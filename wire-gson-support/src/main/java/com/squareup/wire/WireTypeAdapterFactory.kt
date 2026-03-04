@@ -50,11 +50,19 @@ import com.squareup.wire.internal.createRuntimeMessageAdapter
  * specification (i.e. camelCase). Note that [preservingProtoFieldNames], when true, takes
  * precedence over the `jsonName` option.
  */
-class WireTypeAdapterFactory @JvmOverloads constructor(
+class WireTypeAdapterFactory(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
   private val preservingProtoFieldNames: Boolean = false,
 ) : TypeAdapterFactory {
+
+  constructor(typeUrlToAdapter: Map<String, ProtoAdapter<*>>, writeIdentityValues: Boolean) :
+    this(typeUrlToAdapter, writeIdentityValues, false)
+
+  constructor(typeUrlToAdapter: Map<String, ProtoAdapter<*>>) : this(typeUrlToAdapter, false, false)
+
+  constructor() : this(mapOf(), false, false)
+
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
    * used with [AnyMessage].

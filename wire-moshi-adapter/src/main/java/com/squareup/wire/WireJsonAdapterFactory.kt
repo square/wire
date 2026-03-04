@@ -46,11 +46,19 @@ import java.lang.reflect.Type
  * specification (i.e. camelCase). Note that [preservingProtoFieldNames], when true, takes
  * precedence over the `jsonName` option.
  */
-class WireJsonAdapterFactory @JvmOverloads constructor(
+class WireJsonAdapterFactory(
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>> = mapOf(),
   private val writeIdentityValues: Boolean = false,
   private val preservingProtoFieldNames: Boolean = false,
 ) : JsonAdapter.Factory {
+
+  constructor(typeUrlToAdapter: Map<String, ProtoAdapter<*>>, writeIdentityValues: Boolean) :
+    this(typeUrlToAdapter, writeIdentityValues, false)
+
+  constructor(typeUrlToAdapter: Map<String, ProtoAdapter<*>>) : this(typeUrlToAdapter, false, false)
+
+  constructor() : this(mapOf(), false, false)
+
   /**
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
    * used with [AnyMessage].
