@@ -114,7 +114,7 @@ public class ParameterValue(
                   .toInt()
                 data_ = ArrayList(initialCapacity)
               }
-              data_!!.add(ProtoAdapter.FLOAT.decode(reader))
+              ProtoAdapter.FLOAT.tryDecode(reader, data_!!)
             }
             else -> reader.readUnknownField(tag)
           }
