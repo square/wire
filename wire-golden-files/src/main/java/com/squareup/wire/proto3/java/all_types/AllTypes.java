@@ -2966,28 +2966,28 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 223: builder.rep_null_value.add((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
           case 224: builder.rep_empty.add(ProtoAdapter.EMPTY.decode(reader)); break;
           case 225: builder.rep_timestamp.add(ProtoAdapter.INSTANT.decode(reader)); break;
-          case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 302: builder.pack_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
-          case 303: builder.pack_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
-          case 304: builder.pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 305: builder.pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 306: builder.pack_int64.add(ProtoAdapter.INT64.decode(reader)); break;
-          case 307: builder.pack_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
-          case 308: builder.pack_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
-          case 309: builder.pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 310: builder.pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 311: builder.pack_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
-          case 312: builder.pack_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 313: builder.pack_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 301: ProtoAdapter.INT32.tryDecode(reader, builder.pack_int32); break;
+          case 302: ProtoAdapter.UINT32.tryDecode(reader, builder.pack_uint32); break;
+          case 303: ProtoAdapter.SINT32.tryDecode(reader, builder.pack_sint32); break;
+          case 304: ProtoAdapter.FIXED32.tryDecode(reader, builder.pack_fixed32); break;
+          case 305: ProtoAdapter.SFIXED32.tryDecode(reader, builder.pack_sfixed32); break;
+          case 306: ProtoAdapter.INT64.tryDecode(reader, builder.pack_int64); break;
+          case 307: ProtoAdapter.UINT64.tryDecode(reader, builder.pack_uint64); break;
+          case 308: ProtoAdapter.SINT64.tryDecode(reader, builder.pack_sint64); break;
+          case 309: ProtoAdapter.FIXED64.tryDecode(reader, builder.pack_fixed64); break;
+          case 310: ProtoAdapter.SFIXED64.tryDecode(reader, builder.pack_sfixed64); break;
+          case 311: ProtoAdapter.BOOL.tryDecode(reader, builder.pack_bool); break;
+          case 312: ProtoAdapter.FLOAT.tryDecode(reader, builder.pack_float); break;
+          case 313: ProtoAdapter.DOUBLE.tryDecode(reader, builder.pack_double); break;
           case 316: {
             try {
-              builder.pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
+              NestedEnum.ADAPTER.tryDecode(reader, builder.pack_nested_enum);
             } catch (ProtoAdapter.EnumConstantNotFoundException e) {
               builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
             }
             break;
           }
-          case 323: builder.pack_null_value.add((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
+          case 323: ProtoAdapter.STRUCT_NULL.tryDecode(reader, builder.pack_null_value); break;
           case 501: builder.map_int32_int32.putAll(map_int32_int32Adapter().decode(reader)); break;
           case 502: builder.map_string_string.putAll(map_string_stringAdapter().decode(reader)); break;
           case 503: builder.map_string_message.putAll(map_string_messageAdapter().decode(reader)); break;
