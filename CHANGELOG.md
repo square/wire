@@ -4,6 +4,24 @@ Change Log
 Unreleased
 ----------
 
+Version 5.5.1
+---------------------
+
+_2026-03-05_
+
+### Kotlin
+
+* Add option to avoid making immutable copies for Kotlin generations (#3513 by [Jeff Gulbronson][JGulbronson])
+  If set to false, Wire will not use immutable copies for repeated or map fields.
+
+```kotlin
+wire {
+  kotlin {
+    makeImmutableCopies = false
+  }
+}
+ ```
+
 Version 6.0.0-alpha03
 ---------------------
 
