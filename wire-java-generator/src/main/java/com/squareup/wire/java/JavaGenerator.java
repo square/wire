@@ -1379,7 +1379,12 @@ public final class JavaGenerator {
   private CodeBlock decodeAndAssign(Field field, NameAllocator nameAllocator, boolean useBuilder) {
     String fieldName = nameAllocator.get(field);
     CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field, nameAllocator));
-    if (field.isRepeated()) {
+    if (field.isPacked()) {
+      CodeBlock adapter = singleAdapterFor(field, nameAllocator);
+      return useBuilder
+          ? CodeBlock.of("$L.tryDecode(reader, builder.$L)", adapter, fieldName)
+          : CodeBlock.of("$L.tryDecode(reader, $L)", adapter, fieldName);
+    } else if (field.isRepeated()) {
       return useBuilder
           ? field.getType().equals(ProtoType.STRUCT_NULL)
               ? CodeBlock.of("builder.$L.add(($T) $L)", fieldName, Void.class, decode)

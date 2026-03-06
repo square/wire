@@ -2052,7 +2052,7 @@ class KotlinGenerator private constructor(
           }
           addStatement("%N = %L(initialCapacity)", fieldName, ArrayList::class.simpleName)
           endControlFlow()
-          addStatement("%1N.add(%2L)", fieldName, decode)
+          addStatement("%L.tryDecode(reader, %N!!)", adapterName, fieldName)
         }
       }
 

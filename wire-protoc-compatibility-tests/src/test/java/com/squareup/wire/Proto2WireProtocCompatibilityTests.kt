@@ -25,6 +25,7 @@ import com.squareup.wire.proto2.kotlin.simple.SimpleMessageOuterClass
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import org.junit.Test
+import squareup.proto2.java.empty.EmptyLength as EmptyLengthJ
 import squareup.proto2.java.interop.InteropMessage as InteropMessageJ
 import squareup.proto2.java.interop.type.EnumProto2 as EnumProto2J
 import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
@@ -35,6 +36,8 @@ import squareup.proto2.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extOptBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extPackBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extRepBool
+import squareup.proto2.kotlin.empty.EmptyLength as EmptyLengthK
+import squareup.proto2.kotlin.empty.EmptyLengthOuterClass.EmptyLength
 import squareup.proto2.kotlin.extensions.WireMessageOuterClass
 import squareup.proto2.kotlin.interop.InteropMessage as InteropMessageK
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass
@@ -122,6 +125,18 @@ class Proto2WireProtocCompatibilityTests {
   @Test fun protocDontThrowUpOnWireExtensions() {
     assertThat(WireMessageOuterClass.WireMessage.newBuilder().build()).isNotNull()
     assertThat(WireMessage()).isNotNull()
+  }
+
+  @Test fun repeatedZeroLengthUint32Fields() {
+    val bytes: ByteArray = byteArrayOf(18, 0)
+
+    assertThat(EmptyLength.parseFrom(bytes)).isEqualTo(EmptyLength.newBuilder().build())
+    assertThat(EmptyLengthJ.ADAPTER.decode(bytes)).isEqualTo(EmptyLengthJ(listOf()))
+    assertThat(EmptyLengthK.ADAPTER.decode(bytes)).isEqualTo(EmptyLengthK())
+
+    assertThat(EmptyLength.parseFrom(bytes).toByteArray()).isEmpty()
+    assertThat(EmptyLengthJ.ADAPTER.decode(bytes).encode()).isEmpty()
+    assertThat(EmptyLengthK.ADAPTER.decode(bytes).encode()).isEmpty()
   }
 
   @Test fun serializeProto2Proto3Interop() {

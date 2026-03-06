@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+package squareup.proto2.kotlin.empty;
+
+message EmptyLength {
+  repeated uint32 samples = 2 [packed = true];
+}

@@ -3996,7 +3996,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_int32 = ArrayList(initialCapacity)
               }
-              pack_int32!!.add(ProtoAdapter.INT32.decode(reader))
+              ProtoAdapter.INT32.tryDecode(reader, pack_int32!!)
             }
             302 -> {
               if (pack_uint32 == null) {
@@ -4006,7 +4006,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_uint32 = ArrayList(initialCapacity)
               }
-              pack_uint32!!.add(ProtoAdapter.UINT32.decode(reader))
+              ProtoAdapter.UINT32.tryDecode(reader, pack_uint32!!)
             }
             303 -> {
               if (pack_sint32 == null) {
@@ -4016,7 +4016,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_sint32 = ArrayList(initialCapacity)
               }
-              pack_sint32!!.add(ProtoAdapter.SINT32.decode(reader))
+              ProtoAdapter.SINT32.tryDecode(reader, pack_sint32!!)
             }
             304 -> {
               if (pack_fixed32 == null) {
@@ -4026,7 +4026,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_fixed32 = ArrayList(initialCapacity)
               }
-              pack_fixed32!!.add(ProtoAdapter.FIXED32.decode(reader))
+              ProtoAdapter.FIXED32.tryDecode(reader, pack_fixed32!!)
             }
             305 -> {
               if (pack_sfixed32 == null) {
@@ -4036,7 +4036,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_sfixed32 = ArrayList(initialCapacity)
               }
-              pack_sfixed32!!.add(ProtoAdapter.SFIXED32.decode(reader))
+              ProtoAdapter.SFIXED32.tryDecode(reader, pack_sfixed32!!)
             }
             306 -> {
               if (pack_int64 == null) {
@@ -4046,7 +4046,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_int64 = ArrayList(initialCapacity)
               }
-              pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
+              ProtoAdapter.INT64.tryDecode(reader, pack_int64!!)
             }
             307 -> {
               if (pack_uint64 == null) {
@@ -4056,7 +4056,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_uint64 = ArrayList(initialCapacity)
               }
-              pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
+              ProtoAdapter.UINT64.tryDecode(reader, pack_uint64!!)
             }
             308 -> {
               if (pack_sint64 == null) {
@@ -4066,7 +4066,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_sint64 = ArrayList(initialCapacity)
               }
-              pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
+              ProtoAdapter.SINT64.tryDecode(reader, pack_sint64!!)
             }
             309 -> {
               if (pack_fixed64 == null) {
@@ -4076,7 +4076,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_fixed64 = ArrayList(initialCapacity)
               }
-              pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
+              ProtoAdapter.FIXED64.tryDecode(reader, pack_fixed64!!)
             }
             310 -> {
               if (pack_sfixed64 == null) {
@@ -4086,7 +4086,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_sfixed64 = ArrayList(initialCapacity)
               }
-              pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
+              ProtoAdapter.SFIXED64.tryDecode(reader, pack_sfixed64!!)
             }
             311 -> {
               if (pack_bool == null) {
@@ -4096,7 +4096,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_bool = ArrayList(initialCapacity)
               }
-              pack_bool!!.add(ProtoAdapter.BOOL.decode(reader))
+              ProtoAdapter.BOOL.tryDecode(reader, pack_bool!!)
             }
             312 -> {
               if (pack_float == null) {
@@ -4106,7 +4106,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_float = ArrayList(initialCapacity)
               }
-              pack_float!!.add(ProtoAdapter.FLOAT.decode(reader))
+              ProtoAdapter.FLOAT.tryDecode(reader, pack_float!!)
             }
             313 -> {
               if (pack_double == null) {
@@ -4116,7 +4116,7 @@ public class AllTypes private constructor(
                   .toInt()
                 pack_double = ArrayList(initialCapacity)
               }
-              pack_double!!.add(ProtoAdapter.DOUBLE.decode(reader))
+              ProtoAdapter.DOUBLE.tryDecode(reader, pack_double!!)
             }
             316 -> try {
               NestedEnum.ADAPTER.tryDecode(reader, pack_nested_enum)
@@ -4269,7 +4269,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_int32 = ArrayList(initialCapacity)
               }
-              ext_pack_int32!!.add(ProtoAdapter.INT32.decode(reader))
+              ProtoAdapter.INT32.tryDecode(reader, ext_pack_int32!!)
             }
             1_202 -> {
               if (ext_pack_uint32 == null) {
@@ -4279,7 +4279,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_uint32 = ArrayList(initialCapacity)
               }
-              ext_pack_uint32!!.add(ProtoAdapter.UINT32.decode(reader))
+              ProtoAdapter.UINT32.tryDecode(reader, ext_pack_uint32!!)
             }
             1_203 -> {
               if (ext_pack_sint32 == null) {
@@ -4289,7 +4289,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_sint32 = ArrayList(initialCapacity)
               }
-              ext_pack_sint32!!.add(ProtoAdapter.SINT32.decode(reader))
+              ProtoAdapter.SINT32.tryDecode(reader, ext_pack_sint32!!)
             }
             1_204 -> {
               if (ext_pack_fixed32 == null) {
@@ -4299,7 +4299,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_fixed32 = ArrayList(initialCapacity)
               }
-              ext_pack_fixed32!!.add(ProtoAdapter.FIXED32.decode(reader))
+              ProtoAdapter.FIXED32.tryDecode(reader, ext_pack_fixed32!!)
             }
             1_205 -> {
               if (ext_pack_sfixed32 == null) {
@@ -4309,7 +4309,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_sfixed32 = ArrayList(initialCapacity)
               }
-              ext_pack_sfixed32!!.add(ProtoAdapter.SFIXED32.decode(reader))
+              ProtoAdapter.SFIXED32.tryDecode(reader, ext_pack_sfixed32!!)
             }
             1_206 -> {
               if (ext_pack_int64 == null) {
@@ -4319,7 +4319,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_int64 = ArrayList(initialCapacity)
               }
-              ext_pack_int64!!.add(ProtoAdapter.INT64.decode(reader))
+              ProtoAdapter.INT64.tryDecode(reader, ext_pack_int64!!)
             }
             1_207 -> {
               if (ext_pack_uint64 == null) {
@@ -4329,7 +4329,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_uint64 = ArrayList(initialCapacity)
               }
-              ext_pack_uint64!!.add(ProtoAdapter.UINT64.decode(reader))
+              ProtoAdapter.UINT64.tryDecode(reader, ext_pack_uint64!!)
             }
             1_208 -> {
               if (ext_pack_sint64 == null) {
@@ -4339,7 +4339,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_sint64 = ArrayList(initialCapacity)
               }
-              ext_pack_sint64!!.add(ProtoAdapter.SINT64.decode(reader))
+              ProtoAdapter.SINT64.tryDecode(reader, ext_pack_sint64!!)
             }
             1_209 -> {
               if (ext_pack_fixed64 == null) {
@@ -4349,7 +4349,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_fixed64 = ArrayList(initialCapacity)
               }
-              ext_pack_fixed64!!.add(ProtoAdapter.FIXED64.decode(reader))
+              ProtoAdapter.FIXED64.tryDecode(reader, ext_pack_fixed64!!)
             }
             1_210 -> {
               if (ext_pack_sfixed64 == null) {
@@ -4359,7 +4359,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_sfixed64 = ArrayList(initialCapacity)
               }
-              ext_pack_sfixed64!!.add(ProtoAdapter.SFIXED64.decode(reader))
+              ProtoAdapter.SFIXED64.tryDecode(reader, ext_pack_sfixed64!!)
             }
             1_211 -> {
               if (ext_pack_bool == null) {
@@ -4369,7 +4369,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_bool = ArrayList(initialCapacity)
               }
-              ext_pack_bool!!.add(ProtoAdapter.BOOL.decode(reader))
+              ProtoAdapter.BOOL.tryDecode(reader, ext_pack_bool!!)
             }
             1_212 -> {
               if (ext_pack_float == null) {
@@ -4379,7 +4379,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_float = ArrayList(initialCapacity)
               }
-              ext_pack_float!!.add(ProtoAdapter.FLOAT.decode(reader))
+              ProtoAdapter.FLOAT.tryDecode(reader, ext_pack_float!!)
             }
             1_213 -> {
               if (ext_pack_double == null) {
@@ -4389,7 +4389,7 @@ public class AllTypes private constructor(
                   .toInt()
                 ext_pack_double = ArrayList(initialCapacity)
               }
-              ext_pack_double!!.add(ProtoAdapter.DOUBLE.decode(reader))
+              ProtoAdapter.DOUBLE.tryDecode(reader, ext_pack_double!!)
             }
             1_216 -> try {
               NestedEnum.ADAPTER.tryDecode(reader, ext_pack_nested_enum)
