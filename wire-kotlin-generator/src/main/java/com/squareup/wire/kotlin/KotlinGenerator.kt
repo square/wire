@@ -2037,7 +2037,7 @@ class KotlinGenerator private constructor(
             field.getMinimumByteSize(),
           )
           endControlFlow()
-          addStatement("%1N!!.add(%2L)", fieldName, decode)
+          addStatement("%1N.add(%2L)", fieldName, decode)
         }
       }
 
