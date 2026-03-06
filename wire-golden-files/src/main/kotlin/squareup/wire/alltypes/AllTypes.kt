@@ -4151,73 +4151,73 @@ public class AllTypes private constructor(
               if (array_int32 == null) {
                 array_int32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_int32!!.add(decodePrimitive_int32(reader))
+              array_int32.add(decodePrimitive_int32(reader))
             }
             602 -> {
               if (array_uint32 == null) {
                 array_uint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_uint32!!.add(decodePrimitive_uint32(reader))
+              array_uint32.add(decodePrimitive_uint32(reader))
             }
             603 -> {
               if (array_sint32 == null) {
                 array_sint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_sint32!!.add(decodePrimitive_sint32(reader))
+              array_sint32.add(decodePrimitive_sint32(reader))
             }
             604 -> {
               if (array_fixed32 == null) {
                 array_fixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_fixed32!!.add(decodePrimitive_fixed32(reader))
+              array_fixed32.add(decodePrimitive_fixed32(reader))
             }
             605 -> {
               if (array_sfixed32 == null) {
                 array_sfixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_sfixed32!!.add(decodePrimitive_sfixed32(reader))
+              array_sfixed32.add(decodePrimitive_sfixed32(reader))
             }
             606 -> {
               if (array_int64 == null) {
                 array_int64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_int64!!.add(decodePrimitive_int64(reader))
+              array_int64.add(decodePrimitive_int64(reader))
             }
             607 -> {
               if (array_uint64 == null) {
                 array_uint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_uint64!!.add(decodePrimitive_uint64(reader))
+              array_uint64.add(decodePrimitive_uint64(reader))
             }
             608 -> {
               if (array_sint64 == null) {
                 array_sint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
-              array_sint64!!.add(decodePrimitive_sint64(reader))
+              array_sint64.add(decodePrimitive_sint64(reader))
             }
             609 -> {
               if (array_fixed64 == null) {
                 array_fixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_fixed64!!.add(decodePrimitive_fixed64(reader))
+              array_fixed64.add(decodePrimitive_fixed64(reader))
             }
             610 -> {
               if (array_sfixed64 == null) {
                 array_sfixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_sfixed64!!.add(decodePrimitive_sfixed64(reader))
+              array_sfixed64.add(decodePrimitive_sfixed64(reader))
             }
             611 -> {
               if (array_float == null) {
                 array_float = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              array_float!!.add(decodePrimitive_float(reader))
+              array_float.add(decodePrimitive_float(reader))
             }
             612 -> {
               if (array_double == null) {
                 array_double = DoubleArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
-              array_double!!.add(decodePrimitive_double(reader))
+              array_double.add(decodePrimitive_double(reader))
             }
             1_001 -> builder.ext_opt_int32(ProtoAdapter.INT32.decode(reader))
             1_002 -> builder.ext_opt_uint32(ProtoAdapter.UINT32.decode(reader))

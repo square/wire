@@ -110,7 +110,7 @@ public class ParameterValueWithArray(
               if (data_ == null) {
                 data_ = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
-              data_!!.add(decodePrimitive_float(reader))
+              data_.add(decodePrimitive_float(reader))
             }
             else -> reader.readUnknownField(tag)
           }
