@@ -188,7 +188,16 @@ class SyntaxReader(
         "map<$keyType, $valueType>"
       }
 
-      else -> name
+      else -> {
+        // Support type names that wrap across lines.
+        // This works because peekChar() skips whitespace.
+        var result = name
+        while (peekChar() == '.') {
+          pos++ // Consume the dot.
+          result = "$result.${readWord()}"
+        }
+        result
+      }
     }
   }
 

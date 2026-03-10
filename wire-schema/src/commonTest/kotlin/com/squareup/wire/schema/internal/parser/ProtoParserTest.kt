@@ -3284,4 +3284,89 @@ class ProtoParserTest {
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
+
+  @Test
+  fun fieldTypeWrappedAcrossLines() {
+    val proto = """
+        |syntax = "proto3";
+        |message MyRequest {
+        |  message Body {
+        |    string required_field = 1;
+        |    repeated squareup.geology.deep.sedimentary
+        |        .Mite wrapped_field = 2;
+        |    optional string other_field = 3;
+        |  }
+        |}
+    """.trimMargin()
+    val expected = ProtoFileElement(
+      location = location,
+      syntax = PROTO_3,
+      types = listOf(
+        MessageElement(
+          location = location.at(2, 1),
+          name = "MyRequest",
+          nestedTypes = listOf(
+            MessageElement(
+              location = location.at(3, 3),
+              name = "Body",
+              fields = listOf(
+                FieldElement(
+                  location = location.at(4, 5),
+                  type = "string",
+                  name = "required_field",
+                  tag = 1,
+                ),
+                FieldElement(
+                  location = location.at(5, 5),
+                  label = REPEATED,
+                  type = "squareup.geology.deep.sedimentary.Mite",
+                  name = "wrapped_field",
+                  tag = 2,
+                ),
+                FieldElement(
+                  location = location.at(7, 5),
+                  label = OPTIONAL,
+                  type = "string",
+                  name = "other_field",
+                  tag = 3,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test
+  fun fieldTypeWithNestedTypeWrappedAcrossLines() {
+    val proto = """
+        |syntax = "proto3";
+        |message Modules {
+        |  optional squareup.geology.Calcium
+        |      .ite.ite.Ite category = 1;
+        |}
+    """.trimMargin()
+    val expected = ProtoFileElement(
+      location = location,
+      syntax = PROTO_3,
+      types = listOf(
+        MessageElement(
+          location = location.at(2, 1),
+          name = "Modules",
+          fields = listOf(
+            FieldElement(
+              location = location.at(3, 3),
+              label = OPTIONAL,
+              type = "squareup.geology.Calcium.ite.ite.Ite",
+              name = "category",
+              tag = 1,
+            ),
+          ),
+        ),
+      ),
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
 }
