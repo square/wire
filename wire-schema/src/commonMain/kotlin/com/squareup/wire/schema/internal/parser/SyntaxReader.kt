@@ -189,14 +189,13 @@ class SyntaxReader(
       }
 
       else -> {
-        // Support type names that wrap across lines.
-        // This works because peekChar() skips whitespace.
-        var result = name
-        while (peekChar() == '.') {
-          pos++ // Consume the dot.
-          result = "$result.${readWord()}"
+        buildString {
+          append(name)
+          while (peekChar() == '.') {
+            pos++ // We skip the dot so we can read the next word.
+            append(".${readWord()}")
+          }
         }
-        result
       }
     }
   }

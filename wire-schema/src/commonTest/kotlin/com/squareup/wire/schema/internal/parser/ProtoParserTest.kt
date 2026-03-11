@@ -561,6 +561,24 @@ class ProtoParserTest {
   }
 
   @Test
+  fun errorOnMultilinedDefinedTypes() {
+    val proto = """
+        |message Test {
+        |  optional a.b.LookalikeExpansionLevelEnum
+        |      .LookalikeExpansionLevel 3DS = 1;
+        |}
+    """.trimMargin()
+    try {
+      ProtoParser.parse(location, proto)
+      fail()
+    } catch (e: IllegalStateException) {
+      assertThat(e).hasMessage(
+        "Syntax error in file.proto:3:31: field and constant names cannot start with a digit",
+      )
+    }
+  }
+
+  @Test
   fun constantCannotStartWithDigits() {
     val proto = """
         |enum Test {
