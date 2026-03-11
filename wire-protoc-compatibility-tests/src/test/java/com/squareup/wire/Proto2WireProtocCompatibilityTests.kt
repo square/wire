@@ -27,6 +27,10 @@ import okio.ByteString.Companion.decodeHex
 import org.junit.Test
 import squareup.proto2.java.empty.EmptyLength as EmptyLengthJ
 import squareup.proto2.java.interop.InteropMessage as InteropMessageJ
+import squareup.proto2.java.interop.InteropRepeatedUint as InteropRepeatedUintJ2
+import squareup.proto2.java.interop.InteropTest.InteropRepeatedUint as InteropRepeatedUintP2
+import squareup.proto2.java.interop.InteropTest.SubInteropRepeatedUint as SubInteropRepeatedUintP2
+import squareup.proto2.java.interop.SubInteropRepeatedUint as SubInteropRepeatedUintJ2
 import squareup.proto2.java.interop.type.EnumProto2 as EnumProto2J
 import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
 import squareup.proto2.kotlin.MapTypes
@@ -49,10 +53,12 @@ import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto2Enum
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto2Message
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto3Enum
 import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto3Message
+import squareup.proto2.kotlin.interop.InteropRepeatedUint as InteropRepeatedUintK2
 import squareup.proto2.kotlin.interop.Quilt
 import squareup.proto2.kotlin.interop.QuiltColor
 import squareup.proto2.kotlin.interop.QuiltContainer
 import squareup.proto2.kotlin.interop.RepeatedEnum
+import squareup.proto2.kotlin.interop.SubInteropRepeatedUint as SubInteropRepeatedUintK2
 import squareup.proto2.kotlin.interop.type.EnumProto2 as EnumProto2K
 import squareup.proto2.kotlin.interop.type.InteropTypes.EnumProto2
 import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
@@ -181,6 +187,36 @@ class Proto2WireProtocCompatibilityTests {
     assertThat(mapTypeWire.map_string_string.size).isEqualTo(2)
     assertThat(mapTypeWire.map_string_string["de"]).isEqualTo("")
     assertThat(mapTypeWire.map_string_string[""]).isEqualTo("ed")
+  }
+
+  @Test fun decodingRepeatedEntries() {
+    // ── 1 ┐
+    //      ├─ 1: 3
+    //      ╰- 1: 3
+    val byteArray = byteArrayOf(10, 3, 10, 1, 3, 10, 3, 10, 1, 3)
+    assertThat(InteropRepeatedUintP2.parseFrom(byteArray))
+      .isEqualTo(
+        InteropRepeatedUintP2.newBuilder()
+          .setSubMessage(
+            SubInteropRepeatedUintP2.newBuilder().addAllRepeatedValues(listOf(3, 3)).build(),
+          )
+          .mergeFrom()
+          .build(),
+      )
+    assertThat(InteropRepeatedUintK2.ADAPTER.decode(byteArray)).isEqualTo(
+      InteropRepeatedUintK2.Builder()
+        .sub_message(
+          SubInteropRepeatedUintK2.Builder().repeated_values(listOf(3, 3)).build(),
+        )
+        .build(),
+    )
+    assertThat(InteropRepeatedUintJ2.ADAPTER.decode(byteArray)).isEqualTo(
+      InteropRepeatedUintJ2.Builder()
+        .sub_message(
+          SubInteropRepeatedUintJ2.Builder().repeated_values(listOf(3, 3)).build(),
+        )
+        .build(),
+    )
   }
 
   /**
