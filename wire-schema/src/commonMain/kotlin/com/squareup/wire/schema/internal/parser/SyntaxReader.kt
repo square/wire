@@ -188,7 +188,15 @@ class SyntaxReader(
         "map<$keyType, $valueType>"
       }
 
-      else -> name
+      else -> {
+        buildString {
+          append(name)
+          while (peekChar() == '.') {
+            pos++ // We skip the dot so we can read the next word.
+            append(".${readWord()}")
+          }
+        }
+      }
     }
   }
 
