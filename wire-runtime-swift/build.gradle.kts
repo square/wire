@@ -140,6 +140,14 @@ afterEvaluate {
     val developerDir = linkerArgs.get().extractDeveloperDir() ?: return@all
     linkerArgs.add("-L$developerDir/usr/lib")
   }
+
+  // In Gradle 9.x + Xcode 26+, the xctest linkTest task may be a LinkExecutable instead of a
+  // LinkMachOBundle. Handle both to ensure XCTestSwiftSupport is found in either case.
+  // Related to https://github.com/gradle/gradle-native/issues/1126
+  tasks.withType(LinkExecutable::class).all {
+    val developerDir = linkerArgs.get().extractDeveloperDir() ?: return@all
+    linkerArgs.add("-L$developerDir/usr/lib")
+  }
 }
 
 fun List<String>.extractDeveloperDir(): String? = this
@@ -148,6 +156,7 @@ fun List<String>.extractDeveloperDir(): String? = this
   }
   ?.removePrefix("-F")
   ?.removeSuffix("/Library/Frameworks")
+  ?: System.getenv("DEVELOPER_DIR")
 
 configure<SpotlessExtension> {
   format("Swift") {
