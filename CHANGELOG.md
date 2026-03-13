@@ -4,6 +4,25 @@ Change Log
 Unreleased
 ----------
 
+Version 6.0.0
+---------------------
+
+_2026-03-13_
+
+### Common
+
+* Correctly decode packed zero length uint (#3529)
+* Support for multi-line type definition (#3535 by [Joe][jhansche])
+
+### Kotlin
+
+* Removed `!!` on some non-nullable fields. Should reduce warnings (#3533 by [Alexandre Leblanc][mrtryhard])
+
+### Gradle plugin
+
+* Bumped to Gradle `9.3`.
+* Okio to `3.17.0`.
+
 Version 5.5.1
 ---------------------
 
@@ -1807,12 +1826,14 @@ Initial version.
  [jamieQ]: https://github.com/jamieQ
  [javapoet]: https://github.com/square/javapoet
  [jdbp-classpass]: https://github.com/jdbp-classpass
+ [jhansche]: https://github.com/jhansche
  [jimfs]: https://github.com/google/jimfs
  [jszumski]: https://github.com/jszumski
  [lickel]: https://github.com/lickel
  [liutikas]: https://github.com/liutikas
  [mpawliszyn]: https://github.com/mpawliszyn
  [mpeyper]: https://github.com/mpeyper
+ [mrtryhard]: https://github.com/mrtryhard
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
