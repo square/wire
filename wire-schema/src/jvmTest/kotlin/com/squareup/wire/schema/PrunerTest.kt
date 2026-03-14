@@ -257,6 +257,87 @@ class PrunerTest {
       )
   }
 
+  /**
+   * Map option entries may omit 'value' when the value type's default is desired. This is common
+   * in OpenAPI v2 annotations, e.g. a security requirement that needs bearer auth but no scopes:
+   *
+   * ```
+   * security: { security_requirement: { key: "bearer" } }
+   * ```
+   *
+   * The missing 'value' means an empty SecurityRequirementValue (no scopes). Wire must handle
+   * these null map values without crashing during pruning.
+   */
+  @Test
+  fun rootCanHandleInlinedOptionWithMapFieldsMissingValue() {
+    val schema = buildSchema {
+      add(
+        "openapiv2.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |package grpc.gateway.protoc_gen_openapiv2.options;
+          |
+          |message SecurityRequirement {
+          |  message SecurityRequirementValue {
+          |    repeated string scope = 1;
+          |  }
+          |  map<string, SecurityRequirementValue> security_requirement = 1;
+          |}
+          |
+          |message Swagger {
+          |  repeated SecurityRequirement security = 1;
+          |}
+          |
+          |extend google.protobuf.FileOptions {
+          |  Swagger openapiv2_swagger = 80000;
+          |}
+        """.trimMargin(),
+      )
+      add(
+        "test.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "openapiv2.proto";
+          |
+          |package test;
+          |
+          |option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+          |  security: { security_requirement: { key: "bearer" } }
+          |};
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(
+      PruningRules.Builder()
+        .addRoot("grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement#security_requirement")
+        .build(),
+    )
+    assertThat(pruned.protoFile("openapiv2.proto")!!.toSchema())
+      .isEqualTo(
+        """
+          |// Proto schema formatted by Wire, do not edit.
+          |// Source: openapiv2.proto
+          |
+          |syntax = "proto3";
+          |
+          |package grpc.gateway.protoc_gen_openapiv2.options;
+          |
+          |message SecurityRequirement {
+          |  map<string, SecurityRequirementValue> security_requirement = 1;
+          |
+          |  message SecurityRequirementValue {
+          |    repeated string scope = 1;
+          |  }
+          |}
+          |
+        """.trimMargin(),
+      )
+  }
+
   @Ignore("Pruning inlined map options is not supported")
   @Test
   fun pruneCanHandleInlinedOptionMemberWithMapFields() {
