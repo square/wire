@@ -192,7 +192,16 @@ class SwiftGenerator private constructor(
       if (isRequiredParameter || isMap || isRepeated) {
         return false
       }
-      if (type == ProtoType.ANY) return false
+      // These built-in types have hand-written Swift implementations without
+      // @ProtoDefaulted support. STRUCT_NULL is intentionally omitted -- it's an
+      // enum, so it falls through to the isEnum check below.
+      if (type == ProtoType.ANY ||
+        type == ProtoType.STRUCT_MAP ||
+        type == ProtoType.STRUCT_VALUE ||
+        type == ProtoType.STRUCT_LIST
+      ) {
+        return false
+      }
       if (isMessage) {
         val messageType = schema.getType(type!!) as MessageType
 
@@ -1855,6 +1864,10 @@ class SwiftGenerator private constructor(
       ProtoType.UINT32 to UINT32,
       ProtoType.UINT64 to UINT64,
       ProtoType.ANY to DeclaredTypeName.typeName("Wire.AnyMessage"),
+      ProtoType.STRUCT_LIST to DeclaredTypeName.typeName("Wire.ListValue"),
+      ProtoType.STRUCT_MAP to DeclaredTypeName.typeName("Wire.StructMessage"),
+      ProtoType.STRUCT_NULL to DeclaredTypeName.typeName("Wire.StructNull"),
+      ProtoType.STRUCT_VALUE to DeclaredTypeName.typeName("Wire.StructValue"),
 //        Options.FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
 //        Options.MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
 //        Options.ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
