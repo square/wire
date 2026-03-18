@@ -518,14 +518,14 @@ class Proto3WireProtocCompatibilityTests {
     val googleMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
       .setOrderedAt(
         Timestamp.newBuilder()
-          .setSeconds(-631152000000L) // 1950-01-01T00:00:00.250Z.
+          .setSeconds(-631152000L) // 1950-01-01T00:00:00.250Z.
           .setNanos(250_000_000)
           .build(),
       )
       .build()
 
     val wireMessage = PizzaDeliveryK(
-      ordered_at = ofEpochSecond(-631152000000L, 250_000_000L),
+      ordered_at = ofEpochSecond(-631152000L, 250_000_000L),
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
