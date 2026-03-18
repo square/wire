@@ -693,6 +693,18 @@ class WirePluginTest {
   }
 
   @Test
+  fun protoLibraryWithProtoBlock() {
+    val fixtureRoot = File("src/test/projects/proto-library-with-proto-block")
+
+    fixtureGradleRunner(fixtureRoot, "clean", "jar").build()
+
+    ZipFile(File(fixtureRoot, "build/libs/proto-library-with-proto-block.jar")).use {
+      assertThat(it.getEntry("squareup/geology/period.proto")).isNotNull()
+      assertThat(it.getEntry("squareup/dinosaurs/dinosaur.proto")).isNotNull()
+    }
+  }
+
+  @Test
   fun sourceDirExclude() {
     val fixtureRoot = File("src/test/projects/sourcedir-exclude")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
