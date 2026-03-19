@@ -16,6 +16,8 @@
 package com.squareup.wire
 
 import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import kotlin.test.Test
 
@@ -43,5 +45,45 @@ class ProtoAdapterTest {
     assertFailure {
       ProtoAdapter.BOOL.asPacked().asRepeated()
     }.isInstanceOf<UnsupportedOperationException>()
+  }
+
+  @Test fun instantEncodeValidMinBoundary() {
+    // 0001-01-01T00:00:00Z.
+    val instant = ofEpochSecond(-62135596800L, 0L)
+    val bytes = ProtoAdapter.INSTANT.encode(instant)
+    assertThat(ProtoAdapter.INSTANT.decode(bytes).getEpochSecond()).isEqualTo(-62135596800L)
+  }
+
+  @Test fun instantEncodeValidMaxBoundary() {
+    // 9999-12-31T23:59:59Z.
+    val instant = ofEpochSecond(253402300799L, 999_999_999L)
+    val bytes = ProtoAdapter.INSTANT.encode(instant)
+    val decoded = ProtoAdapter.INSTANT.decode(bytes)
+    assertThat(decoded.getEpochSecond()).isEqualTo(253402300799L)
+    assertThat(decoded.getNano()).isEqualTo(999_999_999)
+  }
+
+  @Test fun instantEncodeRejectsSecondsBelowMin() {
+    // 0001-01-01T00:00:00Z - 1 second.
+    val instant = ofEpochSecond(-62135596801L, 0L)
+    assertFailure {
+      ProtoAdapter.INSTANT.encode(instant)
+    }.isInstanceOf<IllegalArgumentException>()
+  }
+
+  @Test fun instantEncodeRejectsSecondsAboveMax() {
+    // 9999-12-31T23:59:59Z + 1 second.
+    val instant = ofEpochSecond(253402300800L, 0L)
+    assertFailure {
+      ProtoAdapter.INSTANT.encode(instant)
+    }.isInstanceOf<IllegalArgumentException>()
+  }
+
+  @Test fun instantEncodedSizeRejectsOutOfRange() {
+    // 0001-01-01T00:00:00Z - 1 second.
+    val instant = ofEpochSecond(-62135596801L, 0L)
+    assertFailure {
+      ProtoAdapter.INSTANT.encodedSize(instant)
+    }.isInstanceOf<IllegalArgumentException>()
   }
 }

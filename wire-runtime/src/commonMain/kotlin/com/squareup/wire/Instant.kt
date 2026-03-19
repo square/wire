@@ -27,6 +27,9 @@ expect class Instant {
    *
    * For example, this value will be -1 for the instant 1969-12-31T23:59:59Z, and 1 for the instant
    * 1970-01-01T00:00:01Z.
+   *
+   * It must be between -62135596800 and 253402300799 inclusive (which corresponds to
+   * 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z).
    */
   fun getEpochSecond(): Long
 
