@@ -82,8 +82,16 @@ class WirePlugin : Plugin<Project> {
 
     project.afterEvaluate {
       if (extension.protoLibrary) {
-        extension.proto { protoOutput ->
-          protoOutput.out = File(project.libraryProtoOutputPath()).path
+        val existingProtoOutput = extension.outputs.filterIsInstance<ProtoOutput>().singleOrNull()
+        if (existingProtoOutput != null) {
+          // There exists a `proto {}` target already, we only set the output path if need be.
+          if (existingProtoOutput.out == null) {
+            existingProtoOutput.out = File(project.libraryProtoOutputPath()).path
+          }
+        } else {
+          extension.proto { protoOutput ->
+            protoOutput.out = File(project.libraryProtoOutputPath()).path
+          }
         }
       }
 

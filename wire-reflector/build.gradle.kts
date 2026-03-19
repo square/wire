@@ -4,7 +4,7 @@ plugins {
 }
 
 val main by sourceSets.getting {
-  java.srcDir("$buildDir/wire")
+  java.srcDir(layout.buildDirectory.dir("wire"))
 }
 
 dependencies {
@@ -14,7 +14,7 @@ dependencies {
   api(projects.wireSchema)
   implementation(libs.okio.core)
   api(libs.guava)
-  implementation("io.grpc:grpc-protobuf:1.79.0")
+  implementation("io.grpc:grpc-protobuf:1.80.0")
   implementation("com.google.protobuf:protoc:4.34.0")
 
   testImplementation(projects.wireTestUtils)
@@ -35,7 +35,7 @@ val generateReflectionProtos by tasks.registering(JavaExec::class) {
   classpath = generateReflectionProtosClasspath
   args(
     "--proto_path=$projectDir/src/main/resources",
-    "--kotlin_out=$buildDir/wire",
+    "--kotlin_out=${layout.buildDirectory.get()}/wire",
     "grpc/reflection/v1alpha/reflection.proto"
   )
 }
