@@ -333,18 +333,18 @@ class Options(
               // When the key isn't a `ProtoMember`, this key/value pair is a inlined value of a map
               // field. We don't need to track the key type in map fields for they are always of
               // scalar types. We however have to check the value type.
-              gatherFields(sink, type, value!!, pruningRules)
+              gatherFields(sink, type, value, pruningRules)
               continue
             }
           }
           if (pruningRules.prunes(protoMember)) continue
           sink.getOrPut(type, ::ArrayList).add(protoMember)
-          gatherFields(sink, protoMember.type, value!!, pruningRules)
+          gatherFields(sink, protoMember.type, value, pruningRules)
         }
       }
       is List<*> -> {
         for (e in o) {
-          gatherFields(sink, type, e!!, pruningRules)
+          gatherFields(sink, type, e, pruningRules)
         }
       }
     }
@@ -373,9 +373,11 @@ class Options(
     schema: Schema,
     markSet: MarkSet,
     type: ProtoType?,
-    o: Any,
+    o: Any?,
   ): Any? {
     return when {
+      o == null -> null
+
       o is Map<*, *> -> {
         val map = mutableMapOf<ProtoMember, Any>()
         for ((key, value) in o) {
@@ -384,7 +386,7 @@ class Options(
             else -> {
               // When the key isn't a `ProtoMember`, this key/value pair is a inlined value of a map
               // field.
-              val retainedValue = retainAll(schema, markSet, type, value!!)
+              val retainedValue = retainAll(schema, markSet, type, value)
               // if `retainedValue` is a map, its value represents an inline message, and we need to
               // mark the proto member.
               if (retainedValue is Map<*, *>) {
@@ -403,11 +405,11 @@ class Options(
           }
 
           val field = schema.getField(protoMember)!!
-          val retainedValue = retainAll(schema, markSet, field.type, value!!)
+          val retainedValue = retainAll(schema, markSet, field.type, value)
           if (retainedValue != null) {
             map[protoMember] = retainedValue // This retained field is non-empty.
           } else if (isCoreMemberOfGoogleProtobuf) {
-            map[protoMember] = value
+            map[protoMember] = value!!
           }
         }
         map.ifEmpty { null }
@@ -416,7 +418,7 @@ class Options(
       o is List<*> -> {
         val list = mutableListOf<Any>()
         for (value in o) {
-          val retainedValue = retainAll(schema, markSet, type, value!!)
+          val retainedValue = retainAll(schema, markSet, type, value)
           if (retainedValue != null) {
             list.add(retainedValue) // This retained value is non-empty.
           }
