@@ -55,3 +55,11 @@ message InteropBoxOneOf {
     sint32 f = 6;
   }
 }
+
+message SubInteropRepeatedUint {
+  repeated uint32 repeated_values = 1 [packed = true];
+}
+
+message InteropRepeatedUint {
+  optional SubInteropRepeatedUint sub_message = 1;
+}
