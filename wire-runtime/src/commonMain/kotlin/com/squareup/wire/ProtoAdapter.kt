@@ -1277,6 +1277,20 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
     }
 }
 
+// Protobuf Timestamp valid range: 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z inclusive.
+private const val TIMESTAMP_SECONDS_MIN = -62135596800L
+private const val TIMESTAMP_SECONDS_MAX = 253402300799L
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun checkTimestampRange(seconds: Long, nanos: Int) {
+  require(seconds in TIMESTAMP_SECONDS_MIN..TIMESTAMP_SECONDS_MAX) {
+    "Timestamp seconds ($seconds) must be in range [$TIMESTAMP_SECONDS_MIN, $TIMESTAMP_SECONDS_MAX]"
+  }
+  require(nanos in 0..999_999_999) {
+    "Timestamp nanos ($nanos) must be in range [0, 999999999]"
+  }
+}
+
 internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Instant>(
   LENGTH_DELIMITED,
   Instant::class,
@@ -1284,25 +1298,28 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
   Syntax.PROTO_3,
 ) {
   override fun encodedSize(value: Instant): Int {
-    var result = 0
     val seconds = value.getEpochSecond()
-    if (seconds != 0L) result += INT64.encodedSizeWithTag(1, seconds)
     val nanos = value.getNano()
+    checkTimestampRange(seconds, nanos)
+    var result = 0
+    if (seconds != 0L) result += INT64.encodedSizeWithTag(1, seconds)
     if (nanos != 0) result += INT32.encodedSizeWithTag(2, nanos)
     return result
   }
 
   override fun encode(writer: ProtoWriter, value: Instant) {
     val seconds = value.getEpochSecond()
-    if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
     val nanos = value.getNano()
+    checkTimestampRange(seconds, nanos)
+    if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
     if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
   }
 
   override fun encode(writer: ReverseProtoWriter, value: Instant) {
-    val nanos = value.getNano()
-    if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
     val seconds = value.getEpochSecond()
+    val nanos = value.getNano()
+    checkTimestampRange(seconds, nanos)
+    if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
     if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
   }
 
