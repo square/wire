@@ -19,8 +19,8 @@ import assertk.assertThat
 import assertk.assertions.containsOnly
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
-import assertk.assertions.message
 import assertk.assertions.messageContains
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
@@ -32,6 +32,7 @@ import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import com.squareup.wire.schema.internal.parser.OptionElement.OptionPrimitive
 import kotlin.test.Test
+import kotlin.test.assertFails
 import kotlin.test.fail
 
 class ProtoParserTest {
@@ -1498,6 +1499,26 @@ class ProtoParserTest {
       publicImports = listOf("src/test/resources/unittest_import.proto"),
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test
+  fun unquotedImportThrows() {
+    val expected = assertFails {
+      ProtoParser.parse(location, "import src/test/resources/unittest_import.proto;\n")
+    }
+    assertThat(expected).isInstanceOf<IllegalStateException>().hasMessage(
+      "Syntax error in file.proto:1:1: expected quoted string",
+    )
+  }
+
+  @Test
+  fun unquotedWeakImportThrows() {
+    val expected = assertFails {
+      ProtoParser.parse(location, "import weak src/test/resources/unittest_import.proto;\n")
+    }
+    assertThat(expected).isInstanceOf<IllegalStateException>().hasMessage(
+      "Syntax error in file.proto:1:14: expected quoted string",
+    )
   }
 
   @Test

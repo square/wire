@@ -52,6 +52,7 @@ class SyntaxReader(
     return data[pos]
   }
 
+  /** Note that although the name suggests otherwise, this does consume the char if it finds it. */
   fun peekChar(c: Char): Boolean {
     return when (peekChar()) {
       c -> {
@@ -79,7 +80,7 @@ class SyntaxReader(
 
   fun readQuotedString(): String {
     var startQuote = readChar()
-    check(startQuote == '"' || startQuote == '\'')
+    expect(startQuote == '"' || startQuote == '\'') { "expected quoted string" }
     val result = StringBuilder()
     while (pos < data.size) {
       var c = data[pos++]
