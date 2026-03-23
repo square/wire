@@ -115,10 +115,15 @@ class ProtoParser internal constructor(
       }
 
       label == "import" && context.permitsImport() -> {
-        when (val importString = reader.readString()) {
-          "weak" -> weakImports.add(reader.readString())
-          "public" -> publicImports.add(reader.readString())
-          else -> imports.add(importString)
+        val peeked = reader.peekChar()
+        if (peeked == '"' || peeked == '\'') {
+          imports.add(reader.readQuotedString())
+        } else {
+          when (reader.readString()) {
+            "weak" -> weakImports.add(reader.readQuotedString())
+            "public" -> publicImports.add(reader.readQuotedString())
+            else -> throw reader.unexpected("expected quoted string", location)
+          }
         }
         reader.require(';')
         null
