@@ -4,6 +4,24 @@ Change Log
 Unreleased
 ----------
 
+Version 6.1.0
+---------------------
+
+_2026-03-24_
+
+### Common
+
+* Validate Timestamp during serialization that values are within spec's range (#3550)
+* Read quoted string when expecting an import (#3554)
+
+### Gradle plugin
+
+* Don't override proto target when `protoLibrary` is true (#3549)
+
+### Swift
+
+* Add `google.protobuf.Struct` support to Swift runtime (#3544 by [Alan Zhang][alanjzhang])
+
 Version 6.0.0
 ---------------------
 
@@ -1827,6 +1845,7 @@ Initial version.
  [javapoet]: https://github.com/square/javapoet
  [jdbp-classpass]: https://github.com/jdbp-classpass
  [jhansche]: https://github.com/jhansche
+ [alanjzhang]: https://github.com/alanjzhang
  [jimfs]: https://github.com/google/jimfs
  [jszumski]: https://github.com/jszumski
  [lickel]: https://github.com/lickel
