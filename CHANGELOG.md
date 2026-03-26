@@ -4,6 +4,15 @@ Change Log
 Unreleased
 ----------
 
+Version 6.2.0
+---------------------
+
+_2026-03-27
+
+### Common
+
+* Fix NPE in `Options.retainAll` when map option entry omits value (#3536 by [Joe Hansche][jhansche])
+
 Version 6.1.0
 ---------------------
 
@@ -30,7 +39,7 @@ _2026-03-13_
 ### Common
 
 * Correctly decode packed zero length uint (#3529)
-* Support for multi-line type definition (#3535 by [Joe][jhansche])
+* Support for multi-line type definition (#3535 by [Joe Hansche][jhansche])
 
 ### Kotlin
 
