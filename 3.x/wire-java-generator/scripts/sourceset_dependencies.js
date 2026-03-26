@@ -1,0 +1,1 @@
+sourceset_dependencies='{":wire-java-generator/main":[]}'
