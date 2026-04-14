@@ -1,0 +1,22 @@
+pluginManagement {
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    google()
+    mavenCentral()
+  }
+}
+
+dependencyResolutionManagement {
+  repositories {
+    google {
+      mavenContent {
+        includeGroupAndSubgroups("androidx")
+        includeGroupAndSubgroups("com.android")
+        includeGroupAndSubgroups("com.google")
+      }
+    }
+    mavenCentral()
+  }
+}

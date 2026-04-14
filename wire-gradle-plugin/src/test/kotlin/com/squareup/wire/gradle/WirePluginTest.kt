@@ -1378,6 +1378,22 @@ class WirePluginTest {
     }
   }
 
+  /** Regression test for https://github.com/square/wire/issues/3558 */
+  @Test
+  fun androidKotlinSourceReleaseJarNoDuplicates() {
+    val fixtureRoot = File("src/test/projects/android-kotlin-source-release-jar")
+
+    val localProperties = File(fixtureRoot, "local.properties")
+    if (!localProperties.exists()) {
+      val androidHome = System.getenv("ANDROID_HOME")
+        ?: "${System.getProperty("user.home")}/Library/Android/sdk"
+      localProperties.writeText("sdk.dir=$androidHome\n")
+    }
+
+    val result = fixtureGradleRunner(fixtureRoot, "sourceReleaseJar", "--no-build-cache").build()
+    assertThat(result.task(":sourceReleaseJar")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+  }
+
   @Test
   fun taskDependency() {
     val fixtureRoot = File("src/test/projects/task-dependency")
