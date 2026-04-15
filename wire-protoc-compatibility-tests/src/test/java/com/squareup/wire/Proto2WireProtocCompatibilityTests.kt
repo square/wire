@@ -200,7 +200,6 @@ class Proto2WireProtocCompatibilityTests {
           .setSubMessage(
             SubInteropRepeatedUintP2.newBuilder().addAllRepeatedValues(listOf(3, 3)).build(),
           )
-          .mergeFrom()
           .build(),
       )
     assertThat(InteropRepeatedUintK2.ADAPTER.decode(byteArray)).isEqualTo(

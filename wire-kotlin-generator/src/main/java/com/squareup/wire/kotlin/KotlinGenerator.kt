@@ -2062,6 +2062,14 @@ class KotlinGenerator private constructor(
 
       field.isRepeated -> CodeBlock.of("%N.add(%L)", fieldName, decode)
       field.isMap -> CodeBlock.of("%N.putAll(%L)", fieldName, decode)
+      field.type!!.isMessage && !field.isOneOf -> {
+        val decodeMessageOrMerge = MemberName("com.squareup.wire.internal", "decodeMessageOrMerge")
+        if (buildersOnly) {
+          CodeBlock.of("builder.%N(%M(%L, reader, builder.%N))", fieldName, decodeMessageOrMerge, adapterName, fieldName)
+        } else {
+          CodeBlock.of("%N = %M(%L, reader, %N)", fieldName, decodeMessageOrMerge, adapterName, fieldName)
+        }
+      }
       else -> CodeBlock.of(if (buildersOnly) "builder.%N(%L)" else "%N·= %L", fieldName, decode)
     }
   }

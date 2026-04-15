@@ -1832,7 +1832,7 @@ class KotlinGeneratorTest {
         |        val unknownFields = reader.forEachTag { tag ->
         |          when (tag) {
         |            1 -> name = ProtoAdapter.STRING.decode(reader)
-        |            2 -> location = StringPointAdapter.INSTANCE.decode(reader)
+        |            2 -> location = decodeMessageOrMerge(StringPointAdapter.INSTANCE, reader, location)
         |            else -> reader.readUnknownField(tag)
         |          }
         |        }
