@@ -108,14 +108,14 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun eventListenerFactory (Lcom/squareup/wire/schema/EventListener$Factory;)V
 	public final fun eventListenerFactoryClass (Ljava/lang/String;)V
 	public final fun eventListenerFactoryClasses ()Ljava/util/Set;
-	public final fun getDryRun ()Z
-	public final fun getOutputs ()Ljava/util/List;
-	public final fun getProtoLibrary ()Z
-	public final fun getRejectUnusedRootsOrPrunes ()Z
-	public final fun getRules ()Ljava/lang/String;
+	public final fun getDryRun ()Lorg/gradle/api/provider/Property;
+	public final fun getOutputs ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getProtoLibrary ()Lorg/gradle/api/provider/Property;
+	public final fun getRejectUnusedRootsOrPrunes ()Lorg/gradle/api/provider/Property;
+	public final fun getRules ()Lorg/gradle/api/provider/Property;
 	public final fun java (Lorg/gradle/api/Action;)V
 	public final fun kotlin (Lorg/gradle/api/Action;)V
-	public final fun loadExhaustively ()Z
+	public final fun loadExhaustively ()Ljava/lang/Boolean;
 	public final fun loadExhaustively (Z)V
 	public final fun move (Lorg/gradle/api/Action;)V
 	public final fun moves ()Ljava/util/List;
@@ -123,7 +123,7 @@ public class com/squareup/wire/gradle/WireExtension {
 	public final fun onlyVersion (Ljava/lang/String;)V
 	public final fun opaque ([Ljava/lang/String;)V
 	public final fun opaques ()Ljava/util/Set;
-	public final fun permitPackageCycles ()Z
+	public final fun permitPackageCycles ()Ljava/lang/Boolean;
 	public final fun permitPackageCycles (Z)V
 	public final fun proto (Lorg/gradle/api/Action;)V
 	public final fun protoPath (Lorg/gradle/api/Action;)V

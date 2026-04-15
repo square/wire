@@ -81,8 +81,8 @@ class WirePlugin : Plugin<Project> {
     project.plugins.withId("java-library", javaPluginHandler)
 
     project.afterEvaluate {
-      if (extension.protoLibrary) {
-        val existingProtoOutput = extension.outputs.filterIsInstance<ProtoOutput>().singleOrNull()
+      if (extension.protoLibrary.get()) {
+        val existingProtoOutput = extension.outputs.get().filterIsInstance<ProtoOutput>().singleOrNull()
         if (existingProtoOutput != null) {
           // There exists a `proto {}` target already, we only set the output path if need be.
           if (existingProtoOutput.out == null) {
@@ -99,7 +99,7 @@ class WirePlugin : Plugin<Project> {
         applyWirePlugin()
       }
 
-      val outputs = extension.outputs
+      val outputs = extension.outputs.get()
       check(outputs.isNotEmpty()) {
         "At least one target must be provided for project '${project.path}\n" + "See our documentation for details: https://square.github.io/wire/wire_compiler/#customizing-output"
       }
@@ -133,7 +133,7 @@ class WirePlugin : Plugin<Project> {
     extension: WireExtension,
     source: WireSource,
   ) {
-    val outputs = extension.outputs
+    val outputs = extension.outputs.get()
 
     val protoSourceProtoRootSets = extension.protoSourceProtoRootSets.toMutableList()
     val protoPathProtoRootSets = extension.protoPathProtoRootSets.toMutableList()
@@ -198,10 +198,10 @@ class WirePlugin : Plugin<Project> {
       }
       task.sourceInput.set(project.provider { protoSourceProtoRootSets.inputLocations })
       task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations })
-      task.roots.set(extension.roots.toList())
-      task.prunes.set(extension.prunes.toList())
-      task.moves.set(extension.moves.toList())
-      task.opaques.set(extension.opaques.toList())
+      task.roots.set(extension.roots)
+      task.prunes.set(extension.prunes)
+      task.moves.set(extension.moves)
+      task.opaques.set(extension.opaques)
       task.sinceVersion.set(extension.sinceVersion)
       task.untilVersion.set(extension.untilVersion)
       task.onlyVersion.set(extension.onlyVersion)
@@ -215,7 +215,7 @@ class WirePlugin : Plugin<Project> {
       task.projectDirProperty.set(project.layout.projectDirectory)
       task.buildDirProperty.set(project.layout.buildDirectory)
 
-      val factories = extension.eventListenerFactories + extension.eventListenerFactoryClasses().map(::newEventListenerFactory)
+      val factories = extension.eventListenerFactories.get() + extension.eventListenerFactoryClasses.get().map(::newEventListenerFactory)
       task.eventListenerFactories.set(factories)
     }
 
