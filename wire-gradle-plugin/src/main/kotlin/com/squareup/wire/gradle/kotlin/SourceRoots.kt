@@ -185,8 +185,6 @@ private class AndroidSource(
         }
         is KotlinTarget -> {
           variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
-          // Remove line below when AGP is upgraded to 9.0+ as it will contain fix for https://issuetracker.google.com/446220448
-          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
         }
         is CustomTarget -> {
           // Custom targets are wildcards, so we add all output directories.

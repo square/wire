@@ -1,0 +1,37 @@
+def wireVersion = gradle.startParameter.projectProperties.get('wireVersion')
+
+buildscript {
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("com.squareup.wire:wire-gradle-plugin:${wireVersion}")
+    classpath("com.android.tools.build:gradle:8.13.2")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'com.squareup.wire'
+apply plugin: 'maven-publish'
+
+android {
+  namespace = "com.example.producer"
+  compileSdk = 36
+
+  publishing {
+    singleVariant('release') {
+      withSourcesJar()
+    }
+  }
+}
+
+wire {
+  kotlin {}
+}
