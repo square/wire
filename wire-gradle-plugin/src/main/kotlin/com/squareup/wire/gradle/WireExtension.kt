@@ -26,6 +26,8 @@ import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 
@@ -36,88 +38,93 @@ open class WireExtension(
 
   internal val protoSourceProtoRootSets = mutableListOf<ProtoRootSet>()
   internal val protoPathProtoRootSets = mutableListOf<ProtoRootSet>()
-  internal val roots = mutableSetOf<String>()
-  internal val prunes = mutableSetOf<String>()
-  internal val moves = mutableListOf<Move>()
-  internal val opaques = mutableSetOf<String>()
-  internal val eventListenerFactories = mutableSetOf<EventListener.Factory>()
-  internal val eventListenerFactoryClasses = mutableSetOf<String>()
-  internal var onlyVersion: String? = null
-  internal var sinceVersion: String? = null
-  internal var untilVersion: String? = null
-  internal var permitPackageCycles: Boolean = false
-  internal var loadExhaustively: Boolean = false
+  internal val roots = objectFactory.setProperty(String::class.java)
+  internal val prunes = objectFactory.setProperty(String::class.java)
+  internal val moves = objectFactory.listProperty(Move::class.java)
+  internal val opaques = objectFactory.setProperty(String::class.java)
+  internal val eventListenerFactories = objectFactory.setProperty(EventListener.Factory::class.java)
+  internal val eventListenerFactoryClasses = objectFactory.setProperty(String::class.java)
+  internal val onlyVersion = objectFactory.property(String::class.java)
+  internal val sinceVersion = objectFactory.property(String::class.java)
+  internal val untilVersion = objectFactory.property(String::class.java)
+  internal val permitPackageCycles = objectFactory.property(Boolean::class.java).convention(false)
+  internal val loadExhaustively = objectFactory.property(Boolean::class.java).convention(false)
 
-  fun roots() = roots.toSet()
+  fun roots() = roots.get().toSet()
 
   /**
    * See [com.squareup.wire.schema.WireRun.treeShakingRoots].
    */
   fun root(vararg roots: String) {
-    this.roots.addAll(roots)
+    this.roots.addAll(roots.toList())
   }
 
-  fun prunes() = prunes.toSet()
+  fun prunes() = prunes.get().toSet()
 
   /**
    * See [com.squareup.wire.schema.WireRun.treeShakingRubbish].
    */
   fun prune(vararg prunes: String) {
-    this.prunes.addAll(prunes)
+    this.prunes.addAll(prunes.toList())
   }
 
-  fun sinceVersion() = sinceVersion
+  fun sinceVersion() = sinceVersion.orNull
 
   /**
    * See [com.squareup.wire.schema.WireRun.sinceVersion].
    */
   fun sinceVersion(sinceVersion: String) {
-    this.sinceVersion = sinceVersion
+    this.sinceVersion.set(sinceVersion)
   }
 
-  fun untilVersion() = untilVersion
+  fun untilVersion() = untilVersion.orNull
 
   /**
    * See [com.squareup.wire.schema.WireRun.untilVersion].
    */
   fun untilVersion(untilVersion: String) {
-    this.untilVersion = untilVersion
+    this.untilVersion.set(untilVersion)
   }
 
-  fun onlyVersion() = onlyVersion
+  fun onlyVersion() = onlyVersion.orNull
 
   /**
    * See [com.squareup.wire.schema.WireRun.onlyVersion].
    */
   fun onlyVersion(onlyVersion: String) {
-    this.onlyVersion = onlyVersion
+    this.onlyVersion.set(onlyVersion)
   }
 
-  fun permitPackageCycles() = permitPackageCycles
+  fun permitPackageCycles() = permitPackageCycles.get()
 
   /**
    * See [com.squareup.wire.schema.WireRun.permitPackageCycles].
    */
   fun permitPackageCycles(permitPackageCycles: Boolean) {
-    this.permitPackageCycles = permitPackageCycles
+    this.permitPackageCycles.set(permitPackageCycles)
   }
 
-  fun loadExhaustively() = loadExhaustively
+  fun loadExhaustively() = loadExhaustively.get()
 
   /**
    * See [com.squareup.wire.schema.WireRun.loadExhaustively].
    */
   fun loadExhaustively(loadExhaustively: Boolean) {
-    this.loadExhaustively = loadExhaustively
+    this.loadExhaustively.set(loadExhaustively)
   }
 
   /**
    * A user-provided file listing [roots] and [prunes].
    */
-  var rules: String? = null
+  val rules: Property<String> = objectFactory.property(String::class.java)
+
+  /** For Groovy DSL assignment: `rules = "path/to/rules.txt"`. */
+  fun setRules(value: String?) {
+    rules.set(value)
+  }
 
   /** Specified what types to output where. Maps to [com.squareup.wire.schema.Target] */
-  val outputs = mutableListOf<WireOutput>()
+  val outputs: ListProperty<WireOutput> = objectFactory.listProperty(WireOutput::class.java)
 
   /**
    * True to emit `.proto` files into the output resources. Use this when your `.jar` file can be
@@ -126,7 +133,13 @@ open class WireExtension(
    * Note that only the `.proto` files used in the library will be included, and these files will
    * have tree-shaking applied.
    */
-  var protoLibrary = false
+  val protoLibrary: Property<Boolean> =
+    objectFactory.property(Boolean::class.java).convention(false)
+
+  /** For Groovy DSL assignment: `protoLibrary = true`. */
+  fun setProtoLibrary(value: Boolean) {
+    protoLibrary.set(value)
+  }
 
   /**
    * If true, Wire will fail if not all [roots] and [prunes] are used when tree-shaking the schema.
@@ -137,13 +150,24 @@ open class WireExtension(
    *
    * If false, unused [roots] and [prunes] will be printed as warnings.
    */
-  var rejectUnusedRootsOrPrunes = true
+  val rejectUnusedRootsOrPrunes: Property<Boolean> =
+    objectFactory.property(Boolean::class.java).convention(true)
+
+  /** For Groovy DSL assignment: `rejectUnusedRootsOrPrunes = false`. */
+  fun setRejectUnusedRootsOrPrunes(value: Boolean) {
+    rejectUnusedRootsOrPrunes.set(value)
+  }
 
   /**
    * True to not write generated types to disk, but emit the names of the source files that would
    * otherwise be generated.
    */
-  var dryRun = false
+  val dryRun: Property<Boolean> = objectFactory.property(Boolean::class.java).convention(false)
+
+  /** For Groovy DSL assignment: `dryRun = true`. */
+  fun setDryRun(value: Boolean) {
+    dryRun.set(value)
+  }
 
   /**
    * Source paths for local jars and directories, as well as remote binary dependencies
@@ -164,14 +188,14 @@ open class WireExtension(
     action.execute(addProtoSourceProtoRootSet())
   }
 
-  fun eventListenerFactories() = eventListenerFactories.toSet()
+  fun eventListenerFactories() = eventListenerFactories.get().toSet()
 
   /** Add a [EventListener.Factory]. */
   fun eventListenerFactory(eventListenerFactory: EventListener.Factory) {
     this.eventListenerFactories.add(eventListenerFactory)
   }
 
-  fun eventListenerFactoryClasses() = eventListenerFactoryClasses.toSet()
+  fun eventListenerFactoryClasses() = eventListenerFactoryClasses.get().toSet()
 
   /** Add a [EventListener.Factory] by name. The referred class must have a no-arguments constructor. */
   fun eventListenerFactoryClass(eventListenerFactoryClass: String) {
@@ -227,7 +251,7 @@ open class WireExtension(
   fun java(action: Action<JavaOutput>) {
     val javaOutput = objectFactory.newInstance(JavaOutput::class.java)
     action.execute(javaOutput)
-    outputs += javaOutput
+    outputs.add(javaOutput)
   }
 
   /**
@@ -236,7 +260,7 @@ open class WireExtension(
   fun kotlin(action: Action<KotlinOutput>) {
     val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
     action.execute(kotlinOutput)
-    outputs += kotlinOutput
+    outputs.add(kotlinOutput)
   }
 
   /**
@@ -245,7 +269,7 @@ open class WireExtension(
   fun proto(action: Action<ProtoOutput>) {
     val protoOutput = objectFactory.newInstance(ProtoOutput::class.java)
     action.execute(protoOutput)
-    outputs += protoOutput
+    outputs.add(protoOutput)
   }
 
   /**
@@ -254,10 +278,10 @@ open class WireExtension(
   fun custom(action: Action<CustomOutput>) {
     val customOutput = objectFactory.newInstance(CustomOutput::class.java)
     action.execute(customOutput)
-    outputs += customOutput
+    outputs.add(customOutput)
   }
 
-  fun moves() = moves.toList()
+  fun moves() = moves.get().toList()
 
   /**
    * See [com.squareup.wire.schema.WireRun.moves].
@@ -265,16 +289,16 @@ open class WireExtension(
   fun move(action: Action<Move>) {
     val move = objectFactory.newInstance(Move::class.java)
     action.execute(move)
-    moves += move
+    moves.add(move)
   }
 
-  fun opaques() = opaques.toSet()
+  fun opaques() = opaques.get().toSet()
 
   /**
    * See [com.squareup.wire.schema.WireRun.opaqueTypes].
    */
   fun opaque(vararg opaques: String) {
-    this.opaques.addAll(opaques)
+    this.opaques.addAll(opaques.toList())
   }
 
   /**
@@ -310,8 +334,8 @@ open class WireExtension(
       files
     }
 
-    internal val includes = mutableListOf<String>()
-    internal val excludes = mutableListOf<String>()
+    internal val includes = project.objects.listProperty(String::class.java)
+    internal val excludes = project.objects.listProperty(String::class.java)
 
     /**
      * Adds a set of source. The given paths are evaluated as per [Project.files][org.gradle.api.Project.files].
@@ -395,7 +419,7 @@ open class WireExtension(
      * Example: "com/example/important.proto".
      */
     fun include(vararg includePaths: String) {
-      includes += includePaths
+      includes.addAll(includePaths.toList())
     }
 
     /**
@@ -403,7 +427,7 @@ open class WireExtension(
      * Example: "com/example/irrelevant.proto".
      */
     fun exclude(vararg excludePaths: String) {
-      excludes += excludePaths
+      excludes.addAll(excludePaths.toList())
     }
   }
 }
