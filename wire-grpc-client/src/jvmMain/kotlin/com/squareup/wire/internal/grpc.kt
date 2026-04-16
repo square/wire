@@ -87,6 +87,15 @@ internal fun <S : Any> PipeDuplexRequestBody.messageSink(
 internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
   grpcCall: RealGrpcStreamingCall<*, R>,
   responseAdapter: ProtoAdapter<R>,
+): Callback = readFromResponseBodyCallback(
+  onResponseMetadata = { grpcCall.responseMetadata = it },
+  responseAdapter = responseAdapter,
+)
+
+/** Sends the response messages to the channel. */
+internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
+  onResponseMetadata: (Map<String, String>) -> Unit,
+  responseAdapter: ProtoAdapter<R>,
 ): Callback {
   return object : Callback {
     override fun onFailure(call: Call, e: IOException) {
@@ -95,7 +104,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
     }
 
     override fun onResponse(call: Call, response: Response) {
-      grpcCall.responseMetadata = response.headers.toMap()
+      onResponseMetadata(response.headers.toMap())
       runBlocking {
         response.use {
           val messageSource = try {
