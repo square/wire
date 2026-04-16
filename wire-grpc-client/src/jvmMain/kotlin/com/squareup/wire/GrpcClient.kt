@@ -16,9 +16,9 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
+import com.squareup.wire.internal.RealGrpcServerStreamingCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
 import com.squareup.wire.internal.asGrpcClientStreamingCall
-import com.squareup.wire.internal.asGrpcServerStreamingCall
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import okhttp3.Call
@@ -194,6 +194,6 @@ internal class WireGrpcClient internal constructor(
   }
 
   override fun <S : Any, R : Any> newServerStreamingCall(method: GrpcMethod<S, R>): GrpcServerStreamingCall<S, R> {
-    return RealGrpcStreamingCall(this, method).asGrpcServerStreamingCall()
+    return RealGrpcServerStreamingCall(this, method)
   }
 }

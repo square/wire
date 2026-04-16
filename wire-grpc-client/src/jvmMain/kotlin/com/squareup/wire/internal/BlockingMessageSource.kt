@@ -33,7 +33,7 @@ import okio.IOException
  *  * Complete: enqueued when the stream completes normally.
  */
 internal class BlockingMessageSource<R : Any>(
-  val grpcCall: RealGrpcStreamingCall<*, R>,
+  val onResponseMetadata: (Map<String, String>) -> Unit,
   val responseAdapter: ProtoAdapter<R>,
   val call: Call,
 ) : MessageSource<R> {
@@ -67,7 +67,7 @@ internal class BlockingMessageSource<R : Any>(
 
       override fun onResponse(call: Call, response: Response) {
         try {
-          grpcCall.responseMetadata = response.headers.toMap()
+          onResponseMetadata(response.headers.toMap())
           response.use {
             response.messageSource(responseAdapter).use { reader ->
               while (true) {
