@@ -33,7 +33,8 @@ import okio.IOException
  *  * Complete: enqueued when the stream completes normally.
  */
 internal class BlockingMessageSource<R : Any>(
-  val grpcCall: RealGrpcStreamingCall<*, R>,
+  val onResponseMetadata: (Map<String, String>) -> Unit,
+  val callTimeout: GrpcCallTimeout,
   val responseAdapter: ProtoAdapter<R>,
   val call: Call,
   val maxInboundMessageSize: Long,
@@ -62,13 +63,13 @@ internal class BlockingMessageSource<R : Any>(
   /** Read messages from the response body and write them to the deque. */
   fun readFromResponseBodyCallback(): Callback = object : Callback {
     override fun onFailure(call: Call, e: IOException) {
-      queue.put(Failure(grpcCall.callTimeout.exit(e)))
+      queue.put(Failure(callTimeout.exit(e)))
     }
 
     override fun onResponse(call: Call, response: Response) {
       try {
-        grpcCall.callTimeout.exitAfter {
-          grpcCall.responseMetadata = response.headers.toMap()
+        callTimeout.exitAfter {
+          onResponseMetadata(response.headers.toMap())
           response.use {
             response.messageSource(responseAdapter, maxInboundMessageSize).use { reader ->
               while (true) {
