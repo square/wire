@@ -18,6 +18,8 @@ package com.squareup.wire
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNull
 import com.squareup.wire.mockwebserver.GrpcDispatcher
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -25,10 +27,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
+import okhttp3.Headers.Companion.headersOf
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -80,6 +85,72 @@ class GrpcOnMockWebServerTest {
       .baseUrl(mockWebServer.url("/"))
       .build()
     routeGuideService = grpcClient.create(RouteGuideClient::class)
+  }
+
+  @Test
+  fun serverStreamingListFeatures() {
+    // MockWebServer only dispatches after receiving the complete request body including END_STREAM,
+    // mimicking some server behaviors that would cause hanging until timeout when
+    // GrpcServerStreamingCall used a duplex request body.
+    enqueueListFeaturesResponse()
+
+    runBlocking {
+      val listFeatures = routeGuideService.ListFeatures()
+      val responses = listFeatures.executeIn(
+        this,
+        Rectangle(lo = Point(latitude = 1, longitude = 2), hi = Point(latitude = 3, longitude = 4)),
+      )
+      assertThat(responses.receive()).isEqualTo(Feature(name = "peak"))
+      assertThat(responses.receive()).isEqualTo(Feature(name = "valley"))
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+      assertThat(listFeatures.isCanceled()).isFalse()
+    }
+  }
+
+  @Test
+  fun legacyServerStreamingListFeatures() {
+    enqueueListFeaturesResponse()
+
+    val listFeatures = grpcClient.newStreamingCall(
+      GrpcMethod(
+        path = "/routeguide.RouteGuide/ListFeatures",
+        requestAdapter = Rectangle.ADAPTER,
+        responseAdapter = Feature.ADAPTER,
+        responseStreaming = true,
+      ),
+    )
+
+    runBlocking {
+      val (requests, responses) = listFeatures.executeIn(this)
+      requests.send(Rectangle(lo = Point(latitude = 1, longitude = 2), hi = Point(latitude = 3, longitude = 4)))
+      requests.close()
+      assertThat(responses.receive()).isEqualTo(Feature(name = "peak"))
+      assertThat(responses.receive()).isEqualTo(Feature(name = "valley"))
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+      assertThat(listFeatures.isCanceled()).isFalse()
+    }
+  }
+
+  private fun enqueueListFeaturesResponse() {
+    val responseBody = Buffer()
+    for (feature in listOf(Feature(name = "peak"), Feature(name = "valley"))) {
+      val encoded = Feature.ADAPTER.encodeByteString(feature)
+      responseBody.writeByte(0) // not compressed
+      responseBody.writeInt(encoded.size)
+      responseBody.write(encoded)
+    }
+    val grpcDispatcher = mockWebServer.dispatcher
+    mockWebServer.dispatcher = object : okhttp3.mockwebserver.Dispatcher() {
+      override fun dispatch(request: okhttp3.mockwebserver.RecordedRequest): MockResponse {
+        if (request.path == "/routeguide.RouteGuide/ListFeatures") {
+          return MockResponse()
+            .setHeader("Content-Type", "application/grpc")
+            .setTrailers(headersOf("grpc-status", "0"))
+            .setBody(responseBody)
+        }
+        return grpcDispatcher.dispatch(request)
+      }
+    }
   }
 
   @Test
