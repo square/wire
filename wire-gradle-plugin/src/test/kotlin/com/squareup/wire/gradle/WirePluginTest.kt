@@ -680,6 +680,38 @@ class WirePluginTest {
     assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
   }
 
+  /**
+   * Verifies that generated Kotlin sources are registered on the Kotlin source set so that
+   * `compileKotlin` picks them up. This exercises the fallback path in
+   * [com.squareup.wire.gradle.kotlin.registerKotlinGeneratedSources] for KGP < 2.3, where
+   * `KotlinSourceSet.generatedKotlin` is not available and we fall back to `kotlin.srcDir()`.
+   */
+  @Test
+  fun kotlinProjectKotlinProtosCompiles() {
+    val fixtureRoot = File("src/test/projects/kotlin-project-kotlin-protos")
+
+    val result = fixtureGradleRunner(fixtureRoot, "clean", "build").build()
+
+    assertThat(result.task(":generateMainProtos")).isNotNull()
+    assertThat(result.task(":compileKotlin")).isNotNull()
+  }
+
+  /**
+   * Verifies that generated Kotlin sources are registered via `KotlinSourceSet.generatedKotlin`
+   * (the API introduced experimentally in Kotlin 2.3) and that `compileKotlin` picks them up.
+   * The fixture uses a hardcoded KGP 2.3.x dependency so that the new code path in
+   * [com.squareup.wire.gradle.kotlin.registerKotlinGeneratedSources] is exercised.
+   */
+  @Test
+  fun kotlinProjectKotlinProtosWithGeneratedKotlinApi() {
+    val fixtureRoot = File("src/test/projects/kotlin-project-kotlin-protos-kgp23")
+
+    val result = fixtureGradleRunner(fixtureRoot, "clean", "build").build()
+
+    assertThat(result.task(":generateMainProtos")).isNotNull()
+    assertThat(result.task(":compileKotlin")).isNotNull()
+  }
+
   @Test
   fun protoLibrary() {
     val fixtureRoot = File("src/test/projects/proto-library")

@@ -1,0 +1,49 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    // Hardcoded to test the KotlinSourceSet.generatedKotlin API introduced in Kotlin 2.3.
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20"
+  }
+
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: 'application'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
+
+application.mainClass = "com.squareup.dinosaurs.Sample"
+
+repositories {
+  maven {
+    url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+  }
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.squareup.wire:wire-runtime:$wireVersion"
+}
+
+wire {
+  kotlin {}
+}
+
+tasks.withType(JavaCompile).configureEach {
+  sourceCompatibility = JavaVersion.VERSION_11.toString()
+  targetCompatibility = JavaVersion.VERSION_11.toString()
+}
+
+tasks.withType(KotlinCompile).configureEach {
+  kotlinOptions {
+    jvmTarget = "11"
+  }
+}
