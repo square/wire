@@ -1,0 +1,15 @@
+buildCache {
+  local {
+    directory = new File(rootDir, '../.source-relocation-build-cache')
+  }
+}
+
+include ':'
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    libs {
+      from(files('../../../../../gradle/libs.versions.toml'))
+    }
+  }
+}
