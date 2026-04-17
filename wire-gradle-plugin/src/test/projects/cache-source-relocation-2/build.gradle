@@ -1,0 +1,41 @@
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
+  }
+
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: 'application'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
+
+// The code in this test project should be identical to
+// the one in cache-source-relocation-1; the only difference is
+// that the pathname and gradle user home dirs are different.
+// The test ensures that the gradle task is cacheable even
+// when the project and gradle user home dirs are relocated
+// to a different filesystem path. This ensures the plugin
+// tasks are compatible with being shared across machines
+// via a gradle remote cache, even when using Maven dependencies
+// as source protos (not just proto paths).
+
+repositories {
+  mavenCentral()
+}
+
+wire {
+  sourcePath {
+    srcJar("com.google.api.grpc:proto-google-common-protos:2.57.0")
+    include("google/rpc/status.proto")
+  }
+  kotlin {
+  }
+}

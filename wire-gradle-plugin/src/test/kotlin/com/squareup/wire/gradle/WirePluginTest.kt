@@ -1217,7 +1217,7 @@ class WirePluginTest {
 
   @Test
   fun cacheRelocation() {
-    // Remove the build cache folder if it is leftover from a previous run
+    // Remove the build cache folder if it is leftover from a previous run.
     val buildCacheDir = File("src/test/projects/.relocation-build-cache")
     if (buildCacheDir.exists()) {
       buildCacheDir.deleteRecursively()
@@ -1263,6 +1263,59 @@ class WirePluginTest {
     assertThat(relocatedResult.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
     assertThat(relocatedResult.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
     assertThat(File(relocatedRoot, generatedProto)).exists()
+
+    // Clean up on success; leave the dir on failure for easier debugging.
+    buildCacheDir.deleteRecursively()
+  }
+
+  @Test
+  fun cacheRelocationWithMavenSourceJar() {
+    // Remove the build cache folder if it is leftover from a previous run.
+    val buildCacheDir = File("src/test/projects/.source-relocation-build-cache")
+    if (buildCacheDir.exists()) {
+      buildCacheDir.deleteRecursively()
+    }
+    assertThat(buildCacheDir.exists()).isFalse()
+
+    val generatedStatus = "build/generated/source/wire/com/google/rpc/Status.kt"
+
+    val fixtureRoot = File("src/test/projects/cache-source-relocation-1")
+    val result = fixtureGradleRunner(fixtureRoot)
+      .withArguments(
+        "-g",
+        tmpFolder.newFolder("gradle-source-home-1").absolutePath,
+        "generateProtos",
+        "--build-cache",
+        "--stacktrace",
+        "--info",
+        "-PwireVersion=$wireVersion",
+      ).build()
+
+    assertThat(result.task(":generateProtos")).isNotNull()
+    assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(result.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(File(fixtureRoot, generatedStatus)).exists()
+
+    // After the first project, the build cache should exist. It will get used for the second
+    // project.
+    assertThat(buildCacheDir.exists()).isTrue()
+
+    val relocatedRoot = File("src/test/projects/cache-source-relocation-2")
+    val relocatedResult = fixtureGradleRunner(relocatedRoot)
+      .withArguments(
+        "-g",
+        tmpFolder.newFolder("gradle-source-home-2").absolutePath,
+        "generateProtos",
+        "--build-cache",
+        "--stacktrace",
+        "--info",
+        "-PwireVersion=$wireVersion",
+      ).build()
+
+    assertThat(relocatedResult.task(":generateProtos")).isNotNull()
+    assertThat(relocatedResult.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
+    assertThat(relocatedResult.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
+    assertThat(File(relocatedRoot, generatedStatus)).exists()
 
     // Clean up on success; leave the dir on failure for easier debugging.
     buildCacheDir.deleteRecursively()
