@@ -285,7 +285,7 @@ public final class JavaGeneratorTest {
                 + "    long token = reader.beginMessage();\n"
                 + "    for (int tag; (tag = reader.nextTag()) != -1;) {\n"
                 + "      switch (tag) {\n"
-                + "        case 1: field = Foo.ADAPTER.decode(reader); break;\n"
+                + "        case 1: field = Internal.decodeMessageOrMerge(Foo.ADAPTER, reader, field); break;\n"
                 + "        case 2: bars.putAll(barsAdapter().decode(reader)); break;\n"
                 + "        case 3: numbers.add(ProtoAdapter.INT32.decode(reader)); break;\n"
                 + "        case 4: {\n"

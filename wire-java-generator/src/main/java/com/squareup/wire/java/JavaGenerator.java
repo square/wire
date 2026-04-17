@@ -1394,6 +1394,21 @@ public final class JavaGenerator {
       return useBuilder
           ? CodeBlock.of("builder.$L.putAll($L)", fieldName, decode)
           : CodeBlock.of("$L.putAll($L)", fieldName, decode);
+    } else if (schema.getType(field.getType()) instanceof MessageType && !field.isOneOf()) {
+      CodeBlock adapter = singleAdapterFor(field, nameAllocator);
+      return useBuilder
+          ? CodeBlock.of(
+              "builder.$L($T.decodeMessageOrMerge($L, reader, builder.$L))",
+              fieldName,
+              Internal.class,
+              adapter,
+              fieldName)
+          : CodeBlock.of(
+              "$L = $T.decodeMessageOrMerge($L, reader, $L)",
+              fieldName,
+              Internal.class,
+              adapter,
+              fieldName);
     } else {
       return useBuilder
           ? field.getType().equals(ProtoType.STRUCT_NULL)
