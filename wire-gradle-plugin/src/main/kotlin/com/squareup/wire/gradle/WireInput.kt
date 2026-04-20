@@ -28,11 +28,13 @@ internal val List<ProtoRootSet>.inputLocations: List<InputLocation>
   get() = map { rootSet -> rootSet.inputLocation() }
 
 private fun ProtoRootSet.inputLocation(): InputLocation {
-  val includes = when {
-    includes.isEmpty() && excludes.isEmpty() -> listOf("**/*.proto")
-    else -> includes
+  val includesList = includes.get()
+  val excludesList = excludes.get()
+  val resolvedIncludes = when {
+    includesList.isEmpty() && excludesList.isEmpty() -> listOf("**/*.proto")
+    else -> includesList
   }
-  return InputLocation(configuration, includes, excludes)
+  return InputLocation(configuration, resolvedIncludes, excludesList)
 }
 
 /**
