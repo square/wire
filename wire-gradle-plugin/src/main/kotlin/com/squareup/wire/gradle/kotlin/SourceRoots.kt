@@ -26,11 +26,14 @@ import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import java.io.File
 import org.gradle.api.Project
+import org.gradle.api.file.Directory
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 internal fun forEachWireSource(
   project: Project,
@@ -63,12 +66,12 @@ internal fun forEachWireSource(
     hasKotlin -> {
       val kotlinSourceSets = project.extensions.findByType(KotlinProjectExtension::class.java)?.sourceSets
       val javaSourceSets = project.extensions.findByType(SourceSetContainer::class.java)
-      val kotlinSourceDirectorySet = kotlinSourceSets?.findByName("main")?.kotlin
+      val kotlinSourceSet = kotlinSourceSets?.findByName("main")
       val javaSourceDirectorySet = javaSourceSets?.findByName("main")?.java
       val source = JvmOrKmpSource(
         name = "main",
         sourceSets = listOf("main"),
-        kotlinSourceDirectorySet = kotlinSourceDirectorySet,
+        kotlinSourceSet = kotlinSourceSet,
         javaSourceDirectorySet = javaSourceDirectorySet,
       )
       sourceHandler(source)
@@ -79,7 +82,7 @@ internal fun forEachWireSource(
       val source = JvmOrKmpSource(
         name = "main",
         sourceSets = listOf("main"),
-        kotlinSourceDirectorySet = null,
+        kotlinSourceSet = null,
         javaSourceDirectorySet = javaSourceDirectorySet,
       )
       sourceHandler(source)
@@ -115,7 +118,7 @@ private fun KotlinMultiplatformExtension.sourceRoots(): List<WireSource> {
   return listOf(
     JvmOrKmpSource(
       name = "commonMain",
-      kotlinSourceDirectorySet = sourceSets.getByName("commonMain").kotlin,
+      kotlinSourceSet = sourceSets.getByName("commonMain"),
       javaSourceDirectorySet = null,
       sourceSets = listOf("commonMain"),
     ),
@@ -125,7 +128,7 @@ private fun KotlinMultiplatformExtension.sourceRoots(): List<WireSource> {
 private class JvmOrKmpSource(
   name: String,
   sourceSets: List<String>,
-  private val kotlinSourceDirectorySet: SourceDirectorySet?,
+  private val kotlinSourceSet: KotlinSourceSet?,
   private val javaSourceDirectorySet: SourceDirectorySet?,
 ) : WireSource(name, sourceSets) {
   override fun outputDir(project: Project): File {
@@ -144,12 +147,12 @@ private class JvmOrKmpSource(
           javaSourceDirectorySet?.srcDir(outputDirectory)
         }
         is KotlinTarget -> {
-          kotlinSourceDirectorySet?.srcDir(outputDirectory)
+          registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
         }
         is CustomTarget -> {
           // Custom targets are wildcards, so we add all output directories.
           javaSourceDirectorySet?.srcDir(outputDirectory)
-          kotlinSourceDirectorySet?.srcDir(outputDirectory)
+          registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
         }
         is ProtoTarget -> {
           // Do nothing
@@ -201,5 +204,30 @@ private class AndroidSource(
         }
       }
     }
+  }
+}
+
+/**
+ * Registers [outputDirectory] as a generated Kotlin source directory on [kotlinSourceSet].
+ *
+ * On Kotlin 2.3+, uses the [KotlinSourceSet.generatedKotlin] API so that IDEs can distinguish
+ * generated sources from handwritten ones. Falls back to [KotlinSourceSet.kotlin] on older
+ * versions of the Kotlin Gradle Plugin where the API is not available.
+ */
+private fun registerKotlinGeneratedSources(
+  kotlinSourceSet: KotlinSourceSet?,
+  outputDirectory: Provider<Directory>,
+) {
+  if (kotlinSourceSet == null) return
+  // generatedKotlin was introduced experimentally in Kotlin 2.3. Detect it reflectively so that
+  // Wire remains compatible with earlier Kotlin Gradle Plugin versions.
+  val generatedKotlinMethod = runCatching {
+    kotlinSourceSet.javaClass.getMethod("getGeneratedKotlin")
+  }.getOrNull()
+  if (generatedKotlinMethod != null) {
+    val generatedKotlin = generatedKotlinMethod.invoke(kotlinSourceSet) as SourceDirectorySet
+    generatedKotlin.srcDir(outputDirectory)
+  } else {
+    kotlinSourceSet.kotlin.srcDir(outputDirectory)
   }
 }
