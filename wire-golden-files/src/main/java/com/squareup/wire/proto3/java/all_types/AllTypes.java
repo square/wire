@@ -2910,15 +2910,15 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
-          case 17: builder.nested_message(NestedMessage.ADAPTER.decode(reader)); break;
-          case 18: builder.any(AnyMessage.ADAPTER.decode(reader)); break;
-          case 19: builder.duration(ProtoAdapter.DURATION.decode(reader)); break;
-          case 20: builder.struct(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
-          case 21: builder.list_value(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
-          case 22: builder.value(ProtoAdapter.STRUCT_VALUE.decode(reader)); break;
+          case 17: builder.nested_message(Internal.decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.nested_message)); break;
+          case 18: builder.any(Internal.decodeMessageOrMerge(AnyMessage.ADAPTER, reader, builder.any)); break;
+          case 19: builder.duration(Internal.decodeMessageOrMerge(ProtoAdapter.DURATION, reader, builder.duration)); break;
+          case 20: builder.struct(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_MAP, reader, builder.struct)); break;
+          case 21: builder.list_value(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_LIST, reader, builder.list_value)); break;
+          case 22: builder.value(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_VALUE, reader, builder.value)); break;
           case 23: builder.null_value((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
-          case 24: builder.empty(ProtoAdapter.EMPTY.decode(reader)); break;
-          case 25: builder.timestamp(ProtoAdapter.INSTANT.decode(reader)); break;
+          case 24: builder.empty(Internal.decodeMessageOrMerge(ProtoAdapter.EMPTY, reader, builder.empty)); break;
+          case 25: builder.timestamp(Internal.decodeMessageOrMerge(ProtoAdapter.INSTANT, reader, builder.timestamp)); break;
           case 101: builder.opt_int32(ProtoAdapter.INT32.decode(reader)); break;
           case 102: builder.opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
           case 103: builder.opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;

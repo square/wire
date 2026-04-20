@@ -25,6 +25,7 @@ import com.squareup.wire.`internal`.JvmStatic
 import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.LongArrayList
 import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.decodeMessageOrMerge
 import com.squareup.wire.`internal`.decodePrimitive_double
 import com.squareup.wire.`internal`.decodePrimitive_fixed32
 import com.squareup.wire.`internal`.decodePrimitive_fixed64
@@ -3945,7 +3946,7 @@ public class AllTypes private constructor(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            17 -> builder.opt_nested_message(NestedMessage.ADAPTER.decode(reader))
+            17 -> builder.opt_nested_message(decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.opt_nested_message))
             101 -> builder.req_int32(ProtoAdapter.INT32.decode(reader))
             102 -> builder.req_uint32(ProtoAdapter.UINT32.decode(reader))
             103 -> builder.req_sint32(ProtoAdapter.SINT32.decode(reader))
@@ -3966,7 +3967,7 @@ public class AllTypes private constructor(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            117 -> builder.req_nested_message(NestedMessage.ADAPTER.decode(reader))
+            117 -> builder.req_nested_message(decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.req_nested_message))
             201 -> rep_int32.add(ProtoAdapter.INT32.decode(reader))
             202 -> rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
             203 -> rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
@@ -4239,7 +4240,7 @@ public class AllTypes private constructor(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            1_017 -> builder.ext_opt_nested_message(NestedMessage.ADAPTER.decode(reader))
+            1_017 -> builder.ext_opt_nested_message(decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.ext_opt_nested_message))
             1_101 -> ext_rep_int32.add(ProtoAdapter.INT32.decode(reader))
             1_102 -> ext_rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
             1_103 -> ext_rep_sint32.add(ProtoAdapter.SINT32.decode(reader))

@@ -29,6 +29,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+import okio.Buffer
 
 // Methods for generated code use only. Not subject to public API rules.
 
@@ -345,6 +346,29 @@ fun encodeArray_double(array: DoubleArray, writer: ReverseProtoWriter, tag: Int)
     writer.writeVarint32(writer.byteCount - byteCountBefore)
     writer.writeTag(tag, FieldEncoding.LENGTH_DELIMITED)
   }
+}
+
+/**
+ * Decodes a message from [reader], merging with [existing] if not null.
+ * Per the proto specification, when an embedded message field appears multiple times, the values
+ * are merged: repeated fields are concatenated, singular fields take the later value.
+ */
+fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader, existing: E?): E {
+  if (existing == null) return adapter.decode(reader)
+  val bytes = reader.readBytes()
+  val buffer = Buffer()
+  adapter.encode(buffer, existing)
+  buffer.write(bytes)
+  return adapter.decode(buffer)
+}
+
+fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, existing: E?): E {
+  if (existing == null) return adapter.decode(reader)
+  val bytes = reader.readBytes()
+  val buffer = Buffer()
+  adapter.encode(buffer, existing)
+  buffer.write(bytes)
+  return adapter.decode(buffer)
 }
 
 fun decodePrimitive_double(reader: ProtoReader32): Double = Double.fromBits(reader.readFixed64())
