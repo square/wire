@@ -363,7 +363,7 @@ class SyntaxReader(
             newline()
             break
           }
-          expect(c == ' ' || c == '\t') { "no syntax may follow trailing comment" }
+          expect(c == ' ' || c == '\t' || c == '\r') { "no syntax may follow trailing comment" }
         }
       }
 
@@ -385,7 +385,7 @@ class SyntaxReader(
     }
 
     // Remove trailing whitespace.
-    while (end > start && (data[end] == ' ' || data[end] == '\t')) {
+    while (end > start && (data[end] == ' ' || data[end] == '\t' || data[end] == '\r')) {
       end--
     }
 
