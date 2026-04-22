@@ -64,17 +64,15 @@ object SampleData {
   """.trimMargin()
 
   @JvmStatic
-  fun newMediumValueWire(): EmailSearchResponseWire {
-    return EmailSearchResponseWire(
-      query = recipientDisplayName,
-      results = listOf(
-        EmailThreadWire(
-          subject = subject,
-          messages = listOf(newEmailMessageWire()),
-        ),
+  fun newMediumValueWire(): EmailSearchResponseWire = EmailSearchResponseWire(
+    query = recipientDisplayName,
+    results = listOf(
+      EmailThreadWire(
+        subject = subject,
+        messages = listOf(newEmailMessageWire()),
       ),
-    )
-  }
+    ),
+  )
 
   private fun newEmailMessageWire() = EmailMessageWire(
     sent_at = sentAt,
@@ -95,19 +93,17 @@ object SampleData {
   )
 
   @JvmStatic
-  fun newMediumValueProtobuf(): EmailSearchResponseProtobuf {
-    return EmailSearchResponseProtobuf.newBuilder()
-      .apply {
-        query = recipientDisplayName
-        addResults(
-          EmailThreadProtobuf.newBuilder()
-            .apply {
-              subject = SampleData.subject
-              addMessages(newEmailMessageProtobuf())
-            }.build(),
-        )
-      }.build()
-  }
+  fun newMediumValueProtobuf(): EmailSearchResponseProtobuf = EmailSearchResponseProtobuf.newBuilder()
+    .apply {
+      query = recipientDisplayName
+      addResults(
+        EmailThreadProtobuf.newBuilder()
+          .apply {
+            subject = SampleData.subject
+            addMessages(newEmailMessageProtobuf())
+          }.build(),
+      )
+    }.build()
 
   private fun newEmailMessageProtobuf() = EmailMessageProtobuf.newBuilder()
     .apply {
