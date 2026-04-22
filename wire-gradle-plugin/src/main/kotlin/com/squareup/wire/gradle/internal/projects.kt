@@ -19,13 +19,9 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
-internal fun Project.targetDefaultOutputPath(): String {
-  return "$buildDir/generated/source/wire"
-}
+internal fun Project.targetDefaultOutputPath(): String = "$buildDir/generated/source/wire"
 
-internal fun Project.libraryProtoOutputPath(): String {
-  return "$buildDir/wire/proto-sources"
-}
+internal fun Project.libraryProtoOutputPath(): String = "$buildDir/wire/proto-sources"
 
 internal fun protoProjectDependenciesJvmConfiguration(classLoader: ClassLoader): (Configuration) -> Unit {
   try {

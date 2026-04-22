@@ -52,7 +52,10 @@ import routeguide.RouteGuideProto.RouteSummary
  * An assertive scriptable implementation of the [RouteGuideGrpc] gRPC service. Receiving and
  * sending actions can be added via the [MockRouteGuideService.enqueue] method.
  */
-class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, ServerInterceptor {
+class MockRouteGuideService :
+  RouteGuideGrpc.RouteGuideImplBase(),
+  TestRule,
+  ServerInterceptor {
   private lateinit var server: Server
   private lateinit var streamObserver: StreamObserver<Any>
   private var lastRequestHeaders: Metadata? = null
@@ -145,21 +148,19 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
     }
   }
 
-  override fun apply(base: Statement, description: Description): Statement {
-    return object : Statement() {
-      override fun evaluate() {
-        server = ServerBuilder.forPort(0)
-          .intercept(this@MockRouteGuideService)
-          .addService(this@MockRouteGuideService)
-          .build()
-        server.start()
-        try {
-          base.evaluate()
-        } finally {
-          server.shutdown()
-        }
-        server.awaitTermination()
+  override fun apply(base: Statement, description: Description): Statement = object : Statement() {
+    override fun evaluate() {
+      server = ServerBuilder.forPort(0)
+        .intercept(this@MockRouteGuideService)
+        .addService(this@MockRouteGuideService)
+        .build()
+      server.start()
+      try {
+        base.evaluate()
+      } finally {
+        server.shutdown()
       }
+      server.awaitTermination()
     }
   }
 
@@ -250,24 +251,22 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, Ser
     )
   }
 
-  private fun <T : com.google.protobuf.Message> createAssertingStreamObserver(): StreamObserver<T> {
-    return object : StreamObserver<T> {
-      override fun onNext(value: T) {
-        assertNextActionAndProcessScript {
-          assertThat(it).isEqualTo(Action.ReceiveMessage(value))
-        }
+  private fun <T : com.google.protobuf.Message> createAssertingStreamObserver(): StreamObserver<T> = object : StreamObserver<T> {
+    override fun onNext(value: T) {
+      assertNextActionAndProcessScript {
+        assertThat(it).isEqualTo(Action.ReceiveMessage(value))
       }
+    }
 
-      override fun onError(t: Throwable?) {
-        assertNextActionAndProcessScript {
-          assertThat(it).isEqualTo(Action.ReceiveError)
-        }
+    override fun onError(t: Throwable?) {
+      assertNextActionAndProcessScript {
+        assertThat(it).isEqualTo(Action.ReceiveError)
       }
+    }
 
-      override fun onCompleted() {
-        assertNextActionAndProcessScript {
-          assertThat(it).isEqualTo(Action.ReceiveComplete)
-        }
+    override fun onCompleted() {
+      assertNextActionAndProcessScript {
+        assertThat(it).isEqualTo(Action.ReceiveComplete)
       }
     }
   }

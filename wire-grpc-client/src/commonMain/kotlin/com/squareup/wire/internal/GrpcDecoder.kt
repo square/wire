@@ -31,12 +31,10 @@ internal sealed class GrpcDecoder(val name: String) {
   }
 }
 
-internal fun String.toGrpcDecoding(): GrpcDecoder {
-  return when (this) {
-    "identity" -> GrpcDecoder.IdentityGrpcDecoder
-    "gzip" -> GrpcDecoder.GzipGrpcDecoder
-    "deflate" -> throw ProtocolException("deflate not yet supported")
-    "snappy" -> throw ProtocolException("snappy not yet supported")
-    else -> throw ProtocolException("unsupported grpc-encoding: $this")
-  }
+internal fun String.toGrpcDecoding(): GrpcDecoder = when (this) {
+  "identity" -> GrpcDecoder.IdentityGrpcDecoder
+  "gzip" -> GrpcDecoder.GzipGrpcDecoder
+  "deflate" -> throw ProtocolException("deflate not yet supported")
+  "snappy" -> throw ProtocolException("snappy not yet supported")
+  else -> throw ProtocolException("unsupported grpc-encoding: $this")
 }

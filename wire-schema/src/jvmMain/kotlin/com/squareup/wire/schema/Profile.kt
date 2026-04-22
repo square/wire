@@ -44,8 +44,7 @@ actual class Profile actual constructor(
   }
 
   /** Returns the config for [type], or null if it is not configured.  */
-  private fun typeConfig(type: ProtoType) =
-    profileFiles
-      .flatMap { it.typeConfigs }
-      .find { it.type == type.toString() }
+  private fun typeConfig(type: ProtoType) = profileFiles
+    .flatMap { it.typeConfigs }
+    .find { it.type == type.toString() }
 }

@@ -394,14 +394,10 @@ class ProtoParser internal constructor(
   }
 
   /** Defaults aren't options. */
-  private fun stripDefault(options: MutableList<OptionElement>): String? {
-    return stripValue("default", options)
-  }
+  private fun stripDefault(options: MutableList<OptionElement>): String? = stripValue("default", options)
 
   /** `json_name` isn't an option. */
-  private fun stripJsonName(options: MutableList<OptionElement>): String? {
-    return stripValue("json_name", options)
-  }
+  private fun stripJsonName(options: MutableList<OptionElement>): String? = stripValue("json_name", options)
 
   /**
    * This finds an option named [name], removes, and returns it.

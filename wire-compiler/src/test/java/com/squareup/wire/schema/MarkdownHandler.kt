@@ -24,24 +24,16 @@ class MarkdownHandlerFactory : SchemaHandler.Factory {
     exclusive: Boolean,
     outDirectory: String,
     options: Map<String, String>,
-  ): SchemaHandler {
-    return MarkdownHandler()
-  }
+  ): SchemaHandler = MarkdownHandler()
 }
 
 /** This is a sample handler that writes text files that describe types. */
 private class MarkdownHandler : SchemaHandler() {
-  override fun handle(type: Type, context: Context): Path {
-    return writeMarkdownFile(type.type, toMarkdown(type), context)
-  }
+  override fun handle(type: Type, context: Context): Path = writeMarkdownFile(type.type, toMarkdown(type), context)
 
-  override fun handle(service: Service, context: Context): List<Path> {
-    return listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
-  }
+  override fun handle(service: Service, context: Context): List<Path> = listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
 
-  override fun handle(extend: Extend, field: Field, context: Context): Path? {
-    return null
-  }
+  override fun handle(extend: Extend, field: Field, context: Context): Path? = null
 
   private fun writeMarkdownFile(protoType: ProtoType, markdown: String, context: Context): Path {
     val outDirectory = context.outDirectory
@@ -62,21 +54,17 @@ private class MarkdownHandler : SchemaHandler() {
     return result
   }
 
-  private fun toMarkdown(type: Type): String {
-    return """
+  private fun toMarkdown(type: Type): String = """
         |# ${type.type.simpleName}
         |
         |${type.documentation}
         |
-    """.trimMargin()
-  }
+  """.trimMargin()
 
-  private fun toMarkdown(service: Service): String {
-    return """
+  private fun toMarkdown(service: Service): String = """
         |# ${service.type.simpleName}
         |
         |${service.documentation}
         |
-    """.trimMargin()
-  }
+  """.trimMargin()
 }

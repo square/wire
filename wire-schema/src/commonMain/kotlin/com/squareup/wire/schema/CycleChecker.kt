@@ -57,23 +57,21 @@ internal class CycleChecker(
   }
 
   /** Returns an error message that describes cyclic imports in [files]. */
-  private fun importCycleMessageError(files: List<String>): String {
-    return buildString {
-      append("imports form a cycle:")
+  private fun importCycleMessageError(files: List<String>): String = buildString {
+    append("imports form a cycle:")
 
-      for (file in files) {
-        val fileLinker = fileLinkers[file] ?: continue
+    for (file in files) {
+      val fileLinker = fileLinkers[file] ?: continue
 
-        append("\n  $file:")
-        for (import in fileLinker.protoFile.imports) {
-          if (import in files) {
-            append("\n    import \"$import\";")
-          }
+      append("\n  $file:")
+      for (import in fileLinker.protoFile.imports) {
+        if (import in files) {
+          append("\n    import \"$import\";")
         }
-        for (import in fileLinker.protoFile.publicImports) {
-          if (import in files) {
-            append("\n    import public \"$import\";")
-          }
+      }
+      for (import in fileLinker.protoFile.publicImports) {
+        if (import in files) {
+          append("\n    import public \"$import\";")
         }
       }
     }
@@ -124,39 +122,37 @@ internal class CycleChecker(
    *       import "locations/residence.proto";
    * ```
    */
-  private fun packagesCycleMessageError(packages: List<String>): String {
-    return buildString {
-      append("packages form a cycle:")
+  private fun packagesCycleMessageError(packages: List<String>): String = buildString {
+    append("packages form a cycle:")
 
-      val sortedFileLinkers = fileLinkers.entries.sortedBy { it.value.cycleCheckPackageName }
+    val sortedFileLinkers = fileLinkers.entries.sortedBy { it.value.cycleCheckPackageName }
 
-      var lastSourcePackage: String? = null
-      var lastTargetPackage: String? = null
-      var lastSourcePath: String? = null
+    var lastSourcePackage: String? = null
+    var lastTargetPackage: String? = null
+    var lastSourcePath: String? = null
 
-      for ((sourcePath, sourceFileLinker) in sortedFileLinkers) {
-        val sourcePackage = sourceFileLinker.cycleCheckPackageName
-        if (sourcePackage !in packages) continue
+    for ((sourcePath, sourceFileLinker) in sortedFileLinkers) {
+      val sourcePackage = sourceFileLinker.cycleCheckPackageName
+      if (sourcePackage !in packages) continue
 
-        for (targetPath in sourceFileLinker.importsAndPublicImports) {
-          val targetFileLinker = fileLinkers[targetPath] ?: continue
-          val targetPackage = targetFileLinker.cycleCheckPackageName
-          if (targetPackage == sourcePackage || targetPackage !in packages) continue
+      for (targetPath in sourceFileLinker.importsAndPublicImports) {
+        val targetFileLinker = fileLinkers[targetPath] ?: continue
+        val targetPackage = targetFileLinker.cycleCheckPackageName
+        if (targetPackage == sourcePackage || targetPackage !in packages) continue
 
-          if (lastSourcePackage != sourcePackage || lastTargetPackage != targetPackage) {
-            append("\n  $sourcePackage imports $targetPackage")
-            lastSourcePackage = sourcePackage
-            lastTargetPackage = targetPackage
-            lastSourcePath = null
-          }
-
-          if (lastSourcePath != sourcePath) {
-            append("\n    $sourcePath:")
-            lastSourcePath = sourcePath
-          }
-
-          append("\n      import \"$targetPath\";")
+        if (lastSourcePackage != sourcePackage || lastTargetPackage != targetPackage) {
+          append("\n  $sourcePackage imports $targetPackage")
+          lastSourcePackage = sourcePackage
+          lastTargetPackage = targetPackage
+          lastSourcePath = null
         }
+
+        if (lastSourcePath != sourcePath) {
+          append("\n    $sourcePath:")
+          lastSourcePath = sourcePath
+        }
+
+        append("\n      import \"$targetPath\";")
       }
     }
   }

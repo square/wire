@@ -221,11 +221,9 @@ open class WireExtension(
     action.execute(protoRootSet)
   }
 
-  internal fun addProtoSourceProtoRootSet() =
-    addProtoRootSet(protoSourceProtoRootSets, "protoSource")
+  internal fun addProtoSourceProtoRootSet() = addProtoRootSet(protoSourceProtoRootSets, "protoSource")
 
-  internal fun addProtoPathProtoRootSet() =
-    addProtoRootSet(protoPathProtoRootSets, "protoPath")
+  internal fun addProtoPathProtoRootSet() = addProtoRootSet(protoPathProtoRootSets, "protoPath")
 
   /** Creates a new uniquely-named [ProtoRootSet], adds it to [list], and returns it. */
   private fun addProtoRootSet(

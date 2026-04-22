@@ -58,49 +58,45 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override val isMessage: Boolean
     get() = Message::class.java.isAssignableFrom(singleAdapter.type?.javaObjectType!!)
 
-  private fun getBuilderSetter(builderType: Class<*>, wireField: WireField): (B, Any?) -> Unit {
-    return when {
-      builderType.isAssignableFrom(KotlinConstructorBuilder::class.java) -> { builder, value ->
-        (builder as KotlinConstructorBuilder<*, *>).set(wireField, value)
+  private fun getBuilderSetter(builderType: Class<*>, wireField: WireField): (B, Any?) -> Unit = when {
+    builderType.isAssignableFrom(KotlinConstructorBuilder::class.java) -> { builder, value ->
+      (builder as KotlinConstructorBuilder<*, *>).set(wireField, value)
+    }
+    wireField.label.isOneOf -> {
+      val type = messageField.type
+      val method = try {
+        builderType.getMethod(name, type)
+      } catch (_: NoSuchMethodException) {
+        throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
       }
-      wireField.label.isOneOf -> {
-        val type = messageField.type
-        val method = try {
-          builderType.getMethod(name, type)
-        } catch (_: NoSuchMethodException) {
-          throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
-        }
-        { builder, value ->
-          method.invoke(builder, value)
-        }
-      }
-      else -> {
-        val field = try {
-          builderType.getField(name)
-        } catch (_: NoSuchFieldException) {
-          throw AssertionError("No builder field ${builderType.name}.$name")
-        }
-        { builder, value ->
-          field.set(builder, value)
-        }
+      { builder, value ->
+        method.invoke(builder, value)
       }
     }
-  }
-
-  private fun getBuilderGetter(builderType: Class<*>, wireField: WireField): (B) -> Any? {
-    return if (builderType.isAssignableFrom(KotlinConstructorBuilder::class.java)) {
-      { builder ->
-        (builder as KotlinConstructorBuilder<*, *>).get(wireField)
-      }
-    } else {
+    else -> {
       val field = try {
         builderType.getField(name)
       } catch (_: NoSuchFieldException) {
         throw AssertionError("No builder field ${builderType.name}.$name")
       }
-      { builder ->
-        field.get(builder)
+      { builder, value ->
+        field.set(builder, value)
       }
+    }
+  }
+
+  private fun getBuilderGetter(builderType: Class<*>, wireField: WireField): (B) -> Any? = if (builderType.isAssignableFrom(KotlinConstructorBuilder::class.java)) {
+    { builder ->
+      (builder as KotlinConstructorBuilder<*, *>).get(wireField)
+    }
+  } else {
+    val field = try {
+      builderType.getField(name)
+    } catch (_: NoSuchFieldException) {
+      throw AssertionError("No builder field ${builderType.name}.$name")
+    }
+    { builder ->
+      field.get(builder)
     }
   }
 

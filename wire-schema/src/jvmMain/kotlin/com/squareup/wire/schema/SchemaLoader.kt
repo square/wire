@@ -20,7 +20,9 @@ import java.nio.file.FileSystem as NioFileSystem
 import okio.FileSystem
 import okio.FileSystem.Companion.asOkioFileSystem
 
-actual class SchemaLoader : Loader, ProfileLoader {
+actual class SchemaLoader :
+  Loader,
+  ProfileLoader {
   private val delegate: CommonSchemaLoader
 
   constructor(fileSystem: NioFileSystem) : this(fileSystem.asOkioFileSystem())

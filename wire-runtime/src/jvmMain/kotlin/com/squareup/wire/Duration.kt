@@ -18,6 +18,4 @@ package com.squareup.wire
 actual typealias Duration = java.time.Duration
 
 @Suppress("NOTHING_TO_INLINE")
-actual inline fun durationOfSeconds(seconds: Long, nano: Long): Duration {
-  return Duration.ofSeconds(seconds, nano)
-}
+actual inline fun durationOfSeconds(seconds: Long, nano: Long): Duration = Duration.ofSeconds(seconds, nano)

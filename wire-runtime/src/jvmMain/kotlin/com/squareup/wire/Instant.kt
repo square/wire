@@ -18,6 +18,4 @@ package com.squareup.wire
 actual typealias Instant = java.time.Instant
 
 @Suppress("NOTHING_TO_INLINE")
-actual inline fun ofEpochSecond(epochSecond: Long, nano: Long): Instant {
-  return Instant.ofEpochSecond(epochSecond, nano)
-}
+actual inline fun ofEpochSecond(epochSecond: Long, nano: Long): Instant = Instant.ofEpochSecond(epochSecond, nano)

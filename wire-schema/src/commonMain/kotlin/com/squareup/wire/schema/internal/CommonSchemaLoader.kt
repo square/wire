@@ -38,7 +38,9 @@ import okio.IOException
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
-internal class CommonSchemaLoader : Loader, ProfileLoader {
+internal class CommonSchemaLoader :
+  Loader,
+  ProfileLoader {
   private val fileSystem: FileSystem
 
   /** Errors accumulated by this load. */
@@ -273,11 +275,9 @@ internal class CommonSchemaLoader : Loader, ProfileLoader {
   }
 }
 
-internal fun ProtoFile.importPath(location: Location): String {
-  return when {
-    location.base.isEmpty() -> canonicalImportPath(location)
-    else -> location.path
-  }
+internal fun ProtoFile.importPath(location: Location): String = when {
+  location.base.isEmpty() -> canonicalImportPath(location)
+  else -> location.path
 }
 
 internal fun ProtoFile.canonicalImportPath(location: Location): String {

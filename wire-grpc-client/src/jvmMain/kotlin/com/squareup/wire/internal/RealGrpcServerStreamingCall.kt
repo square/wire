@@ -33,7 +33,9 @@ internal class RealGrpcServerStreamingCall<S : Any, R : Any>(
 
   override var requestMetadata: Map<String, String>
     get() = callDelegate.requestMetadata
-    set(value) { callDelegate.requestMetadata = value }
+    set(value) {
+      callDelegate.requestMetadata = value
+    }
 
   override val responseMetadata: Map<String, String>?
     get() = callDelegate.responseMetadata
@@ -65,5 +67,4 @@ internal class RealGrpcServerStreamingCall<S : Any, R : Any>(
   }
 }
 
-internal fun <S : Any, R : Any>GrpcStreamingCall<S, R>.asGrpcServerStreamingCall() =
-  RealGrpcServerStreamingCall(this, method)
+internal fun <S : Any, R : Any> GrpcStreamingCall<S, R>.asGrpcServerStreamingCall() = RealGrpcServerStreamingCall(this, method)

@@ -107,9 +107,7 @@ class TestAllTypes {
       .ext_pack_bool(list(true, numRepeated))
   }
 
-  private fun createAllTypes(numRepeated: Int = 2): AllTypes {
-    return getBuilder(numRepeated).build()
-  }
+  private fun createAllTypes(numRepeated: Int = 2): AllTypes = getBuilder(numRepeated).build()
 
   private val allTypes: AllTypes = createAllTypes()
   private val adapter = AllTypes.ADAPTER

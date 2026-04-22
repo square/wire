@@ -127,9 +127,7 @@ data class OneOf<out K : OneOf.Key<T>, T>(
     return """${key.declaredName}=$valueAsString"""
   }
 
-  fun encodedSizeWithTag(): Int {
-    return key.adapter.encodedSizeWithTag(key.tag, value)
-  }
+  fun encodedSizeWithTag(): Int = key.adapter.encodedSizeWithTag(key.tag, value)
 
   fun encodeWithTag(writer: ProtoWriter) {
     key.adapter.encodeWithTag(writer, key.tag, value)

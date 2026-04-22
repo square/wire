@@ -23,7 +23,9 @@ import javax.inject.Singleton
 import misk.web.actions.WebAction
 
 @Singleton
-class WhiteboardGrpcAction : WebAction, WhiteboardWhiteboardBlockingServer {
+class WhiteboardGrpcAction :
+  WebAction,
+  WhiteboardWhiteboardBlockingServer {
   val clients = mutableListOf<Client>()
   val points = mutableListOf<Point>()
 

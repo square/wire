@@ -19,6 +19,4 @@ import assertk.Assert
 import assertk.assertions.containsExactly
 
 /** This doesn't exist in AssertK right now. See https://github.com/willowtreeapps/assertk/discussions/489 */
-internal inline fun <reified T : Any?> Assert<Set<T>>.containsExactly(vararg expected: T) {
-  return transform { it.toList() }.containsExactly(*expected)
-}
+internal inline fun <reified T : Any?> Assert<Set<T>>.containsExactly(vararg expected: T) = transform { it.toList() }.containsExactly(*expected)

@@ -83,17 +83,13 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
    * Returns the field with the fully qualified [typeName] and [memberName], or null if this schema
    * defines no such field.
    */
-  fun getField(typeName: String, memberName: String): Field? {
-    return getField(ProtoType.get(typeName), memberName)
-  }
+  fun getField(typeName: String, memberName: String): Field? = getField(ProtoType.get(typeName), memberName)
 
   /**
    * Returns the field for [protoType] and [memberName], or null if this schema defines no such
    * field.
    */
-  fun getField(protoType: ProtoType, memberName: String): Field? {
-    return getField(ProtoMember.get(protoType, memberName))
-  }
+  fun getField(protoType: ProtoType, memberName: String): Field? = getField(ProtoMember.get(protoType, memberName))
 
   /**
    * Returns a wire adapter for the message or enum type named [typeName]. The returned type

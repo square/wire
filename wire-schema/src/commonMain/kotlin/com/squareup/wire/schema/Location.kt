@@ -61,16 +61,12 @@ data class Location(
 
   companion object {
     @JvmStatic
-    fun get(path: String): Location {
-      return get("", path)
-    }
+    fun get(path: String): Location = get("", path)
 
     @JvmStatic
     fun get(
       base: String,
       path: String,
-    ): Location {
-      return Location(base.trimEnd('/'), path, -1, -1)
-    }
+    ): Location = Location(base.trimEnd('/'), path, -1, -1)
   }
 }

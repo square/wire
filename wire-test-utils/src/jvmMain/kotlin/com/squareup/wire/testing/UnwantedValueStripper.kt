@@ -50,14 +50,12 @@ class UnwantedValueStripper(
       .build()
   }
 
-  fun stripOptionsAndDefaults(fieldDescriptorProto: FieldDescriptorProto): FieldDescriptorProto {
-    return fieldDescriptorProto.toBuilder()
-      .clearDefaultValue()
-      .apply {
-        if (clearJsonName) {
-          clearJsonName()
-        }
+  fun stripOptionsAndDefaults(fieldDescriptorProto: FieldDescriptorProto): FieldDescriptorProto = fieldDescriptorProto.toBuilder()
+    .clearDefaultValue()
+    .apply {
+      if (clearJsonName) {
+        clearJsonName()
       }
-      .build()
-  }
+    }
+    .build()
 }

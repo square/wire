@@ -65,9 +65,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
         }
       }
 
-      override fun read(reader: JsonReader): T {
-        return delegate.read(reader)
-      }
+      override fun read(reader: JsonReader): T = delegate.read(reader)
     }
   }
 

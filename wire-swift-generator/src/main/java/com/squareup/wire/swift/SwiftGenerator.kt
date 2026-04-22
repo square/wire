@@ -281,14 +281,12 @@ class SwiftGenerator private constructor(
     else -> error("Unknown type $type")
   }
 
-  private fun String.sanitizeDoc(): String {
-    return this
-      // Remove trailing whitespace on each line.
-      .replace("[^\\S\n]+\n".toRegex(), "\n")
-      .replace("\\s+$".toRegex(), "")
-      .replace("\\*/".toRegex(), "&#42;/")
-      .replace("/\\*".toRegex(), "/&#42;")
-  }
+  private fun String.sanitizeDoc(): String = this
+    // Remove trailing whitespace on each line.
+    .replace("[^\\S\n]+\n".toRegex(), "\n")
+    .replace("\\s+$".toRegex(), "")
+    .replace("\\*/".toRegex(), "&#42;/")
+    .replace("/\\*".toRegex(), "/&#42;")
 
   /**
    * Returns true if [field] inside [type] forms a cycle and needs an indirection to allow it
@@ -694,7 +692,11 @@ class SwiftGenerator private constructor(
               }
             }
 
-            val fieldName = if (hasPropertyWrapper) { "_${field.safeName}" } else { field.safeName }
+            val fieldName = if (hasPropertyWrapper) {
+              "_${field.safeName}"
+            } else {
+              field.safeName
+            }
             addStatement(
               if (hasPropertyWrapper) {
                 "self.%N.wrappedValue = %L"
@@ -780,17 +782,156 @@ class SwiftGenerator private constructor(
     structType: DeclaredTypeName,
     storageName: String,
     storageType: DeclaredTypeName,
-  ): ExtensionSpec {
-    return ExtensionSpec.builder(structType)
-      .addSuperType(codable)
-      .apply {
+  ): ExtensionSpec = ExtensionSpec.builder(structType)
+    .addSuperType(codable)
+    .apply {
+      addFunction(
+        FunctionSpec.constructorBuilder()
+          .addParameter("from", "decoder", decoder)
+          .addModifiers(PUBLIC)
+          .throws(true)
+          .addStatement("let container = try decoder.singleValueContainer()")
+          .addStatement("self.%N = try container.decode(%T.self)", storageName, storageType)
+          .build(),
+      )
+      addFunction(
+        FunctionSpec.builder("encode")
+          .addParameter("to", "encoder", encoder)
+          .addModifiers(PUBLIC)
+          .throws(true)
+          .addStatement("var container = encoder.singleValueContainer()")
+          .addStatement("try container.encode(%N)", storageName)
+          .build(),
+      )
+    }
+    .build()
+
+  private fun messageCodableExtension(
+    type: MessageType,
+    structType: DeclaredTypeName,
+  ): ExtensionSpec = ExtensionSpec.builder(structType)
+    .addSuperType(codable)
+    .apply {
+      val codingKeys = if (type.declaredFieldsAndOneOfFields.isEmpty()) {
+        structType.nestedType("CodingKeys")
+      } else {
+        stringLiteralCodingKeys
+      }
+
+      if (type.declaredFieldsAndOneOfFields.isEmpty()) {
+        addType(
+          // Coding keys still need to be specified on empty messages in order to prevent `unknownFields` from
+          // getting serialized via JSON/Codable. In this case, the keys cannot conform to `RawRepresentable`
+          // in order to compile.
+
+          TypeSpec.enumBuilder(codingKeys)
+            .addModifiers(PUBLIC)
+            .addSuperType(codingKey)
+            .build(),
+        )
+      }
+
+      // We cannot rely upon built-in Codable support since we need to support multiple keys.
+      if (type.declaredFieldsAndOneOfFields.isNotEmpty()) {
+        // check for name collisions
+        val container = if ("container" in type.declaredFieldsAndOneOfFields.map { it.name }) "_container" else "container"
+
         addFunction(
           FunctionSpec.constructorBuilder()
             .addParameter("from", "decoder", decoder)
             .addModifiers(PUBLIC)
             .throws(true)
-            .addStatement("let container = try decoder.singleValueContainer()")
-            .addStatement("self.%N = try container.decode(%T.self)", storageName, storageType)
+            .addStatement("let $container = try decoder.container(keyedBy: %T.self)", codingKeys)
+            .apply {
+              type.declaredFields.forEach { field ->
+                val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
+
+                var typeName: TypeName = field.typeName.makeNonOptional()
+                if (field.isRepeated && typeName is ParameterizedTypeName) {
+                  typeName = typeName.typeArguments[0]
+                }
+
+                var decode = "decode"
+                if (field.isRepeated) {
+                  decode += "ProtoArray"
+                } else if (field.isMap) {
+                  decode += "ProtoMap"
+                } else if (field.isOptional) {
+                  decode += "IfPresent"
+                }
+
+                val typeArg = if (field.typeName.isStringEncoded) {
+                  "stringEncoded: "
+                } else {
+                  ""
+                }
+
+                val forKeys = field.codableName?.let {
+                  "firstOfKeys"
+                } ?: "forKey"
+
+                val keys = listOf(field.codableName, field.name)
+                  .filterNotNull()
+                  .map { CodeBlock.of("%S", it) }
+                  .joinToCode()
+
+                val fieldName = if (hasPropertyWrapper) {
+                  "_${field.safeName}"
+                } else {
+                  field.safeName
+                }
+                val prefix = if (hasPropertyWrapper) {
+                  "self.%1N.wrappedValue"
+                } else {
+                  "self.%1N"
+                }
+                addStatement(
+                  "$prefix = try $container.$decode($typeArg%2T.self, $forKeys: $keys)",
+                  fieldName,
+                  typeName,
+                )
+              }
+
+              type.oneOfs.forEach { oneOf ->
+                oneOf.fields.fold(mutableListOf<Pair<Field, String>>()) { memo, field ->
+                  field.codableName?.let { codableName ->
+                    memo.add(Pair(field, codableName))
+                  }
+                  memo.add(Pair(field, field.name))
+
+                  memo
+                }.forEachIndexed { index, pair ->
+                  val (field, keyName) = pair
+
+                  val typeName = field.typeName.makeNonOptional()
+
+                  val safeName = field.safeName
+                  val fieldName = if (safeName == "self") "self_" else safeName
+
+                  if (index == 0) {
+                    beginControlFlow(
+                      "if",
+                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
+                      fieldName,
+                      typeName,
+                      keyName,
+                    )
+                  } else {
+                    nextControlFlow(
+                      "else if",
+                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
+                      fieldName,
+                      typeName,
+                      keyName,
+                    )
+                  }
+                  addStatement("self.%1N = .%2N(%3N)", oneOf.name, field.safeName, fieldName)
+                }
+                nextControlFlow("else", "")
+                addStatement("self.%N = nil", oneOf.name)
+                endControlFlow("if")
+              }
+            }
             .build(),
         )
         addFunction(
@@ -798,67 +939,25 @@ class SwiftGenerator private constructor(
             .addParameter("to", "encoder", encoder)
             .addModifiers(PUBLIC)
             .throws(true)
-            .addStatement("var container = encoder.singleValueContainer()")
-            .addStatement("try container.encode(%N)", storageName)
-            .build(),
-        )
-      }
-      .build()
-  }
+            .addStatement("var $container = encoder.container(keyedBy: %T.self)", codingKeys)
+            .apply {
+              if (type.declaredFieldsAndOneOfFields.any { it.codableName != null }) {
+                addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
+              }
+              if (type.declaredFields.any { !it.isOptional && (it.isCollection || it.isEnum || it.codableDefaultValue != null) }) {
+                addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
+              }
+              addStatement("")
 
-  private fun messageCodableExtension(
-    type: MessageType,
-    structType: DeclaredTypeName,
-  ): ExtensionSpec {
-    return ExtensionSpec.builder(structType)
-      .addSuperType(codable)
-      .apply {
-        val codingKeys = if (type.declaredFieldsAndOneOfFields.isEmpty()) {
-          structType.nestedType("CodingKeys")
-        } else {
-          stringLiteralCodingKeys
-        }
-
-        if (type.declaredFieldsAndOneOfFields.isEmpty()) {
-          addType(
-            // Coding keys still need to be specified on empty messages in order to prevent `unknownFields` from
-            // getting serialized via JSON/Codable. In this case, the keys cannot conform to `RawRepresentable`
-            // in order to compile.
-
-            TypeSpec.enumBuilder(codingKeys)
-              .addModifiers(PUBLIC)
-              .addSuperType(codingKey)
-              .build(),
-          )
-        }
-
-        // We cannot rely upon built-in Codable support since we need to support multiple keys.
-        if (type.declaredFieldsAndOneOfFields.isNotEmpty()) {
-          // check for name collisions
-          val container = if ("container" in type.declaredFieldsAndOneOfFields.map { it.name }) "_container" else "container"
-
-          addFunction(
-            FunctionSpec.constructorBuilder()
-              .addParameter("from", "decoder", decoder)
-              .addModifiers(PUBLIC)
-              .throws(true)
-              .addStatement("let $container = try decoder.container(keyedBy: %T.self)", codingKeys)
-              .apply {
-                type.declaredFields.forEach { field ->
-                  val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
-
-                  var typeName: TypeName = field.typeName.makeNonOptional()
-                  if (field.isRepeated && typeName is ParameterizedTypeName) {
-                    typeName = typeName.typeArguments[0]
-                  }
-
-                  var decode = "decode"
+              type.declaredFields.forEach { field ->
+                fun addEncode() {
+                  var encode = "encode"
                   if (field.isRepeated) {
-                    decode += "ProtoArray"
+                    encode += "ProtoArray"
                   } else if (field.isMap) {
-                    decode += "ProtoMap"
+                    encode += "ProtoMap"
                   } else if (field.isOptional) {
-                    decode += "IfPresent"
+                    encode += "IfPresent"
                   }
 
                   val typeArg = if (field.typeName.isStringEncoded) {
@@ -867,164 +966,71 @@ class SwiftGenerator private constructor(
                     ""
                   }
 
-                  val forKeys = field.codableName?.let {
-                    "firstOfKeys"
-                  } ?: "forKey"
+                  val (keys, args) = field.codableName?.let { codableName ->
+                    Pair(
+                      "preferCamelCase ? %3S : %2S",
+                      arrayOf(field.name, codableName),
+                    )
+                  } ?: Pair("%2S", arrayOf(field.name))
 
-                  val keys = listOf(field.codableName, field.name)
-                    .filterNotNull()
-                    .map { CodeBlock.of("%S", it) }
-                    .joinToCode()
-
-                  val fieldName = if (hasPropertyWrapper) { "_${field.safeName}" } else { field.safeName }
-                  val prefix = if (hasPropertyWrapper) { "self.%1N.wrappedValue" } else { "self.%1N" }
                   addStatement(
-                    "$prefix = try $container.$decode($typeArg%2T.self, $forKeys: $keys)",
-                    fieldName,
-                    typeName,
+                    "try $container.$encode(${typeArg}self.%1N, forKey: $keys)",
+                    field.safeName,
+                    *args,
                   )
                 }
 
-                type.oneOfs.forEach { oneOf ->
-                  oneOf.fields.fold(mutableListOf<Pair<Field, String>>()) { memo, field ->
-                    field.codableName?.let { codableName ->
-                      memo.add(Pair(field, codableName))
-                    }
-                    memo.add(Pair(field, field.name))
+                val defaultValue = field.codableDefaultValue
 
-                    memo
-                  }.forEachIndexed { index, pair ->
-                    val (field, keyName) = pair
-
-                    val typeName = field.typeName.makeNonOptional()
-
-                    val safeName = field.safeName
-                    val fieldName = if (safeName == "self") "self_" else safeName
-
-                    if (index == 0) {
-                      beginControlFlow(
-                        "if",
-                        "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
-                        fieldName,
-                        typeName,
-                        keyName,
-                      )
-                    } else {
-                      nextControlFlow(
-                        "else if",
-                        "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
-                        fieldName,
-                        typeName,
-                        keyName,
-                      )
-                    }
-                    addStatement("self.%1N = .%2N(%3N)", oneOf.name, field.safeName, fieldName)
-                  }
-                  nextControlFlow("else", "")
-                  addStatement("self.%N = nil", oneOf.name)
+                if (field.isOptional) {
+                  // A proto3 field that is defined with the optional keyword supports field presence.
+                  // Fields that have a value set and that support field presence always include the field value
+                  // in the JSON-encoded output, even if it is the default value.
+                  addEncode()
+                } else if (field.isCollection) {
+                  beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.safeName)
+                  addEncode()
                   endControlFlow("if")
+                } else if (field.isEnum) {
+                  beginControlFlow("if", "includeDefaults || self.%N.rawValue != 0", field.safeName)
+                  addEncode()
+                  endControlFlow("if")
+                } else if (defaultValue != null) {
+                  beginControlFlow("if", "includeDefaults || self.%N != $defaultValue", field.safeName)
+                  addEncode()
+                  endControlFlow("if")
+                } else {
+                  // Message is fundamentally broken right now when it comes to evaluating "isDefault"
+                  // We would need to check _every_ value and/or keep track of mutations
+                  addEncode()
                 }
               }
-              .build(),
-          )
-          addFunction(
-            FunctionSpec.builder("encode")
-              .addParameter("to", "encoder", encoder)
-              .addModifiers(PUBLIC)
-              .throws(true)
-              .addStatement("var $container = encoder.container(keyedBy: %T.self)", codingKeys)
-              .apply {
-                if (type.declaredFieldsAndOneOfFields.any { it.codableName != null }) {
-                  addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
-                }
-                if (type.declaredFields.any { !it.isOptional && (it.isCollection || it.isEnum || it.codableDefaultValue != null) }) {
-                  addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
-                }
-                addStatement("")
 
-                type.declaredFields.forEach { field ->
-                  fun addEncode() {
-                    var encode = "encode"
-                    if (field.isRepeated) {
-                      encode += "ProtoArray"
-                    } else if (field.isMap) {
-                      encode += "ProtoMap"
-                    } else if (field.isOptional) {
-                      encode += "IfPresent"
-                    }
-
-                    val typeArg = if (field.typeName.isStringEncoded) {
-                      "stringEncoded: "
-                    } else {
-                      ""
-                    }
-
-                    val (keys, args) = field.codableName?.let { codableName ->
-                      Pair(
-                        "preferCamelCase ? %3S : %2S",
-                        arrayOf(field.name, codableName),
-                      )
-                    } ?: Pair("%2S", arrayOf(field.name))
-
-                    addStatement(
-                      "try $container.$encode(${typeArg}self.%1N, forKey: $keys)",
-                      field.safeName,
-                      *args,
+              type.oneOfs.forEach { oneOf ->
+                beginControlFlow("switch", "self.%N", oneOf.name)
+                oneOf.fields.forEach { field ->
+                  val (keys, args) = field.codableName?.let { codableName ->
+                    Pair(
+                      "preferCamelCase ? %3S : %2S",
+                      arrayOf(field.name, codableName),
                     )
-                  }
+                  } ?: Pair("%2S", arrayOf(field.name))
 
-                  val defaultValue = field.codableDefaultValue
-
-                  if (field.isOptional) {
-                    // A proto3 field that is defined with the optional keyword supports field presence.
-                    // Fields that have a value set and that support field presence always include the field value
-                    // in the JSON-encoded output, even if it is the default value.
-                    addEncode()
-                  } else if (field.isCollection) {
-                    beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.safeName)
-                    addEncode()
-                    endControlFlow("if")
-                  } else if (field.isEnum) {
-                    beginControlFlow("if", "includeDefaults || self.%N.rawValue != 0", field.safeName)
-                    addEncode()
-                    endControlFlow("if")
-                  } else if (defaultValue != null) {
-                    beginControlFlow("if", "includeDefaults || self.%N != $defaultValue", field.safeName)
-                    addEncode()
-                    endControlFlow("if")
-                  } else {
-                    // Message is fundamentally broken right now when it comes to evaluating "isDefault"
-                    // We would need to check _every_ value and/or keep track of mutations
-                    addEncode()
-                  }
+                  addStatement(
+                    "case .%1N(let %1N): try $container.encode(%1N, forKey: $keys)",
+                    field.safeName,
+                    *args,
+                  )
                 }
-
-                type.oneOfs.forEach { oneOf ->
-                  beginControlFlow("switch", "self.%N", oneOf.name)
-                  oneOf.fields.forEach { field ->
-                    val (keys, args) = field.codableName?.let { codableName ->
-                      Pair(
-                        "preferCamelCase ? %3S : %2S",
-                        arrayOf(field.name, codableName),
-                      )
-                    } ?: Pair("%2S", arrayOf(field.name))
-
-                    addStatement(
-                      "case .%1N(let %1N): try $container.encode(%1N, forKey: $keys)",
-                      field.safeName,
-                      *args,
-                    )
-                  }
-                  addStatement("case %T.none: break", OPTIONAL)
-                  endControlFlow("switch")
-                }
+                addStatement("case %T.none: break", OPTIONAL)
+                endControlFlow("switch")
               }
-              .build(),
-          )
-        }
+            }
+            .build(),
+        )
       }
-      .build()
-  }
+    }
+    .build()
 
   private fun ParameterSpec.Builder.withFieldDefault(field: Field) = apply {
     when {
@@ -1150,7 +1156,11 @@ class SwiftGenerator private constructor(
         .apply {
           type.declaredFields.filter { it.isRequiredParameter }.forEach { field ->
             val hasPropertyWrapper = !isIndirect(type, field) && (field.defaultedValue != null || field.isProtoDefaulted)
-            val fieldName = if (hasPropertyWrapper) { "_${field.safeName}" } else { field.safeName }
+            val fieldName = if (hasPropertyWrapper) {
+              "_${field.safeName}"
+            } else {
+              field.safeName
+            }
             addStatement(
               if (hasPropertyWrapper) {
                 "self.%1N.wrappedValue = %2N"
@@ -1763,23 +1773,21 @@ class SwiftGenerator private constructor(
   private fun generateEnclosing(
     type: EnclosingType,
     fileMembers: MutableList<FileMemberSpec>,
-  ): TypeSpec {
-    return TypeSpec.enumBuilder(type.typeName)
-      .addModifiers(PUBLIC)
-      .addDoc(
-        "%N\n",
-        "*Note:* This type only exists to maintain class structure for its nested types and " +
-          "is not an actual message.",
-      )
-      .apply {
-        type.nestedTypes.forEach { nestedType ->
-          generateType(nestedType, fileMembers).forEach {
-            addType(it)
-          }
+  ): TypeSpec = TypeSpec.enumBuilder(type.typeName)
+    .addModifiers(PUBLIC)
+    .addDoc(
+      "%N\n",
+      "*Note:* This type only exists to maintain class structure for its nested types and " +
+        "is not an actual message.",
+    )
+    .apply {
+      type.nestedTypes.forEach { nestedType ->
+        generateType(nestedType, fileMembers).forEach {
+          addType(it)
         }
       }
-      .build()
-  }
+    }
+    .build()
 
   companion object {
     // Always fully-qualified in case a message type is named `Data`.

@@ -19,6 +19,4 @@ import com.squareup.wire.ProtoAdapter
 
 fun Schema.protoAdapter(
   messageTypeName: String,
-): ProtoAdapter<Any> {
-  return protoAdapter(messageTypeName, includeUnknown = true)
-}
+): ProtoAdapter<Any> = protoAdapter(messageTypeName, includeUnknown = true)

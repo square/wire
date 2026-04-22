@@ -1385,13 +1385,9 @@ class Proto3WireProtocCompatibilityTests {
       .oneof_proto3_message(MessageProto3J.Builder().build())
       .build()
 
-    private fun <T : kotlin.Any> list(t: T): List<T> {
-      return listOf(t, t)
-    }
+    private fun <T : kotlin.Any> list(t: T): List<T> = listOf(t, t)
 
-    private fun loadJson(fileName: String): String {
-      return File("../wire-tests/fixtures/shared/json", fileName)
-        .source().use { it.buffer().readUtf8() }
-    }
+    private fun loadJson(fileName: String): String = File("../wire-tests/fixtures/shared/json", fileName)
+      .source().use { it.buffer().readUtf8() }
   }
 }

@@ -52,7 +52,11 @@ internal fun InputLocation.toLocations(
         base.isDirectory -> fileOperations.fileTree(base)
         else -> throw IllegalArgumentException(
           """
-          |Invalid path string: "${if (base.startsWith(projectFile)) { base.relativeTo(projectFile) } else { base }}".
+          |Invalid path string: "${if (base.startsWith(projectFile)) {
+            base.relativeTo(projectFile)
+          } else {
+            base
+          }}".
           |For individual files, use the following syntax:
           |wire {
           |  sourcePath {

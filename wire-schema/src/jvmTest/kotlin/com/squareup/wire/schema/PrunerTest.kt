@@ -4097,4 +4097,5 @@ class PrunerTest {
 }
 
 // Used so that spotless or the IDE doesn't trim them away.
+@Suppress("ktlint:standard:property-naming")
 private const val space = " "

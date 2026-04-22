@@ -212,14 +212,10 @@ class Linker {
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name [name]. */
-  fun resolveType(name: String): ProtoType {
-    return resolveType(name, false)
-  }
+  fun resolveType(name: String): ProtoType = resolveType(name, false)
 
   /** Returns the type name for the relative or fully-qualified name [name]. */
-  fun resolveMessageType(name: String): ProtoType {
-    return resolveType(name, true)
-  }
+  fun resolveMessageType(name: String): ProtoType = resolveType(name, true)
 
   private fun resolveType(
     name: String,

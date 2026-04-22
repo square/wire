@@ -96,5 +96,4 @@ internal class RealGrpcClientStreamingCall<S : Any, R : Any>(
   override fun clone() = RealGrpcClientStreamingCall(callDelegate.clone(), method)
 }
 
-internal fun <S : Any, R : Any> GrpcStreamingCall<S, R>.asGrpcClientStreamingCall() =
-  RealGrpcClientStreamingCall(this, method)
+internal fun <S : Any, R : Any> GrpcStreamingCall<S, R>.asGrpcClientStreamingCall() = RealGrpcClientStreamingCall(this, method)

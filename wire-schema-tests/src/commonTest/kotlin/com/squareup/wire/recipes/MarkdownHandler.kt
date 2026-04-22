@@ -25,17 +25,11 @@ import okio.Path
 
 /** Sample schema handler which generate Markdown files for types and services. */
 class MarkdownHandler : SchemaHandler() {
-  override fun handle(type: Type, context: SchemaHandler.Context): Path {
-    return writeMarkdownFile(type.type, toMarkdown(type), context)
-  }
+  override fun handle(type: Type, context: SchemaHandler.Context): Path = writeMarkdownFile(type.type, toMarkdown(type), context)
 
-  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> {
-    return listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
-  }
+  override fun handle(service: Service, context: SchemaHandler.Context): List<Path> = listOf(writeMarkdownFile(service.type, toMarkdown(service), context))
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
-    return null
-  }
+  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? = null
 
   private fun writeMarkdownFile(
     protoType: ProtoType,
@@ -60,21 +54,17 @@ class MarkdownHandler : SchemaHandler() {
     return result
   }
 
-  private fun toMarkdown(type: Type): String {
-    return """
+  private fun toMarkdown(type: Type): String = """
         |# ${type.type.simpleName}
         |
         |${type.documentation}
         |
-    """.trimMargin()
-  }
+  """.trimMargin()
 
-  private fun toMarkdown(service: Service): String {
-    return """
+  private fun toMarkdown(service: Service): String = """
         |# ${service.type.simpleName}
         |
         |${service.documentation}
         |
-    """.trimMargin()
-  }
+  """.trimMargin()
 }

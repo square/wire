@@ -85,9 +85,8 @@ private const val RESERVED_TAG_VALUE_START = 19000
 private const val RESERVED_TAG_VALUE_END = 19999
 
 /** True if the supplied value is in the valid tag range and not reserved.  */
-internal fun Int.isValidTag() =
-  this in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
-    this in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
+internal fun Int.isValidTag() = this in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
+  this in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
 
 internal expect fun Char.isDigit(): Boolean
 
@@ -154,6 +153,4 @@ private fun Service.asStub() = copy(
   options = Options(Options.SERVICE_OPTIONS, emptyList()),
 )
 
-fun Path.withUnixSlashes(): Path {
-  return toString().replace('\\', '/').toPath()
-}
+fun Path.withUnixSlashes(): Path = toString().replace('\\', '/').toPath()

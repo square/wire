@@ -31,11 +31,9 @@ data class Reserved(
 
   companion object {
     @JvmStatic
-    fun fromElements(elements: List<ReservedElement>) =
-      elements.map { Reserved(it.location, it.documentation, it.values) }
+    fun fromElements(elements: List<ReservedElement>) = elements.map { Reserved(it.location, it.documentation, it.values) }
 
     @JvmStatic
-    fun toElements(reserveds: List<Reserved>) =
-      reserveds.map { ReservedElement(it.location, it.documentation, it.values) }
+    fun toElements(reserveds: List<Reserved>) = reserveds.map { ReservedElement(it.location, it.documentation, it.values) }
   }
 }

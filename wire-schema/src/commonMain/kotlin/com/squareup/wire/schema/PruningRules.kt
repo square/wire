@@ -90,12 +90,10 @@ class PruningRules private constructor(builder: Builder) {
     get() = roots.isEmpty() && prunes.isEmpty() && _since == null && _until == null && _only == null
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
-  fun isFieldRetainedVersion(options: Options) =
-    isRetainedVersion(options, FIELD_SINCE, FIELD_UNTIL)
+  fun isFieldRetainedVersion(options: Options) = isRetainedVersion(options, FIELD_SINCE, FIELD_UNTIL)
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
-  fun isEnumConstantRetainedVersion(options: Options) =
-    isRetainedVersion(options, ENUM_CONSTANT_SINCE, ENUM_CONSTANT_UNTIL)
+  fun isEnumConstantRetainedVersion(options: Options) = isRetainedVersion(options, ENUM_CONSTANT_SINCE, ENUM_CONSTANT_UNTIL)
 
   private fun isRetainedVersion(
     options: Options,
@@ -105,8 +103,12 @@ class PruningRules private constructor(builder: Builder) {
     if (_until != null || _only != null) {
       val sinceOption = options.get(sinceMember)
       val since = (sinceOption as? String)?.toLowerCaseSemVer()
-      if (_until != null && since != null && since >= _until ||
-        _only != null && since != null && since > _only
+      if (_until != null &&
+        since != null &&
+        since >= _until ||
+        _only != null &&
+        since != null &&
+        since > _only
       ) {
         return false
       }

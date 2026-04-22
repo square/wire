@@ -27,14 +27,12 @@ private val UNICODE_BOMS = okio.Options.of(
   "0000feff".decodeHex(), // UTF-32BE
 )
 
-internal fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8): Charset {
-  return when (select(UNICODE_BOMS)) {
-    0 -> Charsets.UTF_8
-    1 -> Charsets.UTF_16BE
-    2 -> Charsets.UTF_32LE
-    3 -> Charsets.UTF_16LE
-    4 -> Charsets.UTF_32BE
-    -1 -> default
-    else -> throw AssertionError()
-  }
+internal fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8): Charset = when (select(UNICODE_BOMS)) {
+  0 -> Charsets.UTF_8
+  1 -> Charsets.UTF_16BE
+  2 -> Charsets.UTF_32LE
+  3 -> Charsets.UTF_16LE
+  4 -> Charsets.UTF_32BE
+  -1 -> default
+  else -> throw AssertionError()
 }

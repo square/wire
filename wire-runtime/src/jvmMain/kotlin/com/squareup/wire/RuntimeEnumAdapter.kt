@@ -30,10 +30,8 @@ class RuntimeEnumAdapter<E : WireEnum> internal constructor(
 
   private var fromValueMethod: Method? = null // Lazy to avoid reflection during class loading.
 
-  private fun getFromValueMethod(): Method {
-    return fromValueMethod ?: javaType.getMethod("fromValue", Int::class.javaPrimitiveType).also {
-      fromValueMethod = it
-    }
+  private fun getFromValueMethod(): Method = fromValueMethod ?: javaType.getMethod("fromValue", Int::class.javaPrimitiveType).also {
+    fromValueMethod = it
   }
 
   @Suppress("UNCHECKED_CAST")

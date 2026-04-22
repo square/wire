@@ -1026,8 +1026,7 @@ class WireRunTest {
 
         override fun handle(service: Service, context: SchemaHandler.Context): List<Path> = listOf()
 
-        override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? =
-          null
+        override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? = null
       }
     }
   }

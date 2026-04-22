@@ -22,7 +22,9 @@ import okio.IOException
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
-expect class SchemaLoader(fileSystem: FileSystem) : Loader, ProfileLoader {
+expect class SchemaLoader(fileSystem: FileSystem) :
+  Loader,
+  ProfileLoader {
   override fun load(path: String): ProtoFile
 
   /** Returns a new loader that reports failures to [errors]. */

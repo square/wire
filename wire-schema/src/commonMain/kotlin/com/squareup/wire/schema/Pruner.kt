@@ -46,10 +46,8 @@ class Pruner(
   private fun retainAll(
     schema: Schema,
     marks: MarkSet,
-  ): List<ProtoFile> {
-    return schema.protoFiles.map { protoFile ->
-      protoFile.retainAll(schema, marks)
-    }
+  ): List<ProtoFile> = schema.protoFiles.map { protoFile ->
+    protoFile.retainAll(schema, marks)
   }
 
   private fun retainImports(protoFiles: List<ProtoFile>): List<ProtoFile> {

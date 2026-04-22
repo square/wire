@@ -281,12 +281,10 @@ class WirePlugin : Plugin<Project> {
     }
   }
 
-  private fun wireRuntimeDependency(isInternalBuild: Boolean): Any {
-    return if (isInternalBuild) {
-      project.project(":wire-runtime")
-    } else {
-      project.dependencies.create("com.squareup.wire:wire-runtime:$wireVersion")
-    }
+  private fun wireRuntimeDependency(isInternalBuild: Boolean): Any = if (isInternalBuild) {
+    project.project(":wire-runtime")
+  } else {
+    project.dependencies.create("com.squareup.wire:wire-runtime:$wireVersion")
   }
 
   internal companion object {

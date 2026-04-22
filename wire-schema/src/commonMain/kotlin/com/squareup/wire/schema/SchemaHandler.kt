@@ -112,14 +112,10 @@ abstract class SchemaHandler {
     val fullSchema: Schema,
   ) {
     /** True if this [protoFile] ia part of a `sourcePath` root. */
-    fun inSourcePath(protoFile: ProtoFile): Boolean {
-      return inSourcePath(protoFile.location)
-    }
+    fun inSourcePath(protoFile: ProtoFile): Boolean = inSourcePath(protoFile.location)
 
     /** True if this [location] ia part of a `sourcePath` root. */
-    fun inSourcePath(location: Location): Boolean {
-      return sourcePathPaths == null || location.path in sourcePathPaths
-    }
+    fun inSourcePath(location: Location): Boolean = sourcePathPaths == null || location.path in sourcePathPaths
   }
 
   /**

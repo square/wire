@@ -74,9 +74,7 @@ class SchemaEncoder(
   private val rpcOptionsProtoAdapter =
     schema.protoAdapter(Options.METHOD_OPTIONS.toString(), false)
 
-  fun encode(protoFile: ProtoFile): ByteString {
-    return fileEncoder.encode(protoFile).toByteString()
-  }
+  fun encode(protoFile: ProtoFile): ByteString = fileEncoder.encode(protoFile).toByteString()
 
   private val fileEncoder: Encoder<ProtoFile> = object : Encoder<ProtoFile>() {
     override fun encode(writer: ReverseProtoWriter, value: ProtoFile) {
@@ -410,12 +408,13 @@ class SchemaEncoder(
   }
 
   /** Encodes a synthetic map type. */
-  private abstract class Encoder<T> : ProtoAdapter<T>(
-    FieldEncoding.LENGTH_DELIMITED,
-    null,
-    null,
-    Syntax.PROTO_2,
-  ) {
+  private abstract class Encoder<T> :
+    ProtoAdapter<T>(
+      FieldEncoding.LENGTH_DELIMITED,
+      null,
+      null,
+      Syntax.PROTO_2,
+    ) {
     override fun redact(value: T) = value
     override fun encodedSize(value: T): Int = throw UnsupportedOperationException()
     override fun encode(writer: ProtoWriter, value: T) = throw UnsupportedOperationException()
@@ -441,11 +440,9 @@ class SchemaEncoder(
     return result
   }
 
-  private fun toJson(field: Field, value: Any): Any {
-    return when {
-      field.isRepeated -> (value as List<*>).map { toJsonSingle(field.type!!, it!!) }
-      else -> toJsonSingle(field.type!!, value)
-    }
+  private fun toJson(field: Field, value: Any): Any = when {
+    field.isRepeated -> (value as List<*>).map { toJsonSingle(field.type!!, it!!) }
+    else -> toJsonSingle(field.type!!, value)
   }
 
   /**

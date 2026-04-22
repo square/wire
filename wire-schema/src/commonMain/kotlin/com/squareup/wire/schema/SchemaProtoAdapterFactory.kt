@@ -133,17 +133,15 @@ internal class SchemaProtoAdapterFactory(
   private class EnumAdapter(
     private val enumType: EnumType,
   ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
-    override fun encodedSize(value: Any): Int {
-      return when (value) {
-        is String -> {
-          INT32.encodedSize(enumType.constant(value)!!.tag)
-        }
-        is Int -> {
-          INT32.encodedSize(value)
-        }
-        else -> {
-          throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
-        }
+    override fun encodedSize(value: Any): Int = when (value) {
+      is String -> {
+        INT32.encodedSize(enumType.constant(value)!!.tag)
+      }
+      is Int -> {
+        INT32.encodedSize(value)
+      }
+      else -> {
+        throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
       }
     }
 
@@ -181,9 +179,7 @@ internal class SchemaProtoAdapterFactory(
       return constant?.name ?: value
     }
 
-    override fun redact(value: Any): Any {
-      throw UnsupportedOperationException()
-    }
+    override fun redact(value: Any): Any = throw UnsupportedOperationException()
   }
 
   private class SchemaMessageBinding(

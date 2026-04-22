@@ -28,9 +28,7 @@ private val otherSlash = if (slash == "/") "\\" else "/"
  * This returns a string where all other slashes are replaced with the slash of the local platform.
  * On Windows, `/` will be replaced with `\`. On other platforms, `\` will be replaced with `/`.
  */
-fun String.withPlatformSlashes(): String {
-  return replace(otherSlash, slash)
-}
+fun String.withPlatformSlashes(): String = replace(otherSlash, slash)
 
 fun FileSystem.readUtf8(pathString: String): String {
   read(pathString.toPath()) {
@@ -38,12 +36,10 @@ fun FileSystem.readUtf8(pathString: String): String {
   }
 }
 
-fun FileSystem.findFiles(path: String): Set<String> {
-  return listRecursively(path.withPlatformSlashes().toPath())
-    .filter { !metadata(it).isDirectory }
-    .map { it.toString() }
-    .toSet()
-}
+fun FileSystem.findFiles(path: String): Set<String> = listRecursively(path.withPlatformSlashes().toPath())
+  .filter { !metadata(it).isDirectory }
+  .map { it.toString() }
+  .toSet()
 
 /**
  * This asserts that [this] contains exactly in any order all [values] regardless of the slash they

@@ -26,9 +26,7 @@ import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
  * > fractional digits. Offsets other than "Z" are also accepted.
  */
 object InstantJsonFormatter : JsonFormatter<Instant> {
-  override fun toStringOrNumber(value: Instant): Any {
-    return ISO_INSTANT.format(value)
-  }
+  override fun toStringOrNumber(value: Instant): Any = ISO_INSTANT.format(value)
 
   override fun fromString(value: String): Instant {
     val parsed = ISO_OFFSET_DATE_TIME.parse(value)

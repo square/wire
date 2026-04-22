@@ -86,11 +86,9 @@ class InteropChecker(
     }
   }
 
-  private fun JsonFormat.Parser.parse(json: String): Message {
-    return protocMessage.newBuilderForType()
-      .apply { merge(json, this) }
-      .build()
-  }
+  private fun JsonFormat.Parser.parse(json: String): Message = protocMessage.newBuilderForType()
+    .apply { merge(json, this) }
+    .build()
 
   private fun roundtripWireBytes(message: Any) {
     val adapter = ProtoAdapter.get(message::class.java)

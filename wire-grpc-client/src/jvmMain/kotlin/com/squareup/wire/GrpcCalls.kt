@@ -213,40 +213,35 @@ fun <S : Any, R : Any> GrpcStreamingCall(
       return requestChannel.toMessageSink() to responseChannel.toMessageSource()
     }
 
-    override fun clone() =
-      GrpcStreamingCall(function).also { it.requestMetadata += requestMetadata }
+    override fun clone() = GrpcStreamingCall(function).also { it.requestMetadata += requestMetadata }
   }
 }
 
 @JvmName("grpcClientStreamingCall")
 fun <S : Any, R : Any> GrpcClientStreamingCall(
   function: suspend ReceiveChannel<S>.() -> R,
-): GrpcClientStreamingCall<S, R> =
-  GrpcStreamingCall { requests, responses ->
-    val response = requests.function()
-    if (response != Unit) {
-      responses.send(response)
-    }
-  }.asGrpcClientStreamingCall()
+): GrpcClientStreamingCall<S, R> = GrpcStreamingCall { requests, responses ->
+  val response = requests.function()
+  if (response != Unit) {
+    responses.send(response)
+  }
+}.asGrpcClientStreamingCall()
 
 @JvmName("grpcServerStreamingCall")
 fun <S : Any, R : Any> GrpcServerStreamingCall(
   function: suspend SendChannel<R>.(S) -> Unit,
-): GrpcServerStreamingCall<S, R> =
-  GrpcStreamingCall { requests, responses ->
-    function(responses, requests.receive())
-  }.asGrpcServerStreamingCall()
+): GrpcServerStreamingCall<S, R> = GrpcStreamingCall { requests, responses ->
+  function(responses, requests.receive())
+}.asGrpcServerStreamingCall()
 
 internal fun <E : Any> Channel<E>.toMessageSource() = object : MessageSource<E> {
-  override fun read(): E? {
-    return runBlocking {
-      try {
-        receiveCatching()
-          .onClosed { if (it != null) throw it }
-          .getOrNull()
-      } catch (e: Exception) {
-        throw IOException(e)
-      }
+  override fun read(): E? = runBlocking {
+    try {
+      receiveCatching()
+        .onClosed { if (it != null) throw it }
+        .getOrNull()
+    } catch (e: Exception) {
+      throw IOException(e)
     }
   }
 

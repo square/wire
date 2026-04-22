@@ -52,9 +52,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
    * length-delimited prefix (should the type require one), and value. Returns 0 if `value` is
    * null.
    */
-  actual open fun encodedSizeWithTag(tag: Int, value: E?): Int {
-    return commonEncodedSizeWithTag(tag, value)
-  }
+  actual open fun encodedSizeWithTag(tag: Int, value: E?): Int = commonEncodedSizeWithTag(tag, value)
 
   /** Write non-null `value` to `writer`. */
   actual abstract fun encode(writer: ProtoWriter, value: E)
@@ -80,54 +78,34 @@ actual abstract class ProtoAdapter<E> actual constructor(
   }
 
   /** Encode `value` as a `byte[]`. */
-  actual fun encode(value: E): ByteArray {
-    return commonEncode(value)
-  }
+  actual fun encode(value: E): ByteArray = commonEncode(value)
 
   /** Encode `value` as a [ByteString]. */
-  actual fun encodeByteString(value: E): ByteString {
-    return commonEncodeByteString(value)
-  }
+  actual fun encodeByteString(value: E): ByteString = commonEncodeByteString(value)
 
   /** Read a non-null value from `reader`. */
   actual abstract fun decode(reader: ProtoReader): E
 
   /** Read a non-null value from `reader`. */
-  actual open fun decode(reader: ProtoReader32): E {
-    return decode(reader.asProtoReader())
-  }
+  actual open fun decode(reader: ProtoReader32): E = decode(reader.asProtoReader())
 
   /** Read an encoded message from `bytes`. */
-  actual fun decode(bytes: ByteArray): E {
-    return commonDecode(bytes)
-  }
+  actual fun decode(bytes: ByteArray): E = commonDecode(bytes)
 
   /** Read an encoded message from `bytes`. */
-  actual fun decode(bytes: ByteString): E {
-    return commonDecode(bytes)
-  }
+  actual fun decode(bytes: ByteString): E = commonDecode(bytes)
 
   /** Read an encoded message from `source`. */
-  actual fun decode(source: BufferedSource): E {
-    return commonDecode(source)
-  }
+  actual fun decode(source: BufferedSource): E = commonDecode(source)
 
-  actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) {
-    return commonTryDecode(reader, destination)
-  }
+  actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) = commonTryDecode(reader, destination)
 
-  actual fun tryDecode(reader: ProtoReader32, destination: MutableList<E>) {
-    return commonTryDecode(reader, destination)
-  }
+  actual fun tryDecode(reader: ProtoReader32, destination: MutableList<E>) = commonTryDecode(reader, destination)
 
   /** Returns a human-readable version of the given `value`. */
-  actual open fun toString(value: E): String {
-    return commonToString(value)
-  }
+  actual open fun toString(value: E): String = commonToString(value)
 
-  internal actual fun withLabel(label: WireField.Label): ProtoAdapter<*> {
-    return commonWithLabel(label)
-  }
+  internal actual fun withLabel(label: WireField.Label): ProtoAdapter<*> = commonWithLabel(label)
 
   /** Returns an adapter for `E` but as a packed, repeated value. */
   actual fun asPacked(): ProtoAdapter<List<E>> {
@@ -146,11 +124,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
    * the returned adapter, only single-element lists will be returned and it is the caller's
    * responsibility to merge them into the final list.
    */
-  actual fun asRepeated(): ProtoAdapter<List<E>> {
-    return repeatedAdapter ?: throw UnsupportedOperationException(
-      "Can't create a repeated adapter from a repeated or packed adapter.",
-    )
-  }
+  actual fun asRepeated(): ProtoAdapter<List<E>> = repeatedAdapter ?: throw UnsupportedOperationException(
+    "Can't create a repeated adapter from a repeated or packed adapter.",
+  )
 
   actual class EnumConstantNotFoundException actual constructor(
     actual val value: Int,
@@ -168,9 +144,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual fun <K, V> newMapAdapter(
       keyAdapter: ProtoAdapter<K>,
       valueAdapter: ProtoAdapter<V>,
-    ): ProtoAdapter<Map<K, V>> {
-      return commonNewMapAdapter(keyAdapter, valueAdapter)
-    }
+    ): ProtoAdapter<Map<K, V>> = commonNewMapAdapter(keyAdapter, valueAdapter)
 
     actual val BOOL: ProtoAdapter<Boolean> = commonBool()
 

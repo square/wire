@@ -83,12 +83,10 @@ data class MessageType(
    * Returns the field with the qualified name [qualifiedName], or null if this type has no
    * such field.
    */
-  fun extensionField(qualifiedName: String): Field? =
-    extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
+  fun extensionField(qualifiedName: String): Field? = extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
 
   /** Returns the oneOf named [name], or null if this type has no such oneOf. */
-  fun oneOf(name: String): OneOf? =
-    oneOfs.firstOrNull { it.name == name }
+  fun oneOf(name: String): OneOf? = oneOfs.firstOrNull { it.name == name }
 
   /** Returns the field tagged [tag], or null if this type has no such field.  */
   fun field(tag: Int): Field? {
@@ -231,21 +229,19 @@ data class MessageType(
     )
   }
 
-  fun toElement(): MessageElement {
-    return MessageElement(
-      location = location,
-      name = name,
-      documentation = documentation,
-      nestedTypes = toElements(nestedTypes),
-      extendDeclarations = toElements(nestedExtendList),
-      options = options.elements,
-      reserveds = toElements(reserveds),
-      fields = toElements(declaredFields),
-      oneOfs = toElements(oneOfs),
-      extensions = toElements(extensionsList),
-      groups = emptyList(),
-    )
-  }
+  fun toElement(): MessageElement = MessageElement(
+    location = location,
+    name = name,
+    documentation = documentation,
+    nestedTypes = toElements(nestedTypes),
+    extendDeclarations = toElements(nestedExtendList),
+    options = options.elements,
+    reserveds = toElements(reserveds),
+    fields = toElements(declaredFields),
+    oneOfs = toElements(oneOfs),
+    extensions = toElements(extensionsList),
+    groups = emptyList(),
+  )
 
   companion object {
     internal val DEPRECATED = ProtoMember.get(MESSAGE_OPTIONS, "deprecated")

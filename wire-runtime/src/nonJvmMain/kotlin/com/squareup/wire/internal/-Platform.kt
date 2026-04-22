@@ -41,24 +41,22 @@ actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> = this
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = this
 
 // TODO: Use code points to process each char.
-actual fun camelCase(string: String, upperCamel: Boolean): String {
-  return buildString(string.length) {
-    var index = 0
-    var uppercase = upperCamel
-    while (index < string.length) {
-      var char = string[index]
+actual fun camelCase(string: String, upperCamel: Boolean): String = buildString(string.length) {
+  var index = 0
+  var uppercase = upperCamel
+  while (index < string.length) {
+    var char = string[index]
 
-      index++
+    index++
 
-      if (char == '_') {
-        uppercase = true
-        continue
-      }
-      if (uppercase) {
-        if (char in 'a'..'z') char += 'A' - 'a'
-      }
-      append(char)
-      uppercase = false
+    if (char == '_') {
+      uppercase = true
+      continue
     }
+    if (uppercase) {
+      if (char in 'a'..'z') char += 'A' - 'a'
+    }
+    append(char)
+    uppercase = false
   }
 }

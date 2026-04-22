@@ -61,20 +61,18 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
       }
   }
 
-  fun get(field: WireField): Any? {
-    return if (field.isMap) {
-      mapFieldKeyValueMap[field.tag]?.second ?: mapOf<Any, Any>()
-    } else if (field.label.isRepeated) {
-      repeatedFieldValueMap[field.tag]?.second ?: listOf<Any>()
+  fun get(field: WireField): Any? = if (field.isMap) {
+    mapFieldKeyValueMap[field.tag]?.second ?: mapOf<Any, Any>()
+  } else if (field.label.isRepeated) {
+    repeatedFieldValueMap[field.tag]?.second ?: listOf<Any>()
+  } else {
+    val value = fieldValueMap[field.tag]?.second
+    // Proto3 singular fields have non-nullable types with default parameters, we need to pass
+    // the identity value to please the constructor.
+    if (value == null && field.label == WireField.Label.OMIT_IDENTITY) {
+      ProtoAdapter.get(field.adapter).identity
     } else {
-      val value = fieldValueMap[field.tag]?.second
-      // Proto3 singular fields have non-nullable types with default parameters, we need to pass
-      // the identity value to please the constructor.
-      if (value == null && field.label == WireField.Label.OMIT_IDENTITY) {
-        ProtoAdapter.get(field.adapter).identity
-      } else {
-        value
-      }
+      value
     }
   }
 

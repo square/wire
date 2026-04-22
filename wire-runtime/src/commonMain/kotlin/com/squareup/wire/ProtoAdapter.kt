@@ -349,19 +349,13 @@ internal inline fun <E> ProtoAdapter<E>.commonEncodeByteString(value: E): ByteSt
 }
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteArray): E {
-  return decode(ProtoReader32(bytes))
-}
+internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteArray): E = decode(ProtoReader32(bytes))
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E {
-  return decode(ProtoReader32(bytes))
-}
+internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E = decode(ProtoReader32(bytes))
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E {
-  return decode(ProtoReader(source))
-}
+internal inline fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E = decode(ProtoReader(source))
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonTryDecode(
@@ -431,9 +425,7 @@ internal class PackedProtoAdapter<E>(
     return size
   }
 
-  override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
-    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
-  }
+  override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int = if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
 
   override fun encode(writer: ProtoWriter, value: List<E>) {
     for (i in 0 until value.size) {
@@ -455,9 +447,7 @@ internal class PackedProtoAdapter<E>(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<List<E>> {
-  return RepeatedProtoAdapter(originalAdapter = this)
-}
+internal inline fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<List<E>> = RepeatedProtoAdapter(originalAdapter = this)
 
 internal class RepeatedProtoAdapter<E>(
   private val originalAdapter: ProtoAdapter<E>,
@@ -468,9 +458,7 @@ internal class RepeatedProtoAdapter<E>(
   originalAdapter.syntax,
   listOf<E>(),
 ) {
-  override fun encodedSize(value: List<E>): Int {
-    throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
-  }
+  override fun encodedSize(value: List<E>): Int = throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
 
   override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
     if (value == null) return 0
@@ -481,13 +469,9 @@ internal class RepeatedProtoAdapter<E>(
     return size
   }
 
-  override fun encode(writer: ProtoWriter, value: List<E>) {
-    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
-  }
+  override fun encode(writer: ProtoWriter, value: List<E>): Unit = throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
 
-  override fun encode(writer: ReverseProtoWriter, value: List<E>) {
-    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
-  }
+  override fun encode(writer: ReverseProtoWriter, value: List<E>): Unit = throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
 
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
     if (value == null) return
@@ -539,9 +523,7 @@ internal class DoubleArrayProtoAdapter(
     return size
   }
 
-  override fun encodedSizeWithTag(tag: Int, value: DoubleArray?): Int {
-    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
-  }
+  override fun encodedSizeWithTag(tag: Int, value: DoubleArray?): Int = if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
 
   override fun encode(writer: ProtoWriter, value: DoubleArray) {
     for (i in 0 until value.size) {
@@ -555,11 +537,9 @@ internal class DoubleArrayProtoAdapter(
     }
   }
 
-  override fun decode(reader: ProtoReader): DoubleArray =
-    doubleArrayOf(Double.fromBits(reader.readFixed64()))
+  override fun decode(reader: ProtoReader): DoubleArray = doubleArrayOf(Double.fromBits(reader.readFixed64()))
 
-  override fun decode(reader: ProtoReader32): DoubleArray =
-    doubleArrayOf(Double.fromBits(reader.readFixed64()))
+  override fun decode(reader: ProtoReader32): DoubleArray = doubleArrayOf(Double.fromBits(reader.readFixed64()))
 
   override fun redact(value: DoubleArray): DoubleArray = doubleArrayOf()
 }
@@ -593,9 +573,7 @@ internal class LongArrayProtoAdapter(
     return size
   }
 
-  override fun encodedSizeWithTag(tag: Int, value: LongArray?): Int {
-    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
-  }
+  override fun encodedSizeWithTag(tag: Int, value: LongArray?): Int = if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
 
   override fun encode(writer: ProtoWriter, value: LongArray) {
     for (i in 0 until value.size) {
@@ -645,9 +623,7 @@ internal class FloatArrayProtoAdapter(
     return size
   }
 
-  override fun encodedSizeWithTag(tag: Int, value: FloatArray?): Int {
-    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
-  }
+  override fun encodedSizeWithTag(tag: Int, value: FloatArray?): Int = if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
 
   override fun encode(writer: ProtoWriter, value: FloatArray) {
     for (i in 0 until value.size) {
@@ -661,11 +637,9 @@ internal class FloatArrayProtoAdapter(
     }
   }
 
-  override fun decode(reader: ProtoReader): FloatArray =
-    floatArrayOf(Float.fromBits(reader.readFixed32()))
+  override fun decode(reader: ProtoReader): FloatArray = floatArrayOf(Float.fromBits(reader.readFixed32()))
 
-  override fun decode(reader: ProtoReader32): FloatArray =
-    floatArrayOf(Float.fromBits(reader.readFixed32()))
+  override fun decode(reader: ProtoReader32): FloatArray = floatArrayOf(Float.fromBits(reader.readFixed32()))
 
   override fun redact(value: FloatArray): FloatArray = floatArrayOf()
 }
@@ -699,9 +673,7 @@ internal class IntArrayProtoAdapter(
     return size
   }
 
-  override fun encodedSizeWithTag(tag: Int, value: IntArray?): Int {
-    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
-  }
+  override fun encodedSizeWithTag(tag: Int, value: IntArray?): Int = if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
 
   override fun encode(writer: ProtoWriter, value: IntArray) {
     for (i in 0 until value.size) {
@@ -734,9 +706,7 @@ internal class MapProtoAdapter<K, V> internal constructor(
 ) {
   private val entryAdapter = MapEntryProtoAdapter(keyAdapter, valueAdapter)
 
-  override fun encodedSize(value: Map<K, V>): Int {
-    throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
-  }
+  override fun encodedSize(value: Map<K, V>): Int = throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
 
   override fun encodedSizeWithTag(tag: Int, value: Map<K, V>?): Int {
     if (value == null) return 0
@@ -747,13 +717,9 @@ internal class MapProtoAdapter<K, V> internal constructor(
     return size
   }
 
-  override fun encode(writer: ProtoWriter, value: Map<K, V>) {
-    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
-  }
+  override fun encode(writer: ProtoWriter, value: Map<K, V>): Unit = throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
 
-  override fun encode(writer: ReverseProtoWriter, value: Map<K, V>) {
-    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
-  }
+  override fun encode(writer: ReverseProtoWriter, value: Map<K, V>): Unit = throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
 
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Map<K, V>?) {
     if (value == null) return
@@ -824,10 +790,8 @@ private class MapEntryProtoAdapter<K, V> internal constructor(
   valueAdapter.syntax,
 ) {
 
-  override fun encodedSize(value: Map.Entry<K, V>): Int {
-    return keyAdapter.encodedSizeWithTag(1, value.key) +
-      valueAdapter.encodedSizeWithTag(2, value.value)
-  }
+  override fun encodedSize(value: Map.Entry<K, V>): Int = keyAdapter.encodedSizeWithTag(1, value.key) +
+    valueAdapter.encodedSizeWithTag(2, value.value)
 
   override fun encode(writer: ProtoWriter, value: Map.Entry<K, V>) {
     keyAdapter.encodeWithTag(writer, 1, value.key)
@@ -839,13 +803,9 @@ private class MapEntryProtoAdapter<K, V> internal constructor(
     keyAdapter.encodeWithTag(writer, 1, value.key)
   }
 
-  override fun decode(reader: ProtoReader): Map.Entry<K, V> {
-    throw UnsupportedOperationException()
-  }
+  override fun decode(reader: ProtoReader): Map.Entry<K, V> = throw UnsupportedOperationException()
 
-  override fun redact(value: Map.Entry<K, V>): Map.Entry<K, V> {
-    throw UnsupportedOperationException()
-  }
+  override fun redact(value: Map.Entry<K, V>): Map.Entry<K, V> = throw UnsupportedOperationException()
 }
 
 private const val FIXED_BOOL_SIZE = 1
@@ -856,9 +816,7 @@ private const val FIXED_64_SIZE = 8
 internal inline fun <K, V> commonNewMapAdapter(
   keyAdapter: ProtoAdapter<K>,
   valueAdapter: ProtoAdapter<V>,
-): ProtoAdapter<Map<K, V>> {
-  return MapProtoAdapter(keyAdapter, valueAdapter)
-}
+): ProtoAdapter<Map<K, V>> = MapProtoAdapter(keyAdapter, valueAdapter)
 
 internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean>(
   VARINT,
@@ -1090,13 +1048,14 @@ internal fun commonFixed64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
 
-internal class FloatProtoAdapter : ProtoAdapter<Float>(
-  FieldEncoding.FIXED32,
-  Float::class,
-  null,
-  Syntax.PROTO_2,
-  0.0f,
-) {
+internal class FloatProtoAdapter :
+  ProtoAdapter<Float>(
+    FieldEncoding.FIXED32,
+    Float::class,
+    null,
+    Syntax.PROTO_2,
+    0.0f,
+  ) {
   override fun encode(writer: ProtoWriter, value: Float) {
     writer.writeFixed32(value.toBits())
   }
@@ -1105,13 +1064,9 @@ internal class FloatProtoAdapter : ProtoAdapter<Float>(
     writer.writeFixed32(value.toBits())
   }
 
-  override fun decode(reader: ProtoReader): Float {
-    return Float.fromBits(reader.readFixed32())
-  }
+  override fun decode(reader: ProtoReader): Float = Float.fromBits(reader.readFixed32())
 
-  override fun decode(reader: ProtoReader32): Float {
-    return Float.fromBits(reader.readFixed32())
-  }
+  override fun decode(reader: ProtoReader32): Float = Float.fromBits(reader.readFixed32())
 
   override fun encodedSize(value: Float): Int = FIXED_32_SIZE
 
@@ -1121,13 +1076,14 @@ internal class FloatProtoAdapter : ProtoAdapter<Float>(
 internal fun commonSfixed64() = commonFixed64()
 internal fun commonFloat(): FloatProtoAdapter = FloatProtoAdapter()
 
-internal class DoubleProtoAdapter : ProtoAdapter<Double>(
-  FieldEncoding.FIXED64,
-  Double::class,
-  null,
-  Syntax.PROTO_2,
-  0.0,
-) {
+internal class DoubleProtoAdapter :
+  ProtoAdapter<Double>(
+    FieldEncoding.FIXED64,
+    Double::class,
+    null,
+    Syntax.PROTO_2,
+    0.0,
+  ) {
   override fun encodedSize(value: Double): Int = FIXED_64_SIZE
 
   override fun encode(writer: ProtoWriter, value: Double) {

@@ -35,6 +35,4 @@ private class SimpleMultimap<K, V>(private val map: Map<K, Collection<V>>) : Mul
   override fun asMap() = map
 }
 
-internal actual fun <K, V> Map<K, Collection<V>>.toMultimap(): Multimap<K, V> {
-  return SimpleMultimap(this)
-}
+internal actual fun <K, V> Map<K, Collection<V>>.toMultimap(): Multimap<K, V> = SimpleMultimap(this)

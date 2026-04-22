@@ -36,8 +36,7 @@ class ProtoMember private constructor(
     require(!type.isScalar) { "scalars cannot have members" }
   }
 
-  override fun equals(other: Any?) =
-    other is ProtoMember && type == other.type && member == other.member
+  override fun equals(other: Any?) = other is ProtoMember && type == other.type && member == other.member
 
   override fun hashCode() = type.hashCode() * 37 + member.hashCode()
 

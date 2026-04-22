@@ -77,16 +77,15 @@ data class OneOf(
     }
 
     @JvmStatic
-    fun toElements(oneOfs: List<OneOf>) =
-      oneOfs.map {
-        OneOfElement(
-          name = it.name,
-          documentation = it.documentation,
-          fields = Field.toElements(it.fields),
-          groups = emptyList(),
-          location = it.location,
-          options = it.options.elements,
-        )
-      }
+    fun toElements(oneOfs: List<OneOf>) = oneOfs.map {
+      OneOfElement(
+        name = it.name,
+        documentation = it.documentation,
+        fields = Field.toElements(it.fields),
+        groups = emptyList(),
+        location = it.location,
+        options = it.options.elements,
+      )
+    }
   }
 }

@@ -142,8 +142,6 @@ class DagCheckerTest {
     assertThat(cycleFinder.check()).containsExactly(listOf("a", "d", "e", "b", "f", "i", "h"))
   }
 
-  private fun String.targets(allEdges: List<String>): List<String> {
-    return allEdges.filter { it.startsWith(this) }
-      .map { it.substring(1) }
-  }
+  private fun String.targets(allEdges: List<String>): List<String> = allEdges.filter { it.startsWith(this) }
+    .map { it.substring(1) }
 }

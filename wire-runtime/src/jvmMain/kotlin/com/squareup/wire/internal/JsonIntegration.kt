@@ -132,25 +132,23 @@ abstract class JsonIntegration<F, A> {
     }
   }
 
-  private fun mapKeyJsonFormatter(protoAdapter: ProtoAdapter<*>): JsonFormatter<*> {
-    return when (protoAdapter) {
-      ProtoAdapter.STRING -> StringJsonFormatter
-      ProtoAdapter.INT32,
-      ProtoAdapter.SINT32,
-      ProtoAdapter.SFIXED32,
-      -> IntAsStringJsonFormatter
-      ProtoAdapter.FIXED32,
-      ProtoAdapter.UINT32,
-      -> UnsignedIntAsStringJsonFormatter
-      ProtoAdapter.INT64,
-      ProtoAdapter.SFIXED64,
-      ProtoAdapter.SINT64,
-      -> LongAsStringJsonFormatter
-      ProtoAdapter.FIXED64,
-      ProtoAdapter.UINT64,
-      -> UnsignedLongAsStringJsonFormatter
-      else -> error("Unexpected map key type: ${protoAdapter.type}")
-    }
+  private fun mapKeyJsonFormatter(protoAdapter: ProtoAdapter<*>): JsonFormatter<*> = when (protoAdapter) {
+    ProtoAdapter.STRING -> StringJsonFormatter
+    ProtoAdapter.INT32,
+    ProtoAdapter.SINT32,
+    ProtoAdapter.SFIXED32,
+    -> IntAsStringJsonFormatter
+    ProtoAdapter.FIXED32,
+    ProtoAdapter.UINT32,
+    -> UnsignedIntAsStringJsonFormatter
+    ProtoAdapter.INT64,
+    ProtoAdapter.SFIXED64,
+    ProtoAdapter.SINT64,
+    -> LongAsStringJsonFormatter
+    ProtoAdapter.FIXED64,
+    ProtoAdapter.UINT64,
+    -> UnsignedLongAsStringJsonFormatter
+    else -> error("Unexpected map key type: ${protoAdapter.type}")
   }
 
   /** Encodes a unsigned value without quotes, like `123`. */
@@ -171,39 +169,36 @@ abstract class JsonIntegration<F, A> {
       }
     }
 
-    override fun toStringOrNumber(value: Long): Any {
-      return when {
-        value < 0L -> power64.add(BigInteger.valueOf(value))
-        else -> value
-      }
+    override fun toStringOrNumber(value: Long): Any = when {
+      value < 0L -> power64.add(BigInteger.valueOf(value))
+      else -> value
     }
   }
 
   /** Encodes an unsigned value with quotes, like `"123"`. */
   private object UnsignedLongAsStringJsonFormatter : JsonFormatter<Long> {
-    override fun toStringOrNumber(value: Long) =
-      UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
+    override fun toStringOrNumber(value: Long) = UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
 
-    override fun fromString(value: String) =
-      UnsignedLongAsNumberJsonFormatter.fromString(value)
+    override fun fromString(value: String) = UnsignedLongAsNumberJsonFormatter.fromString(value)
   }
 
   /** Encodes an signed value with quotes, like `"-123"`. */
   private object LongAsStringJsonFormatter : JsonFormatter<Long> {
     override fun toStringOrNumber(value: Long) = value.toString()
-    override fun fromString(value: String): Long {
-      return try {
-        value.toLong()
-      } catch (e: Exception) {
-        BigDecimal(value).longValueExact() // Handle extra trailing values like 5.0.
-      }
+    override fun fromString(value: String): Long = try {
+      value.toLong()
+    } catch (e: Exception) {
+      BigDecimal(value).longValueExact() // Handle extra trailing values like 5.0.
     }
   }
 
   /** Encodes a unsigned value without quotes, like `123`. */
   private object UnsignedIntAsNumberJsonFormatter : JsonFormatter<Int> {
     // 2^32, used to convert sint32 values >= 2^31 to unsigned decimal form
+    @Suppress("ktlint:standard:property-naming")
     private const val power32 = 1L shl 32
+
+    @Suppress("ktlint:standard:property-naming")
     private const val maxInt = Int.MAX_VALUE.toLong()
 
     override fun fromString(value: String): Int {
@@ -214,26 +209,23 @@ abstract class JsonIntegration<F, A> {
       }
     }
 
-    override fun toStringOrNumber(value: Int): Any {
-      return when {
-        value < 0 -> value + power32
-        else -> value
-      }
+    override fun toStringOrNumber(value: Int): Any = when {
+      value < 0 -> value + power32
+      else -> value
     }
   }
 
   /** Encodes an unsigned value with quotes, like `"123"`. */
   private object UnsignedIntAsStringJsonFormatter : JsonFormatter<Int> {
     // 2^32, used to convert sint32 values >= 2^31 to unsigned decimal form
+    @Suppress("ktlint:standard:property-naming")
     private const val power32 = 1L shl 32
 
     override fun fromString(value: String) = value.toLong().toInt()
 
-    override fun toStringOrNumber(value: Int): Any {
-      return when {
-        value < 0 -> (value + power32).toString()
-        else -> value.toString()
-      }
+    override fun toStringOrNumber(value: Int): Any = when {
+      value < 0 -> (value + power32).toString()
+      else -> value.toString()
     }
   }
 
