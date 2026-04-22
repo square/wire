@@ -85,3 +85,16 @@ allprojects {
     }
   }
 }
+
+// The vanniktech publish plugin 0.36.0+ requires JDK 17. Override the allprojects default (11) for
+// the build-support root module which declares it as an implementation dependency.
+tasks.withType<JavaCompile>().configureEach {
+  sourceCompatibility = JavaVersion.VERSION_17.toString()
+  targetCompatibility = JavaVersion.VERSION_17.toString()
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_17)
+  }
+}
