@@ -70,7 +70,9 @@ data class Location(
       base: String,
       path: String,
     ): Location {
-      return Location(base.trimEnd('/'), path, -1, -1)
+      val normalizedBase = base.replace('\\', '/')
+      val normalizedPath = path.replace('\\', '/')
+      return Location(normalizedBase.trimEnd('/'), normalizedPath, -1, -1)
     }
   }
 }
