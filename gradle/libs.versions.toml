@@ -92,4 +92,4 @@ protobuf-javaUtil = { module = "com.google.protobuf:protobuf-java-util", version
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
 swiftpoet = { module = "io.outfoxx:swiftpoet", version = "1.6.11" }
 truth = { module = "com.google.truth:truth", version = "1.4.5" }
-vanniktechPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.35.0" }
+vanniktechPublishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.36.0" }
