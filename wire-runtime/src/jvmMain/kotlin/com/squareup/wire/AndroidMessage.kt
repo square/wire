@@ -24,7 +24,8 @@ import okio.ByteString
 abstract class AndroidMessage<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
   adapter: ProtoAdapter<M>,
   unknownFields: ByteString,
-) : Message<M, B>(adapter, unknownFields), Parcelable {
+) : Message<M, B>(adapter, unknownFields),
+  Parcelable {
 
   override fun writeToParcel(dest: Parcel, flags: Int) {
     dest.writeByteArray(encode())
@@ -38,14 +39,11 @@ abstract class AndroidMessage<M : Message<M, B>, B : Message.Builder<M, B>> prot
     override fun createFromParcel(input: Parcel): M = adapter.decode(input.createByteArray())
 
     @Suppress("UNCHECKED_CAST")
-    override fun newArray(size: Int): Array<M> =
-      newInstance(adapter.type?.javaObjectType, size) as Array<M>
+    override fun newArray(size: Int): Array<M> = newInstance(adapter.type?.javaObjectType, size) as Array<M>
   }
 
   companion object {
     /** Creates a new [Parcelable.Creator] using `adapter` for serialization. */
-    @JvmStatic fun <E> newCreator(adapter: ProtoAdapter<E>): Parcelable.Creator<E> {
-      return ProtoAdapterCreator(adapter)
-    }
+    @JvmStatic fun <E> newCreator(adapter: ProtoAdapter<E>): Parcelable.Creator<E> = ProtoAdapterCreator(adapter)
   }
 }

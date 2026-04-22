@@ -114,11 +114,9 @@ data class Field(
   var jsonName: String? = null
     private set
 
-  private fun isPackable(linker: Linker, type: ProtoType): Boolean {
-    return type != ProtoType.STRING &&
-      type != ProtoType.BYTES &&
-      linker.get(type) !is MessageType
-  }
+  private fun isPackable(linker: Linker, type: ProtoType): Boolean = type != ProtoType.STRING &&
+    type != ProtoType.BYTES &&
+    linker.get(type) !is MessageType
 
   fun link(linker: Linker) {
     type = linker.withContext(this).resolveType(elementType)

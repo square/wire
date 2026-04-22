@@ -514,22 +514,20 @@ class StructTest {
     assertThat(allStructs.rep_struct).containsExactly(mapOf("a" to "b"))
   }
 
-  private fun Any?.isDeeplyUnmodifiable(): Boolean {
-    return when (this) {
-      null -> true
-      is String -> true
-      is Double -> true
-      is Int -> true
-      is Boolean -> true
-      is List<*> -> {
-        this.all { it.isDeeplyUnmodifiable() } && this.isUnmodifiable()
-      }
-      is Map<*, *> -> {
-        this.all { it.key.isDeeplyUnmodifiable() && it.value.isDeeplyUnmodifiable() } &&
-          this.isUnmodifiable()
-      }
-      else -> false
+  private fun Any?.isDeeplyUnmodifiable(): Boolean = when (this) {
+    null -> true
+    is String -> true
+    is Double -> true
+    is Int -> true
+    is Boolean -> true
+    is List<*> -> {
+      this.all { it.isDeeplyUnmodifiable() } && this.isUnmodifiable()
     }
+    is Map<*, *> -> {
+      this.all { it.key.isDeeplyUnmodifiable() && it.value.isDeeplyUnmodifiable() } &&
+        this.isUnmodifiable()
+    }
+    else -> false
   }
 
   @Suppress("LiftReturnOrAssignment")

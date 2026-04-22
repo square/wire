@@ -24,14 +24,10 @@ import okio.Path
  * @param loggerFactoryClass a fully qualified class name for a class that implements [WireLogger.Factory]. The
  * class must have a no-arguments public constructor.
  */
-fun newLoggerFactory(loggerFactoryClass: String): WireLogger.Factory {
-  return ClassNameLoggerFactory(loggerFactoryClass)
-}
+fun newLoggerFactory(loggerFactoryClass: String): WireLogger.Factory = ClassNameLoggerFactory(loggerFactoryClass)
 
 class EmptyWireLoggerFactory : WireLogger.Factory {
-  override fun create(): WireLogger {
-    return EmptyWireLogger()
-  }
+  override fun create(): WireLogger = EmptyWireLogger()
 }
 
 class EmptyWireLogger : WireLogger {
@@ -81,7 +77,5 @@ private class ClassNameLoggerFactory(
       return result
     }
 
-  override fun create(): WireLogger {
-    return delegate.create()
-  }
+  override fun create(): WireLogger = delegate.create()
 }

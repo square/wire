@@ -75,35 +75,31 @@ data class Rpc(
 
   companion object {
     @JvmStatic
-    fun fromElements(elements: List<RpcElement>): List<Rpc> {
-      return elements.map { element ->
-        Rpc(
-          location = element.location,
-          name = element.name,
-          documentation = element.documentation,
-          requestTypeElement = element.requestType,
-          responseTypeElement = element.responseType,
-          requestStreaming = element.requestStreaming,
-          responseStreaming = element.responseStreaming,
-          options = Options(Options.METHOD_OPTIONS, element.options),
-        )
-      }
+    fun fromElements(elements: List<RpcElement>): List<Rpc> = elements.map { element ->
+      Rpc(
+        location = element.location,
+        name = element.name,
+        documentation = element.documentation,
+        requestTypeElement = element.requestType,
+        responseTypeElement = element.responseType,
+        requestStreaming = element.requestStreaming,
+        responseStreaming = element.responseStreaming,
+        options = Options(Options.METHOD_OPTIONS, element.options),
+      )
     }
 
     @JvmStatic
-    fun toElements(rpcs: List<Rpc>): List<RpcElement> {
-      return rpcs.map { rpc ->
-        RpcElement(
-          location = rpc.location,
-          name = rpc.name,
-          documentation = rpc.documentation,
-          requestType = rpc.requestTypeElement,
-          responseType = rpc.responseTypeElement,
-          requestStreaming = rpc.requestStreaming,
-          responseStreaming = rpc.responseStreaming,
-          options = rpc.options.elements,
-        )
-      }
+    fun toElements(rpcs: List<Rpc>): List<RpcElement> = rpcs.map { rpc ->
+      RpcElement(
+        location = rpc.location,
+        name = rpc.name,
+        documentation = rpc.documentation,
+        requestType = rpc.requestTypeElement,
+        responseType = rpc.responseTypeElement,
+        requestStreaming = rpc.requestStreaming,
+        responseStreaming = rpc.responseStreaming,
+        options = rpc.options.elements,
+      )
     }
   }
 }

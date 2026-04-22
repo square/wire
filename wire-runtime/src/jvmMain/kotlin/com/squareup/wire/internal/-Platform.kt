@@ -39,24 +39,22 @@ actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> =
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
   Collections.unmodifiableMap(this)
 
-actual fun camelCase(string: String, upperCamel: Boolean): String {
-  return buildString(string.length) {
-    var index = 0
-    var uppercase = upperCamel
-    while (index < string.length) {
-      var codePoint = string.codePointAt(index)
+actual fun camelCase(string: String, upperCamel: Boolean): String = buildString(string.length) {
+  var index = 0
+  var uppercase = upperCamel
+  while (index < string.length) {
+    var codePoint = string.codePointAt(index)
 
-      index += Character.charCount(codePoint)
+    index += Character.charCount(codePoint)
 
-      if (codePoint == '_'.code) {
-        uppercase = true
-        continue
-      }
-      if (uppercase) {
-        if (codePoint in 'a'.code..'z'.code) codePoint += 'A' - 'a'
-      }
-      appendCodePoint(codePoint)
-      uppercase = false
+    if (codePoint == '_'.code) {
+      uppercase = true
+      continue
     }
+    if (uppercase) {
+      if (codePoint in 'a'.code..'z'.code) codePoint += 'A' - 'a'
+    }
+    appendCodePoint(codePoint)
+    uppercase = false
   }
 }

@@ -44,9 +44,7 @@ class AnyMessage(
     return adapter.decode(value)
   }
 
-  fun <T> unpackOrNull(adapter: ProtoAdapter<T>): T? {
-    return if (typeUrl == adapter.typeUrl) adapter.decode(value) else null
-  }
+  fun <T> unpackOrNull(adapter: ProtoAdapter<T>): T? = if (typeUrl == adapter.typeUrl) adapter.decode(value) else null
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
@@ -91,9 +89,8 @@ class AnyMessage(
       "type.googleapis.com/google.protobuf.Any",
       Syntax.PROTO_3,
     ) {
-      override fun encodedSize(value: AnyMessage): Int =
-        STRING.encodedSizeWithTag(1, value.typeUrl) +
-          BYTES.encodedSizeWithTag(2, value.value)
+      override fun encodedSize(value: AnyMessage): Int = STRING.encodedSizeWithTag(1, value.typeUrl) +
+        BYTES.encodedSizeWithTag(2, value.value)
 
       override fun encode(writer: ProtoWriter, value: AnyMessage) {
         STRING.encodeWithTag(writer, 1, value.typeUrl)
@@ -132,8 +129,7 @@ class AnyMessage(
       }
 
       // TODO: this is a hazard.
-      override fun redact(value: AnyMessage) =
-        AnyMessage("square.github.io/wire/redacted", ByteString.EMPTY)
+      override fun redact(value: AnyMessage) = AnyMessage("square.github.io/wire/redacted", ByteString.EMPTY)
     }
   }
 }

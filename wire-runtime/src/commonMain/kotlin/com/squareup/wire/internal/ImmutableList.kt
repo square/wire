@@ -15,7 +15,10 @@
  */
 package com.squareup.wire.internal
 
-internal class ImmutableList<T>(list: List<T>) : AbstractList<T?>(), RandomAccess, Serializable {
+internal class ImmutableList<T>(list: List<T>) :
+  AbstractList<T?>(),
+  RandomAccess,
+  Serializable {
   private val list = ArrayList(list)
 
   override val size: Int

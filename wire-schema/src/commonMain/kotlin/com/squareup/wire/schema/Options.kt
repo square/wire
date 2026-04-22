@@ -47,9 +47,7 @@ class Options(
 
   fun retainLinked() = Options(optionType, emptyList())
 
-  fun get(protoMember: ProtoMember): Any? {
-    return entries?.find { it.protoMember == protoMember }?.value
-  }
+  fun get(protoMember: ProtoMember): Any? = entries?.find { it.protoMember == protoMember }?.value
 
   /**
    * Returns true if any of the options in [entries] matches both of the regular expressions
@@ -235,28 +233,24 @@ class Options(
     }
   }
 
-  private fun coerceValueForField(context: ProtoType, value: Any, isRepeated: Boolean): Any {
-    return when {
-      isRepeated || context.isMap -> value as? List<*> ?: listOf(value)
-      value is List<*> -> value.single()!!
-      else -> value
-    }
+  private fun coerceValueForField(context: ProtoType, value: Any, isRepeated: Boolean): Any = when {
+    isRepeated || context.isMap -> value as? List<*> ?: listOf(value)
+    value is List<*> -> value.single()!!
+    else -> value
   }
 
   /** Combine values for the same key, resolving conflicts based on their type.  */
-  private fun union(linker: Linker, a: Any, b: Any): Any {
-    return when (a) {
-      is List<*> -> a + b as List<*>
+  private fun union(linker: Linker, a: Any, b: Any): Any = when (a) {
+    is List<*> -> a + b as List<*>
 
-      is Map<*, *> -> {
-        @Suppress("UNCHECKED_CAST") // All maps have this type.
-        union(linker, a as Map<ProtoMember, Any?>, b as Map<ProtoMember, Any>)
-      }
+    is Map<*, *> -> {
+      @Suppress("UNCHECKED_CAST") // All maps have this type.
+      union(linker, a as Map<ProtoMember, Any?>, b as Map<ProtoMember, Any>)
+    }
 
-      else -> {
-        linker.errors += "conflicting options: $a, $b"
-        a // Just return any placeholder.
-      }
+    else -> {
+      linker.errors += "conflicting options: $a, $b"
+      a // Just return any placeholder.
     }
   }
 
@@ -308,15 +302,11 @@ class Options(
     return result
   }
 
-  fun fields(): Multimap<ProtoType, ProtoMember> {
-    return fields(PruningRules.Builder().build())
-  }
+  fun fields(): Multimap<ProtoType, ProtoMember> = fields(PruningRules.Builder().build())
 
-  fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember> {
-    return mutableMapOf<ProtoType, MutableCollection<ProtoMember>>().also {
-      gatherFields(it, optionType, entries?.toMap(), pruningRules)
-    }.toMultimap()
-  }
+  fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember> = mutableMapOf<ProtoType, MutableCollection<ProtoMember>>().also {
+    gatherFields(it, optionType, entries?.toMap(), pruningRules)
+  }.toMultimap()
 
   private fun gatherFields(
     sink: MutableMap<ProtoType, MutableCollection<ProtoMember>>,
@@ -374,62 +364,60 @@ class Options(
     markSet: MarkSet,
     type: ProtoType?,
     o: Any?,
-  ): Any? {
-    return when {
-      o == null -> null
+  ): Any? = when {
+    o == null -> null
 
-      o is Map<*, *> -> {
-        val map = mutableMapOf<ProtoMember, Any>()
-        for ((key, value) in o) {
-          val protoMember = when (key) {
-            is ProtoMember -> key
-            else -> {
-              // When the key isn't a `ProtoMember`, this key/value pair is a inlined value of a map
-              // field.
-              val retainedValue = retainAll(schema, markSet, type, value)
-              // if `retainedValue` is a map, its value represents an inline message, and we need to
-              // mark the proto member.
-              if (retainedValue is Map<*, *>) {
-                for ((k, v) in retainedValue) {
-                  map[k as ProtoMember] = v!!
-                }
+    o is Map<*, *> -> {
+      val map = mutableMapOf<ProtoMember, Any>()
+      for ((key, value) in o) {
+        val protoMember = when (key) {
+          is ProtoMember -> key
+          else -> {
+            // When the key isn't a `ProtoMember`, this key/value pair is a inlined value of a map
+            // field.
+            val retainedValue = retainAll(schema, markSet, type, value)
+            // if `retainedValue` is a map, its value represents an inline message, and we need to
+            // mark the proto member.
+            if (retainedValue is Map<*, *>) {
+              for ((k, v) in retainedValue) {
+                map[k as ProtoMember] = v!!
               }
-              continue
             }
-          }
-          val isCoreMemberOfGoogleProtobuf =
-            protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
-              !schema.isExtensionField(protoMember)
-          if (!markSet.contains(protoMember) && !isCoreMemberOfGoogleProtobuf) {
-            continue // Prune this field.
-          }
-
-          val field = schema.getField(protoMember)!!
-          val retainedValue = retainAll(schema, markSet, field.type, value)
-          if (retainedValue != null) {
-            map[protoMember] = retainedValue // This retained field is non-empty.
-          } else if (isCoreMemberOfGoogleProtobuf) {
-            map[protoMember] = value!!
+            continue
           }
         }
-        map.ifEmpty { null }
-      }
-
-      o is List<*> -> {
-        val list = mutableListOf<Any>()
-        for (value in o) {
-          val retainedValue = retainAll(schema, markSet, type, value)
-          if (retainedValue != null) {
-            list.add(retainedValue) // This retained value is non-empty.
-          }
+        val isCoreMemberOfGoogleProtobuf =
+          protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
+            !schema.isExtensionField(protoMember)
+        if (!markSet.contains(protoMember) && !isCoreMemberOfGoogleProtobuf) {
+          continue // Prune this field.
         }
-        list.ifEmpty { null }
+
+        val field = schema.getField(protoMember)!!
+        val retainedValue = retainAll(schema, markSet, field.type, value)
+        if (retainedValue != null) {
+          map[protoMember] = retainedValue // This retained field is non-empty.
+        } else if (isCoreMemberOfGoogleProtobuf) {
+          map[protoMember] = value!!
+        }
       }
-
-      !markSet.contains(type!!) -> null // Prune this type.
-
-      else -> o
+      map.ifEmpty { null }
     }
+
+    o is List<*> -> {
+      val list = mutableListOf<Any>()
+      for (value in o) {
+        val retainedValue = retainAll(schema, markSet, type, value)
+        if (retainedValue != null) {
+          list.add(retainedValue) // This retained value is non-empty.
+        }
+      }
+      list.ifEmpty { null }
+    }
+
+    !markSet.contains(type!!) -> null // Prune this type.
+
+    else -> o
   }
 
   companion object {
@@ -520,7 +508,5 @@ class Options(
     }
   }
 
-  private fun List<LinkedOptionEntry>.toMap(): Map<ProtoMember, Any?> {
-    return associate { it.protoMember to it.value }
-  }
+  private fun List<LinkedOptionEntry>.toMap(): Map<ProtoMember, Any?> = associate { it.protoMember to it.value }
 }

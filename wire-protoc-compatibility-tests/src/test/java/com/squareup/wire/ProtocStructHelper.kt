@@ -28,9 +28,7 @@ internal fun Map<String, *>.toStruct(): Struct {
   return builder.build()
 }
 
-internal fun emptyStruct(): Struct {
-  return Struct.newBuilder().build()
-}
+internal fun emptyStruct(): Struct = Struct.newBuilder().build()
 
 internal fun List<*>.toListValue(): ListValue {
   val builder = ListValue.newBuilder()
@@ -40,18 +38,14 @@ internal fun List<*>.toListValue(): ListValue {
   return builder.build()
 }
 
-internal fun emptyListValue(): ListValue {
-  return ListValue.newBuilder().build()
-}
+internal fun emptyListValue(): ListValue = ListValue.newBuilder().build()
 
-internal fun Any?.toValue(): Value {
-  return when (this) {
-    null -> Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build()
-    is Double -> Value.newBuilder().setNumberValue(this).build()
-    is String -> Value.newBuilder().setStringValue(this).build()
-    is Boolean -> Value.newBuilder().setBoolValue(this).build()
-    is Map<*, *> -> Value.newBuilder().setStructValue((this as Map<String, *>).toStruct()).build()
-    is List<*> -> Value.newBuilder().setListValue(toListValue()).build()
-    else -> throw IllegalArgumentException("unexpected struct value: $this")
-  }
+internal fun Any?.toValue(): Value = when (this) {
+  null -> Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build()
+  is Double -> Value.newBuilder().setNumberValue(this).build()
+  is String -> Value.newBuilder().setStringValue(this).build()
+  is Boolean -> Value.newBuilder().setBoolValue(this).build()
+  is Map<*, *> -> Value.newBuilder().setStructValue((this as Map<String, *>).toStruct()).build()
+  is List<*> -> Value.newBuilder().setListValue(toListValue()).build()
+  else -> throw IllegalArgumentException("unexpected struct value: $this")
 }

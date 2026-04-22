@@ -106,20 +106,22 @@ fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
   return true
 }
 
-fun annotationTargetType(extend: Extend): ElementType? {
-  return when (extend.type!!) {
-    Options.MESSAGE_OPTIONS, Options.ENUM_OPTIONS, Options.SERVICE_OPTIONS -> ElementType.TYPE
-    Options.FIELD_OPTIONS, Options.ENUM_VALUE_OPTIONS -> ElementType.FIELD
-    Options.METHOD_OPTIONS -> ElementType.METHOD
-    else -> null
-  }
+fun annotationTargetType(extend: Extend): ElementType? = when (extend.type!!) {
+  Options.MESSAGE_OPTIONS, Options.ENUM_OPTIONS, Options.SERVICE_OPTIONS -> ElementType.TYPE
+  Options.FIELD_OPTIONS, Options.ENUM_VALUE_OPTIONS -> ElementType.FIELD
+  Options.METHOD_OPTIONS -> ElementType.METHOD
+  else -> null
 }
 
 fun optionValueToInt(value: Any?): Int {
   if (value == null) return 0
 
   val string = value.toString()
-  val negativeSign = if (string.startsWith('-')) { "-" } else { "" }
+  val negativeSign = if (string.startsWith('-')) {
+    "-"
+  } else {
+    ""
+  }
 
   return when {
     // Hexadecimal.
@@ -141,7 +143,11 @@ fun optionValueToLong(value: Any?): Long {
   if (value == null) return 0L
 
   val string = value.toString()
-  val negativeSign = if (string.startsWith('-')) { "-" } else { "" }
+  val negativeSign = if (string.startsWith('-')) {
+    "-"
+  } else {
+    ""
+  }
 
   return when {
     // Hexadecimal.

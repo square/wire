@@ -179,8 +179,6 @@ class ManifestPartitionTest {
   }
 }
 
-private fun Schema.getMessage(name: String): MessageType {
-  return checkNotNull(getType(name) as? MessageType) {
-    "No type '$name' in schema"
-  }
+private fun Schema.getMessage(name: String): MessageType = checkNotNull(getType(name) as? MessageType) {
+  "No type '$name' in schema"
 }

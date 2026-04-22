@@ -60,12 +60,10 @@ sealed class Type {
   }
 
   companion object {
-    fun get(namespaces: List<String>, protoType: ProtoType, type: TypeElement, syntax: Syntax): Type {
-      return when (type) {
-        is EnumElement -> fromElement(protoType, type, syntax)
-        is MessageElement -> fromElement(namespaces, protoType, type, syntax)
-        else -> throw IllegalArgumentException("unexpected type: $type")
-      }
+    fun get(namespaces: List<String>, protoType: ProtoType, type: TypeElement, syntax: Syntax): Type = when (type) {
+      is EnumElement -> fromElement(protoType, type, syntax)
+      is MessageElement -> fromElement(namespaces, protoType, type, syntax)
+      else -> throw IllegalArgumentException("unexpected type: $type")
     }
 
     @JvmStatic
@@ -82,12 +80,10 @@ sealed class Type {
       return@map get(namespaces, protoType, it, syntax)
     }
 
-    private fun toElement(type: Type): TypeElement {
-      return when (type) {
-        is EnumType -> type.toElement()
-        is MessageType -> type.toElement()
-        is EnclosingType -> type.toElement()
-      }
+    private fun toElement(type: Type): TypeElement = when (type) {
+      is EnumType -> type.toElement()
+      is MessageType -> type.toElement()
+      is EnclosingType -> type.toElement()
     }
 
     @JvmStatic

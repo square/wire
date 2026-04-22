@@ -93,7 +93,6 @@ class GrpcStatus private constructor(
      * Returns an instance with a well-known name (like "OK"), or a string like "STATUS_99" if the
      * code was not known when this was built.
      */
-    fun get(status: Int): GrpcStatus =
-      INSTANCES.getOrNull(status) ?: GrpcStatus("STATUS_$status", status)
+    fun get(status: Int): GrpcStatus = INSTANCES.getOrNull(status) ?: GrpcStatus("STATUS_$status", status)
   }
 }

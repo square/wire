@@ -698,8 +698,6 @@ class Proto2WireProtocCompatibilityTests {
       .oneof_proto3_enum(EnumProto3J.A)
       .build()
 
-    private fun <T : Any> list(t: T): List<T> {
-      return listOf(t, t)
-    }
+    private fun <T : Any> list(t: T): List<T> = listOf(t, t)
   }
 }

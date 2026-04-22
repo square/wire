@@ -43,9 +43,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     return this
   }
 
-  private fun profile(profileName: String?): Profile {
-    return if (profileName == null) Profile() else profiles["$profileName.wire"]!!
-  }
+  private fun profile(profileName: String?): Profile = if (profileName == null) Profile() else profiles["$profileName.wire"]!!
 
   fun generateKotlin(
     typeName: String,

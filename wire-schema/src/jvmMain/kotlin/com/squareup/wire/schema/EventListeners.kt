@@ -21,9 +21,7 @@ package com.squareup.wire.schema
  * @param eventListenerFactoryClass a fully qualified class name for a class that implements [EventListener.Factory]. The
  * class must have a no-arguments public constructor.
  */
-fun newEventListenerFactory(eventListenerFactoryClass: String): EventListener.Factory {
-  return ClassNameEventListenerFactory(eventListenerFactoryClass)
-}
+fun newEventListenerFactory(eventListenerFactoryClass: String): EventListener.Factory = ClassNameEventListenerFactory(eventListenerFactoryClass)
 
 /**
  * This event listener factory is serializable (so Gradle can cache targets that use it). It works
@@ -58,7 +56,5 @@ private class ClassNameEventListenerFactory(
       return result
     }
 
-  override fun create(): EventListener {
-    return delegate.create()
-  }
+  override fun create(): EventListener = delegate.create()
 }

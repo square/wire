@@ -43,9 +43,7 @@ class SchemaBuilder {
    * @param name The qualified name of the file.
    * @param protoFile The content of the file.
    */
-  fun add(name: Path, protoFile: String): SchemaBuilder {
-    return add(name, protoFile, sourcePath)
-  }
+  fun add(name: Path, protoFile: String): SchemaBuilder = add(name, protoFile, sourcePath)
 
   /**
    * Add a file to be loaded into the schema.
@@ -75,9 +73,7 @@ class SchemaBuilder {
   }
 
   /** Add a file to be linked against, but not used to generate artifacts. */
-  fun addProtoPath(name: Path, protoFile: String): SchemaBuilder {
-    return add(name, protoFile, protoPath)
-  }
+  fun addProtoPath(name: Path, protoFile: String): SchemaBuilder = add(name, protoFile, protoPath)
 
   /** See [SchemaLoader.opaqueTypes]. */
   fun addOpaqueTypes(vararg opaqueTypes: ProtoType): SchemaBuilder {
@@ -97,9 +93,7 @@ class SchemaBuilder {
 }
 
 /** Builds a schema out of written `.proto` files. */
-inline fun buildSchema(builderAction: SchemaBuilder.() -> Unit): Schema {
-  return SchemaBuilder().apply(builderAction).build()
-}
+inline fun buildSchema(builderAction: SchemaBuilder.() -> Unit): Schema = SchemaBuilder().apply(builderAction).build()
 
 /**
  * Wire loads runtime protos such as `google/protobuf/descriptor.proto` when it needs to load a

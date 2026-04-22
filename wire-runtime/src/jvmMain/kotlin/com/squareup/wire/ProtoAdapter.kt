@@ -97,9 +97,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
   actual abstract fun encodedSize(value: E): Int
 
-  actual open fun encodedSizeWithTag(tag: Int, value: E?): Int {
-    return commonEncodedSizeWithTag(tag, value)
-  }
+  actual open fun encodedSizeWithTag(tag: Int, value: E?): Int = commonEncodedSizeWithTag(tag, value)
 
   @Throws(IOException::class)
   actual abstract fun encode(writer: ProtoWriter, value: E)
@@ -124,13 +122,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
     commonEncode(sink, value)
   }
 
-  actual fun encode(value: E): ByteArray {
-    return commonEncode(value)
-  }
+  actual fun encode(value: E): ByteArray = commonEncode(value)
 
-  actual fun encodeByteString(value: E): ByteString {
-    return commonEncodeByteString(value)
-  }
+  actual fun encodeByteString(value: E): ByteString = commonEncodeByteString(value)
 
   @Throws(IOException::class)
   fun encode(stream: OutputStream, value: E) {
@@ -144,45 +138,29 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
   /** Read a non-null value from `reader`. */
   @Throws(IOException::class)
-  actual open fun decode(reader: ProtoReader32): E {
-    return decode(reader.asProtoReader())
-  }
+  actual open fun decode(reader: ProtoReader32): E = decode(reader.asProtoReader())
 
   @Throws(IOException::class)
-  actual fun decode(bytes: ByteArray): E {
-    return commonDecode(bytes)
-  }
+  actual fun decode(bytes: ByteArray): E = commonDecode(bytes)
 
   @Throws(IOException::class)
-  actual fun decode(bytes: ByteString): E {
-    return commonDecode(bytes)
-  }
+  actual fun decode(bytes: ByteString): E = commonDecode(bytes)
 
   @Throws(IOException::class)
-  actual fun decode(source: BufferedSource): E {
-    return commonDecode(source)
-  }
+  actual fun decode(source: BufferedSource): E = commonDecode(source)
 
   @Throws(IOException::class)
-  actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) {
-    return commonTryDecode(reader, destination)
-  }
+  actual fun tryDecode(reader: ProtoReader, destination: MutableList<E>) = commonTryDecode(reader, destination)
 
   @Throws(IOException::class)
-  actual fun tryDecode(reader: ProtoReader32, destination: MutableList<E>) {
-    return commonTryDecode(reader, destination)
-  }
+  actual fun tryDecode(reader: ProtoReader32, destination: MutableList<E>) = commonTryDecode(reader, destination)
 
   @Throws(IOException::class)
   fun decode(stream: InputStream): E = decode(stream.source().buffer())
 
-  actual open fun toString(value: E): String {
-    return commonToString(value)
-  }
+  actual open fun toString(value: E): String = commonToString(value)
 
-  internal actual fun withLabel(label: WireField.Label): ProtoAdapter<*> {
-    return commonWithLabel(label)
-  }
+  internal actual fun withLabel(label: WireField.Label): ProtoAdapter<*> = commonWithLabel(label)
 
   actual fun asPacked(): ProtoAdapter<List<E>> {
     require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
@@ -193,11 +171,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
     )
   }
 
-  actual fun asRepeated(): ProtoAdapter<List<E>> {
-    return repeatedAdapter ?: throw UnsupportedOperationException(
-      "Can't create a repeated adapter from a repeated or packed adapter.",
-    )
-  }
+  actual fun asRepeated(): ProtoAdapter<List<E>> = repeatedAdapter ?: throw UnsupportedOperationException(
+    "Can't create a repeated adapter from a repeated or packed adapter.",
+  )
 
   internal val isStruct: Boolean
     get() = this == STRUCT_MAP || this == STRUCT_LIST || this == STRUCT_VALUE || this == STRUCT_NULL
@@ -213,33 +189,25 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmStatic actual fun <K, V> newMapAdapter(
       keyAdapter: ProtoAdapter<K>,
       valueAdapter: ProtoAdapter<V>,
-    ): ProtoAdapter<Map<K, V>> {
-      return commonNewMapAdapter(keyAdapter, valueAdapter)
-    }
+    ): ProtoAdapter<Map<K, V>> = commonNewMapAdapter(keyAdapter, valueAdapter)
 
     // Obsolete; for Java classes generated before typeUrl and syntax were added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
-    ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, null, Syntax.PROTO_2)
-    }
+    ): ProtoAdapter<M> = createRuntimeMessageAdapter(type, null, Syntax.PROTO_2)
 
     // Obsolete; for Java classes generated before typeUrl and syntax were added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
       typeUrl: String,
-    ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2)
-    }
+    ): ProtoAdapter<M> = createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2)
 
     // Obsolete; for Java classes generated before `classLoader` was added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
       typeUrl: String,
       syntax: Syntax,
-    ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, typeUrl, syntax)
-    }
+    ): ProtoAdapter<M> = createRuntimeMessageAdapter(type, typeUrl, syntax)
 
     /** Creates a new proto adapter for `type`. */
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
@@ -247,19 +215,13 @@ actual abstract class ProtoAdapter<E> actual constructor(
       typeUrl: String,
       syntax: Syntax,
       classLoader: ClassLoader?,
-    ): ProtoAdapter<M> {
-      return createRuntimeMessageAdapter(type, typeUrl, syntax, classLoader)
-    }
+    ): ProtoAdapter<M> = createRuntimeMessageAdapter(type, typeUrl, syntax, classLoader)
 
     /** Creates a new proto adapter for `type`. */
-    @JvmStatic fun <E : WireEnum> newEnumAdapter(type: Class<E>): EnumAdapter<E> {
-      return RuntimeEnumAdapter(type)
-    }
+    @JvmStatic fun <E : WireEnum> newEnumAdapter(type: Class<E>): EnumAdapter<E> = RuntimeEnumAdapter(type)
 
     /** Returns the adapter for the type of `Message`. */
-    @JvmStatic fun <M : Message<*, *>> get(message: M): ProtoAdapter<M> {
-      return get(message.javaClass)
-    }
+    @JvmStatic fun <M : Message<*, *>> get(message: M): ProtoAdapter<M> = get(message.javaClass)
 
     /** Returns the adapter for `type`. */
     @JvmStatic fun <M> get(type: Class<M>): ProtoAdapter<M> {
@@ -278,9 +240,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
      * message field's [WireField] annotation in the form
      * `com.squareup.wire.protos.person.Person#ADAPTER`.
      */
-    @JvmStatic fun get(adapterString: String): ProtoAdapter<*> {
-      return get(adapterString, ProtoAdapter::class.java.classLoader)
-    }
+    @JvmStatic fun get(adapterString: String): ProtoAdapter<*> = get(adapterString, ProtoAdapter::class.java.classLoader)
 
     /**
      * Returns the adapter for a given `adapterString`, using [classLoader]. `adapterString` is specified on a
@@ -403,22 +363,17 @@ actual abstract class ProtoAdapter<E> actual constructor(
      * such as [Duration] and [Instant]. This proto adapter is used when the corresponding
      * `java.time` type is missing from the JVM classpath.
      */
-    class UnsupportedTypeProtoAdapter : ProtoAdapter<Nothing>(
-      FieldEncoding.LENGTH_DELIMITED,
-      Nothing::class,
-    ) {
-      override fun redact(value: Nothing) =
-        throw IllegalStateException("Operation not supported.")
-      override fun encodedSize(value: Nothing) =
-        throw IllegalStateException("Operation not supported.")
-      override fun encode(writer: ProtoWriter, value: Nothing) =
-        throw IllegalStateException("Operation not supported.")
-      override fun encode(writer: ReverseProtoWriter, value: Nothing) =
-        throw IllegalStateException("Operation not supported.")
-      override fun decode(reader: ProtoReader): Nothing =
-        throw IllegalStateException("Operation not supported.")
-      override fun decode(reader: ProtoReader32): Nothing =
-        throw IllegalStateException("Operation not supported.")
+    class UnsupportedTypeProtoAdapter :
+      ProtoAdapter<Nothing>(
+        FieldEncoding.LENGTH_DELIMITED,
+        Nothing::class,
+      ) {
+      override fun redact(value: Nothing) = throw IllegalStateException("Operation not supported.")
+      override fun encodedSize(value: Nothing) = throw IllegalStateException("Operation not supported.")
+      override fun encode(writer: ProtoWriter, value: Nothing) = throw IllegalStateException("Operation not supported.")
+      override fun encode(writer: ReverseProtoWriter, value: Nothing) = throw IllegalStateException("Operation not supported.")
+      override fun decode(reader: ProtoReader): Nothing = throw IllegalStateException("Operation not supported.")
+      override fun decode(reader: ProtoReader32): Nothing = throw IllegalStateException("Operation not supported.")
     }
   }
 }

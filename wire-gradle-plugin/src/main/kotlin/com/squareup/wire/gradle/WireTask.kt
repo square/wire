@@ -197,7 +197,5 @@ abstract class WireTask @Inject constructor(
   @InputFiles
   @SkipWhenEmpty
   @PathSensitive(PathSensitivity.RELATIVE)
-  override fun getSource(): FileTree {
-    return super.getSource()
-  }
+  override fun getSource(): FileTree = super.getSource()
 }

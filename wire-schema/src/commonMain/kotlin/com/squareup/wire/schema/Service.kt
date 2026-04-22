@@ -24,6 +24,7 @@ import com.squareup.wire.schema.internal.parser.ServiceElement
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
+@Suppress("ktlint:standard:value-parameter-comment")
 data class Service(
   @get:JvmName("type") // For binary compatibility.
   val type: ProtoType,
@@ -39,9 +40,7 @@ data class Service(
   val options: Options,
 ) {
   /** Returns the RPC named `name`, or null if this service has no such method.  */
-  fun rpc(name: String): Rpc? {
-    return rpcs.find { it.name == name }
-  }
+  fun rpc(name: String): Rpc? = rpcs.find { it.name == name }
 
   fun link(linker: Linker) {
     var linker = linker
@@ -137,23 +136,19 @@ data class Service(
     @JvmStatic internal fun fromElements(
       packageName: String?,
       elements: List<ServiceElement>,
-    ): List<Service> {
-      return elements.map { service ->
-        val protoType = get(packageName, service.name)
-        fromElement(protoType, service)
-      }
+    ): List<Service> = elements.map { service ->
+      val protoType = get(packageName, service.name)
+      fromElement(protoType, service)
     }
 
-    @JvmStatic internal fun toElements(services: List<Service>): List<ServiceElement> {
-      return services.map { service ->
-        ServiceElement(
-          service.location,
-          service.name,
-          service.documentation,
-          Rpc.toElements(service.rpcs),
-          service.options.elements,
-        )
-      }
+    @JvmStatic internal fun toElements(services: List<Service>): List<ServiceElement> = services.map { service ->
+      ServiceElement(
+        service.location,
+        service.name,
+        service.documentation,
+        Rpc.toElements(service.rpcs),
+        service.options.elements,
+      )
     }
   }
 }

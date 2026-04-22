@@ -33,7 +33,9 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : ComponentActivity(), OnBoardEventListener {
+class MainActivity :
+  ComponentActivity(),
+  OnBoardEventListener {
   private lateinit var sendCommandChannel: SendChannel<WhiteboardCommand>
   private lateinit var receiveUpdateChannel: ReceiveChannel<WhiteboardUpdate>
   private lateinit var whiteboardView: WhiteboardView

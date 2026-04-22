@@ -128,9 +128,7 @@ class ProtoWriter(private val sink: BufferedSink) {
   companion object {
 
     /** Makes a tag value given a field number and wire type. */
-    internal fun makeTag(fieldNumber: Int, fieldEncoding: FieldEncoding): Int {
-      return (fieldNumber shl ProtoReader.TAG_FIELD_ENCODING_BITS) or fieldEncoding.value
-    }
+    internal fun makeTag(fieldNumber: Int, fieldEncoding: FieldEncoding): Int = (fieldNumber shl ProtoReader.TAG_FIELD_ENCODING_BITS) or fieldEncoding.value
 
     /** Compute the number of bytes that would be needed to encode a tag. */
     internal fun tagSize(tag: Int): Int = varint32Size(makeTag(tag, FieldEncoding.VARINT))
@@ -139,13 +137,11 @@ class ProtoWriter(private val sink: BufferedSink) {
      * Computes the number of bytes that would be needed to encode a signed variable-length integer
      * of up to 32 bits.
      */
-    internal fun int32Size(value: Int): Int {
-      return if (value >= 0) {
-        varint32Size(value)
-      } else {
-        // Must sign-extend.
-        10
-      }
+    internal fun int32Size(value: Int): Int = if (value >= 0) {
+      varint32Size(value)
+    } else {
+      // Must sign-extend.
+      10
     }
 
     /**

@@ -25,12 +25,15 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 class OneOfTest {
+  @Suppress("ktlint:standard:property-naming")
   private val INITIAL_BYTES = byteArrayOf()
 
   // (Tag #1 << 3 | VARINT) = 8.
+  @Suppress("ktlint:standard:property-naming")
   private val FOO_BYTES = byteArrayOf(8, 17)
 
   // (Tag #3 << 3 | LENGTH_DELIMITED) = 26, string length = 6.
+  @Suppress("ktlint:standard:property-naming")
   private val BAR_BYTES = byteArrayOf(
     26,
     6,

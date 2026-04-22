@@ -211,10 +211,8 @@ class ReverseProtoWriterTest {
       ) {
         override fun redact(value: Person) = error("unexpected call")
 
-        public override fun encodedSize(`value`: Person): Int {
-          return STRING.encodedSizeWithTag(1, value.name) +
-            INT32.encodedSizeWithTag(2, value.birthYear)
-        }
+        public override fun encodedSize(`value`: Person): Int = STRING.encodedSizeWithTag(1, value.name) +
+          INT32.encodedSizeWithTag(2, value.birthYear)
 
         public override fun encode(writer: ProtoWriter, `value`: Person) {
           STRING.encodeWithTag(writer, 1, value.name)
@@ -251,10 +249,8 @@ class ReverseProtoWriterTest {
       ) {
         override fun redact(value: Task) = error("unexpected call")
 
-        public override fun encodedSize(`value`: Task): Int {
-          return STRING.encodedSizeWithTag(1, value.description) +
-            Person.ADAPTER.encodedSizeWithTag(2, value.assignee)
-        }
+        public override fun encodedSize(`value`: Task): Int = STRING.encodedSizeWithTag(1, value.description) +
+          Person.ADAPTER.encodedSizeWithTag(2, value.assignee)
 
         override fun encode(writer: ProtoWriter, value: Task) {
           STRING.encodeWithTag(writer, 1, value.description)

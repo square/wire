@@ -30,8 +30,7 @@ internal class ProtoReader32AsProtoReader(
 ) : ProtoReader(Buffer()) {
   override fun beginMessage() = delegate.beginMessage().toLong()
 
-  override fun endMessageAndGetUnknownFields(token: Long) =
-    delegate.endMessageAndGetUnknownFields(token.toInt())
+  override fun endMessageAndGetUnknownFields(token: Long) = delegate.endMessageAndGetUnknownFields(token.toInt())
 
   override fun nextLengthDelimited() = delegate.nextLengthDelimited()
 

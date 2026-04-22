@@ -74,9 +74,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
    * Returns a new WireTypeAdapterFactory that can encode the messages for [adapter] if they're
    * used with [AnyMessage].
    */
-  fun plus(adapter: ProtoAdapter<*>): WireTypeAdapterFactory {
-    return plus(listOf(adapter))
-  }
+  fun plus(adapter: ProtoAdapter<*>): WireTypeAdapterFactory = plus(listOf(adapter))
 
   @Suppress("UNCHECKED_CAST")
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {

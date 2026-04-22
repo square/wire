@@ -163,9 +163,7 @@ class TypeMover(
   }
 
   /** Returns the type that moved. */
-  private fun getType(move: Move): Type {
-    return pathToFile[move.targetPath]!!.types.first { it.type == move.type }
-  }
+  private fun getType(move: Move): Type = pathToFile[move.targetPath]!!.types.first { it.type == move.type }
 
   private fun ProtoFile.collectReferencedTypes(sink: MutableSet<ProtoType>) {
     for (type in types) {
@@ -215,16 +213,14 @@ class TypeMover(
     }
   }
 
-  private fun ProtoFile.emptyCopy(path: String): ProtoFile {
-    return copy(
-      location = location.copy(path = path),
-      imports = listOf(),
-      publicImports = listOf(),
-      types = listOf(),
-      services = listOf(),
-      extendList = listOf(),
-    )
-  }
+  private fun ProtoFile.emptyCopy(path: String): ProtoFile = copy(
+    location = location.copy(path = path),
+    imports = listOf(),
+    publicImports = listOf(),
+    types = listOf(),
+    services = listOf(),
+    extendList = listOf(),
+  )
 
   private fun checkForErrors() {
     require(errors.isEmpty()) { errors.joinToString(separator = "\n") }

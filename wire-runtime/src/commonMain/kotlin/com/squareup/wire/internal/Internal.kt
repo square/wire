@@ -43,12 +43,10 @@ fun <K, V> newMutableMap(): MutableMap<K, V> = LinkedHashMap()
 )
 fun <T> copyOf(@Suppress("UNUSED_PARAMETER") name: String, list: List<T>?): MutableList<T> = copyOf(list!!)
 
-fun <T> copyOf(list: List<T>): MutableList<T> {
-  return if (list === emptyList<T>() || list is ImmutableList<*>) {
-    MutableOnWriteList(list)
-  } else {
-    ArrayList(list)
-  }
+fun <T> copyOf(list: List<T>): MutableList<T> = if (list === emptyList<T>() || list is ImmutableList<*>) {
+  MutableOnWriteList(list)
+} else {
+  ArrayList(list)
 }
 
 @Deprecated(
@@ -98,34 +96,32 @@ fun <K, V> immutableCopyOfMapWithStructValues(name: String, map: Map<K, V>): Map
 }
 
 /** Confirms [value] is a struct and returns an immutable copy. */
-fun <T> immutableCopyOfStruct(name: String, value: T): T {
-  return when (value) {
-    null -> value
-    is Boolean -> value
-    is Double -> value
-    is String -> value
-    is List<*> -> {
-      val copy = mutableListOf<Any?>()
-      for (element in value) {
-        copy += immutableCopyOfStruct(name, element)
-      }
-      @Suppress("UNCHECKED_CAST")
-      copy.toUnmodifiableList() as T
+fun <T> immutableCopyOfStruct(name: String, value: T): T = when (value) {
+  null -> value
+  is Boolean -> value
+  is Double -> value
+  is String -> value
+  is List<*> -> {
+    val copy = mutableListOf<Any?>()
+    for (element in value) {
+      copy += immutableCopyOfStruct(name, element)
     }
-    is Map<*, *> -> {
-      val copy = mutableMapOf<Any?, Any?>()
-      for ((k, v) in value) {
-        copy[immutableCopyOfStruct(name, k)] = immutableCopyOfStruct(name, v)
-      }
-      @Suppress("UNCHECKED_CAST")
-      copy.toUnmodifiableMap() as T
+    @Suppress("UNCHECKED_CAST")
+    copy.toUnmodifiableList() as T
+  }
+  is Map<*, *> -> {
+    val copy = mutableMapOf<Any?, Any?>()
+    for ((k, v) in value) {
+      copy[immutableCopyOfStruct(name, k)] = immutableCopyOfStruct(name, v)
     }
-    else -> {
-      throw IllegalArgumentException(
-        "struct value $name must be a JSON type " +
-          "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value",
-      )
-    }
+    @Suppress("UNCHECKED_CAST")
+    copy.toUnmodifiableMap() as T
+  }
+  else -> {
+    throw IllegalArgumentException(
+      "struct value $name must be a JSON type " +
+        "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value",
+    )
   }
 }
 
@@ -136,9 +132,7 @@ private val Any.typeName
 fun <T> List<T>.redactElements(adapter: ProtoAdapter<T>): List<T> = map(adapter::redact)
 
 @JvmName("-redactElements") // Hide from Java
-fun <K, V> Map<K, V>.redactElements(adapter: ProtoAdapter<V>): Map<K, V> {
-  return mapValues { (_, value) -> adapter.redact(value) }
-}
+fun <K, V> Map<K, V>.redactElements(adapter: ProtoAdapter<V>): Map<K, V> = mapValues { (_, value) -> adapter.redact(value) }
 
 @Suppress("SuspiciousEqualsCombination")
 fun equals(a: Any?, b: Any?): Boolean = a === b || (a != null && a == b)
@@ -189,9 +183,7 @@ fun checkElementsNotNull(map: Map<*, *>) {
 fun countNonNull(a: Any?, b: Any?): Int = (if (a != null) 1 else 0) + (if (b != null) 1 else 0)
 
 /** Returns the number of non-null values in `a, b, c`. */
-fun countNonNull(a: Any?, b: Any?, c: Any?): Int {
-  return (if (a != null) 1 else 0) + (if (b != null) 1 else 0) + (if (c != null) 1 else 0)
-}
+fun countNonNull(a: Any?, b: Any?, c: Any?): Int = (if (a != null) 1 else 0) + (if (b != null) 1 else 0) + (if (c != null) 1 else 0)
 
 /** Returns the number of non-null values in `a, b, c, d, rest`. */
 fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
@@ -209,35 +201,25 @@ fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
 private const val ESCAPED_CHARS = ",[]{}\\"
 
 /** Return a string where `,[]{}\` are escaped with a `\`. */
-fun sanitize(value: String): String {
-  return buildString(value.length) {
-    value.forEach { char ->
-      if (char in ESCAPED_CHARS) append('\\')
-      append(char)
-    }
+fun sanitize(value: String): String = buildString(value.length) {
+  value.forEach { char ->
+    if (char in ESCAPED_CHARS) append('\\')
+    append(char)
   }
 }
 
 /** Return a string where `,[]{}\` are escaped with a `\`. */
-fun sanitize(values: List<String>): String {
-  return values.joinToString(prefix = "[", postfix = "]", transform = ::sanitize)
-}
+fun sanitize(values: List<String>): String = values.joinToString(prefix = "[", postfix = "]", transform = ::sanitize)
 
-fun boxedOneOfClassName(oneOfName: String): String {
-  return oneOfName.replaceFirstChar(Char::titlecase)
-}
+fun boxedOneOfClassName(oneOfName: String): String = oneOfName.replaceFirstChar(Char::titlecase)
 
 /**
  * Maps [oneOfName] and [fieldName] to the companion object key representing a boxed oneof field.
  */
-fun boxedOneOfKeyFieldName(oneOfName: String, fieldName: String): String {
-  return (oneOfName + "_" + fieldName).uppercase()
-}
+fun boxedOneOfKeyFieldName(oneOfName: String, fieldName: String): String = (oneOfName + "_" + fieldName).uppercase()
 
 /** Maps [oneOfName] to the companion object field of type `Set` containing the eligible keys.  */
-fun boxedOneOfKeysFieldName(oneOfName: String): String {
-  return "${oneOfName}_keys".uppercase()
-}
+fun boxedOneOfKeysFieldName(oneOfName: String): String = "${oneOfName}_keys".uppercase()
 
 fun encodeArray_int32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {
@@ -283,9 +265,7 @@ fun encodeArray_fixed32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
   }
 }
 
-fun encodeArray_sfixed32(array: IntArray, writer: ReverseProtoWriter, tag: Int) {
-  return encodeArray_fixed32(array, writer, tag)
-}
+fun encodeArray_sfixed32(array: IntArray, writer: ReverseProtoWriter, tag: Int) = encodeArray_fixed32(array, writer, tag)
 
 fun encodeArray_int64(array: LongArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {
@@ -298,8 +278,7 @@ fun encodeArray_int64(array: LongArray, writer: ReverseProtoWriter, tag: Int) {
   }
 }
 
-fun encodeArray_uint64(array: LongArray, writer: ReverseProtoWriter, tag: Int) =
-  encodeArray_int64(array, writer, tag)
+fun encodeArray_uint64(array: LongArray, writer: ReverseProtoWriter, tag: Int) = encodeArray_int64(array, writer, tag)
 
 fun encodeArray_sint64(array: LongArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {
@@ -323,8 +302,7 @@ fun encodeArray_fixed64(array: LongArray, writer: ReverseProtoWriter, tag: Int) 
   }
 }
 
-fun encodeArray_sfixed64(array: LongArray, writer: ReverseProtoWriter, tag: Int) =
-  encodeArray_fixed64(array, writer, tag)
+fun encodeArray_sfixed64(array: LongArray, writer: ReverseProtoWriter, tag: Int) = encodeArray_fixed64(array, writer, tag)
 
 fun encodeArray_float(array: FloatArray, writer: ReverseProtoWriter, tag: Int) {
   if (array.isNotEmpty()) {

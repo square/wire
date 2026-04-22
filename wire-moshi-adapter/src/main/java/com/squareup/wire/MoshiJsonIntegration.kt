@@ -47,8 +47,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     return MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as JsonAdapter<Any?>
   }
 
-  override fun structAdapter(framework: Moshi): JsonAdapter<Any?> =
-    framework.adapter<Any?>(Object::class.java).serializeNulls().nullSafe()
+  override fun structAdapter(framework: Moshi): JsonAdapter<Any?> = framework.adapter<Any?>(Object::class.java).serializeNulls().nullSafe()
 
   override fun formatterAdapter(jsonStringAdapter: JsonFormatter<*>): JsonAdapter<Any?> {
     @Suppress("UNCHECKED_CAST")

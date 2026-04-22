@@ -45,9 +45,7 @@ expect abstract class EnumAdapter<E : WireEnum> protected constructor(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E : WireEnum> commonEncodedSize(value: E): Int {
-  return ProtoWriter.varint32Size(value.value)
-}
+internal inline fun <E : WireEnum> commonEncodedSize(value: E): Int = ProtoWriter.varint32Size(value.value)
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E : WireEnum> commonEncode(writer: ProtoWriter, value: E) {
@@ -78,6 +76,4 @@ internal inline fun <E : WireEnum> EnumAdapter<E>.commonDecode(
 }
 
 @Suppress("NOTHING_TO_INLINE", "UNUSED_PARAMETER")
-internal inline fun <E : WireEnum> commonRedact(value: E): E {
-  throw UnsupportedOperationException()
-}
+internal inline fun <E : WireEnum> commonRedact(value: E): E = throw UnsupportedOperationException()

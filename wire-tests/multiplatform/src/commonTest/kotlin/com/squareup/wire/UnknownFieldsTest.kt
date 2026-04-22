@@ -33,6 +33,7 @@ class UnknownFieldsTest {
   private val v2Adapter = VersionTwo.ADAPTER
 
   @Test
+  @Suppress("ktlint:standard:property-naming")
   fun testUnknownFields() {
     val v1_obj = NestedVersionOne(i = 111)
     val v2_obj = NestedVersionTwo(

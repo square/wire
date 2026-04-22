@@ -24,13 +24,9 @@ internal actual interface Call {
   actual fun execute(): GrpcResponse
 }
 
-internal actual fun Sink.asGzip(): Sink {
-  throw UnsupportedOperationException("Gzip not implemented for native")
-}
+internal actual fun Sink.asGzip(): Sink = throw UnsupportedOperationException("Gzip not implemented for native")
 
-internal actual fun Source.asGzip(): Source {
-  throw UnsupportedOperationException("Gzip not implemented for native")
-}
+internal actual fun Source.asGzip(): Source = throw UnsupportedOperationException("Gzip not implemented for native")
 
 internal actual fun Throwable.addSuppressed(other: Throwable) {
 }

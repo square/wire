@@ -110,8 +110,10 @@ object TestAllTypesData {
     )
   }
 
+  @Suppress("ktlint:standard:property-naming")
   val allTypes = message()
 
+  @Suppress("ktlint:standard:property-naming")
   const val expectedToString = (
     "" +
       "AllTypes{opt_int32=111, opt_uint32=112, opt_sint32=113, opt_fixed32=114, opt_sfixed32=115," +
@@ -136,6 +138,8 @@ object TestAllTypesData {
       "0, 122.0], array_double=[123.0, 123.0], ext_opt_bool=true, ext_rep_bool=[true, true], ext_" +
       "pack_bool=[true, true]}"
     )
+
+  @Suppress("ktlint:standard:property-naming")
   val expectedOutput = (
     "" +
       // optional

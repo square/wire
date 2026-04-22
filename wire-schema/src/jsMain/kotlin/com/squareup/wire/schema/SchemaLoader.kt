@@ -18,7 +18,9 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.internal.CommonSchemaLoader
 import okio.FileSystem
 
-actual class SchemaLoader : Loader, ProfileLoader {
+actual class SchemaLoader :
+  Loader,
+  ProfileLoader {
   private val delegate: CommonSchemaLoader
 
   actual constructor(fileSystem: FileSystem) {

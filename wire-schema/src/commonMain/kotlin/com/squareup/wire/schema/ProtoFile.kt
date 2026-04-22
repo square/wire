@@ -36,20 +36,18 @@ data class ProtoFile(
   private var javaPackage: Any? = null
   private var wirePackage: Any? = null
 
-  fun toElement(): ProtoFileElement {
-    return ProtoFileElement(
-      location,
-      packageName,
-      syntax,
-      imports,
-      publicImports,
-      weakImports,
-      Type.toElements(types),
-      Service.toElements(services),
-      Extend.toElements(extendList),
-      options.elements,
-    )
-  }
+  fun toElement(): ProtoFileElement = ProtoFileElement(
+    location,
+    packageName,
+    syntax,
+    imports,
+    publicImports,
+    weakImports,
+    Type.toElements(types),
+    Service.toElements(services),
+    Extend.toElements(extendList),
+    options.elements,
+  )
 
   /**
    * Returns the name of this proto file, like `simple_message` for
@@ -82,13 +80,9 @@ data class ProtoFile(
     return typesAndNestedTypes
   }
 
-  fun javaPackage(): String? {
-    return javaPackage?.toString()
-  }
+  fun javaPackage(): String? = javaPackage?.toString()
 
-  fun wirePackage(): String? {
-    return wirePackage?.toString()
-  }
+  fun wirePackage(): String? = wirePackage?.toString()
 
   /**
    * Returns a new proto file that omits types, services, extensions, and options not in
@@ -206,7 +200,8 @@ data class ProtoFile(
 
     val retainedWeakImports = weakImports.filter { referencedImports.contains(it) }
 
-    return if (imports.size != retainedImports.size || publicImports.size != retainedPublicImports.size ||
+    return if (imports.size != retainedImports.size ||
+      publicImports.size != retainedPublicImports.size ||
       weakImports.size != retainedWeakImports.size
     ) {
       val result = ProtoFile(
@@ -227,13 +222,9 @@ data class ProtoFile(
     wirePackage = options.get(WIRE_PACKAGE)
   }
 
-  override fun toString(): String {
-    return location.path
-  }
+  override fun toString(): String = location.path
 
-  fun toSchema(): String {
-    return toElement().toSchema()
-  }
+  fun toSchema(): String = toElement().toSchema()
 
   companion object {
     val JAVA_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "java_package")

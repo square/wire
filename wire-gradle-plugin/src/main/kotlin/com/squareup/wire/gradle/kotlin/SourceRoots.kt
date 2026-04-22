@@ -97,11 +97,9 @@ internal abstract class WireSource(
   val name: String,
   private val sourceSets: List<String>,
 ) {
-  fun defaultSourceFolders(project: Project): Set<String> {
-    return sourceSets.map { "src/$it/proto" }
-      .filter { path -> File(project.projectDir, path).exists() }
-      .toSet()
-  }
+  fun defaultSourceFolders(project: Project): Set<String> = sourceSets.map { "src/$it/proto" }
+    .filter { path -> File(project.projectDir, path).exists() }
+    .toSet()
 
   abstract fun outputDir(project: Project): File
 
@@ -131,9 +129,7 @@ private class JvmOrKmpSource(
   private val kotlinSourceSet: KotlinSourceSet?,
   private val javaSourceDirectorySet: SourceDirectorySet?,
 ) : WireSource(name, sourceSets) {
-  override fun outputDir(project: Project): File {
-    return File(project.targetDefaultOutputPath())
-  }
+  override fun outputDir(project: Project): File = File(project.targetDefaultOutputPath())
 
   override fun registerGeneratedSources(
     project: Project,
@@ -172,9 +168,7 @@ private class AndroidSource(
   sourceSets: List<String>,
   private val variant: Variant,
 ) : WireSource(name, sourceSets) {
-  override fun outputDir(project: Project): File {
-    return File(project.targetDefaultOutputPath(), name)
-  }
+  override fun outputDir(project: Project): File = File(project.targetDefaultOutputPath(), name)
 
   override fun registerGeneratedSources(
     project: Project,

@@ -54,30 +54,26 @@ data class JavaTarget(
   /** If true, the constructor of all generated types will be non-public. */
   val buildersOnly: Boolean = false,
 ) : Target() {
-  override fun newHandler(): SchemaHandler {
-    return JavaSchemaHandler(
-      android = android,
-      androidAnnotations = androidAnnotations,
-      compact = compact,
-      emitDeclaredOptions = emitDeclaredOptions,
-      emitAppliedOptions = emitAppliedOptions,
-      buildersOnly = buildersOnly,
-    )
-  }
+  override fun newHandler(): SchemaHandler = JavaSchemaHandler(
+    android = android,
+    androidAnnotations = androidAnnotations,
+    compact = compact,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    buildersOnly = buildersOnly,
+  )
 
   override fun copyTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
     outDirectory: String,
-  ): Target {
-    return copy(
-      includes = includes,
-      excludes = excludes,
-      exclusive = exclusive,
-      outDirectory = outDirectory,
-    )
-  }
+  ): Target = copy(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+  )
 }
 
 /** Generate `.kt` sources. */
@@ -164,41 +160,37 @@ data class KotlinTarget(
    */
   private val makeImmutableCopies: Boolean = true,
 ) : Target() {
-  override fun newHandler(): SchemaHandler {
-    return KotlinSchemaHandler(
-      outDirectory = outDirectory,
-      android = android,
-      javaInterop = javaInterop,
-      emitDeclaredOptions = emitDeclaredOptions,
-      emitAppliedOptions = emitAppliedOptions,
-      rpcCallStyle = rpcCallStyle,
-      rpcRole = rpcRole,
-      singleMethodServices = singleMethodServices,
-      boxOneOfsMinSize = boxOneOfsMinSize,
-      nameSuffix = nameSuffix,
-      buildersOnly = buildersOnly,
-      escapeKotlinKeywords = escapeKotlinKeywords,
-      enumMode = enumMode,
-      emitProtoReader32 = emitProtoReader32,
-      mutableTypes = mutableTypes,
-      explicitStreamingCalls = explicitStreamingCalls,
-      makeImmutableCopies = makeImmutableCopies,
-    )
-  }
+  override fun newHandler(): SchemaHandler = KotlinSchemaHandler(
+    outDirectory = outDirectory,
+    android = android,
+    javaInterop = javaInterop,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    rpcCallStyle = rpcCallStyle,
+    rpcRole = rpcRole,
+    singleMethodServices = singleMethodServices,
+    boxOneOfsMinSize = boxOneOfsMinSize,
+    nameSuffix = nameSuffix,
+    buildersOnly = buildersOnly,
+    escapeKotlinKeywords = escapeKotlinKeywords,
+    enumMode = enumMode,
+    emitProtoReader32 = emitProtoReader32,
+    mutableTypes = mutableTypes,
+    explicitStreamingCalls = explicitStreamingCalls,
+    makeImmutableCopies = makeImmutableCopies,
+  )
 
   override fun copyTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
     outDirectory: String,
-  ): Target {
-    return copy(
-      includes = includes,
-      excludes = excludes,
-      exclusive = exclusive,
-      outDirectory = outDirectory,
-    )
-  }
+  ): Target = copy(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+  )
 }
 
 data class SwiftTarget(
@@ -207,23 +199,19 @@ data class SwiftTarget(
   override val exclusive: Boolean = true,
   override val outDirectory: String,
 ) : Target() {
-  override fun newHandler(): SchemaHandler {
-    return SwiftSchemaHandler()
-  }
+  override fun newHandler(): SchemaHandler = SwiftSchemaHandler()
 
   override fun copyTarget(
     includes: List<String>,
     excludes: List<String>,
     exclusive: Boolean,
     outDirectory: String,
-  ): Target {
-    return copy(
-      includes = includes,
-      excludes = excludes,
-      exclusive = exclusive,
-      outDirectory = outDirectory,
-    )
-  }
+  ): Target = copy(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+  )
 }
 
 data class ProtoTarget(
@@ -233,46 +221,44 @@ data class ProtoTarget(
   override val excludes: List<String> = listOf()
   override val exclusive: Boolean = false
 
-  override fun newHandler(): SchemaHandler {
-    return object : SchemaHandler() {
-      override fun handle(schema: Schema, context: Context) {
-        context.fileSystem.createDirectories(context.outDirectory)
-        val outDirectory = context.outDirectory
+  override fun newHandler(): SchemaHandler = object : SchemaHandler() {
+    override fun handle(schema: Schema, context: Context) {
+      context.fileSystem.createDirectories(context.outDirectory)
+      val outDirectory = context.outDirectory
 
-        for (protoFile in schema.protoFiles) {
-          if (!context.inSourcePath(protoFile) ||
-            protoFile.isEmpty() ||
-            // We never emit the `.proto` files we are embedding within Wire.
-            isWireRuntimeProto(protoFile.location.path)
-          ) {
-            continue
+      for (protoFile in schema.protoFiles) {
+        if (!context.inSourcePath(protoFile) ||
+          protoFile.isEmpty() ||
+          // We never emit the `.proto` files we are embedding within Wire.
+          isWireRuntimeProto(protoFile.location.path)
+        ) {
+          continue
+        }
+
+        val relativePath = protoFile.location.path
+          .substringBeforeLast("/", missingDelimiterValue = ".")
+        val outputDirectory = outDirectory / relativePath
+        val outputFilePath = outputDirectory / "${protoFile.name()}.proto"
+        context.logger.artifactHandled(outputDirectory, protoFile.location.path, "Proto")
+
+        try {
+          context.fileSystem.createDirectories(outputFilePath.parent!!)
+          context.fileSystem.write(outputFilePath) {
+            writeUtf8(protoFile.toSchema())
           }
-
-          val relativePath = protoFile.location.path
-            .substringBeforeLast("/", missingDelimiterValue = ".")
-          val outputDirectory = outDirectory / relativePath
-          val outputFilePath = outputDirectory / "${protoFile.name()}.proto"
-          context.logger.artifactHandled(outputDirectory, protoFile.location.path, "Proto")
-
-          try {
-            context.fileSystem.createDirectories(outputFilePath.parent!!)
-            context.fileSystem.write(outputFilePath) {
-              writeUtf8(protoFile.toSchema())
-            }
-          } catch (e: IOException) {
-            throw IOException("Error emitting $outputFilePath to $outDirectory", e)
-          }
+        } catch (e: IOException) {
+          throw IOException("Error emitting $outputFilePath to $outDirectory", e)
         }
       }
-
-      private fun ProtoFile.isEmpty() = types.isEmpty() && services.isEmpty() && extendList.isEmpty()
-
-      override fun handle(type: Type, context: Context): Path? = null
-
-      override fun handle(service: Service, context: Context): List<Path> = listOf()
-
-      override fun handle(extend: Extend, field: Field, context: Context): Path? = null
     }
+
+    private fun ProtoFile.isEmpty() = types.isEmpty() && services.isEmpty() && extendList.isEmpty()
+
+    override fun handle(type: Type, context: Context): Path? = null
+
+    override fun handle(service: Service, context: Context): List<Path> = listOf()
+
+    override fun handle(extend: Extend, field: Field, context: Context): Path? = null
   }
 
   override fun copyTarget(
@@ -280,11 +266,9 @@ data class ProtoTarget(
     excludes: List<String>,
     exclusive: Boolean,
     outDirectory: String,
-  ): Target {
-    return copy(
-      outDirectory = outDirectory,
-    )
-  }
+  ): Target = copy(
+    outDirectory = outDirectory,
+  )
 }
 
 data class CustomTarget(
@@ -300,24 +284,20 @@ data class CustomTarget(
     excludes: List<String>,
     exclusive: Boolean,
     outDirectory: String,
-  ): Target {
-    return this.copy(
-      includes = includes,
-      excludes = excludes,
-      exclusive = exclusive,
-      outDirectory = outDirectory,
-    )
-  }
+  ): Target = this.copy(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+  )
 
-  override fun newHandler(): SchemaHandler {
-    return schemaHandlerFactory.create(
-      includes = includes,
-      excludes = excludes,
-      exclusive = exclusive,
-      outDirectory = outDirectory,
-      options = options,
-    )
-  }
+  override fun newHandler(): SchemaHandler = schemaHandlerFactory.create(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+    options = options,
+  )
 }
 
 /**
@@ -326,9 +306,7 @@ data class CustomTarget(
  * @param schemaHandlerFactoryClass a fully qualified class name for a class that implements
  *     [SchemaHandler.Factory]. The class must have a no-arguments public constructor.
  */
-fun newSchemaHandler(schemaHandlerFactoryClass: String): SchemaHandler.Factory {
-  return ClassNameSchemaHandlerFactory(schemaHandlerFactoryClass)
-}
+fun newSchemaHandler(schemaHandlerFactoryClass: String): SchemaHandler.Factory = ClassNameSchemaHandlerFactory(schemaHandlerFactoryClass)
 
 /**
  * This schema handler factory is serializable (so Gradle can cache targets that use it). It works
@@ -368,7 +346,5 @@ private class ClassNameSchemaHandlerFactory(
     exclusive: Boolean,
     outDirectory: String,
     options: Map<String, String>,
-  ): SchemaHandler {
-    return delegate.create(includes, excludes, exclusive, outDirectory, options)
-  }
+  ): SchemaHandler = delegate.create(includes, excludes, exclusive, outDirectory, options)
 }

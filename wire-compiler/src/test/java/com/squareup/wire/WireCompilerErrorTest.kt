@@ -212,9 +212,7 @@ class WireCompilerErrorTest {
     assertThat(readFile("/target/Simple.java")).doesNotContain("package")
   }
 
-  private fun readFile(path: String): String {
-    return fileSystem.read(path.toPath()) {
-      readUtf8()
-    }
+  private fun readFile(path: String): String = fileSystem.read(path.toPath()) {
+    readUtf8()
   }
 }

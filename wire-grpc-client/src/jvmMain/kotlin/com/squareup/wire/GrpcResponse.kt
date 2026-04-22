@@ -27,8 +27,7 @@ internal actual class GrpcResponse(private val response: Response) {
 
   fun header(name: String): String? = header(name, null)
 
-  actual fun header(name: String, defaultValue: String?): String? =
-    response.header(name, defaultValue)
+  actual fun header(name: String, defaultValue: String?): String? = response.header(name, defaultValue)
 
   /**
    * Returns the trailers after the HTTP response, which may be empty. It is an error to call this

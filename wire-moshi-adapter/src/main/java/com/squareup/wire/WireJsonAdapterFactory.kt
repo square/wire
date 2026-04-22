@@ -70,9 +70,7 @@ class WireJsonAdapterFactory @JvmOverloads constructor(
    * Returns a new WireJsonAdapterFactory that can encode the messages for [adapter] if they're
    * used with [AnyMessage].
    */
-  fun plus(adapter: ProtoAdapter<*>): WireJsonAdapterFactory {
-    return plus(listOf(adapter))
-  }
+  fun plus(adapter: ProtoAdapter<*>): WireJsonAdapterFactory = plus(listOf(adapter))
 
   @Suppress("UNCHECKED_CAST")
   override fun create(

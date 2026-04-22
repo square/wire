@@ -99,9 +99,7 @@ class MarkSet(
   }
 
   /** Returns true if `type` is marked and should be retained. */
-  operator fun contains(type: ProtoType): Boolean {
-    return types.contains(type)
-  }
+  operator fun contains(type: ProtoType): Boolean = types.contains(type)
 
   /** Returns true if `member` is marked and should be retained. */
   operator fun contains(protoMember: ProtoMember): Boolean {
@@ -109,7 +107,8 @@ class MarkSet(
 
     // We do not contain non-root members whose referenced type is excluded.
     if (!rootMemberTypes.containsKey(protoMember) &&
-      memberType != null && pruningRules.prunes(memberType)
+      memberType != null &&
+      pruningRules.prunes(memberType)
     ) {
       return false
     }

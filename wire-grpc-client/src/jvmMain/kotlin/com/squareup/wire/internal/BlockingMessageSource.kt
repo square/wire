@@ -59,31 +59,29 @@ internal class BlockingMessageSource<R : Any>(
   }
 
   /** Read messages from the response body and write them to the deque. */
-  fun readFromResponseBodyCallback(): Callback {
-    return object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        queue.put(Failure(e))
-      }
+  fun readFromResponseBodyCallback(): Callback = object : Callback {
+    override fun onFailure(call: Call, e: IOException) {
+      queue.put(Failure(e))
+    }
 
-      override fun onResponse(call: Call, response: Response) {
-        try {
-          grpcCall.responseMetadata = response.headers.toMap()
-          response.use {
-            response.messageSource(responseAdapter).use { reader ->
-              while (true) {
-                val message = reader.read() ?: break
-                queue.put(message)
-              }
-
-              val exception = response.grpcResponseToException()
-              if (exception != null) throw exception
+    override fun onResponse(call: Call, response: Response) {
+      try {
+        grpcCall.responseMetadata = response.headers.toMap()
+        response.use {
+          response.messageSource(responseAdapter).use { reader ->
+            while (true) {
+              val message = reader.read() ?: break
+              queue.put(message)
             }
+
+            val exception = response.grpcResponseToException()
+            if (exception != null) throw exception
           }
-          queue.put(Complete)
-        } catch (e: IOException) {
-          call.cancel() // Break the request stream if the response stream breaks.
-          queue.put(Failure(e))
         }
+        queue.put(Complete)
+      } catch (e: IOException) {
+        call.cancel() // Break the request stream if the response stream breaks.
+        queue.put(Failure(e))
       }
     }
   }

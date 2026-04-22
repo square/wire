@@ -115,18 +115,16 @@ internal class DirectoryRoot(
   /** The root to search. If this is a .zip file this is within its internal file system. */
   val rootDirectory: Path,
 ) : Root() {
-  override fun allProtoFiles(): Set<ProtoFilePath> {
-    return fileSystem.listRecursively(rootDirectory)
-      .filter { it.toString().endsWith(".proto") }
-      .map { descendant ->
-        val location = Location.get(
-          base = base,
-          path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString(),
-        )
-        ProtoFilePath(location, fileSystem, descendant)
-      }
-      .toSet()
-  }
+  override fun allProtoFiles(): Set<ProtoFilePath> = fileSystem.listRecursively(rootDirectory)
+    .filter { it.toString().endsWith(".proto") }
+    .map { descendant ->
+      val location = Location.get(
+        base = base,
+        path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString(),
+      )
+      ProtoFilePath(location, fileSystem, descendant)
+    }
+    .toSet()
 
   override fun resolve(import: String): ProtoFilePath? {
     val resolved = rootDirectory / import

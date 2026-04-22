@@ -187,16 +187,14 @@ data class EnumType(
     )
   }
 
-  fun toElement(): EnumElement {
-    return EnumElement(
-      location = location,
-      name = name,
-      documentation = documentation,
-      options = options.elements,
-      constants = toElements(constants),
-      reserveds = toElements(reserveds),
-    )
-  }
+  fun toElement(): EnumElement = EnumElement(
+    location = location,
+    name = name,
+    documentation = documentation,
+    options = options.elements,
+    constants = toElements(constants),
+    reserveds = toElements(reserveds),
+  )
 
   companion object {
     internal val ALLOW_ALIAS = ProtoMember.get(ENUM_OPTIONS, "allow_alias")
@@ -208,17 +206,15 @@ data class EnumType(
       protoType: ProtoType,
       enumElement: EnumElement,
       syntax: Syntax,
-    ): EnumType {
-      return EnumType(
-        type = protoType,
-        location = enumElement.location,
-        documentation = enumElement.documentation,
-        name = enumElement.name,
-        constants = EnumConstant.fromElements(enumElement.constants),
-        options = Options(ENUM_OPTIONS, enumElement.options),
-        syntax = syntax,
-        reserveds = fromElements(enumElement.reserveds),
-      )
-    }
+    ): EnumType = EnumType(
+      type = protoType,
+      location = enumElement.location,
+      documentation = enumElement.documentation,
+      name = enumElement.name,
+      constants = EnumConstant.fromElements(enumElement.constants),
+      options = Options(ENUM_OPTIONS, enumElement.options),
+      syntax = syntax,
+      reserveds = fromElements(enumElement.reserveds),
+    )
   }
 }

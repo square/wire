@@ -2003,6 +2003,7 @@ class ProtoParserTest {
   }
 
   @Test
+  @Suppress("ktlint:standard:property-naming")
   fun structuredOption() {
     val proto = """
         |message ExoticOptions {

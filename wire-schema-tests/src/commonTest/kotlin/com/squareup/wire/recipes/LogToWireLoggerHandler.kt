@@ -44,7 +44,5 @@ class LogToWireLoggerHandler : SchemaHandler() {
     return listOf()
   }
 
-  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? {
-    return null
-  }
+  override fun handle(extend: Extend, field: Field, context: SchemaHandler.Context): Path? = null
 }

@@ -329,9 +329,7 @@ class WireCompiler internal constructor(
       fileSystem: NioFileSystem,
       logger: WireLogger,
       vararg args: String,
-    ): WireCompiler {
-      return forArgs(fileSystem.asOkioFileSystem(), logger, *args)
-    }
+    ): WireCompiler = forArgs(fileSystem.asOkioFileSystem(), logger, *args)
 
     @Throws(WireException::class)
     @JvmOverloads

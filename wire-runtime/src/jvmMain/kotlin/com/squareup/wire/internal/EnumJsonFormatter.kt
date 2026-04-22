@@ -92,14 +92,10 @@ class EnumJsonFormatter<E : WireEnum>(
     valueToString = mutableValueToString
   }
 
-  override fun fromString(value: String): E? {
-    return stringToValue[value]
-      // In case the `Unrecognized` instance is generated, we store the value assuming it represents
-      // a constant value (integer), and ignore it otherwise (name as string).
-      ?: value.toIntOrNull()?.let { value -> unrecognizedClassConstructor?.newInstance(value) }
-  }
+  override fun fromString(value: String): E? = stringToValue[value]
+    // In case the `Unrecognized` instance is generated, we store the value assuming it represents
+    // a constant value (integer), and ignore it otherwise (name as string).
+    ?: value.toIntOrNull()?.let { value -> unrecognizedClassConstructor?.newInstance(value) }
 
-  override fun toStringOrNumber(value: E): Any {
-    return valueToString[value] ?: value.value
-  }
+  override fun toStringOrNumber(value: E): Any = valueToString[value] ?: value.value
 }

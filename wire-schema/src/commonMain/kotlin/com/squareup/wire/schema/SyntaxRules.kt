@@ -38,13 +38,11 @@ interface SyntaxRules {
   fun jsonName(name: String, declaredJsonName: String?): String
 
   companion object {
-    fun get(syntax: Syntax?): SyntaxRules {
-      return when (syntax) {
-        PROTO_3 -> PROTO_3_SYNTAX_RULES
-        PROTO_2,
-        null,
-        -> PROTO_2_SYNTAX_RULES
-      }
+    fun get(syntax: Syntax?): SyntaxRules = when (syntax) {
+      PROTO_3 -> PROTO_3_SYNTAX_RULES
+      PROTO_2,
+      null,
+      -> PROTO_2_SYNTAX_RULES
     }
 
     internal val PROTO_2_SYNTAX_RULES = object : SyntaxRules {
@@ -72,25 +70,21 @@ interface SyntaxRules {
         label: Field.Label?,
         isPacked: Boolean,
         isOneOf: Boolean,
-      ): Field.EncodeMode {
-        return when (label) {
-          Field.Label.REPEATED ->
-            if (isPacked) {
-              Field.EncodeMode.PACKED
-            } else {
-              Field.EncodeMode.REPEATED
-            }
-          Field.Label.OPTIONAL -> Field.EncodeMode.NULL_IF_ABSENT
-          Field.Label.REQUIRED -> Field.EncodeMode.REQUIRED
-          Field.Label.ONE_OF,
-          null,
-          -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
-        }
+      ): Field.EncodeMode = when (label) {
+        Field.Label.REPEATED ->
+          if (isPacked) {
+            Field.EncodeMode.PACKED
+          } else {
+            Field.EncodeMode.REPEATED
+          }
+        Field.Label.OPTIONAL -> Field.EncodeMode.NULL_IF_ABSENT
+        Field.Label.REQUIRED -> Field.EncodeMode.REQUIRED
+        Field.Label.ONE_OF,
+        null,
+        -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
       }
 
-      override fun jsonName(name: String, declaredJsonName: String?): String {
-        return declaredJsonName ?: name
-      }
+      override fun jsonName(name: String, declaredJsonName: String?): String = declaredJsonName ?: name
     }
 
     internal val PROTO_3_SYNTAX_RULES = object : SyntaxRules {
@@ -123,9 +117,7 @@ interface SyntaxRules {
       override fun isPackedByDefault(
         type: ProtoType,
         label: Field.Label?,
-      ): Boolean {
-        return label == Field.Label.REPEATED && type in ProtoType.NUMERIC_SCALAR_TYPES
-      }
+      ): Boolean = label == Field.Label.REPEATED && type in ProtoType.NUMERIC_SCALAR_TYPES
 
       override fun getEncodeMode(
         protoType: ProtoType,
@@ -147,9 +139,7 @@ interface SyntaxRules {
         return Field.EncodeMode.OMIT_IDENTITY
       }
 
-      override fun jsonName(name: String, declaredJsonName: String?): String {
-        return declaredJsonName ?: camelCase(name)
-      }
+      override fun jsonName(name: String, declaredJsonName: String?): String = declaredJsonName ?: camelCase(name)
     }
   }
 }

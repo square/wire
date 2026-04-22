@@ -50,11 +50,9 @@ data class Extensions(
 
   companion object {
     @JvmStatic
-    fun fromElements(elements: List<ExtensionsElement>) =
-      elements.map { Extensions(it.location, it.documentation, it.values) }
+    fun fromElements(elements: List<ExtensionsElement>) = elements.map { Extensions(it.location, it.documentation, it.values) }
 
     @JvmStatic
-    fun toElements(extensions: List<Extensions>) =
-      extensions.map { ExtensionsElement(it.location, it.documentation, it.values) }
+    fun toElements(extensions: List<Extensions>) = extensions.map { ExtensionsElement(it.location, it.documentation, it.values) }
   }
 }

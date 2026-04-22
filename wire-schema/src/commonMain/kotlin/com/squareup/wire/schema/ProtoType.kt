@@ -211,11 +211,9 @@ class ProtoType {
     )
 
     @JvmStatic
-    fun get(enclosingTypeOrPackage: String?, typeName: String): ProtoType {
-      return when {
-        enclosingTypeOrPackage != null -> get("$enclosingTypeOrPackage.$typeName")
-        else -> get(typeName)
-      }
+    fun get(enclosingTypeOrPackage: String?, typeName: String): ProtoType = when {
+      enclosingTypeOrPackage != null -> get("$enclosingTypeOrPackage.$typeName")
+      else -> get(typeName)
     }
 
     @JvmStatic
@@ -236,7 +234,6 @@ class ProtoType {
       return ProtoType(false, name)
     }
 
-    @JvmStatic fun get(keyType: ProtoType, valueType: ProtoType, name: String) =
-      ProtoType(keyType, valueType, name)
+    @JvmStatic fun get(keyType: ProtoType, valueType: ProtoType, name: String) = ProtoType(keyType, valueType, name)
   }
 }

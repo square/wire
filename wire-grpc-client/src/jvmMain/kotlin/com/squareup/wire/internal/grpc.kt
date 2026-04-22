@@ -43,21 +43,19 @@ internal fun <S : Any> newRequestBody(
   minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   onlyMessage: S,
-): RequestBody {
-  return object : RequestBody() {
-    override fun contentType() = APPLICATION_GRPC_MEDIA_TYPE
+): RequestBody = object : RequestBody() {
+  override fun contentType() = APPLICATION_GRPC_MEDIA_TYPE
 
-    override fun writeTo(sink: BufferedSink) {
-      val grpcMessageSink = GrpcMessageSink(
-        sink = sink,
-        minMessageToCompress = minMessageToCompress,
-        messageAdapter = requestAdapter,
-        callForCancel = null,
-        grpcEncoding = "gzip",
-      )
-      grpcMessageSink.use {
-        it.write(onlyMessage)
-      }
+  override fun writeTo(sink: BufferedSink) {
+    val grpcMessageSink = GrpcMessageSink(
+      sink = sink,
+      minMessageToCompress = minMessageToCompress,
+      messageAdapter = requestAdapter,
+      callForCancel = null,
+      grpcEncoding = "gzip",
+    )
+    grpcMessageSink.use {
+      it.write(onlyMessage)
     }
   }
 }
@@ -66,9 +64,7 @@ internal fun <S : Any> newRequestBody(
  * Returns a new duplex request body that allows us to write request messages even after the
  * response status, headers, and body have been received.
  */
-internal fun newDuplexRequestBody(): PipeDuplexRequestBody {
-  return PipeDuplexRequestBody(APPLICATION_GRPC_MEDIA_TYPE, pipeMaxBufferSize = 1024 * 1024)
-}
+internal fun newDuplexRequestBody(): PipeDuplexRequestBody = PipeDuplexRequestBody(APPLICATION_GRPC_MEDIA_TYPE, pipeMaxBufferSize = 1024 * 1024)
 
 /** Writes messages to the request body. */
 internal fun <S : Any> PipeDuplexRequestBody.messageSink(
@@ -193,7 +189,8 @@ private fun Response.checkGrpcResponse() {
   if (code != 200 ||
     contentType == null ||
     contentType.type != "application" ||
-    contentType.subtype != "grpc" && contentType.subtype != "grpc+proto"
+    contentType.subtype != "grpc" &&
+    contentType.subtype != "grpc+proto"
   ) {
     throw IOException("expected gRPC but was HTTP status=$code, content-type=$contentType")
   }

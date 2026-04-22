@@ -74,20 +74,18 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   /** If true, the constructor of all generated types will be non-public. */
   var buildersOnly: Boolean = false
 
-  override fun toTarget(outputDirectory: String): JavaTarget {
-    return JavaTarget(
-      includes = includes ?: listOf("*"),
-      excludes = excludes ?: listOf(),
-      exclusive = exclusive,
-      outDirectory = outputDirectory,
-      android = android,
-      androidAnnotations = androidAnnotations,
-      compact = compact,
-      emitDeclaredOptions = emitDeclaredOptions,
-      emitAppliedOptions = emitAppliedOptions,
-      buildersOnly = buildersOnly,
-    )
-  }
+  override fun toTarget(outputDirectory: String): JavaTarget = JavaTarget(
+    includes = includes ?: listOf("*"),
+    excludes = excludes ?: listOf(),
+    exclusive = exclusive,
+    outDirectory = outputDirectory,
+    android = android,
+    androidAnnotations = androidAnnotations,
+    compact = compact,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    buildersOnly = buildersOnly,
+  )
 }
 
 open class KotlinOutput @Inject constructor() : WireOutput() {
@@ -226,9 +224,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
 }
 
 open class ProtoOutput @Inject constructor() : WireOutput() {
-  override fun toTarget(outputDirectory: String): ProtoTarget {
-    return ProtoTarget(outDirectory = outputDirectory)
-  }
+  override fun toTarget(outputDirectory: String): ProtoTarget = ProtoTarget(outDirectory = outputDirectory)
 }
 
 open class CustomOutput @Inject constructor() : WireOutput() {

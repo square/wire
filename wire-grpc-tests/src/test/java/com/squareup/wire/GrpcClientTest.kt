@@ -239,9 +239,7 @@ class GrpcClientTest {
     grpcCall.enqueue(
       Point(latitude = 5, longitude = 6),
       object : GrpcCall.Callback<Point, Feature> {
-        override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
-          throw AssertionError()
-        }
+        override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException): Unit = throw AssertionError()
 
         override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
           feature = response
@@ -994,9 +992,7 @@ class GrpcClientTest {
     grpcCall.enqueue(
       Point(latitude = 5, longitude = 6),
       object : GrpcCall.Callback<Point, Feature> {
-        override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
-          throw AssertionError()
-        }
+        override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException): Unit = throw AssertionError()
 
         override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
           feature = response
@@ -1112,9 +1108,7 @@ class GrpcClientTest {
           latch.countDown()
         }
 
-        override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
-          throw AssertionError()
-        }
+        override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature): Unit = throw AssertionError()
       },
     )
 
@@ -1125,15 +1119,13 @@ class GrpcClientTest {
   @Test
   fun responseStatusIsNot200() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Chain): Response {
-        return Response.Builder()
-          .request(chain.request())
-          .protocol(HTTP_2)
-          .code(500)
-          .message("internal server error")
-          .body(ByteString.EMPTY.toResponseBody("application/grpc".toMediaType()))
-          .build()
-      }
+      override fun intercept(chain: Chain): Response = Response.Builder()
+        .request(chain.request())
+        .protocol(HTTP_2)
+        .code(500)
+        .message("internal server error")
+        .body(ByteString.EMPTY.toResponseBody("application/grpc".toMediaType()))
+        .build()
     }
 
     runBlocking {
@@ -1152,15 +1144,13 @@ class GrpcClientTest {
   @Test
   fun responseContentTypeIsNotGrpc() {
     interceptor = object : Interceptor {
-      override fun intercept(chain: Chain): Response {
-        return Response.Builder()
-          .request(chain.request())
-          .protocol(HTTP_2)
-          .code(200)
-          .message("ok")
-          .body(ByteString.EMPTY.toResponseBody("text/plain".toMediaType()))
-          .build()
-      }
+      override fun intercept(chain: Chain): Response = Response.Builder()
+        .request(chain.request())
+        .protocol(HTTP_2)
+        .code(200)
+        .message("ok")
+        .body(ByteString.EMPTY.toResponseBody("text/plain".toMediaType()))
+        .build()
     }
 
     runBlocking {
@@ -1894,13 +1884,13 @@ class GrpcClientTest {
   class IncompatibleRouteGuideClient(
     private val client: GrpcClient,
   ) {
-    fun RouteChat(): GrpcCall<RouteNote, RouteNote> =
-      client.newCall(
-        GrpcMethod(
-          path = "/routeguide.RouteGuide/RouteChat",
-          requestAdapter = RouteNote.ADAPTER,
-          responseAdapter = RouteNote.ADAPTER,
-        ),
-      )
+    @Suppress("ktlint:standard:function-naming")
+    fun RouteChat(): GrpcCall<RouteNote, RouteNote> = client.newCall(
+      GrpcMethod(
+        path = "/routeguide.RouteGuide/RouteChat",
+        requestAdapter = RouteNote.ADAPTER,
+        responseAdapter = RouteNote.ADAPTER,
+      ),
+    )
   }
 }

@@ -557,8 +557,7 @@ class LinkerTest {
     val schemaLoaderFileSystem = when {
       reverseSort -> {
         object : ForwardingFileSystem(fs) {
-          override fun listRecursively(dir: Path, followSymlinks: Boolean): Sequence<Path> =
-            super.listRecursively(dir, followSymlinks).toList().reversed().asSequence()
+          override fun listRecursively(dir: Path, followSymlinks: Boolean): Sequence<Path> = super.listRecursively(dir, followSymlinks).toList().reversed().asSequence()
         }
       }
       else -> fs

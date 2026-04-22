@@ -141,9 +141,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     return binding.build(builder)
   }
 
-  override fun equals(other: Any?): Boolean {
-    return other is RuntimeMessageAdapter<*, *> && other.messageType == messageType
-  }
+  override fun equals(other: Any?): Boolean = other is RuntimeMessageAdapter<*, *> && other.messageType == messageType
 
   override fun hashCode(): Int = messageType.hashCode()
 

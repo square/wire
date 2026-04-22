@@ -53,14 +53,12 @@ class SyntaxReader(
   }
 
   /** Note that although the name suggests otherwise, this does consume the char if it finds it. */
-  fun peekChar(c: Char): Boolean {
-    return when (peekChar()) {
-      c -> {
-        pos++
-        true
-      }
-      else -> false
+  fun peekChar(c: Char): Boolean = when (peekChar()) {
+    c -> {
+      pos++
+      true
     }
+    else -> false
   }
 
   /** Push back the most recently read character. */
@@ -132,13 +130,11 @@ class SyntaxReader(
     return value.toChar()
   }
 
-  private fun hexDigit(c: Char): Int {
-    return when (c) {
-      in '0'..'9' -> c - '0'
-      in 'a'..'f' -> c - 'a' + 10
-      in 'A'..'F' -> c - 'A' + 10
-      else -> -1
-    }
+  private fun hexDigit(c: Char): Int = when (c) {
+    in '0'..'9' -> c - '0'
+    in 'a'..'f' -> c - 'a' + 10
+    in 'A'..'F' -> c - 'A' + 10
+    else -> -1
   }
 
   /**
@@ -147,26 +143,24 @@ class SyntaxReader(
    * or square brackets, the returned string retains the wrapping
    * punctuation. Otherwise, just the symbol is returned.
    */
-  fun readName(allowLeadingDigit: Boolean = true, retainWrap: Boolean = false): String {
-    return when (peekChar()) {
-      '(' -> {
-        pos++
-        val word = readWord(allowLeadingDigit).also {
-          expect(readChar() == ')') { "expected ')'" }
-        }
-        if (retainWrap) "($word)" else word
+  fun readName(allowLeadingDigit: Boolean = true, retainWrap: Boolean = false): String = when (peekChar()) {
+    '(' -> {
+      pos++
+      val word = readWord(allowLeadingDigit).also {
+        expect(readChar() == ')') { "expected ')'" }
       }
-
-      '[' -> {
-        pos++
-        val word = readWord(allowLeadingDigit).also {
-          expect(readChar() == ']') { "expected ']'" }
-        }
-        if (retainWrap) "[$word]" else word
-      }
-
-      else -> readWord(allowLeadingDigit)
+      if (retainWrap) "($word)" else word
     }
+
+    '[' -> {
+      pos++
+      val word = readWord(allowLeadingDigit).also {
+        expect(readChar() == ']') { "expected ']'" }
+      }
+      if (retainWrap) "[$word]" else word
+    }
+
+    else -> readWord(allowLeadingDigit)
   }
 
   /** Reads a scalar, map, or type name. */
@@ -176,26 +170,24 @@ class SyntaxReader(
   }
 
   /** Reads a scalar, map, or type name with `name` as a prefix word. */
-  fun readDataType(name: String): String {
-    return when (name) {
-      "map" -> {
-        expect(readChar() == '<') { "expected '<'" }
-        val keyType = readDataType()
+  fun readDataType(name: String): String = when (name) {
+    "map" -> {
+      expect(readChar() == '<') { "expected '<'" }
+      val keyType = readDataType()
 
-        expect(readChar() == ',') { "expected ','" }
-        val valueType = readDataType()
+      expect(readChar() == ',') { "expected ','" }
+      val valueType = readDataType()
 
-        expect(readChar() == '>') { "expected '>'" }
-        "map<$keyType, $valueType>"
-      }
+      expect(readChar() == '>') { "expected '>'" }
+      "map<$keyType, $valueType>"
+    }
 
-      else -> {
-        buildString {
-          append(name)
-          while (peekChar() == '.') {
-            pos++ // We skip the dot so we can read the next word.
-            append(".${readWord()}")
-          }
+    else -> {
+      buildString {
+        append(name)
+        while (peekChar() == '.') {
+          pos++ // We skip the dot so we can read the next word.
+          append(".${readWord()}")
         }
       }
     }

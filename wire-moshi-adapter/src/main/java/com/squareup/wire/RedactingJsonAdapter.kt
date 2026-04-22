@@ -22,9 +22,7 @@ import com.squareup.moshi.JsonWriter
 fun <T> JsonAdapter<T>.redacting(): JsonAdapter<T> {
   val delegate = this
   return object : JsonAdapter<T>() {
-    override fun fromJson(reader: JsonReader): T? {
-      return delegate.fromJson(reader)
-    }
+    override fun fromJson(reader: JsonReader): T? = delegate.fromJson(reader)
 
     override fun toJson(writer: JsonWriter, value: T?) {
       var redactedTag = writer.tag(RedactedTag::class.java)

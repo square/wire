@@ -236,9 +236,7 @@ class WireRun(
     }
   }
 
-  fun execute(fs: FileSystem, logger: WireLogger) {
-    return execute(fs, logger, SchemaLoader(fs))
-  }
+  fun execute(fs: FileSystem, logger: WireLogger) = execute(fs, logger, SchemaLoader(fs))
 
   internal fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
     eventListeners.forEach { it.runStart(wireRun = this) }

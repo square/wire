@@ -109,12 +109,10 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
 @Suppress("UNCHECKED_CAST")
 private fun <M : Message<M, B>, B : Message.Builder<M, B>> getBuilderType(
   messageType: Class<M>,
-): Class<B> {
-  return runCatching {
-    Class.forName("${messageType.name}\$Builder", false, messageType.classLoader) as Class<B>
-  }
-    .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
+): Class<B> = runCatching {
+  Class.forName("${messageType.name}\$Builder", false, messageType.classLoader) as Class<B>
 }
+  .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
 
 private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
   override val messageType: KClass<M>,
@@ -135,9 +133,7 @@ private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>
 
   override fun newBuilder(): B = createBuilder()
 
-  override fun build(builder: B): M {
-    return builder.build()
-  }
+  override fun build(builder: B): M = builder.build()
 
   override fun addUnknownField(builder: B, tag: Int, fieldEncoding: FieldEncoding, value: Any?) {
     builder.addUnknownField(tag, fieldEncoding, value)

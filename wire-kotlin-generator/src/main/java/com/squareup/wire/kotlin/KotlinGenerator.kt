@@ -495,78 +495,72 @@ class KotlinGenerator private constructor(
     return funSpecBuilder.build()
   }
 
-  private fun writableStreamOf(typeName: TypeName): ParameterizedTypeName {
-    return when (rpcCallStyle) {
-      RpcCallStyle.SUSPENDING -> SendChannel::class.asClassName().parameterizedBy(typeName)
-      RpcCallStyle.BLOCKING -> MessageSink::class.asClassName().parameterizedBy(typeName)
-    }
+  private fun writableStreamOf(typeName: TypeName): ParameterizedTypeName = when (rpcCallStyle) {
+    RpcCallStyle.SUSPENDING -> SendChannel::class.asClassName().parameterizedBy(typeName)
+    RpcCallStyle.BLOCKING -> MessageSink::class.asClassName().parameterizedBy(typeName)
   }
 
-  private fun readableStreamOf(typeName: TypeName): ParameterizedTypeName {
-    return when (rpcCallStyle) {
-      RpcCallStyle.SUSPENDING -> ReceiveChannel::class.asClassName().parameterizedBy(typeName)
-      RpcCallStyle.BLOCKING -> MessageSource::class.asClassName().parameterizedBy(typeName)
-    }
+  private fun readableStreamOf(typeName: TypeName): ParameterizedTypeName = when (rpcCallStyle) {
+    RpcCallStyle.SUSPENDING -> ReceiveChannel::class.asClassName().parameterizedBy(typeName)
+    RpcCallStyle.BLOCKING -> MessageSource::class.asClassName().parameterizedBy(typeName)
   }
 
-  private fun nameAllocator(message: Type): NameAllocator {
-    return nameAllocatorStore.getOrPut(message) {
-      NameAllocator(preallocateKeywords = !escapeKotlinKeywords).apply {
-        when (message) {
-          is EnumType -> {
-            newName("ADAPTER", "ADAPTER")
-            newName("ENUM_OPTIONS", "ENUM_OPTIONS")
-            message.constants.forEach { constant ->
-              val constantName = when (constant.name) {
-                // `name` and `ordinal` are private fields of all Kotlin enums. We are escaping them
-                // manually because KotlinPoet does not escape them.
-                "name", "ordinal" -> constant.name + "_"
-                else -> constant.name
-              }
-              newName(constantName, constant)
+  private fun nameAllocator(message: Type): NameAllocator = nameAllocatorStore.getOrPut(message) {
+    NameAllocator(preallocateKeywords = !escapeKotlinKeywords).apply {
+      when (message) {
+        is EnumType -> {
+          newName("ADAPTER", "ADAPTER")
+          newName("ENUM_OPTIONS", "ENUM_OPTIONS")
+          message.constants.forEach { constant ->
+            val constantName = when (constant.name) {
+              // `name` and `ordinal` are private fields of all Kotlin enums. We are escaping them
+              // manually because KotlinPoet does not escape them.
+              "name", "ordinal" -> constant.name + "_"
+              else -> constant.name
             }
+            newName(constantName, constant)
           }
-          is MessageType -> {
-            newName("unknownFields", "unknownFields")
-            newName("ADAPTER", "ADAPTER")
-            newName("adapter", "adapter")
-            newName("reader", "reader")
-            newName("Builder", "Builder")
-            newName("builder", "builder")
-            newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS")
-
-            if (emitAndroid) {
-              newName("CREATOR", "CREATOR")
-            }
-            for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
-              when (fieldOrOneOf) {
-                is Field -> {
-                  if (fieldOrOneOf.name == fieldOrOneOf.type!!.simpleName ||
-                    hasEponymousType(schema, fieldOrOneOf)
-                  ) {
-                    newName(legacyQualifiedFieldName(fieldOrOneOf), fieldOrOneOf)
-                  } else {
-                    newName(fieldOrOneOf.name, fieldOrOneOf)
-                  }
-                }
-                is OneOf -> {
-                  val fieldName = newName(fieldOrOneOf.name, fieldOrOneOf)
-                  val keysFieldName = boxedOneOfKeysFieldName(fieldName)
-                  check(newName(keysFieldName) == keysFieldName) {
-                    "unexpected name collision for keys set of boxed one of, ${fieldOrOneOf.name}"
-                  }
-                  newName(boxedOneOfClassName(fieldOrOneOf.name), boxedOneOfClassName(fieldOrOneOf.name))
-                  fieldOrOneOf.fields.forEach { field ->
-                    val keyFieldName = boxedOneOfKeyFieldName(fieldOrOneOf.name, field.name)
-                    newName(keyFieldName, keyFieldName)
-                  }
-                }
-                else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
-              }
-            }
-          }
-          else -> {}
         }
+        is MessageType -> {
+          newName("unknownFields", "unknownFields")
+          newName("ADAPTER", "ADAPTER")
+          newName("adapter", "adapter")
+          newName("reader", "reader")
+          newName("Builder", "Builder")
+          newName("builder", "builder")
+          newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS")
+
+          if (emitAndroid) {
+            newName("CREATOR", "CREATOR")
+          }
+          for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+            when (fieldOrOneOf) {
+              is Field -> {
+                if (fieldOrOneOf.name == fieldOrOneOf.type!!.simpleName ||
+                  hasEponymousType(schema, fieldOrOneOf)
+                ) {
+                  newName(legacyQualifiedFieldName(fieldOrOneOf), fieldOrOneOf)
+                } else {
+                  newName(fieldOrOneOf.name, fieldOrOneOf)
+                }
+              }
+              is OneOf -> {
+                val fieldName = newName(fieldOrOneOf.name, fieldOrOneOf)
+                val keysFieldName = boxedOneOfKeysFieldName(fieldName)
+                check(newName(keysFieldName) == keysFieldName) {
+                  "unexpected name collision for keys set of boxed one of, ${fieldOrOneOf.name}"
+                }
+                newName(boxedOneOfClassName(fieldOrOneOf.name), boxedOneOfClassName(fieldOrOneOf.name))
+                fieldOrOneOf.fields.forEach { field ->
+                  val keyFieldName = boxedOneOfKeyFieldName(fieldOrOneOf.name, field.name)
+                  newName(keyFieldName, keyFieldName)
+                }
+              }
+              else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+            }
+          }
+        }
+        else -> {}
       }
     }
   }
@@ -670,21 +664,19 @@ class KotlinGenerator private constructor(
     return classBuilder.build()
   }
 
-  private fun generateInitializerFlatOneOfBlock(type: MessageType): CodeBlock {
-    return buildCodeBlock {
-      val nameAllocator = nameAllocator(type)
-      type.flatOneOfs()
-        .filter { oneOf -> oneOf.fields.size >= 2 }
-        .forEach { oneOf ->
-          val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
-          // FIXME(egor): Revert back to function reference once KotlinPoet compiled with Kotlin
-          // 1.4 is released. See https://youtrack.jetbrains.com/issue/KT-37435.
-          val fieldNames = oneOf.fields.joinToString(", ") { field -> nameAllocator[field] }
-          beginControlFlow("require(%M(%L)·<=·1)", countNonNull, fieldNames)
-          addStatement("%S", "At most one of $fieldNames may be non-null")
-          endControlFlow()
-        }
-    }
+  private fun generateInitializerFlatOneOfBlock(type: MessageType): CodeBlock = buildCodeBlock {
+    val nameAllocator = nameAllocator(type)
+    type.flatOneOfs()
+      .filter { oneOf -> oneOf.fields.size >= 2 }
+      .forEach { oneOf ->
+        val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
+        // FIXME(egor): Revert back to function reference once KotlinPoet compiled with Kotlin
+        // 1.4 is released. See https://youtrack.jetbrains.com/issue/KT-37435.
+        val fieldNames = oneOf.fields.joinToString(", ") { field -> nameAllocator[field] }
+        beginControlFlow("require(%M(%L)·<=·1)", countNonNull, fieldNames)
+        addStatement("%S", "At most one of $fieldNames may be non-null")
+        endControlFlow()
+      }
   }
 
   private fun generateNewBuilderMethod(type: MessageType, builderClassName: ClassName): FunSpec {
@@ -1321,65 +1313,63 @@ class KotlinGenerator private constructor(
     message: MessageType,
     field: Field,
     schemaIndex: Int?,
-  ): AnnotationSpec {
-    return AnnotationSpec.builder(WireField::class)
-      .useSiteTarget(FIELD)
-      .addMember("tag = %L", field.tag)
-      .apply {
-        if (field.type!!.isMap) {
-          addMember("keyAdapter = %S", field.type!!.keyType!!.adapterString())
-          addMember("adapter = %S", field.type!!.valueType!!.adapterString())
-        } else {
-          addMember("adapter = %S", field.type!!.adapterString(field.useArray))
-        }
+  ): AnnotationSpec = AnnotationSpec.builder(WireField::class)
+    .useSiteTarget(FIELD)
+    .addMember("tag = %L", field.tag)
+    .apply {
+      if (field.type!!.isMap) {
+        addMember("keyAdapter = %S", field.type!!.keyType!!.adapterString())
+        addMember("adapter = %S", field.type!!.valueType!!.adapterString())
+      } else {
+        addMember("adapter = %S", field.type!!.adapterString(field.useArray))
       }
-      .apply {
-        val wireFieldLabel: WireField.Label? =
-          when (field.encodeMode!!) {
-            EncodeMode.REQUIRED -> WireField.Label.REQUIRED
-            EncodeMode.OMIT_IDENTITY -> {
-              // Wrapper types don't omit identity values on JSON as other proto3 messages would.
-              if (field.type!!.isWrapper) {
-                null
-              } else {
-                WireField.Label.OMIT_IDENTITY
-              }
+    }
+    .apply {
+      val wireFieldLabel: WireField.Label? =
+        when (field.encodeMode!!) {
+          EncodeMode.REQUIRED -> WireField.Label.REQUIRED
+          EncodeMode.OMIT_IDENTITY -> {
+            // Wrapper types don't omit identity values on JSON as other proto3 messages would.
+            if (field.type!!.isWrapper) {
+              null
+            } else {
+              WireField.Label.OMIT_IDENTITY
             }
-            EncodeMode.REPEATED -> WireField.Label.REPEATED
-            EncodeMode.PACKED -> WireField.Label.PACKED
-            EncodeMode.MAP,
-            EncodeMode.NULL_IF_ABSENT,
-            -> null
           }
-        if (wireFieldLabel != null) {
-          addMember("label = %T.%L", WireField.Label::class, wireFieldLabel)
+          EncodeMode.REPEATED -> WireField.Label.REPEATED
+          EncodeMode.PACKED -> WireField.Label.PACKED
+          EncodeMode.MAP,
+          EncodeMode.NULL_IF_ABSENT,
+          -> null
         }
+      if (wireFieldLabel != null) {
+        addMember("label = %T.%L", WireField.Label::class, wireFieldLabel)
       }
-      .apply { if (field.isRedacted) addMember("redacted = true") }
-      .apply {
-        val generatedName = nameAllocator(message)[field]
-        if (generatedName != field.name) {
-          addMember("declaredName = %S", field.name)
-        }
+    }
+    .apply { if (field.isRedacted) addMember("redacted = true") }
+    .apply {
+      val generatedName = nameAllocator(message)[field]
+      if (generatedName != field.name) {
+        addMember("declaredName = %S", field.name)
       }
-      .apply {
-        if (field.jsonName != field.name) {
-          addMember("jsonName = %S", field.jsonName!!)
-        }
+    }
+    .apply {
+      if (field.jsonName != field.name) {
+        addMember("jsonName = %S", field.jsonName!!)
       }
-      .apply {
-        if (field.isOneOf) {
-          val oneofName = message.oneOfs.first { it.fields.contains(field) }.name
-          addMember("oneofName = %S", oneofName)
-        }
+    }
+    .apply {
+      if (field.isOneOf) {
+        val oneofName = message.oneOfs.first { it.fields.contains(field) }.name
+        addMember("oneofName = %S", oneofName)
       }
-      .apply {
-        if (schemaIndex != null) {
-          addMember("schemaIndex = %L", schemaIndex)
-        }
+    }
+    .apply {
+      if (schemaIndex != null) {
+        addMember("schemaIndex = %L", schemaIndex)
       }
-      .build()
-  }
+    }
+    .build()
 
   private fun wireEnumConstantAnnotation(enum: EnumType, constant: EnumConstant): AnnotationSpec? {
     return AnnotationSpec.builder(WireEnumConstant::class)
@@ -2274,12 +2264,10 @@ class KotlinGenerator private constructor(
     return null
   }
 
-  private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
-    return if (type!!.isMap) {
-      CodeBlock.of("%N", "${name}Adapter")
-    } else {
-      type!!.getAdapterName(nameDelimiter)
-    }
+  private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock = if (type!!.isMap) {
+    CodeBlock.of("%N", "${name}Adapter")
+  } else {
+    type!!.getAdapterName(nameDelimiter)
   }
 
   private fun ProtoType.getAdapterName(adapterFieldDelimiterName: Char = '.'): CodeBlock {
@@ -3093,9 +3081,7 @@ class KotlinGenerator private constructor(
     return result
   }
 
-  private fun MessageType.boxOneOfs(): List<OneOf> {
-    return oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
-  }
+  private fun MessageType.boxOneOfs(): List<OneOf> = oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
 
   private fun MessageType.oneOfClassFor(oneOf: OneOf, nameAllocator: NameAllocator): TypeName {
     val oneOfClass = (this.typeName as ClassName)
@@ -3285,13 +3271,9 @@ class KotlinGenerator private constructor(
     }
 
     private class ClassNameFactory : NameFactory<ClassName> {
-      override fun newName(packageName: String, simpleName: String): ClassName {
-        return ClassName(packageName, simpleName)
-      }
+      override fun newName(packageName: String, simpleName: String): ClassName = ClassName(packageName, simpleName)
 
-      override fun nestedName(enclosing: ClassName, simpleName: String): ClassName {
-        return enclosing.nestedClass(simpleName)
-      }
+      override fun nestedName(enclosing: ClassName, simpleName: String): ClassName = enclosing.nestedClass(simpleName)
     }
 
     private val Extend.annotationTargets: List<AnnotationTarget>
@@ -3302,16 +3284,14 @@ class KotlinGenerator private constructor(
         else -> emptyList()
       }
 
-    internal fun String.sanitizeKdoc(): String {
-      return this
-        // Remove trailing whitespace on each line.
-        .replace("[^\\S\n]+\n".toRegex(), "\n")
-        .replace("\\s+$".toRegex(), "")
-        .replace("\\*/".toRegex(), "&#42;/")
-        .replace("/\\*".toRegex(), "/&#42;")
-        .replace("""[""", """\[""")
-        .replace("""]""", """\]""")
-    }
+    internal fun String.sanitizeKdoc(): String = this
+      // Remove trailing whitespace on each line.
+      .replace("[^\\S\n]+\n".toRegex(), "\n")
+      .replace("\\s+$".toRegex(), "")
+      .replace("\\*/".toRegex(), "&#42;/")
+      .replace("/\\*".toRegex(), "/&#42;")
+      .replace("""[""", """\[""")
+      .replace("""]""", """\]""")
 
     private const val DOUBLE_FULL_BLOCK = "\u2588\u2588"
 
@@ -3323,11 +3303,10 @@ class KotlinGenerator private constructor(
   }
 }
 
-private fun PropertySpec.Builder.jvmFieldIf(addJvmField: Boolean, jvmAnnotationPackage: String): PropertySpec.Builder =
-  if (addJvmField) {
-    this.addAnnotation(
-      ClassName(jvmAnnotationPackage, "JvmField"),
-    )
-  } else {
-    this
-  }
+private fun PropertySpec.Builder.jvmFieldIf(addJvmField: Boolean, jvmAnnotationPackage: String): PropertySpec.Builder = if (addJvmField) {
+  this.addAnnotation(
+    ClassName(jvmAnnotationPackage, "JvmField"),
+  )
+} else {
+  this
+}

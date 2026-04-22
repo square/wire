@@ -29,12 +29,10 @@ internal actual interface Call {
   actual fun execute(): GrpcResponse
 }
 
-internal fun okhttp3.Call.toWireCall(): Call {
-  return object : Call {
-    override fun cancel() = this@toWireCall.cancel()
+internal fun okhttp3.Call.toWireCall(): Call = object : Call {
+  override fun cancel() = this@toWireCall.cancel()
 
-    override fun execute(): GrpcResponse = GrpcResponse(this@toWireCall.execute())
-  }
+  override fun execute(): GrpcResponse = GrpcResponse(this@toWireCall.execute())
 }
 
 @Suppress("NOTHING_TO_INLINE")
