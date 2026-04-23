@@ -73,7 +73,7 @@ extension Wire.Timestamp {
 
 #if !WIRE_REMOVE_CODABLE
 
-private let rfc3339: ISO8601DateFormatter = {
+nonisolated(unsafe) private let rfc3339: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = .withInternetDateTime
     return formatter

@@ -46,7 +46,7 @@ public final class ProtoEncoder {
     // MARK: -
 
     /// The formatting of the output binary data.
-    public struct OutputFormatting : OptionSet {
+    public struct OutputFormatting : OptionSet, Sendable {
 
         /// The format's numerical value.
         public let rawValue: UInt

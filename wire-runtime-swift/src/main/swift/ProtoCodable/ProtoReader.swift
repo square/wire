@@ -50,7 +50,7 @@ public final class ProtoReader {
 
     // MARK: - Public Properties
 
-    static let empty = ProtoReader(buffer: .init())
+    nonisolated(unsafe) static let empty = ProtoReader(buffer: .init())
 
     // MARK: - Private Properties
 
