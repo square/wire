@@ -52,6 +52,11 @@ kotlin {
         implementation(libs.assertk)
       }
     }
+    val jvmTest by getting {
+      dependencies {
+        implementation(libs.kotlin.test.junit)
+      }
+    }
     if (System.getProperty("kjs", "true").toBoolean()) {
       val jsTest by getting {
         dependencies {
