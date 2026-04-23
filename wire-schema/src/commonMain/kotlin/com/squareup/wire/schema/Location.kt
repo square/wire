@@ -67,6 +67,18 @@ data class Location(
     fun get(
       base: String,
       path: String,
-    ): Location = Location(base.trimEnd('/'), path, -1, -1)
+    ): Location = Location(
+      base = base.replace('\\', '/').trimEnd('/'),
+      path = if (path.length >= 3 && path[1] == ':' && path[2] == '\\') {
+        // Preserve the Windows drive root backslash (e.g. "C:\") since okio's path parser
+        // requires a backslash after the volume letter to recognize a Windows absolute path.
+        // TODO(Benoit) Remove this branch once https://github.com/square/okio/pull/1802 is released.
+        path.substring(0, 3) + path.substring(3).replace('\\', '/')
+      } else {
+        path.replace('\\', '/')
+      },
+      line = -1,
+      column = -1,
+    )
   }
 }
