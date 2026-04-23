@@ -53,13 +53,13 @@ tasks {
   val jmhJar by getting(ShadowJar::class) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-    transform(DontIncludeResourceTransformer().apply {
+    transform(DontIncludeResourceTransformer(objects).apply {
       resource = "META-INF/BenchmarkList"
     })
 
-    transform(IncludeResourceTransformer().apply {
+    transform(IncludeResourceTransformer(objects).apply {
       resource = "META-INF/BenchmarkList"
-      file = file("${project.buildDir}/jmh-generated-resources/META-INF/BenchmarkList")
+      file = layout.buildDirectory.file("jmh-generated-resources/META-INF/BenchmarkList").get().asFile
     })
   }
 
