@@ -25,7 +25,14 @@ import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newSchemaHandler
+import java.io.File
 import javax.inject.Inject
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import kotlin.LazyThreadSafetyMode.NONE
 
 /**
  * Specifies Wire's outputs (expressed as a list of [Target] objects) using Gradle's DSL (expressed
@@ -33,8 +40,26 @@ import javax.inject.Inject
  * directories with the project so they can be compiled after they are generated.
  */
 abstract class WireOutput {
+  @get:Inject
+  protected abstract val objectFactory: ObjectFactory
+
+  val out: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java)
+  }
+
   /** Set this to override the default output directory for this [WireOutput]. */
-  var out: String? = null
+  fun setOut(value: String?) {
+    out.set(value)
+  }
+
+  fun out(value: String) {
+    out.set(value)
+  }
+
+  internal fun outputDirectory(
+    projectDir: File,
+    defaultOutputDirectory: Provider<String>,
+  ): Provider<String> = out.map { relativizeOutputDirectory(it, projectDir) }.orElse(defaultOutputDirectory)
 
   /**
    * Transforms this [WireOutput] into a [Target] for which Wire will generate code. The [Target]
@@ -43,7 +68,17 @@ abstract class WireOutput {
   abstract fun toTarget(outputDirectory: String): Target
 }
 
-open class JavaOutput @Inject constructor() : WireOutput() {
+internal fun relativizeOutputDirectory(
+  outputDirectory: String,
+  projectDir: File,
+): String {
+  val file = File(outputDirectory)
+  if (!file.isAbsolute) return outputDirectory
+  return runCatching { file.relativeTo(projectDir).path }
+    .getOrElse { outputDirectory }
+}
+
+abstract class JavaOutput @Inject constructor() : WireOutput() {
   /** See [com.squareup.wire.schema.Target.includes] */
   var includes: List<String>? = null
 
@@ -88,7 +123,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   )
 }
 
-open class KotlinOutput @Inject constructor() : WireOutput() {
+abstract class KotlinOutput @Inject constructor() : WireOutput() {
   /** See [com.squareup.wire.schema.Target.includes] */
   var includes: List<String>? = null
 
@@ -223,45 +258,97 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   }
 }
 
-open class ProtoOutput @Inject constructor() : WireOutput() {
+abstract class ProtoOutput @Inject constructor() : WireOutput() {
   override fun toTarget(outputDirectory: String): ProtoTarget = ProtoTarget(outDirectory = outputDirectory)
 }
 
-open class CustomOutput @Inject constructor() : WireOutput() {
+abstract class CustomOutput @Inject constructor() : WireOutput() {
+  val includes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val excludes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val exclusive: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.java).convention(true)
+  }
+
+  val options: MapProperty<String, String> by lazy(NONE) {
+    objectFactory.mapProperty(String::class.java, String::class.java)
+  }
+
+  val schemaHandlerFactory: Property<SchemaHandler.Factory> by lazy(NONE) {
+    objectFactory.property(SchemaHandler.Factory::class.java)
+  }
+
+  val schemaHandlerFactoryClass: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java)
+  }
+
   /** See [com.squareup.wire.schema.Target.includes] */
-  var includes: List<String>? = null
+  fun setIncludes(values: List<String>?) {
+    includes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.excludes] */
-  var excludes: List<String>? = null
+  fun setExcludes(values: List<String>?) {
+    excludes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.exclusive] */
-  var exclusive: Boolean = true
+  fun setExclusive(value: Boolean) {
+    exclusive.set(value)
+  }
+
+  fun exclusive(value: Boolean) {
+    exclusive.set(value)
+  }
 
   /**
    * Black boxed payload which a caller can set for the custom [SchemaHandler.Factory] to receive.
    */
-  var options: Map<String, String>? = null
+  fun options(value: Map<String, String>) {
+    options.set(value)
+  }
+
+  fun setOptions(value: Map<String, String>?) {
+    options.set(value)
+  }
 
   /** Assign the schema handler factory instance. */
-  var schemaHandlerFactory: SchemaHandler.Factory? = null
+  fun setSchemaHandlerFactory(value: SchemaHandler.Factory?) {
+    schemaHandlerFactory.set(value)
+  }
 
   /**
    * Assign the schema handler factory by name. If you use a class name, that class must have a
    * no-arguments constructor.
    */
-  var schemaHandlerFactoryClass: String? = null
+  fun setSchemaHandlerFactoryClass(value: String?) {
+    schemaHandlerFactoryClass.set(value)
+  }
+
+  fun schemaHandlerFactoryClass(value: String) {
+    schemaHandlerFactoryClass.set(value)
+  }
 
   override fun toTarget(outputDirectory: String): CustomTarget {
-    check((schemaHandlerFactory != null) || (schemaHandlerFactoryClass != null)) {
+    val configuredSchemaHandlerFactory = schemaHandlerFactory.orNull
+    val configuredSchemaHandlerFactoryClass = schemaHandlerFactoryClass.orNull
+
+    check(configuredSchemaHandlerFactory != null || configuredSchemaHandlerFactoryClass != null) {
       "schemaHandlerFactory or schemaHandlerFactoryClass required"
     }
+
     return CustomTarget(
-      includes = includes ?: listOf("*"),
-      excludes = excludes ?: listOf(),
-      exclusive = exclusive,
+      includes = includes.orNull ?: listOf("*"),
+      excludes = excludes.orNull ?: listOf(),
+      exclusive = exclusive.orElse(true).get(),
       outDirectory = outputDirectory,
-      options = options ?: mapOf(),
-      schemaHandlerFactory = schemaHandlerFactory ?: newSchemaHandler(schemaHandlerFactoryClass!!),
+      options = options.orNull ?: mapOf(),
+      schemaHandlerFactory = configuredSchemaHandlerFactory ?: newSchemaHandler(configuredSchemaHandlerFactoryClass!!),
     )
   }
 }
