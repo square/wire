@@ -52,6 +52,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     buildersOnly: Boolean = false,
     javaInterop: Boolean = false,
     enumMode: EnumMode = EnumMode.ENUM_CLASS,
+    oneofMode: OneofMode = OneofMode.LEGACY,
     mutableTypes: Boolean = false,
     makeImmutableCopies: Boolean = true,
   ): String {
@@ -62,6 +63,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       buildersOnly = buildersOnly,
       javaInterop = javaInterop,
       enumMode = enumMode,
+      oneofMode = oneofMode,
       mutableTypes = mutableTypes,
       makeImmutableCopies = makeImmutableCopies,
     )

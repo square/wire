@@ -2197,6 +2197,206 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test fun sealedOneofGeneratesNestedSealedClass() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    string card_id = 1;
+        |    string cash = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS)
+    assertThat(code).contains(
+      """
+      |public class PaymentMethodChoice(
+      |  public val method: Method? = null,
+      """.trimMargin(),
+    )
+    assertThat(code).contains(
+      """
+      |  public sealed class Method {
+      |    public data class CardId(
+      |      public val `value`: String,
+      |    ) : Method()
+      |
+      |    public data class Cash(
+      |      public val `value`: String,
+      |    ) : Method()
+      |  }
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun sealedOneofAdapterEncodesAndDecodesCorrectly() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    string card_id = 1;
+        |    string cash = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS)
+    // encode: when over the sealed class
+    assertThat(code).contains("when (val method = value.method)")
+    assertThat(code).contains("is Method.CardId ->")
+    assertThat(code).contains("is Method.Cash ->")
+    assertThat(code).contains("null -> {}")
+    // decode: inline tag cases
+    assertThat(code).contains("1 -> method = Method.CardId(")
+    assertThat(code).contains("2 -> method = Method.Cash(")
+  }
+
+  @Test fun legacyOneofModeProducesIndividualNullableFields() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    string card_id = 1;
+        |    string cash = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.LEGACY)
+    assertThat(code).contains("public val card_id: String? = null")
+    assertThat(code).contains("public val cash: String? = null")
+    assertThat(code).doesNotContain("sealed class Method")
+  }
+
+  @Test fun boxedOneofModeProducesOneOfProperty() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    string card_id = 1;
+        |    string cash = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.BOXED)
+    assertThat(code).contains("public val method: OneOf<Method<*>, *>? = null")
+    assertThat(code).doesNotContain("sealed class Method")
+  }
+
+  @Test fun sealedOneofBuildersOnlyMakesSubclassConstructorsInternal() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    string card_id = 1;
+        |    string cash = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS, buildersOnly = true)
+    assertThat(code).contains("internal constructor(")
+    assertThat(code).doesNotContain("public constructor(")
+  }
+
+  @Test fun sealedOneofFieldOptionsAppliedAsAnnotationsOnSubtypes() {
+    val schema = buildSchema {
+      add(
+        "options.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package squareup.test;
+        |import "google/protobuf/descriptor.proto";
+        |extend google.protobuf.FieldOptions {
+        |  optional bool sensitive = 50001;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "options.proto";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    string card_id = 1 [(squareup.test.sensitive) = true];
+        |    string cash = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS)
+    // @SensitiveOption(true) should appear on CardId but not on Cash
+    assertThat(code).contains("@SensitiveOption(true)")
+    assertThat(code).contains("public data class CardId(")
+    // Cash has no option applied
+    assertThat(code).contains("public data class Cash(")
+  }
+
+  @Test fun sealedOneofOptionsAppliedAsAnnotationsOnSealedClass() {
+    val schema = buildSchema {
+      add(
+        "options.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package squareup.test;
+        |import "google/protobuf/descriptor.proto";
+        |extend google.protobuf.OneofOptions {
+        |  optional string category = 50003;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "options.proto";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    option (squareup.test.category) = "payment";
+        |    string card_id = 1;
+        |    string cash = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS)
+    // @CategoryOption("payment") should appear on the sealed class
+    assertThat(code).contains("@CategoryOption(\"payment\")")
+    assertThat(code).contains("public sealed class Method")
+  }
+
   @Test fun hashCodeFunctionImplementation() {
     val schema = buildSchema {
       add(
