@@ -16,6 +16,7 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.kotlin.EnumMode
+import com.squareup.wire.kotlin.OneofMode
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.CustomTarget
@@ -146,6 +147,9 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
   var enumMode: String = "enum_class"
 
+  /** flat, boxed, or sealed_class. See [OneofMode][com.squareup.wire.kotlin.OneofMode]. */
+  var oneofMode: String = "flat"
+
   /**
    * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
    * when targeting Kotlin/JS, where `Long` cursors are inefficient.
@@ -198,6 +202,12 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         "Unknown enumMode $enumMode. Valid values: ${EnumMode.values().contentToString()}",
       )
 
+    val oneofMode = OneofMode.values()
+      .singleOrNull { it.toString().equals(oneofMode, ignoreCase = true) }
+      ?: throw IllegalArgumentException(
+        "Unknown oneofMode $oneofMode. Valid values: ${OneofMode.values().contentToString()}",
+      )
+
     return KotlinTarget(
       includes = includes ?: listOf("*"),
       excludes = excludes ?: listOf(),
@@ -215,6 +225,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
+      oneofMode = oneofMode,
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,

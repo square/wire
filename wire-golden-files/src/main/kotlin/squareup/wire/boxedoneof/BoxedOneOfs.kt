@@ -27,6 +27,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.jvm.JvmSynthetic
 import okio.ByteString
+import squareup.proto3.options.FieldOptionOption
 
 public class BoxedOneOfs(
   @JvmField
@@ -149,6 +150,7 @@ public class BoxedOneOfs(
     public val VALUE_SECOND_VALUE: Value<String> =
         Value<String>(tag = 2, adapter = ProtoAdapter.STRING, declaredName = "second_value")
 
+    @FieldOptionOption(806)
     public val VALUE_VALUE: Value<String> =
         Value<String>(tag = 3, adapter = ProtoAdapter.STRING, declaredName = "value")
 

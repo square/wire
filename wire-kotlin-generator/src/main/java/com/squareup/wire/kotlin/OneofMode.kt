@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Square, Inc.
+ * Copyright (C) 2026 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,16 @@ enum class OneofMode {
    * Each oneof field is generated as a separate nullable property on the message class. If
    * [KotlinTarget.boxOneOfsMinSize] is set, it'll be honored.
    */
-  LEGACY,
+  FLAT,
 
   /**
-   * Oneof fields are generated as boxed types. Effectively as is [KotlinTarget.boxOneOfsMinSize]
+   * Oneof fields are generated as boxed types. Effectively as if [KotlinTarget.boxOneOfsMinSize]
    * was set to 1.
    */
   BOXED,
 
   /**
-   * Eneof is generated as a nested sealed class with a data class subtype per field. The message
+   * Oneof is generated as a nested sealed class with a data class subtype per field. The message
    * holds a single nullable property of the sealed class type.
    *
    * Example for a oneof named `method` with fields `card_id`, `bank_account`, `cash_balance_cents`:

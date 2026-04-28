@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 syntax = "proto2";
-package squareup.wire.boxedoneof;
+package squareup.wire.sealedoneof;
 
 import "squareup/wire/options.proto";
 
-message BoxedOneOfs {
+message SealedOneOfs {
+  // Where do you go?
   oneof value {
-    string first_value = 1;
-    string second_value = 2;
-    string value = 3 [(squareup.proto3.options.field_option) = 806];
+    option (squareup.proto3.options.oneof_option) = 33;
+
+    SealedMessage first_value = 1;
+    string second_value = 2 [deprecated = true];
+    // This one is a good candidate.
+    int32 value = 3 [(squareup.proto3.options.field_option) = 806];
   }
+}
+
+message SealedMessage {
+  optional string content = 1;
 }

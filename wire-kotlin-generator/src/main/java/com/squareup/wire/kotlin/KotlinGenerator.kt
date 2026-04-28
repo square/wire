@@ -84,7 +84,6 @@ import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
 import com.squareup.wire.kotlin.EnumMode.ENUM_CLASS
 import com.squareup.wire.kotlin.EnumMode.SEALED_CLASS
-import com.squareup.wire.kotlin.OneofMode
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
@@ -3031,7 +3030,6 @@ class KotlinGenerator private constructor(
         .superclass(sealedClassName)
         .primaryConstructor(
           FunSpec.constructorBuilder()
-            .apply { if (buildersOnly) addModifiers(INTERNAL) }
             .addParameter("value", valueType)
             .build(),
         )
@@ -3235,12 +3233,12 @@ class KotlinGenerator private constructor(
   }
 
   private fun MessageType.flatOneOfs(): List<OneOf> = when (oneofMode) {
-    OneofMode.LEGACY -> oneOfs.filter { it.fields.size < boxOneOfsMinSize }
+    OneofMode.FLAT -> oneOfs.filter { it.fields.size < boxOneOfsMinSize }
     else -> emptyList()
   }
 
   private fun MessageType.boxOneOfs(): List<OneOf> = when (oneofMode) {
-    OneofMode.LEGACY -> oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
+    OneofMode.FLAT -> oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
     OneofMode.BOXED -> oneOfs
     OneofMode.SEALED_CLASS -> emptyList()
   }
@@ -3348,7 +3346,7 @@ class KotlinGenerator private constructor(
       buildersOnly: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
       enumMode: EnumMode = ENUM_CLASS,
-      oneofMode: OneofMode = OneofMode.LEGACY,
+      oneofMode: OneofMode = OneofMode.FLAT,
       emitProtoReader32: Boolean = false,
       mutableTypes: Boolean = false,
       explicitStreamingCalls: Boolean = false,
@@ -3459,7 +3457,13 @@ class KotlinGenerator private constructor(
     private val Extend.annotationTargets: List<AnnotationTarget>
       get() = when (type) {
         MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS, ONEOF_OPTIONS -> listOf(AnnotationTarget.CLASS)
-        FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> listOf(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+        FIELD_OPTIONS, ENUM_VALUE_OPTIONS ->
+          listOf(
+            // Class is required when oneofMode is `SEALED_CLASS`.
+            AnnotationTarget.CLASS,
+            AnnotationTarget.PROPERTY,
+            AnnotationTarget.FIELD,
+          )
         METHOD_OPTIONS -> listOf(AnnotationTarget.FUNCTION)
         else -> emptyList()
       }

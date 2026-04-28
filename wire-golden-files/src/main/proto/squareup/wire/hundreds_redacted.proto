@@ -206,7 +206,3 @@ message HundredsFields {
 }
 
 message Field {}
-
-// extend google.protobuf.FieldOptions {
-//   optional bool redacted = 22222;
-// }

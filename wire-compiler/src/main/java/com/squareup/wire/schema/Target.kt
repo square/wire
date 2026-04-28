@@ -134,8 +134,8 @@ data class KotlinTarget(
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
   val enumMode: EnumMode = EnumMode.ENUM_CLASS,
 
-  /** legacy, boxed, or sealed_class. See [OneofMode][com.squareup.wire.kotlin.OneofMode]. */
-  val oneofMode: OneofMode = OneofMode.LEGACY,
+  /** flat, boxed, or sealed_class. See [OneofMode][com.squareup.wire.kotlin.OneofMode]. */
+  val oneofMode: OneofMode = OneofMode.FLAT,
 
   /**
    * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization

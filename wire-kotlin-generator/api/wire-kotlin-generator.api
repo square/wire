@@ -31,7 +31,6 @@ public final class com/squareup/wire/kotlin/KotlinSchemaHandler : com/squareup/w
 	public static final field Companion Lcom/squareup/wire/kotlin/KotlinSchemaHandler$Companion;
 	public fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZLcom/squareup/wire/kotlin/EnumMode;Lcom/squareup/wire/kotlin/OneofMode;ZZZZ)V
 	public synthetic fun <init> (Ljava/lang/String;ZZZZLcom/squareup/wire/kotlin/RpcCallStyle;Lcom/squareup/wire/kotlin/RpcRole;ZILjava/lang/String;ZZLcom/squareup/wire/kotlin/EnumMode;Lcom/squareup/wire/kotlin/OneofMode;ZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getEnumMode ()Lcom/squareup/wire/kotlin/EnumMode;
 	public fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
 	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
 	public fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;
@@ -43,7 +42,7 @@ public final class com/squareup/wire/kotlin/KotlinSchemaHandler$Companion {
 
 public final class com/squareup/wire/kotlin/OneofMode : java/lang/Enum {
 	public static final field BOXED Lcom/squareup/wire/kotlin/OneofMode;
-	public static final field LEGACY Lcom/squareup/wire/kotlin/OneofMode;
+	public static final field FLAT Lcom/squareup/wire/kotlin/OneofMode;
 	public static final field SEALED_CLASS Lcom/squareup/wire/kotlin/OneofMode;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/squareup/wire/kotlin/OneofMode;
