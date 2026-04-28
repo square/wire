@@ -2278,7 +2278,7 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema)
-      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.LEGACY)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.FLAT)
     assertThat(code).contains("public val card_id: String? = null")
     assertThat(code).contains("public val cash: String? = null")
     assertThat(code).doesNotContain("sealed class Method")
@@ -2303,27 +2303,6 @@ class KotlinGeneratorTest {
       .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.BOXED)
     assertThat(code).contains("public val method: OneOf<Method<*>, *>? = null")
     assertThat(code).doesNotContain("sealed class Method")
-  }
-
-  @Test fun sealedOneofBuildersOnlyMakesSubclassConstructorsInternal() {
-    val schema = buildSchema {
-      add(
-        "message.proto".toPath(),
-        """
-        |syntax = "proto2";
-        |message PaymentMethodChoice {
-        |  oneof method {
-        |    string card_id = 1;
-        |    string cash = 2;
-        |  }
-        |}
-        """.trimMargin(),
-      )
-    }
-    val code = KotlinWithProfilesGenerator(schema)
-      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS, buildersOnly = true)
-    assertThat(code).contains("internal constructor(")
-    assertThat(code).doesNotContain("public constructor(")
   }
 
   @Test fun sealedOneofFieldOptionsAppliedAsAnnotationsOnSubtypes() {

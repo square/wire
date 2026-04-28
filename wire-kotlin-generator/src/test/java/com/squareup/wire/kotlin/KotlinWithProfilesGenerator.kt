@@ -16,7 +16,6 @@
 package com.squareup.wire.kotlin
 
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.wire.kotlin.EnumMode.ENUM_CLASS
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.Schema
@@ -52,7 +51,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     buildersOnly: Boolean = false,
     javaInterop: Boolean = false,
     enumMode: EnumMode = EnumMode.ENUM_CLASS,
-    oneofMode: OneofMode = OneofMode.LEGACY,
+    oneofMode: OneofMode = OneofMode.FLAT,
     mutableTypes: Boolean = false,
     makeImmutableCopies: Boolean = true,
   ): String {
