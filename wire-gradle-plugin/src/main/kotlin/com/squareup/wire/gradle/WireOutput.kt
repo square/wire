@@ -27,12 +27,12 @@ import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newSchemaHandler
 import java.io.File
 import javax.inject.Inject
+import kotlin.LazyThreadSafetyMode.NONE
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import kotlin.LazyThreadSafetyMode.NONE
 
 /**
  * Specifies Wire's outputs (expressed as a list of [Target] objects) using Gradle's DSL (expressed
