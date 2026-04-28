@@ -1,4 +1,4 @@
-public abstract class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/WireOutput {
+public class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
 	public final fun getExcludes ()Ljava/util/List;
 	public final fun getExcludesProperty ()Lorg/gradle/api/provider/ListProperty;
@@ -22,7 +22,7 @@ public abstract class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/
 	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
 }
 
-public abstract class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
+public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
 	public final fun getAndroid ()Z
 	public final fun getAndroidAnnotations ()Z
@@ -46,7 +46,7 @@ public abstract class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gr
 	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
 }
 
-public abstract class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/WireOutput {
+public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
 	public final fun getAndroid ()Z
 	public final fun getBoxOneOfsMinSize ()I
@@ -101,7 +101,7 @@ public class com/squareup/wire/gradle/Move : java/io/Serializable {
 	public final fun toTypeMoverMove ()Lcom/squareup/wire/schema/internal/TypeMover$Move;
 }
 
-public abstract class com/squareup/wire/gradle/ProtoOutput : com/squareup/wire/gradle/WireOutput {
+public class com/squareup/wire/gradle/ProtoOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
 	public fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoTarget;
 	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
@@ -166,7 +166,7 @@ public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 
 public abstract class com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	protected abstract fun getObjectFactory ()Lorg/gradle/api/model/ObjectFactory;
+	protected fun getObjectFactory ()Lorg/gradle/api/model/ObjectFactory;
 	public final fun getOut ()Ljava/lang/String;
 	public final fun getOutProperty ()Lorg/gradle/api/provider/Property;
 	public final fun setOut (Ljava/lang/String;)V

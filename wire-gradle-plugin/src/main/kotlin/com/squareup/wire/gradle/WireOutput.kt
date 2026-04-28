@@ -40,8 +40,10 @@ import org.gradle.api.provider.Provider
  * directories with the project so they can be compiled after they are generated.
  */
 abstract class WireOutput {
+  // Gradle decorates this getter for instances created with ObjectFactory.newInstance().
   @get:Inject
-  protected abstract val objectFactory: ObjectFactory
+  protected open val objectFactory: ObjectFactory
+    get() = throw UnsupportedOperationException("Injected by Gradle")
 
   val outProperty: Property<String> by lazy(NONE) {
     objectFactory.property(String::class.java)
@@ -54,7 +56,9 @@ abstract class WireOutput {
   )
   var out: String?
     get() = outProperty.orNull
-    set(value) { outProperty.set(value) }
+    set(value) {
+      outProperty.set(value)
+    }
 
   internal fun outputDirectory(
     projectDir: File,
@@ -78,7 +82,7 @@ internal fun relativizeOutputDirectory(
     .getOrElse { outputDirectory }
 }
 
-abstract class JavaOutput @Inject constructor() : WireOutput() {
+open class JavaOutput @Inject constructor() : WireOutput() {
   /** See [com.squareup.wire.schema.Target.includes] */
   var includes: List<String>? = null
 
@@ -123,7 +127,7 @@ abstract class JavaOutput @Inject constructor() : WireOutput() {
   )
 }
 
-abstract class KotlinOutput @Inject constructor() : WireOutput() {
+open class KotlinOutput @Inject constructor() : WireOutput() {
   /** See [com.squareup.wire.schema.Target.includes] */
   var includes: List<String>? = null
 
@@ -258,11 +262,11 @@ abstract class KotlinOutput @Inject constructor() : WireOutput() {
   }
 }
 
-abstract class ProtoOutput @Inject constructor() : WireOutput() {
+open class ProtoOutput @Inject constructor() : WireOutput() {
   override fun toTarget(outputDirectory: String): ProtoTarget = ProtoTarget(outDirectory = outputDirectory)
 }
 
-abstract class CustomOutput @Inject constructor() : WireOutput() {
+open class CustomOutput @Inject constructor() : WireOutput() {
   val includesProperty: ListProperty<String> by lazy(NONE) {
     objectFactory.listProperty(String::class.java)
   }
@@ -294,7 +298,9 @@ abstract class CustomOutput @Inject constructor() : WireOutput() {
   )
   var includes: List<String>?
     get() = includesProperty.orNull
-    set(value) { includesProperty.set(value) }
+    set(value) {
+      includesProperty.set(value)
+    }
 
   /** See [com.squareup.wire.schema.Target.excludes] */
   @Deprecated(
@@ -303,7 +309,9 @@ abstract class CustomOutput @Inject constructor() : WireOutput() {
   )
   var excludes: List<String>?
     get() = excludesProperty.orNull
-    set(value) { excludesProperty.set(value) }
+    set(value) {
+      excludesProperty.set(value)
+    }
 
   /** See [com.squareup.wire.schema.Target.exclusive] */
   @Deprecated(
@@ -312,7 +320,9 @@ abstract class CustomOutput @Inject constructor() : WireOutput() {
   )
   var exclusive: Boolean
     get() = exclusiveProperty.orElse(true).get()
-    set(value) { exclusiveProperty.set(value) }
+    set(value) {
+      exclusiveProperty.set(value)
+    }
 
   /** Black boxed payload which a caller can set for the custom [SchemaHandler.Factory] to receive. */
   @Deprecated(
@@ -321,7 +331,9 @@ abstract class CustomOutput @Inject constructor() : WireOutput() {
   )
   var options: Map<String, String>?
     get() = optionsProperty.orNull
-    set(value) { optionsProperty.set(value) }
+    set(value) {
+      optionsProperty.set(value)
+    }
 
   /** Assign the schema handler factory instance. */
   @Deprecated(
@@ -330,7 +342,9 @@ abstract class CustomOutput @Inject constructor() : WireOutput() {
   )
   var schemaHandlerFactory: SchemaHandler.Factory?
     get() = schemaHandlerFactoryProperty.orNull
-    set(value) { schemaHandlerFactoryProperty.set(value) }
+    set(value) {
+      schemaHandlerFactoryProperty.set(value)
+    }
 
   /**
    * Assign the schema handler factory by name. If you use a class name, that class must have a
@@ -342,7 +356,9 @@ abstract class CustomOutput @Inject constructor() : WireOutput() {
   )
   var schemaHandlerFactoryClass: String?
     get() = schemaHandlerFactoryClassProperty.orNull
-    set(value) { schemaHandlerFactoryClassProperty.set(value) }
+    set(value) {
+      schemaHandlerFactoryClassProperty.set(value)
+    }
 
   override fun toTarget(outputDirectory: String): CustomTarget {
     val configuredSchemaHandlerFactory = schemaHandlerFactoryProperty.orNull

@@ -25,11 +25,24 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
+import java.lang.reflect.Modifier
 import okio.Path
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
 class WireOutputProviderTest {
+  @Test
+  fun nestedOutputTypesRemainConcrete() {
+    assertThat(Modifier.isAbstract(JavaOutput::class.java.modifiers)).isFalse()
+    assertThat(JavaOutput::class.java.getConstructor().parameterCount).isEqualTo(0)
+    assertThat(Modifier.isAbstract(KotlinOutput::class.java.modifiers)).isFalse()
+    assertThat(KotlinOutput::class.java.getConstructor().parameterCount).isEqualTo(0)
+    assertThat(Modifier.isAbstract(ProtoOutput::class.java.modifiers)).isFalse()
+    assertThat(ProtoOutput::class.java.getConstructor().parameterCount).isEqualTo(0)
+    assertThat(Modifier.isAbstract(CustomOutput::class.java.modifiers)).isFalse()
+    assertThat(CustomOutput::class.java.getConstructor().parameterCount).isEqualTo(0)
+  }
+
   @Test
   fun customOutputResolvesProviderBackedProperties() {
     val project = ProjectBuilder.builder().build()
