@@ -163,6 +163,7 @@ public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 
 public abstract class com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
+	protected abstract fun getObjectFactory ()Lorg/gradle/api/model/ObjectFactory;
 	public final fun getOut ()Lorg/gradle/api/provider/Property;
 	public final fun out (Ljava/lang/String;)V
 	public final fun setOut (Ljava/lang/String;)V
@@ -204,3 +205,4 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public abstract fun getTargets ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getUntilVersion ()Lorg/gradle/api/provider/Property;
 }
+
