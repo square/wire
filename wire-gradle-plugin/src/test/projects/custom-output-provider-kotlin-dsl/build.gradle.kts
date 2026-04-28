@@ -23,11 +23,11 @@ configure<WireExtension> {
   sourcePath("src/main/proto")
 
   custom {
-    out.set(providers.gradleProperty("wireOut"))
-    includes.set(providers.provider { listOf(providers.gradleProperty("includeType").get()) })
-    excludes.set(providers.provider { listOf(providers.gradleProperty("excludeType").get()) })
-    exclusive.set(providers.provider { providers.gradleProperty("exclusive").get().toBoolean() })
-    options.set(
+    outProperty.set(providers.gradleProperty("wireOut"))
+    includesProperty.set(providers.provider { listOf(providers.gradleProperty("includeType").get()) })
+    excludesProperty.set(providers.provider { listOf(providers.gradleProperty("excludeType").get()) })
+    exclusiveProperty.set(providers.provider { providers.gradleProperty("exclusive").get().toBoolean() })
+    optionsProperty.set(
       providers.provider {
         mapOf(
           "a" to providers.gradleProperty("optionA").get(),
@@ -35,6 +35,6 @@ configure<WireExtension> {
         )
       },
     )
-    schemaHandlerFactoryClass.set(providers.gradleProperty("handlerClass"))
+    schemaHandlerFactoryClassProperty.set(providers.gradleProperty("handlerClass"))
   }
 }
