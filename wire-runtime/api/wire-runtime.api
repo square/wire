@@ -423,10 +423,22 @@ public final class com/squareup/wire/WireField$Label : java/lang/Enum {
 	public static fun values ()[Lcom/squareup/wire/WireField$Label;
 }
 
+public abstract interface annotation class com/squareup/wire/WireOneofField : java/lang/annotation/Annotation {
+	public abstract fun adapter ()Ljava/lang/String;
+	public abstract fun declaredName ()Ljava/lang/String;
+	public abstract fun jsonName ()Ljava/lang/String;
+	public abstract fun redacted ()Z
+	public abstract fun tag ()I
+}
+
 public abstract interface annotation class com/squareup/wire/WireRpc : java/lang/annotation/Annotation {
 	public abstract fun path ()Ljava/lang/String;
 	public abstract fun requestAdapter ()Ljava/lang/String;
 	public abstract fun responseAdapter ()Ljava/lang/String;
 	public abstract fun sourceFile ()Ljava/lang/String;
+}
+
+public abstract interface annotation class com/squareup/wire/WireSealedOneof : java/lang/annotation/Annotation {
+	public abstract fun schemaIndex ()I
 }
 

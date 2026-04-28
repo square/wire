@@ -38,6 +38,8 @@ import squareup.proto2.kotlin.interop.InteropCamelCase as InteropCamelCaseK2
 import squareup.proto2.kotlin.interop.InteropDuration as InteropDurationK2
 import squareup.proto2.kotlin.interop.InteropJsonName as InteropJsonNameK2
 import squareup.proto2.kotlin.interop.InteropUint64 as InteropUint64K2
+import squareup.proto2.kotlin.sealed.interop.InteropSealedOneOf as InteropSealedOneOfK2
+import squareup.proto2.kotlin.sealed.interop.buildersonly.InteropSealedOneOfBuildersOnly as InteropSealedOneOfBuildersOnlyK2
 import squareup.proto3.java.interop.InteropBoxOneOf as InteropBoxOneOfJ3
 import squareup.proto3.java.interop.InteropCamelCase as InteropCamelCaseJ3
 import squareup.proto3.java.interop.InteropDuration as InteropDurationJ3
@@ -61,6 +63,10 @@ import squareup.proto3.kotlin.interop.InteropRepeatedEnums as InteropRepeatedEnu
 import squareup.proto3.kotlin.interop.InteropUint64 as InteropUint64K3
 import squareup.proto3.kotlin.interop.InteropWrappers as InteropWrappersK3
 import squareup.proto3.kotlin.interop.TestProto3Optional.InteropOptional as InteropOptionalP3
+import squareup.proto3.kotlin.sealed.interop.InteropSealedOneOf as InteropSealedOneOfK3
+import squareup.proto3.kotlin.sealed.interop.InteropSealedTest.InteropSealedOneOf as InteropSealedOneOfP3
+import squareup.proto3.kotlin.sealed.interop.buildersonly.InteropSealedOneOfBuildersOnly as InteropSealedOneOfBuildersOnlyK3
+import squareup.proto3.kotlin.sealed.interop.buildersonly.InteropSealedTestBuildersonly.InteropSealedOneOfBuildersOnly as InteropSealedOneOfBuildersOnlyP3
 import squareup.proto3.kotlin.unrecognized_constant.Easter as EasterK3
 import squareup.proto3.kotlin.unrecognized_constant.EasterOuterClass.Easter as EasterP3
 
@@ -276,6 +282,56 @@ class InteropTest {
       InteropBoxOneOfK3.Builder()
         .option(OneOf(InteropBoxOneOfK3.OPTION_A, "Hello"))
         .build(),
+    )
+  }
+
+  @Test fun sealedOneOfsKotlin_BuildersOnly() {
+    val checker = InteropChecker(
+      protocMessage = InteropSealedOneOfBuildersOnlyP3.newBuilder()
+        .setA("Hello")
+        .setG(InteropSealedOneOfBuildersOnlyP3.SealedMessage.newBuilder().setContent("content").build())
+        .setH("in the middle")
+        .build(),
+      canonicalJson = """{"sayMyName":"Hello","g":{"content":"content"},"h":"in the middle"}""",
+    )
+    checker.check(
+      InteropSealedOneOfBuildersOnlyK2.Builder()
+        .first_method(InteropSealedOneOfBuildersOnlyK2.First_method.A("Hello"))
+        .h("in the middle")
+        .second_method(InteropSealedOneOfBuildersOnlyK2.Second_method.G(InteropSealedOneOfBuildersOnlyK2.SealedMessage.build { content("content") }))
+        .build(),
+    )
+    checker.check(
+      InteropSealedOneOfBuildersOnlyK3.Builder()
+        .first_method(InteropSealedOneOfBuildersOnlyK3.First_method.A("Hello"))
+        .h("in the middle")
+        .second_method(InteropSealedOneOfBuildersOnlyK3.Second_method.G(InteropSealedOneOfBuildersOnlyK3.SealedMessage.build { content("content") }))
+        .build(),
+    )
+  }
+
+  @Test fun sealedOneOfsKotlin() {
+    val checker = InteropChecker(
+      protocMessage = InteropSealedOneOfP3.newBuilder()
+        .setA("Hello")
+        .setG(InteropSealedOneOfP3.SealedMessage.newBuilder().setContent("content").build())
+        .setH("in the middle")
+        .build(),
+      canonicalJson = """{"sayMyName":"Hello","g":{"content":"content"},"h":"in the middle"}""",
+    )
+    checker.check(
+      InteropSealedOneOfK2(
+        first_method = InteropSealedOneOfK2.First_method.A("Hello"),
+        h = "in the middle",
+        second_method = InteropSealedOneOfK2.Second_method.G(InteropSealedOneOfK2.SealedMessage(content = "content")),
+      ),
+    )
+    checker.check(
+      InteropSealedOneOfK3(
+        first_method = InteropSealedOneOfK3.First_method.A("Hello"),
+        h = "in the middle",
+        second_method = InteropSealedOneOfK3.Second_method.G(InteropSealedOneOfK3.SealedMessage(content = "content")),
+      ),
     )
   }
 

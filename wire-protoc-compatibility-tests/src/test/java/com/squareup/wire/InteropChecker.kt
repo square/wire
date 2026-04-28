@@ -17,13 +17,15 @@ package com.squareup.wire
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.message
+import assertk.assertions.support.expected
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.wire.json.assertJsonEquals
+import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 
@@ -95,8 +97,8 @@ class InteropChecker(
 
     @Suppress("UNCHECKED_CAST")
     val wireBytes = (adapter as ProtoAdapter<Any>).encodeByteString(message)
-    assertThat(wireBytes).isEqualTo(protocBytes)
-    assertThat(adapter.encodeByteString(message)).isEqualTo(protocBytes)
+    assertProtobufByteStringEquality(expected = protocBytes!!, actual = wireBytes)
+    assertProtobufByteStringEquality(expected = adapter.encodeByteString(message), actual = wireBytes)
     assertThat(adapter.decode(protocBytes!!)).isEqualTo(message)
   }
 
@@ -104,7 +106,7 @@ class InteropChecker(
     @Suppress("UNCHECKED_CAST")
     val adapter = gson.getAdapter(message::class.java) as TypeAdapter<Any>
 
-    assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
+    assertJsonEquals(expected = wireCanonicalJson, value = adapter.toJson(message))
     val fromJson = adapter.fromJson(wireCanonicalJson)
     assertThat(fromJson, displayActual = {
       """
@@ -122,7 +124,7 @@ class InteropChecker(
     @Suppress("UNCHECKED_CAST")
     val adapter = moshi.adapter(message::class.java) as JsonAdapter<Any>
 
-    assertThat(adapter.toJson(message)).isEqualTo(wireCanonicalJson)
+    assertJsonEquals(expected = wireCanonicalJson, value = adapter.toJson(message))
     val fromJson = adapter.fromJson(wireCanonicalJson)
     assertThat(fromJson, displayActual = {
       """
@@ -135,4 +137,47 @@ class InteropChecker(
       assertThat(adapter.fromJson(json)).isEqualTo(message)
     }
   }
+
+  /**
+   * Protoc and Wire might serialize their Protobuf messages in a different order. We thus try two
+   * comparisons.
+   */
+  fun assertProtobufByteStringEquality(expected: ByteString, actual: ByteString) {
+    if (actual == expected) return
+
+    val sortedActual = actual.sortedByTagUnsafe()
+    if (sortedActual == expected) return
+
+    assertThat(actual).expected(":<$expected> but was:<$actual> or sorted by tags: <$sortedActual>")
+  }
+}
+
+/**
+ * Not safe for production code. Returns a re-encoded copy of this protobuf message with fields
+ * ordered by tag number. Fields with the same tag (e.g. repeated fields) retain their relative
+ * order. Nested message bytes are kept opaque. This is used solely for testing.
+ */
+private fun ByteString.sortedByTagUnsafe(): ByteString {
+  data class Record(val tag: Int, val fieldEncoding: FieldEncoding, val value: Any)
+
+  val records = mutableListOf<Record>()
+  val reader = ProtoReader(Buffer().write(this))
+
+  reader.forEachTag { tag ->
+    val fieldEncoding = reader.peekFieldEncoding()!!
+
+    @Suppress("UNCHECKED_CAST")
+    val value = (fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>).decode(reader)
+    records.add(Record(tag, fieldEncoding, value))
+  }
+
+  records.sortBy { it.tag }
+
+  val buffer = Buffer()
+  val writer = ProtoWriter(buffer)
+  for ((tag, fieldEncoding, value) in records) {
+    @Suppress("UNCHECKED_CAST")
+    (fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>).encodeWithTag(writer, tag, value)
+  }
+  return buffer.readByteString()
 }

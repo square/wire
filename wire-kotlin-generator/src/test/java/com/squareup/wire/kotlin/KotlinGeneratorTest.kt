@@ -2217,16 +2217,27 @@ class KotlinGeneratorTest {
     assertThat(code).contains(
       """
       |public class PaymentMethodChoice(
+      |  @field:WireSealedOneof(schemaIndex = 0)
       |  public val method: Method? = null,
       """.trimMargin(),
     )
     assertThat(code).contains(
       """
       |  public sealed class Method {
+      |    @WireOneofField(
+      |      tag = 1,
+      |      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |      declaredName = "card_id",
+      |    )
       |    public data class CardId(
       |      public val `value`: String,
       |    ) : Method()
       |
+      |    @WireOneofField(
+      |      tag = 2,
+      |      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |      declaredName = "cash",
+      |    )
       |    public data class Cash(
       |      public val `value`: String,
       |    ) : Method()
@@ -2252,12 +2263,12 @@ class KotlinGeneratorTest {
     }
     val code = KotlinWithProfilesGenerator(schema)
       .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS)
-    // encode: when over the sealed class
+    // Encode.
     assertThat(code).contains("when (val method = value.method)")
     assertThat(code).contains("is Method.CardId ->")
     assertThat(code).contains("is Method.Cash ->")
     assertThat(code).contains("null -> {}")
-    // decode: inline tag cases
+    // Decode.
     assertThat(code).contains("1 -> method = Method.CardId(")
     assertThat(code).contains("2 -> method = Method.Cash(")
   }
@@ -2334,10 +2345,8 @@ class KotlinGeneratorTest {
     }
     val code = KotlinWithProfilesGenerator(schema)
       .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS)
-    // @SensitiveOption(true) should appear on CardId but not on Cash
     assertThat(code).contains("@SensitiveOption(true)")
     assertThat(code).contains("public data class CardId(")
-    // Cash has no option applied
     assertThat(code).contains("public data class Cash(")
   }
 

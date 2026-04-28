@@ -14,6 +14,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.WireOneofField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmSynthetic
 import kotlin.Any
@@ -92,10 +93,20 @@ public class SealedOneOfs private constructor(
    */
   @OneofOptionOption(33)
   public sealed class Value {
+    @WireOneofField(
+      tag = 1,
+      adapter = "squareup.wire.sealedoneof.SealedMessage#ADAPTER",
+      declaredName = "first_value",
+    )
     public data class FirstValue(
       public val `value`: SealedMessage,
     ) : SealedOneOfs.Value()
 
+    @WireOneofField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "second_value",
+    )
     @Deprecated(message = "second_value is deprecated")
     public data class SecondValue(
       public val `value`: String,
@@ -104,6 +115,11 @@ public class SealedOneOfs private constructor(
     /**
      * This one is a good candidate.
      */
+    @WireOneofField(
+      tag = 3,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      declaredName = "value",
+    )
     @FieldOptionOption(806)
     public data class Value(
       public val `value`: Int,

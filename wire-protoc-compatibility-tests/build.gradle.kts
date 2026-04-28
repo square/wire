@@ -39,6 +39,25 @@ wire {
   }
 
   kotlin {
+    buildersOnly = true
+    oneofMode = "sealed_class"
+
+    includes = listOf(
+      "squareup.proto2.kotlin.sealed.interop.buildersonly.*",
+      "squareup.proto3.kotlin.sealed.interop.buildersonly.*"
+    )
+  }
+
+  kotlin {
+    oneofMode = "sealed_class"
+
+    includes = listOf(
+      "squareup.proto2.kotlin.sealed.interop.*",
+      "squareup.proto3.kotlin.sealed.interop.*"
+    )
+  }
+
+  kotlin {
     javaInterop = true
     boxOneOfsMinSize = 5
     enumMode = "sealed_class"

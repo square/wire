@@ -73,7 +73,7 @@ import okio.openZip
  * (default) to generate Kotlin enum classes, or `sealed_class` to generate sealed classes with
  * data objects for each value and an Unrecognized case.
  *
- * `--kotlin_oneof_mode` controls how Kotlin oneofs are generated. Valid values are `flat`
+ * `--kotlin_oneof_mode` controls how oneofs are generated in Kotlin. Valid values are `flat`
  * (default) to generate each oneof field as a separate nullable property, `boxed` to generate
  * boxed oneofs, or `sealed_class` to generate a nested sealed class with a data class per field.
  *

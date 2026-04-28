@@ -56,6 +56,22 @@ message InteropBoxOneOf {
   }
 }
 
+message InteropSealedOneOf {
+  oneof method {
+    string a = 1;
+    int32 b = 2;
+    bool c = 3;
+    int64 d = 4;
+    bytes e = 5;
+    sint32 f = 6;
+    SealedMessage g = 7;
+  }
+
+  message SealedMessage {
+    optional string content = 1;
+  }
+}
+
 message SubInteropRepeatedUint {
   repeated uint32 repeated_values = 1 [packed = true];
 }

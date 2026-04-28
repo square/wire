@@ -74,7 +74,9 @@ import com.squareup.wire.WireEnclosingType
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
+import com.squareup.wire.WireOneofField
 import com.squareup.wire.WireRpc
+import com.squareup.wire.WireSealedOneof
 import com.squareup.wire.internal.DoubleArrayList
 import com.squareup.wire.internal.FloatArrayList
 import com.squareup.wire.internal.IntArrayList
@@ -1212,13 +1214,17 @@ class KotlinGenerator private constructor(
             schemaIndex = schemaIndex++,
           ),
         )
-        is OneOf -> result.add(
-          constructorParameterAndProperty(
-            message = message,
-            oneOf = fieldOrOneOf,
-            nameAllocator = nameAllocator,
-          ),
-        )
+        is OneOf -> {
+          val sealedIndex = if (fieldOrOneOf in message.sealedOneOfs()) schemaIndex++ else null
+          result.add(
+            constructorParameterAndProperty(
+              message = message,
+              oneOf = fieldOrOneOf,
+              nameAllocator = nameAllocator,
+              schemaIndex = sealedIndex,
+            ),
+          )
+        }
         else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
     }
@@ -1309,6 +1315,7 @@ class KotlinGenerator private constructor(
     message: MessageType,
     oneOf: OneOf,
     nameAllocator: NameAllocator,
+    schemaIndex: Int? = null,
   ): Pair<ParameterSpec, PropertySpec> {
     val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
     val fieldName = nameAllocator[oneOf]
@@ -1321,6 +1328,14 @@ class KotlinGenerator private constructor(
       .initializer(CodeBlock.of(if (buildersOnly) "builder.%N" else "%N", fieldName))
       .jvmFieldIf(useJavaInterop, jvmAnnotationPackage)
       .apply {
+        if (!buildersOnly && schemaIndex != null) {
+          addAnnotation(
+            AnnotationSpec.builder(WireSealedOneof::class)
+              .useSiteTarget(AnnotationSpec.UseSiteTarget.FIELD)
+              .addMember("schemaIndex = %L", schemaIndex)
+              .build(),
+          )
+        }
         if (oneOf.documentation.isNotBlank()) {
           addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
         }
@@ -3039,6 +3054,7 @@ class KotlinGenerator private constructor(
             .build(),
         )
         .apply {
+          addAnnotation(wireOneofFieldAnnotation(field))
           if (field.isDeprecated) {
             addAnnotation(
               AnnotationSpec.builder(Deprecated::class)
@@ -3215,6 +3231,19 @@ class KotlinGenerator private constructor(
       )
       .build()
   }
+
+  private fun wireOneofFieldAnnotation(field: Field): AnnotationSpec = AnnotationSpec.builder(WireOneofField::class)
+    .addMember("tag = %L", field.tag)
+    .addMember("adapter = %S", field.type!!.adapterString())
+    .apply {
+      if (field.isRedacted) addMember("redacted = true")
+      val jsonName = field.jsonName
+      if (jsonName != null && jsonName != field.name) {
+        addMember("jsonName = %S", jsonName)
+      }
+    }
+    .addMember("declaredName = %S", field.name)
+    .build()
 
   private fun MessageType.fieldsAndFlatOneOfFieldsAndBoxedOneOfs(): List<Any> {
     val fieldsAndFlatOneOfFields: List<Field> =
