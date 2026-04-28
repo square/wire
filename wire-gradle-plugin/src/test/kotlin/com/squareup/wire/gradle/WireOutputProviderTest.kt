@@ -35,16 +35,16 @@ class WireOutputProviderTest {
     val project = ProjectBuilder.builder().build()
     val output = project.objects.newInstance(CustomOutput::class.java)
 
-    output.out.set(project.providers.provider { "build/generated/custom-wire" })
-    output.includes.set(project.providers.provider { listOf("squareup.dinosaurs.Dinosaur") })
-    output.excludes.set(project.providers.provider { listOf("squareup.geology.Period") })
-    output.exclusive.set(project.providers.provider { false })
-    output.options.set(project.providers.provider { mapOf("a" to "one", "b" to "two") })
-    output.schemaHandlerFactory.set(TestSchemaHandlerFactory())
+    output.outProperty.set(project.providers.provider { "build/generated/custom-wire" })
+    output.includesProperty.set(project.providers.provider { listOf("squareup.dinosaurs.Dinosaur") })
+    output.excludesProperty.set(project.providers.provider { listOf("squareup.geology.Period") })
+    output.exclusiveProperty.set(project.providers.provider { false })
+    output.optionsProperty.set(project.providers.provider { mapOf("a" to "one", "b" to "two") })
+    output.schemaHandlerFactoryProperty.set(TestSchemaHandlerFactory())
 
-    assertThat(output.out.orNull).isEqualTo("build/generated/custom-wire")
+    assertThat(output.outProperty.orNull).isEqualTo("build/generated/custom-wire")
 
-    val target = output.toTarget(output.out.get()) as CustomTarget
+    val target = output.toTarget(output.outProperty.get()) as CustomTarget
 
     assertThat(target.outDirectory).isEqualTo("build/generated/custom-wire")
     assertThat(target.includes).containsExactly("squareup.dinosaurs.Dinosaur")
@@ -59,9 +59,9 @@ class WireOutputProviderTest {
     val project = ProjectBuilder.builder().build()
     val output = project.objects.newInstance(CustomOutput::class.java)
 
-    output.exclusive.set(false)
-    output.exclusive.set(project.providers.gradleProperty("missing-exclusive").map(String::toBoolean))
-    output.schemaHandlerFactory.set(TestSchemaHandlerFactory())
+    output.exclusiveProperty.set(false)
+    output.exclusiveProperty.set(project.providers.gradleProperty("missing-exclusive").map(String::toBoolean))
+    output.schemaHandlerFactoryProperty.set(TestSchemaHandlerFactory())
 
     val target = output.toTarget("build/generated/custom-wire") as CustomTarget
 

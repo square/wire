@@ -1,14 +1,17 @@
 public abstract class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	public final fun exclusive (Z)V
-	public final fun getExcludes ()Lorg/gradle/api/provider/ListProperty;
-	public final fun getExclusive ()Lorg/gradle/api/provider/Property;
-	public final fun getIncludes ()Lorg/gradle/api/provider/ListProperty;
-	public final fun getOptions ()Lorg/gradle/api/provider/MapProperty;
-	public final fun getSchemaHandlerFactory ()Lorg/gradle/api/provider/Property;
-	public final fun getSchemaHandlerFactoryClass ()Lorg/gradle/api/provider/Property;
-	public final fun options (Ljava/util/Map;)V
-	public final fun schemaHandlerFactoryClass (Ljava/lang/String;)V
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getExcludesProperty ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getExclusive ()Z
+	public final fun getExclusiveProperty ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludes ()Ljava/util/List;
+	public final fun getIncludesProperty ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getOptions ()Ljava/util/Map;
+	public final fun getOptionsProperty ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getSchemaHandlerFactory ()Lcom/squareup/wire/schema/SchemaHandler$Factory;
+	public final fun getSchemaHandlerFactoryClass ()Ljava/lang/String;
+	public final fun getSchemaHandlerFactoryClassProperty ()Lorg/gradle/api/provider/Property;
+	public final fun getSchemaHandlerFactoryProperty ()Lorg/gradle/api/provider/Property;
 	public final fun setExcludes (Ljava/util/List;)V
 	public final fun setExclusive (Z)V
 	public final fun setIncludes (Ljava/util/List;)V
@@ -164,8 +167,8 @@ public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 public abstract class com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
 	protected abstract fun getObjectFactory ()Lorg/gradle/api/model/ObjectFactory;
-	public final fun getOut ()Lorg/gradle/api/provider/Property;
-	public final fun out (Ljava/lang/String;)V
+	public final fun getOut ()Ljava/lang/String;
+	public final fun getOutProperty ()Lorg/gradle/api/provider/Property;
 	public final fun setOut (Ljava/lang/String;)V
 	public abstract fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
 }
