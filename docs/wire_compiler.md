@@ -489,12 +489,12 @@ wire {
     // `suspending` to generate coroutines APIs that require a Kotlin
     // coroutines context.
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
-    rpcCallStyle = 'blocking'
+    rpcCallStyle = 'suspending'
 
     // `client` to generate interfaces best suited to sending outbound calls.
     // `server` to generate interfaces best suited to receiving inbound calls.
     // `none` to not generate services.
-    rpcRole = 'server'
+    rpcRole = 'client'
 
     // If set, the value will be appended to generated service type names. If
     // null, their rpcRole will be used as a suffix instead.
@@ -515,9 +515,27 @@ wire {
     // Defines how an protobuf enum type is to be generated. See `com.squareup.wire.kotlin.EnumMode`
     enumMode = "enum_class"
 
+    // `flat` (default) to generate each oneof field as a separate nullable property on the
+    // message class. `boxed` to generate all oneof fields as boxed types. `sealed_class` to
+    // generate a nested sealed class with a data class subtype per field.
+    // See `com.squareup.wire.kotlin.OneofMode`.
+    oneofMode = "flat"
+
     // True to emit a adapters that include a decode() function that accepts a `ProtoReader32`.
     // Use this optimization when targeting Kotlin/JS, where `Long` cursors are inefficient.
     emitProtoReader32 = false
+
+    // True for the generated classes to be mutable.
+    mutableTypes = false
+
+    // True for the generated gRPC client to use explicit classes for client, server,
+    // and bidirectional streaming calls.
+    explicitStreamingCalls = false
+
+    // False to skip making immutable copies of repeated and map fields when constructing a
+    // Message. Only set to false when you can guarantee these fields won't be mutated after
+    // construction, to avoid the copy overhead.
+    makeImmutableCopies = true
   }
 }
 ```

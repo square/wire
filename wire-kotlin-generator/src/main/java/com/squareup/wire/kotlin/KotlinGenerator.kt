@@ -147,6 +147,50 @@ class KotlinGenerator private constructor(
   private val explicitStreamingCalls: Boolean,
   private val makeImmutableCopies: Boolean,
 ) {
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before oneofMode was added.")
+  private constructor(
+    schema: Schema,
+    typeToKotlinName: Map<ProtoType, TypeName>,
+    memberToKotlinName: Map<ProtoMember, TypeName>,
+    profile: Profile,
+    emitAndroid: Boolean,
+    javaInterOp: Boolean,
+    emitDeclaredOptions: Boolean,
+    emitAppliedOptions: Boolean,
+    rpcCallStyle: RpcCallStyle,
+    rpcRole: RpcRole,
+    boxOneOfsMinSize: Int,
+    nameSuffix: String?,
+    buildersOnly: Boolean,
+    escapeKotlinKeywords: Boolean,
+    enumMode: EnumMode,
+    emitProtoReader32: Boolean,
+    mutableTypes: Boolean,
+    explicitStreamingCalls: Boolean,
+    makeImmutableCopies: Boolean,
+  ) : this(
+    schema = schema,
+    typeToKotlinName = typeToKotlinName,
+    memberToKotlinName = memberToKotlinName,
+    profile = profile,
+    emitAndroid = emitAndroid,
+    javaInterOp = javaInterOp,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    rpcCallStyle = rpcCallStyle,
+    rpcRole = rpcRole,
+    boxOneOfsMinSize = boxOneOfsMinSize,
+    nameSuffix = nameSuffix,
+    buildersOnly = buildersOnly,
+    escapeKotlinKeywords = escapeKotlinKeywords,
+    enumMode = enumMode,
+    oneofMode = OneofMode.FLAT,
+    emitProtoReader32 = emitProtoReader32,
+    mutableTypes = mutableTypes,
+    explicitStreamingCalls = explicitStreamingCalls,
+    makeImmutableCopies = makeImmutableCopies,
+  )
+
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
   private val sealedSubclassNameAllocatorStore = mutableMapOf<OneOf, NameAllocator>()
 
