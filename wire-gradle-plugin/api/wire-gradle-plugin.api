@@ -21,15 +21,15 @@ public abstract class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/
 
 public abstract class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	public final fun getAndroid ()Z
-	public final fun getAndroidAnnotations ()Z
-	public final fun getBuildersOnly ()Z
-	public final fun getCompact ()Z
-	public final fun getEmitAppliedOptions ()Z
-	public final fun getEmitDeclaredOptions ()Z
-	public final fun getExcludes ()Ljava/util/List;
-	public final fun getExclusive ()Z
-	public final fun getIncludes ()Ljava/util/List;
+	public final fun getAndroid ()Lorg/gradle/api/provider/Property;
+	public final fun getAndroidAnnotations ()Lorg/gradle/api/provider/Property;
+	public final fun getBuildersOnly ()Lorg/gradle/api/provider/Property;
+	public final fun getCompact ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitAppliedOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitDeclaredOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getExcludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getExclusive ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludes ()Lorg/gradle/api/provider/ListProperty;
 	public final fun setAndroid (Z)V
 	public final fun setAndroidAnnotations (Z)V
 	public final fun setBuildersOnly (Z)V
@@ -45,26 +45,26 @@ public abstract class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gr
 
 public abstract class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	public final fun getAndroid ()Z
-	public final fun getBoxOneOfsMinSize ()I
-	public final fun getBuildersOnly ()Z
-	public final fun getEmitAppliedOptions ()Z
-	public final fun getEmitDeclaredOptions ()Z
-	public final fun getEmitProtoReader32 ()Z
-	public final fun getEnumMode ()Ljava/lang/String;
-	public final fun getEscapeKotlinKeywords ()Z
-	public final fun getExcludes ()Ljava/util/List;
-	public final fun getExclusive ()Z
-	public final fun getExplicitStreamingCalls ()Z
-	public final fun getGrpcServerCompatible ()Z
-	public final fun getIncludes ()Ljava/util/List;
-	public final fun getJavaInterop ()Z
-	public final fun getMakeImmutableCopies ()Z
-	public final fun getMutableTypes ()Z
-	public final fun getNameSuffix ()Ljava/lang/String;
-	public final fun getRpcCallStyle ()Ljava/lang/String;
-	public final fun getRpcRole ()Ljava/lang/String;
-	public final fun getSingleMethodServices ()Z
+	public final fun getAndroid ()Lorg/gradle/api/provider/Property;
+	public final fun getBoxOneOfsMinSize ()Lorg/gradle/api/provider/Property;
+	public final fun getBuildersOnly ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitAppliedOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitDeclaredOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitProtoReader32 ()Lorg/gradle/api/provider/Property;
+	public final fun getEnumMode ()Lorg/gradle/api/provider/Property;
+	public final fun getEscapeKotlinKeywords ()Lorg/gradle/api/provider/Property;
+	public final fun getExcludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getExclusive ()Lorg/gradle/api/provider/Property;
+	public final fun getExplicitStreamingCalls ()Lorg/gradle/api/provider/Property;
+	public final fun getGrpcServerCompatible ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getJavaInterop ()Lorg/gradle/api/provider/Property;
+	public final fun getMakeImmutableCopies ()Lorg/gradle/api/provider/Property;
+	public final fun getMutableTypes ()Lorg/gradle/api/provider/Property;
+	public final fun getNameSuffix ()Lorg/gradle/api/provider/Property;
+	public final fun getRpcCallStyle ()Lorg/gradle/api/provider/Property;
+	public final fun getRpcRole ()Lorg/gradle/api/provider/Property;
+	public final fun getSingleMethodServices ()Lorg/gradle/api/provider/Property;
 	public final fun setAndroid (Z)V
 	public final fun setBoxOneOfsMinSize (I)V
 	public final fun setBuildersOnly (Z)V
