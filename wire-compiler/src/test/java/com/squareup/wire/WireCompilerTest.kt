@@ -29,6 +29,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.squareup.wire.kotlin.EnumMode
+import com.squareup.wire.kotlin.OneofMode
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.CustomTarget
@@ -158,6 +159,7 @@ class WireCompilerTest {
       "--kotlin_escape_keywords",
       "--emit_proto_reader_32",
       "--kotlin_enum_mode=sealed_class",
+      "--kotlin_oneof_mode=sealed_class",
       // "--custom_option=a,1",
       // "--custom_option=b,2",
       "--opaque_types=opaque_types",
@@ -205,6 +207,7 @@ class WireCompilerTest {
           buildersOnly = true,
           escapeKotlinKeywords = true,
           enumMode = EnumMode.SEALED_CLASS,
+          oneofMode = OneofMode.SEALED_CLASS,
           emitProtoReader32 = true,
           mutableTypes = false,
           explicitStreamingCalls = true,
@@ -450,6 +453,7 @@ class WireCompilerTest {
       "--kotlin_escape_keywords",
       "--emit_proto_reader_32",
       "--kotlin_enum_mode=sealed_class",
+      "--kotlin_oneof_mode=sealed_class",
       "--custom_option=a,1",
       "--custom_option=b,2",
       "--kotlin_explicit_streaming_calls",
@@ -488,6 +492,7 @@ class WireCompilerTest {
         buildersOnly = true,
         escapeKotlinKeywords = true,
         enumMode = EnumMode.SEALED_CLASS,
+        oneofMode = OneofMode.SEALED_CLASS,
         emitProtoReader32 = true,
         mutableTypes = false,
         explicitStreamingCalls = true,

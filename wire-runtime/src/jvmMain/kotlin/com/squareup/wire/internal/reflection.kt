@@ -22,6 +22,7 @@ import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
+import com.squareup.wire.WireOneofField
 import java.lang.reflect.Field
 import java.util.Collections
 import kotlin.reflect.KClass
@@ -63,6 +64,10 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
       for (key in getKeys<M, B>(messageField)) {
         fields[key.tag] = OneOfBinding(messageField, builderType, key, writeIdentityValues)
       }
+    } else {
+      for ((annotation, subclassType) in getSealedOneOfAnnotations(messageField)) {
+        fields[annotation.tag] = SealedOneOfBinding(messageField, builderType, annotation, subclassType, classLoader)
+      }
     }
   }
 
@@ -87,6 +92,14 @@ private fun <M : Message<M, B>, B : Message.Builder<M, B>> getKeys(
   keysField.isAccessible = true
   @Suppress("UNCHECKED_CAST")
   return keysField.get(null) as Set<OneOf.Key<*>>
+}
+
+private fun getSealedOneOfAnnotations(messageField: Field): List<Pair<WireOneofField, Class<*>>> {
+  val sealedClass = messageField.type ?: return emptyList()
+  return sealedClass.declaredClasses.mapNotNull { nestedClass ->
+    val annotation = nestedClass.getAnnotation(WireOneofField::class.java) ?: return@mapNotNull null
+    annotation to nestedClass
+  }
 }
 
 fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(

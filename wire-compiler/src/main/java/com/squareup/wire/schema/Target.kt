@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.java.JavaSchemaHandler
 import com.squareup.wire.kotlin.EnumMode
 import com.squareup.wire.kotlin.KotlinSchemaHandler
+import com.squareup.wire.kotlin.OneofMode
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftSchemaHandler
@@ -133,6 +134,9 @@ data class KotlinTarget(
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
   val enumMode: EnumMode = EnumMode.ENUM_CLASS,
 
+  /** flat, boxed, or sealed_class. See [OneofMode][com.squareup.wire.kotlin.OneofMode]. */
+  val oneofMode: OneofMode = OneofMode.FLAT,
+
   /**
    * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
    * when targeting Kotlin/JS, where `Long` cursors are inefficient.
@@ -174,6 +178,7 @@ data class KotlinTarget(
     buildersOnly = buildersOnly,
     escapeKotlinKeywords = escapeKotlinKeywords,
     enumMode = enumMode,
+    oneofMode = oneofMode,
     emitProtoReader32 = emitProtoReader32,
     mutableTypes = mutableTypes,
     explicitStreamingCalls = explicitStreamingCalls,

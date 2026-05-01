@@ -24,6 +24,7 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
   private val fieldValueMap: MutableMap<Int, Pair<WireField, Any?>>
   private val repeatedFieldValueMap: MutableMap<Int, Pair<WireField, MutableList<*>>>
   private val mapFieldKeyValueMap: MutableMap<Int, Pair<WireField, MutableMap<*, *>>>
+  private val sealedOneofValues: MutableMap<String, Any?> = LinkedHashMap()
 
   init {
     val fieldCount = messageType.declaredFields.size
@@ -52,6 +53,12 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     }
   }
 
+  fun setSealedOneof(fieldName: String, value: Any?) {
+    sealedOneofValues[fieldName] = value
+  }
+
+  fun getSealedOneof(fieldName: String): Any? = sealedOneofValues[fieldName]
+
   private fun clobberOtherIsOneOfs(field: WireField) {
     fieldValueMap.values
       .map { it.first }
@@ -77,38 +84,29 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
   }
 
   override fun build(): M {
-    val protoFields = messageType.declaredProtoFields()
-    val fields = ArrayDeque<ProtoField>().apply {
-      for (protoField in protoFields) {
-        add(protoField)
-      }
-    }
+    data class ConstructorParam(val type: Class<*>, val schemaIndex: Int, val value: () -> Any?)
 
     // Retrieve constructor explicitly since `Constructor#getParameterCount` was introduced in JDK
     // 1.8 and may not be available. ByteString is for `unknown_fields`.
-    val parameterTypes = protoFields.map { it.type }.toTypedArray()
-    val constructor = messageType.getDeclaredConstructor(*parameterTypes, ByteString::class.java)
-    val args = (0..parameterTypes.size).map { index ->
-      when {
-        index == protoFields.size -> buildUnknownFields()
-        else -> get(fields.removeFirst().wireField)
+    val params = messageType.declaredFields.mapNotNull { field ->
+      val wireField = field.getAnnotation(WireField::class.java)
+      if (wireField != null) {
+        return@mapNotNull ConstructorParam(field.type, wireField.schemaIndex) { get(wireField) }
       }
-    }
-    return constructor.newInstance(*args.toTypedArray()) as M
+      val sealedOneof = field.getAnnotation(WireSealedOneof::class.java)
+      if (sealedOneof != null) {
+        val name = field.name
+        return@mapNotNull ConstructorParam(field.type, sealedOneof.schemaIndex) { sealedOneofValues[name] }
+      }
+      null
+    }.sortedBy { it.schemaIndex }
+
+    val constructor = messageType.getDeclaredConstructor(
+      *(params.map { it.type } + ByteString::class.java).toTypedArray(),
+    )
+    val args = (params.map { it.value() } + buildUnknownFields()).toTypedArray()
+    return constructor.newInstance(*args) as M
   }
-
-  private fun Class<M>.declaredProtoFields(): List<ProtoField> = declaredFields
-    .mapNotNull { field ->
-      val wireField = field.declaredAnnotations.filterIsInstance<WireField>()
-        .firstOrNull()
-      return@mapNotNull wireField?.let { ProtoField(field.type, wireField) }
-    }
-    .sortedBy { it.wireField.schemaIndex }
-
-  private class ProtoField(
-    val type: Class<*>,
-    val wireField: WireField,
-  )
 }
 
 private val WireField.isMap: Boolean

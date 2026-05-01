@@ -39,6 +39,13 @@ wire {
     boxOneOfsMinSize = 1
   }
 
+  kotlin {
+    includes = listOf("squareup.wire.sealedoneof.*")
+    out = "src/main/kotlin"
+    oneofMode = "sealed_class"
+    buildersOnly = true
+  }
+
   opaque("squareup.protos.opaque_types.OuterOpaqueType.InnerOpaqueType1")
   kotlin {
     includes = listOf("squareup.protos.opaque_types.*")

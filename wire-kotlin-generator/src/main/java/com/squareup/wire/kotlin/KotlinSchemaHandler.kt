@@ -79,7 +79,10 @@ class KotlinSchemaHandler(
   private val escapeKotlinKeywords: Boolean = false,
 
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
-  val enumMode: EnumMode = EnumMode.ENUM_CLASS,
+  private val enumMode: EnumMode = EnumMode.ENUM_CLASS,
+
+  /** flat, boxed, or sealed_class. See [OneofMode][com.squareup.wire.kotlin.OneofMode]. */
+  private val oneofMode: OneofMode = OneofMode.FLAT,
 
   /**
    * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
@@ -126,6 +129,7 @@ class KotlinSchemaHandler(
       buildersOnly = buildersOnly,
       escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
+      oneofMode = oneofMode,
       emitProtoReader32 = emitProtoReader32,
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,

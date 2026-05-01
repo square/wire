@@ -59,6 +59,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun getMakeImmutableCopies ()Z
 	public final fun getMutableTypes ()Z
 	public final fun getNameSuffix ()Ljava/lang/String;
+	public final fun getOneofMode ()Ljava/lang/String;
 	public final fun getRpcCallStyle ()Ljava/lang/String;
 	public final fun getRpcRole ()Ljava/lang/String;
 	public final fun getSingleMethodServices ()Z
@@ -79,6 +80,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun setMakeImmutableCopies (Z)V
 	public final fun setMutableTypes (Z)V
 	public final fun setNameSuffix (Ljava/lang/String;)V
+	public final fun setOneofMode (Ljava/lang/String;)V
 	public final fun setRpcCallStyle (Ljava/lang/String;)V
 	public final fun setRpcRole (Ljava/lang/String;)V
 	public final fun setSingleMethodServices (Z)V

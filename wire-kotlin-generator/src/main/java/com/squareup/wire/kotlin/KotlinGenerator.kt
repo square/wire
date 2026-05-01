@@ -74,7 +74,9 @@ import com.squareup.wire.WireEnclosingType
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
+import com.squareup.wire.WireOneofField
 import com.squareup.wire.WireRpc
+import com.squareup.wire.WireSealedOneof
 import com.squareup.wire.internal.DoubleArrayList
 import com.squareup.wire.internal.FloatArrayList
 import com.squareup.wire.internal.IntArrayList
@@ -98,6 +100,7 @@ import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
 import com.squareup.wire.schema.Options.Companion.METHOD_OPTIONS
+import com.squareup.wire.schema.Options.Companion.ONEOF_OPTIONS
 import com.squareup.wire.schema.Options.Companion.SERVICE_OPTIONS
 import com.squareup.wire.schema.Profile
 import com.squareup.wire.schema.ProtoFile
@@ -138,12 +141,58 @@ class KotlinGenerator private constructor(
   private val buildersOnly: Boolean,
   private val escapeKotlinKeywords: Boolean,
   private val enumMode: EnumMode,
+  private val oneofMode: OneofMode,
   private val emitProtoReader32: Boolean,
   private val mutableTypes: Boolean,
   private val explicitStreamingCalls: Boolean,
   private val makeImmutableCopies: Boolean,
 ) {
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before oneofMode was added.")
+  private constructor(
+    schema: Schema,
+    typeToKotlinName: Map<ProtoType, TypeName>,
+    memberToKotlinName: Map<ProtoMember, TypeName>,
+    profile: Profile,
+    emitAndroid: Boolean,
+    javaInterOp: Boolean,
+    emitDeclaredOptions: Boolean,
+    emitAppliedOptions: Boolean,
+    rpcCallStyle: RpcCallStyle,
+    rpcRole: RpcRole,
+    boxOneOfsMinSize: Int,
+    nameSuffix: String?,
+    buildersOnly: Boolean,
+    escapeKotlinKeywords: Boolean,
+    enumMode: EnumMode,
+    emitProtoReader32: Boolean,
+    mutableTypes: Boolean,
+    explicitStreamingCalls: Boolean,
+    makeImmutableCopies: Boolean,
+  ) : this(
+    schema = schema,
+    typeToKotlinName = typeToKotlinName,
+    memberToKotlinName = memberToKotlinName,
+    profile = profile,
+    emitAndroid = emitAndroid,
+    javaInterOp = javaInterOp,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    rpcCallStyle = rpcCallStyle,
+    rpcRole = rpcRole,
+    boxOneOfsMinSize = boxOneOfsMinSize,
+    nameSuffix = nameSuffix,
+    buildersOnly = buildersOnly,
+    escapeKotlinKeywords = escapeKotlinKeywords,
+    enumMode = enumMode,
+    oneofMode = OneofMode.FLAT,
+    emitProtoReader32 = emitProtoReader32,
+    mutableTypes = mutableTypes,
+    explicitStreamingCalls = explicitStreamingCalls,
+    makeImmutableCopies = makeImmutableCopies,
+  )
+
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
+  private val sealedSubclassNameAllocatorStore = mutableMapOf<OneOf, NameAllocator>()
 
   private val jvmAnnotationPackage: String = if (javaInterOp) "kotlin.jvm" else "com.squareup.wire.internal"
   private val useJavaInterop: Boolean = javaInterOp || buildersOnly
@@ -546,14 +595,16 @@ class KotlinGenerator private constructor(
               }
               is OneOf -> {
                 val fieldName = newName(fieldOrOneOf.name, fieldOrOneOf)
-                val keysFieldName = boxedOneOfKeysFieldName(fieldName)
-                check(newName(keysFieldName) == keysFieldName) {
-                  "unexpected name collision for keys set of boxed one of, ${fieldOrOneOf.name}"
-                }
                 newName(boxedOneOfClassName(fieldOrOneOf.name), boxedOneOfClassName(fieldOrOneOf.name))
-                fieldOrOneOf.fields.forEach { field ->
-                  val keyFieldName = boxedOneOfKeyFieldName(fieldOrOneOf.name, field.name)
-                  newName(keyFieldName, keyFieldName)
+                if (oneofMode != OneofMode.SEALED_CLASS) {
+                  val keysFieldName = boxedOneOfKeysFieldName(fieldName)
+                  check(newName(keysFieldName) == keysFieldName) {
+                    "unexpected name collision for keys set of boxed one of, ${fieldOrOneOf.name}"
+                  }
+                  fieldOrOneOf.fields.forEach { field ->
+                    val keyFieldName = boxedOneOfKeyFieldName(fieldOrOneOf.name, field.name)
+                    newName(keyFieldName, keyFieldName)
+                  }
                 }
               }
               else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
@@ -640,6 +691,11 @@ class KotlinGenerator private constructor(
       val boxClassName = className.nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
       classBuilder.addType(oneOfBoxType(boxClassName, oneOf))
       addOneOfKeys(companionBuilder, oneOf, boxClassName, nameAllocator)
+    }
+
+    for (oneOf in type.sealedOneOfs()) {
+      val sealedClassName = className.nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
+      classBuilder.addType(sealedOneOfClass(sealedClassName, oneOf))
     }
 
     companionBuilder.addProperty(
@@ -1026,6 +1082,16 @@ class KotlinGenerator private constructor(
         ),
       )
     }
+    for (sealedOneOf in type.sealedOneOfs()) {
+      builder.addFunction(
+        boxOneOfBuilderSetter(
+          type,
+          sealedOneOf,
+          nameAllocator,
+          builderClass,
+        ),
+      )
+    }
 
     val buildFunction = FunSpec.builder("build")
       .addModifiers(OVERRIDE)
@@ -1192,13 +1258,17 @@ class KotlinGenerator private constructor(
             schemaIndex = schemaIndex++,
           ),
         )
-        is OneOf -> result.add(
-          constructorParameterAndProperty(
-            message = message,
-            oneOf = fieldOrOneOf,
-            nameAllocator = nameAllocator,
-          ),
-        )
+        is OneOf -> {
+          val sealedIndex = if (fieldOrOneOf in message.sealedOneOfs()) schemaIndex++ else null
+          result.add(
+            constructorParameterAndProperty(
+              message = message,
+              oneOf = fieldOrOneOf,
+              nameAllocator = nameAllocator,
+              schemaIndex = sealedIndex,
+            ),
+          )
+        }
         else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
     }
@@ -1289,6 +1359,7 @@ class KotlinGenerator private constructor(
     message: MessageType,
     oneOf: OneOf,
     nameAllocator: NameAllocator,
+    schemaIndex: Int? = null,
   ): Pair<ParameterSpec, PropertySpec> {
     val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
     val fieldName = nameAllocator[oneOf]
@@ -1301,6 +1372,14 @@ class KotlinGenerator private constructor(
       .initializer(CodeBlock.of(if (buildersOnly) "builder.%N" else "%N", fieldName))
       .jvmFieldIf(useJavaInterop, jvmAnnotationPackage)
       .apply {
+        if (!buildersOnly && schemaIndex != null) {
+          addAnnotation(
+            AnnotationSpec.builder(WireSealedOneof::class)
+              .useSiteTarget(AnnotationSpec.UseSiteTarget.FIELD)
+              .addMember("schemaIndex = %L", schemaIndex)
+              .build(),
+          )
+        }
         if (oneOf.documentation.isNotBlank()) {
           addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
         }
@@ -1707,8 +1786,28 @@ class KotlinGenerator private constructor(
           }
           is OneOf -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
-            add("if (value.%1N != %2L) ", fieldName, "null")
-            addStatement("%N += value.%N.encodedSizeWithTag()", sizeName, fieldName)
+            if (fieldOrOneOf in message.sealedOneOfs()) {
+              val sealedClassName = (message.typeName as ClassName)
+                .nestedClass(localNameAllocator[boxedOneOfClassName(fieldOrOneOf.name)])
+              val subclassNameAllocator = sealedSubclassNameAllocator(fieldOrOneOf)
+              beginControlFlow("when (val %N = value.%N)", fieldName, fieldName)
+              for (field in fieldOrOneOf.fields) {
+                val subclassType = sealedClassName.nestedClass(subclassNameAllocator[field])
+                addStatement(
+                  "is %T -> %N += %L.encodedSizeWithTag(%L, %N.value)",
+                  subclassType,
+                  sizeName,
+                  adapterFor(field),
+                  field.tag,
+                  fieldName,
+                )
+              }
+              addStatement("null -> {}")
+              endControlFlow()
+            } else {
+              add("if (value.%1N != %2L) ", fieldName, "null")
+              addStatement("%N += value.%N.encodedSizeWithTag()", sizeName, fieldName)
+            }
           }
           else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
@@ -1779,6 +1878,27 @@ class KotlinGenerator private constructor(
         addStatement("value.%L.encodeWithTag(writer)", fieldName)
       }
     }
+    for (sealedOneOf in message.sealedOneOfs()) {
+      val fieldName = nameAllocator[sealedOneOf]
+      val sealedClassName = (message.typeName as ClassName)
+        .nestedClass(nameAllocator[boxedOneOfClassName(sealedOneOf.name)])
+      val subclassNameAllocator = sealedSubclassNameAllocator(sealedOneOf)
+      encodeCalls += buildCodeBlock {
+        beginControlFlow("when (val %N = value.%N)", fieldName, fieldName)
+        for (field in sealedOneOf.fields) {
+          val subclassType = sealedClassName.nestedClass(subclassNameAllocator[field])
+          addStatement(
+            "is %T -> %L.encodeWithTag(writer, %L, %N.value)",
+            subclassType,
+            adapterFor(field),
+            field.tag,
+            fieldName,
+          )
+        }
+        addStatement("null -> {}")
+        endControlFlow()
+      }
+    }
     encodeCalls += buildCodeBlock {
       addStatement("writer.writeBytes(value.unknownFields)")
     }
@@ -1832,11 +1952,7 @@ class KotlinGenerator private constructor(
             }
             is OneOf -> {
               val fieldName = nameAllocator[fieldOrOneOf]
-              val oneOfClass = (message.typeName as ClassName)
-                .nestedClass(nameAllocator[boxedOneOfClassName(fieldOrOneOf.name)])
-                .parameterizedBy(STAR)
-              val fieldClass = com.squareup.wire.OneOf::class.asClassName()
-                .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
+              val fieldClass = message.oneOfClassFor(fieldOrOneOf, nameAllocator)
               val fieldDeclaration = CodeBlock.of("var %N: %T = %L", fieldName, fieldClass, "null")
               addStatement("%L", fieldDeclaration)
             }
@@ -1914,7 +2030,8 @@ class KotlinGenerator private constructor(
     val decodeBlock = buildCodeBlock {
       val fields = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()
       val boxOneOfs = message.boxOneOfs()
-      if (fields.isEmpty() && boxOneOfs.isEmpty()) {
+      val sealedOneOfs = message.sealedOneOfs()
+      if (fields.isEmpty() && boxOneOfs.isEmpty() && sealedOneOfs.isEmpty()) {
         addStatement(
           "val unknownFields = reader.%L(reader::readUnknownField)",
           protoReaderType.forEachTag,
@@ -1954,6 +2071,40 @@ class KotlinGenerator private constructor(
                 "%L -> %L",
                 field.tag,
                 decodeAndAssign(protoReaderType, field, fieldName, adapterName),
+              )
+            }
+          }
+        }
+        for (sealedOneOf in sealedOneOfs) {
+          val fieldName = nameAllocator[sealedOneOf]
+          val sealedClassName = (message.typeName as ClassName)
+            .nestedClass(nameAllocator[boxedOneOfClassName(sealedOneOf.name)])
+          val subclassNameAllocator = sealedSubclassNameAllocator(sealedOneOf)
+          for (field in sealedOneOf.fields) {
+            val subclassType = sealedClassName.nestedClass(subclassNameAllocator[field])
+            val adapterName = adapterFor(field)
+            if (field.type!!.isEnum) {
+              beginControlFlow("%L -> try", field.tag)
+              addStatement(
+                "${if (buildersOnly) "builder.%N" else "%N"} = %T(%L.decode(reader))",
+                fieldName,
+                subclassType,
+                adapterName,
+              )
+              nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
+              addStatement(
+                "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())",
+                tag,
+                FieldEncoding::class,
+              )
+              endControlFlow()
+            } else {
+              addStatement(
+                "%L -> ${if (buildersOnly) "builder.%N" else "%N"} = %T(%L.decode(reader))",
+                field.tag,
+                fieldName,
+                subclassType,
+                adapterName,
               )
             }
           }
@@ -2900,6 +3051,76 @@ class KotlinGenerator private constructor(
   }
 
   /**
+   * Converts a snake_case field name to PascalCase for use as a sealed class subtype name.
+   * For example: `card_id` → `CardId`, `bank_account` → `BankAccount`.
+   */
+  private fun String.toSealedSubclassName(): String = split("_").joinToString("") { part -> part.replaceFirstChar { it.uppercaseChar() } }
+
+  /**
+   * Generates a sealed class for a oneof.
+   *
+   * Example:
+   * ```
+   * public sealed class Method {
+   *   public data class CardId(public val value: String) : Method()
+   *   public data class BankAccount(public val value: BankAccount) : Method()
+   *   public data class CashBalanceCents(public val value: Int) : Method()
+   * }
+   * ```
+   */
+  private fun sealedOneOfClass(sealedClassName: ClassName, oneOf: OneOf): TypeSpec {
+    val builder = TypeSpec.classBuilder(sealedClassName)
+      .addModifiers(KModifier.SEALED)
+      .apply {
+        if (oneOf.documentation.isNotBlank()) {
+          addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
+        }
+        for (annotation in optionAnnotations(oneOf.options)) {
+          addAnnotation(annotation)
+        }
+      }
+
+    val subclassNameAllocator = sealedSubclassNameAllocator(oneOf)
+    for (field in oneOf.fields) {
+      val subclassName = subclassNameAllocator[field]
+      val valueType = field.type!!.typeName
+      val subclass = TypeSpec.classBuilder(subclassName)
+        .addModifiers(DATA)
+        .superclass(sealedClassName)
+        .primaryConstructor(
+          FunSpec.constructorBuilder()
+            .addParameter("value", valueType)
+            .build(),
+        )
+        .addProperty(
+          PropertySpec.builder("value", valueType)
+            .initializer("value")
+            .build(),
+        )
+        .apply {
+          addAnnotation(wireOneofFieldAnnotation(field))
+          if (field.isDeprecated) {
+            addAnnotation(
+              AnnotationSpec.builder(Deprecated::class)
+                .addMember("message = %S", "${field.name} is deprecated")
+                .build(),
+            )
+          }
+          for (annotation in optionAnnotations(field.options)) {
+            addAnnotation(annotation)
+          }
+          if (field.documentation.isNotBlank()) {
+            addKdoc("%L\n", field.documentation.sanitizeKdoc())
+          }
+        }
+        .build()
+      builder.addType(subclass)
+    }
+
+    return builder.build()
+  }
+
+  /**
    * Generates a class for this boxed oneof.
    *
    * Example:
@@ -3055,40 +3276,68 @@ class KotlinGenerator private constructor(
       .build()
   }
 
+  private fun wireOneofFieldAnnotation(field: Field): AnnotationSpec = AnnotationSpec.builder(WireOneofField::class)
+    .addMember("tag = %L", field.tag)
+    .addMember("adapter = %S", field.type!!.adapterString())
+    .apply {
+      if (field.isRedacted) addMember("redacted = true")
+      val jsonName = field.jsonName
+      if (jsonName != null && jsonName != field.name) {
+        addMember("jsonName = %S", jsonName)
+      }
+    }
+    .addMember("declaredName = %S", field.name)
+    .build()
+
   private fun MessageType.fieldsAndFlatOneOfFieldsAndBoxedOneOfs(): List<Any> {
     val fieldsAndFlatOneOfFields: List<Field> =
       declaredFields + extensionFields + flatOneOfs().flatMap { it.fields }
 
-    return (fieldsAndFlatOneOfFields + boxOneOfs())
+    return (fieldsAndFlatOneOfFields + boxOneOfs() + sealedOneOfs())
       .sortedBy { fieldOrOneOf ->
         when (fieldOrOneOf) {
           is Field -> fieldOrOneOf.location.line
-          // TODO(Benoit) If boxed oneofs without fields become a problem, we can add location to
-          //  oneofs and use that.
+          // TODO(Benoit) If boxed/sealed oneofs without fields become a problem, we can add
+          //  location to oneofs and use that.
           is OneOf -> fieldOrOneOf.fields.getOrNull(0)?.location?.line ?: 0
           else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
       }
   }
 
-  private fun MessageType.flatOneOfs(): List<OneOf> {
-    val result = mutableListOf<OneOf>()
-    for (oneOf in this.oneOfs) {
-      if (oneOf.fields.size < boxOneOfsMinSize) {
-        result.add(oneOf)
-      }
-    }
-    return result
+  private fun MessageType.flatOneOfs(): List<OneOf> = when (oneofMode) {
+    OneofMode.FLAT -> oneOfs.filter { it.fields.size < boxOneOfsMinSize }
+    else -> emptyList()
   }
 
-  private fun MessageType.boxOneOfs(): List<OneOf> = oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
+  private fun MessageType.boxOneOfs(): List<OneOf> = when (oneofMode) {
+    OneofMode.FLAT -> oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
+    OneofMode.BOXED -> oneOfs
+    OneofMode.SEALED_CLASS -> emptyList()
+  }
+
+  private fun MessageType.sealedOneOfs(): List<OneOf> = when (oneofMode) {
+    OneofMode.SEALED_CLASS -> oneOfs
+    else -> emptyList()
+  }
+
+  private fun sealedSubclassNameAllocator(oneOf: OneOf): NameAllocator = sealedSubclassNameAllocatorStore.getOrPut(oneOf) {
+    NameAllocator(preallocateKeywords = !escapeKotlinKeywords).apply {
+      for (field in oneOf.fields) {
+        newName(field.name.toSealedSubclassName(), field)
+      }
+    }
+  }
 
   private fun MessageType.oneOfClassFor(oneOf: OneOf, nameAllocator: NameAllocator): TypeName {
-    val oneOfClass = (this.typeName as ClassName)
+    val nestedClass = (this.typeName as ClassName)
       .nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
-      .parameterizedBy(STAR)
-    return com.squareup.wire.OneOf::class.asClassName()
-      .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
+    return if (oneOf in sealedOneOfs()) {
+      nestedClass.copy(nullable = true)
+    } else {
+      com.squareup.wire.OneOf::class.asClassName()
+        .parameterizedBy(nestedClass.parameterizedBy(STAR), STAR).copy(nullable = true)
+    }
   }
 
   companion object {
@@ -3170,6 +3419,7 @@ class KotlinGenerator private constructor(
       buildersOnly: Boolean = false,
       escapeKotlinKeywords: Boolean = false,
       enumMode: EnumMode = ENUM_CLASS,
+      oneofMode: OneofMode = OneofMode.FLAT,
       emitProtoReader32: Boolean = false,
       mutableTypes: Boolean = false,
       explicitStreamingCalls: Boolean = false,
@@ -3225,6 +3475,7 @@ class KotlinGenerator private constructor(
         buildersOnly = buildersOnly,
         escapeKotlinKeywords = escapeKotlinKeywords,
         enumMode = enumMode,
+        oneofMode = oneofMode,
         emitProtoReader32 = emitProtoReader32,
         mutableTypes = mutableTypes,
         explicitStreamingCalls = explicitStreamingCalls,
@@ -3278,8 +3529,14 @@ class KotlinGenerator private constructor(
 
     private val Extend.annotationTargets: List<AnnotationTarget>
       get() = when (type) {
-        MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS -> listOf(AnnotationTarget.CLASS)
-        FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> listOf(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+        MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS, ONEOF_OPTIONS -> listOf(AnnotationTarget.CLASS)
+        FIELD_OPTIONS, ENUM_VALUE_OPTIONS ->
+          listOf(
+            // Class is required when oneofMode is `SEALED_CLASS`.
+            AnnotationTarget.CLASS,
+            AnnotationTarget.PROPERTY,
+            AnnotationTarget.FIELD,
+          )
         METHOD_OPTIONS -> listOf(AnnotationTarget.FUNCTION)
         else -> emptyList()
       }

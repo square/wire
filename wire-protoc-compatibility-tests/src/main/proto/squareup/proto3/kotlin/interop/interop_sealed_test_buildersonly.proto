@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Block Inc.
+ * Copyright 2026 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-syntax = "proto2";
-package squareup.wire.boxedoneof;
+syntax = "proto3";
 
-import "squareup/wire/options.proto";
+package squareup.proto3.kotlin.sealed.interop.buildersonly;
 
-message BoxedOneOfs {
-  oneof value {
-    string first_value = 1;
-    string second_value = 2;
-    string value = 3 [(squareup.proto3.options.field_option) = 806];
+message InteropSealedOneOfBuildersOnly {
+  oneof second_method {
+    bytes e = 7;
+    sint32 f = 6;
+    SealedMessage g = 5;
+  }
+  string h = 8;
+  oneof first_method {
+    string a = 3 [json_name = "sayMyName"];
+    int32 b = 2;
+    bool c = 1;
+    int64 d = 4;
+  }
+
+  message SealedMessage {
+    string content = 1;
   }
 }
