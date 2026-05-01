@@ -430,7 +430,18 @@ class KotlinGenerator private constructor(
         .addStatement("%T(⇥⇥", GrpcMethod::class)
         .addStatement("path = %S,", "/$packageName$serviceName/${rpc.name}")
         .addStatement("requestAdapter = %L,", rpc.requestType!!.getAdapterName())
-        .addStatement("responseAdapter = %L", rpc.responseType!!.getAdapterName())
+        .apply {
+          val streamingArguments = buildList {
+            if (rpc.requestStreaming) add("requestStreaming = true")
+            if (rpc.responseStreaming) add("responseStreaming = true")
+          }
+          val responseAdapterSuffix = if (streamingArguments.isEmpty()) "" else ","
+          addStatement("responseAdapter = %L$responseAdapterSuffix", rpc.responseType!!.getAdapterName())
+          for ((index, argument) in streamingArguments.withIndex()) {
+            val suffix = if (index == streamingArguments.lastIndex) "" else ","
+            addStatement("$argument$suffix")
+          }
+        }
         .add("⇤⇤)")
         .build()
       when {

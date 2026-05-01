@@ -16,9 +16,10 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
+import com.squareup.wire.internal.RealGrpcServerStreamingCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
 import com.squareup.wire.internal.asGrpcClientStreamingCall
-import com.squareup.wire.internal.asGrpcServerStreamingCall
+import com.squareup.wire.internal.asGrpcStreamingCall
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import okhttp3.Call
@@ -183,9 +184,15 @@ internal class WireGrpcClient internal constructor(
 ) : GrpcClient() {
   override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = RealGrpcCall(this, method)
 
-  override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> = RealGrpcStreamingCall(this, method)
+  override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
+    return if (!method.requestStreaming && method.responseStreaming) {
+      RealGrpcServerStreamingCall(this, method).asGrpcStreamingCall()
+    } else {
+      RealGrpcStreamingCall(this, method)
+    }
+  }
 
   override fun <S : Any, R : Any> newClientStreamingCall(method: GrpcMethod<S, R>): GrpcClientStreamingCall<S, R> = RealGrpcStreamingCall(this, method).asGrpcClientStreamingCall()
 
-  override fun <S : Any, R : Any> newServerStreamingCall(method: GrpcMethod<S, R>): GrpcServerStreamingCall<S, R> = RealGrpcStreamingCall(this, method).asGrpcServerStreamingCall()
+  override fun <S : Any, R : Any> newServerStreamingCall(method: GrpcMethod<S, R>): GrpcServerStreamingCall<S, R> = RealGrpcServerStreamingCall(this, method)
 }
