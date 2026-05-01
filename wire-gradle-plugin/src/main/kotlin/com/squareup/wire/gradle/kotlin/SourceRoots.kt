@@ -17,13 +17,12 @@ package com.squareup.wire.gradle.kotlin
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
+import com.squareup.wire.gradle.CustomOutput
+import com.squareup.wire.gradle.JavaOutput
+import com.squareup.wire.gradle.KotlinOutput
+import com.squareup.wire.gradle.WireOutput
 import com.squareup.wire.gradle.WireTask
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
-import com.squareup.wire.schema.CustomTarget
-import com.squareup.wire.schema.JavaTarget
-import com.squareup.wire.schema.KotlinTarget
-import com.squareup.wire.schema.ProtoTarget
-import com.squareup.wire.schema.Target
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
@@ -106,7 +105,7 @@ internal abstract class WireSource(
   abstract fun registerGeneratedSources(
     project: Project,
     wireTask: TaskProvider<WireTask>,
-    targets: List<Target>,
+    outputs: List<WireOutput>,
   )
 }
 
@@ -134,28 +133,25 @@ private class JvmOrKmpSource(
   override fun registerGeneratedSources(
     project: Project,
     wireTask: TaskProvider<WireTask>,
-    targets: List<Target>,
+    outputs: List<WireOutput>,
   ) {
-    targets.forEachIndexed { index, target ->
+    outputs.forEachIndexed { index, output ->
       val outputDirectory = wireTask.flatMap { it.outputDirectoriesList[index] }
-      when (target) {
-        is JavaTarget -> {
+      when (output) {
+        is JavaOutput -> {
           javaSourceDirectorySet?.srcDir(outputDirectory)
         }
-        is KotlinTarget -> {
+        is KotlinOutput -> {
           registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
         }
-        is CustomTarget -> {
+        is CustomOutput -> {
           // Custom targets are wildcards, so we add all output directories.
           javaSourceDirectorySet?.srcDir(outputDirectory)
           registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
         }
-        is ProtoTarget -> {
-          // Do nothing
-        }
         else -> {
           throw IllegalArgumentException(
-            "Wire target ${target::class.simpleName} is not supported in project ${project.path}",
+            "Wire output ${output::class.simpleName} is not supported in project ${project.path}",
           )
         }
       }
@@ -173,27 +169,24 @@ private class AndroidSource(
   override fun registerGeneratedSources(
     project: Project,
     wireTask: TaskProvider<WireTask>,
-    targets: List<Target>,
+    outputs: List<WireOutput>,
   ) {
-    targets.forEachIndexed { index, target ->
-      when (target) {
-        is JavaTarget -> {
+    outputs.forEachIndexed { index, output ->
+      when (output) {
+        is JavaOutput -> {
           variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
         }
-        is KotlinTarget -> {
+        is KotlinOutput -> {
           variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
         }
-        is CustomTarget -> {
+        is CustomOutput -> {
           // Custom targets are wildcards, so we add all output directories.
           variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
           variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
         }
-        is ProtoTarget -> {
-          // Do nothing
-        }
         else -> {
           throw IllegalArgumentException(
-            "Wire target ${target::class.simpleName} is not supported in Android project ${project.path}",
+            "Wire output ${output::class.simpleName} is not supported in Android project ${project.path}",
           )
         }
       }

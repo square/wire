@@ -25,7 +25,14 @@ import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newSchemaHandler
+import java.io.File
 import javax.inject.Inject
+import kotlin.LazyThreadSafetyMode.NONE
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 
 /**
  * Specifies Wire's outputs (expressed as a list of [Target] objects) using Gradle's DSL (expressed
@@ -33,8 +40,26 @@ import javax.inject.Inject
  * directories with the project so they can be compiled after they are generated.
  */
 abstract class WireOutput {
+  @get:Inject
+  protected abstract val objectFactory: ObjectFactory
+
+  val out: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java)
+  }
+
   /** Set this to override the default output directory for this [WireOutput]. */
-  var out: String? = null
+  fun setOut(value: String?) {
+    out.set(value)
+  }
+
+  fun out(value: String) {
+    out.set(value)
+  }
+
+  internal fun outputDirectory(
+    projectDir: File,
+    defaultOutputDirectory: Provider<String>,
+  ): Provider<String> = out.map { relativizeOutputDirectory(it, projectDir) }.orElse(defaultOutputDirectory)
 
   /**
    * Transforms this [WireOutput] into a [Target] for which Wire will generate code. The [Target]
@@ -43,225 +68,456 @@ abstract class WireOutput {
   abstract fun toTarget(outputDirectory: String): Target
 }
 
-open class JavaOutput @Inject constructor() : WireOutput() {
+internal fun relativizeOutputDirectory(
+  outputDirectory: String,
+  projectDir: File,
+): String {
+  val file = File(outputDirectory)
+  if (!file.isAbsolute) return outputDirectory
+  return runCatching { file.relativeTo(projectDir).path }
+    .getOrElse { outputDirectory }
+}
+
+abstract class JavaOutput @Inject constructor() : WireOutput() {
+  val includes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val excludes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val exclusive: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(true)
+  }
+
+  val android: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val androidAnnotations: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val compact: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val emitDeclaredOptions: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(true)
+  }
+
+  val emitAppliedOptions: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(true)
+  }
+
+  val buildersOnly: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
   /** See [com.squareup.wire.schema.Target.includes] */
-  var includes: List<String>? = null
+  fun setIncludes(values: List<String>?) {
+    includes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.excludes] */
-  var excludes: List<String>? = null
+  fun setExcludes(values: List<String>?) {
+    excludes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.exclusive] */
-  var exclusive: Boolean = true
+  fun setExclusive(value: Boolean) {
+    exclusive.set(value)
+  }
 
   /** True for emitted types to implement `android.os.Parcelable`. */
-  var android: Boolean = false
+  fun setAndroid(value: Boolean) {
+    android.set(value)
+  }
 
   /** True to enable the `androidx.annotation.Nullable` annotation where applicable. */
-  var androidAnnotations: Boolean = false
+  fun setAndroidAnnotations(value: Boolean) {
+    androidAnnotations.set(value)
+  }
 
   /**
    * True to emit code that uses reflection for reading, writing, and toString methods which are
    * normally implemented with generated code.
    */
-  var compact: Boolean = false
+  fun setCompact(value: Boolean) {
+    compact.set(value)
+  }
 
   /** True to emit types for options declared on messages, fields, etc. */
-  var emitDeclaredOptions: Boolean = true
+  fun setEmitDeclaredOptions(value: Boolean) {
+    emitDeclaredOptions.set(value)
+  }
 
   /** True to emit annotations for options applied on messages, fields, etc. */
-  var emitAppliedOptions: Boolean = true
+  fun setEmitAppliedOptions(value: Boolean) {
+    emitAppliedOptions.set(value)
+  }
 
   /** If true, the constructor of all generated types will be non-public. */
-  var buildersOnly: Boolean = false
+  fun setBuildersOnly(value: Boolean) {
+    buildersOnly.set(value)
+  }
 
   override fun toTarget(outputDirectory: String): JavaTarget = JavaTarget(
-    includes = includes ?: listOf("*"),
-    excludes = excludes ?: listOf(),
-    exclusive = exclusive,
+    includes = includes.orNull ?: listOf("*"),
+    excludes = excludes.orNull ?: listOf(),
+    exclusive = exclusive.get(),
     outDirectory = outputDirectory,
-    android = android,
-    androidAnnotations = androidAnnotations,
-    compact = compact,
-    emitDeclaredOptions = emitDeclaredOptions,
-    emitAppliedOptions = emitAppliedOptions,
-    buildersOnly = buildersOnly,
+    android = android.get(),
+    androidAnnotations = androidAnnotations.get(),
+    compact = compact.get(),
+    emitDeclaredOptions = emitDeclaredOptions.get(),
+    emitAppliedOptions = emitAppliedOptions.get(),
+    buildersOnly = buildersOnly.get(),
   )
 }
 
-open class KotlinOutput @Inject constructor() : WireOutput() {
+abstract class KotlinOutput @Inject constructor() : WireOutput() {
+  val includes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val excludes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val exclusive: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(true)
+  }
+
+  val android: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val javaInterop: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val emitDeclaredOptions: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(true)
+  }
+
+  val emitAppliedOptions: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(true)
+  }
+
+  val rpcCallStyle: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java).convention("suspending")
+  }
+
+  val rpcRole: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java).convention("client")
+  }
+
+  val singleMethodServices: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val boxOneOfsMinSize: Property<Int> by lazy(NONE) {
+    objectFactory.property(Int::class.javaObjectType).convention(5_000)
+  }
+
+  @Deprecated("See https://square.github.io/wire/wire_grpc/#wire-grpc-server")
+  val grpcServerCompatible: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val nameSuffix: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java)
+  }
+
+  val buildersOnly: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val escapeKotlinKeywords: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val enumMode: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java).convention("enum_class")
+  }
+
+  val emitProtoReader32: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val mutableTypes: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val explicitStreamingCalls: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(false)
+  }
+
+  val makeImmutableCopies: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.javaObjectType).convention(true)
+  }
+
   /** See [com.squareup.wire.schema.Target.includes] */
-  var includes: List<String>? = null
+  fun setIncludes(values: List<String>?) {
+    includes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.excludes] */
-  var excludes: List<String>? = null
+  fun setExcludes(values: List<String>?) {
+    excludes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.exclusive] */
-  var exclusive: Boolean = true
+  fun setExclusive(value: Boolean) {
+    exclusive.set(value)
+  }
 
   /** True for emitted types to implement `android.os.Parcelable`. */
-  var android: Boolean = false
+  fun setAndroid(value: Boolean) {
+    android.set(value)
+  }
 
   /** True for emitted types to implement APIs for easier migration from the Java target. */
-  var javaInterop: Boolean = false
+  fun setJavaInterop(value: Boolean) {
+    javaInterop.set(value)
+  }
 
   /** True to emit types for options declared on messages, fields, etc. */
-  var emitDeclaredOptions: Boolean = true
+  fun setEmitDeclaredOptions(value: Boolean) {
+    emitDeclaredOptions.set(value)
+  }
 
   /** True to emit annotations for options applied on messages, fields, etc. */
-  var emitAppliedOptions: Boolean = true
+  fun setEmitAppliedOptions(value: Boolean) {
+    emitAppliedOptions.set(value)
+  }
 
   /** Blocking or suspending. */
-  var rpcCallStyle: String = "suspending"
+  fun setRpcCallStyle(value: String) {
+    rpcCallStyle.set(value)
+  }
 
   /** Client, server, or none. */
-  var rpcRole: String = "client"
+  fun setRpcRole(value: String) {
+    rpcRole.set(value)
+  }
 
   /** True for emitted services to implement one interface per RPC. */
-  var singleMethodServices: Boolean = false
+  fun setSingleMethodServices(value: Boolean) {
+    singleMethodServices.set(value)
+  }
 
   /**
    * If a oneof has more than or [boxOneOfsMinSize] fields, it will be generated using boxed oneofs
    * as defined in [OneOf][com.squareup.wire.OneOf].
    */
-  var boxOneOfsMinSize: Int = 5_000
+  fun setBoxOneOfsMinSize(value: Int) {
+    boxOneOfsMinSize.set(value)
+  }
 
   @Deprecated("See https://square.github.io/wire/wire_grpc/#wire-grpc-server")
-  var grpcServerCompatible: Boolean = false
+  fun setGrpcServerCompatible(value: Boolean) {
+    grpcServerCompatible.set(value)
+  }
 
   /**
    * If present, generated services classes will use this as a suffix instead of inferring one
    * from the [rpcRole].
    */
-  var nameSuffix: String? = null
+  fun setNameSuffix(value: String?) {
+    nameSuffix.set(value)
+  }
 
   /**
    * If true, the constructor of all generated types will be non-public, and they will be
    * instantiable via their builders, regardless of the value of [javaInterop].
    */
-  var buildersOnly: Boolean = false
+  fun setBuildersOnly(value: Boolean) {
+    buildersOnly.set(value)
+  }
 
   /** If true, Kotlin keywords are escaped with backticks. If false, an underscore is added as a suffix. */
-  var escapeKotlinKeywords: Boolean = false
+  fun setEscapeKotlinKeywords(value: Boolean) {
+    escapeKotlinKeywords.set(value)
+  }
 
   /** enum_class or sealed_class. See [EnumMode][com.squareup.wire.kotlin.EnumMode]. */
-  var enumMode: String = "enum_class"
+  fun setEnumMode(value: String) {
+    enumMode.set(value)
+  }
 
   /**
    * If true, adapters will generate decode functions for `ProtoReader32`. Use this optimization
    * when targeting Kotlin/JS, where `Long` cursors are inefficient.
    */
-  var emitProtoReader32: Boolean = false
+  fun setEmitProtoReader32(value: Boolean) {
+    emitProtoReader32.set(value)
+  }
 
-  /**
-   * If true, the generated classes will be mutable..
-   */
-  var mutableTypes: Boolean = false
+  /** If true, the generated classes will be mutable. */
+  fun setMutableTypes(value: Boolean) {
+    mutableTypes.set(value)
+  }
 
   /**
    * If true, the generated gRPC client will use explicit classes for client, server,
    * and bidirectional streaming calls.
    */
-  var explicitStreamingCalls: Boolean = false
+  fun setExplicitStreamingCalls(value: Boolean) {
+    explicitStreamingCalls.set(value)
+  }
 
   /**
    * If false, repeated and map fields will not have immutable copies made when constructing
-   * a [com.squareup.wire.Message]. It is up to the developer to avoid mutating any Maps or Lists
-   * after they are used to create a [com.squareup.wire.Message] as the [com.squareup.wire.Message]
-   * will reference those collections rather than creating a copy. In exchange, the developer can
-   * avoid the overhead of creating a list which can be excessive for long lists or for performance
-   * critical usages.
+   * a [com.squareup.wire.Message].
    */
-  var makeImmutableCopies: Boolean = true
+  fun setMakeImmutableCopies(value: Boolean) {
+    makeImmutableCopies.set(value)
+  }
 
   override fun toTarget(outputDirectory: String): KotlinTarget {
-    if (grpcServerCompatible) {
+    if (grpcServerCompatible.get()) {
       throw IllegalArgumentException(
         "grpcServerCompatible is no longer valid.\n" +
           "Please migrate by following the steps defined in https://square.github.io/wire/wire_grpc/#wire-grpc-server",
       )
     }
 
-    val rpcCallStyle = RpcCallStyle.values()
-      .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
+    val rpcCallStyleValue = RpcCallStyle.values()
+      .singleOrNull { it.toString().equals(rpcCallStyle.get(), ignoreCase = true) }
       ?: throw IllegalArgumentException(
-        "Unknown rpcCallStyle $rpcCallStyle. Valid values: ${RpcCallStyle.values().contentToString()}",
+        "Unknown rpcCallStyle ${rpcCallStyle.get()}. Valid values: ${RpcCallStyle.values().contentToString()}",
       )
-    val rpcRole = RpcRole.values()
-      .singleOrNull { it.toString().equals(rpcRole, ignoreCase = true) }
+    val rpcRoleValue = RpcRole.values()
+      .singleOrNull { it.toString().equals(rpcRole.get(), ignoreCase = true) }
       ?: throw IllegalArgumentException(
-        "Unknown rpcRole $rpcRole. Valid values: ${RpcRole.values().contentToString()}",
+        "Unknown rpcRole ${rpcRole.get()}. Valid values: ${RpcRole.values().contentToString()}",
       )
 
-    val enumMode = EnumMode.values()
-      .singleOrNull { it.toString().equals(enumMode, ignoreCase = true) }
+    val enumModeValue = EnumMode.values()
+      .singleOrNull { it.toString().equals(enumMode.get(), ignoreCase = true) }
       ?: throw IllegalArgumentException(
-        "Unknown enumMode $enumMode. Valid values: ${EnumMode.values().contentToString()}",
+        "Unknown enumMode ${enumMode.get()}. Valid values: ${EnumMode.values().contentToString()}",
       )
 
     return KotlinTarget(
-      includes = includes ?: listOf("*"),
-      excludes = excludes ?: listOf(),
-      exclusive = exclusive,
+      includes = includes.orNull ?: listOf("*"),
+      excludes = excludes.orNull ?: listOf(),
+      exclusive = exclusive.get(),
       outDirectory = outputDirectory,
-      android = android,
-      javaInterop = javaInterop,
-      emitDeclaredOptions = emitDeclaredOptions,
-      emitAppliedOptions = emitAppliedOptions,
-      rpcCallStyle = rpcCallStyle,
-      rpcRole = rpcRole,
-      singleMethodServices = singleMethodServices,
-      boxOneOfsMinSize = boxOneOfsMinSize,
-      nameSuffix = nameSuffix,
-      buildersOnly = buildersOnly,
-      escapeKotlinKeywords = escapeKotlinKeywords,
-      enumMode = enumMode,
-      emitProtoReader32 = emitProtoReader32,
-      mutableTypes = mutableTypes,
-      explicitStreamingCalls = explicitStreamingCalls,
-      makeImmutableCopies = makeImmutableCopies,
+      android = android.get(),
+      javaInterop = javaInterop.get(),
+      emitDeclaredOptions = emitDeclaredOptions.get(),
+      emitAppliedOptions = emitAppliedOptions.get(),
+      rpcCallStyle = rpcCallStyleValue,
+      rpcRole = rpcRoleValue,
+      singleMethodServices = singleMethodServices.get(),
+      boxOneOfsMinSize = boxOneOfsMinSize.get(),
+      nameSuffix = nameSuffix.orNull,
+      buildersOnly = buildersOnly.get(),
+      escapeKotlinKeywords = escapeKotlinKeywords.get(),
+      enumMode = enumModeValue,
+      emitProtoReader32 = emitProtoReader32.get(),
+      mutableTypes = mutableTypes.get(),
+      explicitStreamingCalls = explicitStreamingCalls.get(),
+      makeImmutableCopies = makeImmutableCopies.get(),
     )
   }
 }
 
-open class ProtoOutput @Inject constructor() : WireOutput() {
+abstract class ProtoOutput @Inject constructor() : WireOutput() {
   override fun toTarget(outputDirectory: String): ProtoTarget = ProtoTarget(outDirectory = outputDirectory)
 }
 
-open class CustomOutput @Inject constructor() : WireOutput() {
+abstract class CustomOutput @Inject constructor() : WireOutput() {
+  val includes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val excludes: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val exclusive: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.java).convention(true)
+  }
+
+  val options: MapProperty<String, String> by lazy(NONE) {
+    objectFactory.mapProperty(String::class.java, String::class.java)
+  }
+
+  val schemaHandlerFactory: Property<SchemaHandler.Factory> by lazy(NONE) {
+    objectFactory.property(SchemaHandler.Factory::class.java)
+  }
+
+  val schemaHandlerFactoryClass: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java)
+  }
+
   /** See [com.squareup.wire.schema.Target.includes] */
-  var includes: List<String>? = null
+  fun setIncludes(values: List<String>?) {
+    includes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.excludes] */
-  var excludes: List<String>? = null
+  fun setExcludes(values: List<String>?) {
+    excludes.set(values)
+  }
 
   /** See [com.squareup.wire.schema.Target.exclusive] */
-  var exclusive: Boolean = true
+  fun setExclusive(value: Boolean) {
+    exclusive.set(value)
+  }
+
+  fun exclusive(value: Boolean) {
+    exclusive.set(value)
+  }
 
   /**
    * Black boxed payload which a caller can set for the custom [SchemaHandler.Factory] to receive.
    */
-  var options: Map<String, String>? = null
+  fun options(value: Map<String, String>) {
+    options.set(value)
+  }
+
+  fun setOptions(value: Map<String, String>?) {
+    options.set(value)
+  }
 
   /** Assign the schema handler factory instance. */
-  var schemaHandlerFactory: SchemaHandler.Factory? = null
+  fun setSchemaHandlerFactory(value: SchemaHandler.Factory?) {
+    schemaHandlerFactory.set(value)
+  }
 
   /**
    * Assign the schema handler factory by name. If you use a class name, that class must have a
    * no-arguments constructor.
    */
-  var schemaHandlerFactoryClass: String? = null
+  fun setSchemaHandlerFactoryClass(value: String?) {
+    schemaHandlerFactoryClass.set(value)
+  }
+
+  fun schemaHandlerFactoryClass(value: String) {
+    schemaHandlerFactoryClass.set(value)
+  }
 
   override fun toTarget(outputDirectory: String): CustomTarget {
-    check((schemaHandlerFactory != null) || (schemaHandlerFactoryClass != null)) {
+    val configuredSchemaHandlerFactory = schemaHandlerFactory.orNull
+    val configuredSchemaHandlerFactoryClass = schemaHandlerFactoryClass.orNull
+
+    check(configuredSchemaHandlerFactory != null || configuredSchemaHandlerFactoryClass != null) {
       "schemaHandlerFactory or schemaHandlerFactoryClass required"
     }
+
     return CustomTarget(
-      includes = includes ?: listOf("*"),
-      excludes = excludes ?: listOf(),
-      exclusive = exclusive,
+      includes = includes.orNull ?: listOf("*"),
+      excludes = excludes.orNull ?: listOf(),
+      exclusive = exclusive.orElse(true).get(),
       outDirectory = outputDirectory,
-      options = options ?: mapOf(),
-      schemaHandlerFactory = schemaHandlerFactory ?: newSchemaHandler(schemaHandlerFactoryClass!!),
+      options = options.orNull ?: mapOf(),
+      schemaHandlerFactory = configuredSchemaHandlerFactory ?: newSchemaHandler(configuredSchemaHandlerFactoryClass!!),
     )
   }
 }

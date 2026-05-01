@@ -1,11 +1,14 @@
-public class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/WireOutput {
+public abstract class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	public final fun getExcludes ()Ljava/util/List;
-	public final fun getExclusive ()Z
-	public final fun getIncludes ()Ljava/util/List;
-	public final fun getOptions ()Ljava/util/Map;
-	public final fun getSchemaHandlerFactory ()Lcom/squareup/wire/schema/SchemaHandler$Factory;
-	public final fun getSchemaHandlerFactoryClass ()Ljava/lang/String;
+	public final fun exclusive (Z)V
+	public final fun getExcludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getExclusive ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getOptions ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getSchemaHandlerFactory ()Lorg/gradle/api/provider/Property;
+	public final fun getSchemaHandlerFactoryClass ()Lorg/gradle/api/provider/Property;
+	public final fun options (Ljava/util/Map;)V
+	public final fun schemaHandlerFactoryClass (Ljava/lang/String;)V
 	public final fun setExcludes (Ljava/util/List;)V
 	public final fun setExclusive (Z)V
 	public final fun setIncludes (Ljava/util/List;)V
@@ -16,17 +19,17 @@ public class com/squareup/wire/gradle/CustomOutput : com/squareup/wire/gradle/Wi
 	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
 }
 
-public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
+public abstract class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	public final fun getAndroid ()Z
-	public final fun getAndroidAnnotations ()Z
-	public final fun getBuildersOnly ()Z
-	public final fun getCompact ()Z
-	public final fun getEmitAppliedOptions ()Z
-	public final fun getEmitDeclaredOptions ()Z
-	public final fun getExcludes ()Ljava/util/List;
-	public final fun getExclusive ()Z
-	public final fun getIncludes ()Ljava/util/List;
+	public final fun getAndroid ()Lorg/gradle/api/provider/Property;
+	public final fun getAndroidAnnotations ()Lorg/gradle/api/provider/Property;
+	public final fun getBuildersOnly ()Lorg/gradle/api/provider/Property;
+	public final fun getCompact ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitAppliedOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitDeclaredOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getExcludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getExclusive ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludes ()Lorg/gradle/api/provider/ListProperty;
 	public final fun setAndroid (Z)V
 	public final fun setAndroidAnnotations (Z)V
 	public final fun setBuildersOnly (Z)V
@@ -40,28 +43,28 @@ public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/Wire
 	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
 }
 
-public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/WireOutput {
+public abstract class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	public final fun getAndroid ()Z
-	public final fun getBoxOneOfsMinSize ()I
-	public final fun getBuildersOnly ()Z
-	public final fun getEmitAppliedOptions ()Z
-	public final fun getEmitDeclaredOptions ()Z
-	public final fun getEmitProtoReader32 ()Z
-	public final fun getEnumMode ()Ljava/lang/String;
-	public final fun getEscapeKotlinKeywords ()Z
-	public final fun getExcludes ()Ljava/util/List;
-	public final fun getExclusive ()Z
-	public final fun getExplicitStreamingCalls ()Z
-	public final fun getGrpcServerCompatible ()Z
-	public final fun getIncludes ()Ljava/util/List;
-	public final fun getJavaInterop ()Z
-	public final fun getMakeImmutableCopies ()Z
-	public final fun getMutableTypes ()Z
-	public final fun getNameSuffix ()Ljava/lang/String;
-	public final fun getRpcCallStyle ()Ljava/lang/String;
-	public final fun getRpcRole ()Ljava/lang/String;
-	public final fun getSingleMethodServices ()Z
+	public final fun getAndroid ()Lorg/gradle/api/provider/Property;
+	public final fun getBoxOneOfsMinSize ()Lorg/gradle/api/provider/Property;
+	public final fun getBuildersOnly ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitAppliedOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitDeclaredOptions ()Lorg/gradle/api/provider/Property;
+	public final fun getEmitProtoReader32 ()Lorg/gradle/api/provider/Property;
+	public final fun getEnumMode ()Lorg/gradle/api/provider/Property;
+	public final fun getEscapeKotlinKeywords ()Lorg/gradle/api/provider/Property;
+	public final fun getExcludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getExclusive ()Lorg/gradle/api/provider/Property;
+	public final fun getExplicitStreamingCalls ()Lorg/gradle/api/provider/Property;
+	public final fun getGrpcServerCompatible ()Lorg/gradle/api/provider/Property;
+	public final fun getIncludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getJavaInterop ()Lorg/gradle/api/provider/Property;
+	public final fun getMakeImmutableCopies ()Lorg/gradle/api/provider/Property;
+	public final fun getMutableTypes ()Lorg/gradle/api/provider/Property;
+	public final fun getNameSuffix ()Lorg/gradle/api/provider/Property;
+	public final fun getRpcCallStyle ()Lorg/gradle/api/provider/Property;
+	public final fun getRpcRole ()Lorg/gradle/api/provider/Property;
+	public final fun getSingleMethodServices ()Lorg/gradle/api/provider/Property;
 	public final fun setAndroid (Z)V
 	public final fun setBoxOneOfsMinSize (I)V
 	public final fun setBuildersOnly (Z)V
@@ -95,7 +98,7 @@ public class com/squareup/wire/gradle/Move : java/io/Serializable {
 	public final fun toTypeMoverMove ()Lcom/squareup/wire/schema/internal/TypeMover$Move;
 }
 
-public class com/squareup/wire/gradle/ProtoOutput : com/squareup/wire/gradle/WireOutput {
+public abstract class com/squareup/wire/gradle/ProtoOutput : com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
 	public fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/ProtoTarget;
 	public synthetic fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
@@ -160,7 +163,8 @@ public final class com/squareup/wire/gradle/WireExtension$ProtoRootSet {
 
 public abstract class com/squareup/wire/gradle/WireOutput {
 	public fun <init> ()V
-	public final fun getOut ()Ljava/lang/String;
+	public final fun getOut ()Lorg/gradle/api/provider/Property;
+	public final fun out (Ljava/lang/String;)V
 	public final fun setOut (Ljava/lang/String;)V
 	public abstract fun toTarget (Ljava/lang/String;)Lcom/squareup/wire/schema/Target;
 }
@@ -200,4 +204,3 @@ public abstract class com/squareup/wire/gradle/WireTask : org/gradle/api/tasks/S
 	public abstract fun getTargets ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getUntilVersion ()Lorg/gradle/api/provider/Property;
 }
-

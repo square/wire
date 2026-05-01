@@ -19,7 +19,6 @@ import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.protoProjectDependenciesJvmConfiguration
 import com.squareup.wire.gradle.kotlin.WireSource
 import com.squareup.wire.gradle.kotlin.forEachWireSource
-import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.newEventListenerFactory
 import com.squareup.wire.wireVersion
 import java.io.File
@@ -85,12 +84,12 @@ class WirePlugin : Plugin<Project> {
         val existingProtoOutput = extension.outputs.get().filterIsInstance<ProtoOutput>().singleOrNull()
         if (existingProtoOutput != null) {
           // There exists a `proto {}` target already, we only set the output path if need be.
-          if (existingProtoOutput.out == null) {
-            existingProtoOutput.out = File(project.libraryProtoOutputPath()).path
+          if (!existingProtoOutput.out.isPresent) {
+            existingProtoOutput.out.set(File(project.libraryProtoOutputPath()).path)
           }
         } else {
           extension.proto { protoOutput ->
-            protoOutput.out = File(project.libraryProtoOutputPath()).path
+            protoOutput.out.set(File(project.libraryProtoOutputPath()).path)
           }
         }
       }
@@ -134,6 +133,11 @@ class WirePlugin : Plugin<Project> {
     source: WireSource,
   ) {
     val outputs = extension.outputs.get()
+    val nonProtoOutputs = outputs.filterNot { it is ProtoOutput }
+    val projectDir = project.projectDir
+    val projectDirectory = project.layout.projectDirectory
+    val defaultOutputPath = relativizeOutputDirectory(source.outputDir(project).path, projectDir)
+    val defaultOutputDirectory = project.providers.provider { defaultOutputPath }
 
     val protoSourceProtoRootSets = extension.protoSourceProtoRootSets.toMutableList()
     val protoPathProtoRootSets = extension.protoPathProtoRootSets.toMutableList()
@@ -149,11 +153,13 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
-    val targets = outputs.map {
-      it.toTarget(project.relativePath(it.out ?: source.outputDir(project)))
+    val targets = project.provider {
+      outputs.map { output ->
+        output.toTarget(output.outputDirectory(projectDir, defaultOutputDirectory).get())
+      }
     }
 
-    val protoTarget = targets.filterIsInstance<ProtoTarget>().singleOrNull()
+    val protoOutput = outputs.filterIsInstance<ProtoOutput>().singleOrNull()
 
     val taskName = "generate${source.name.replaceFirstChar { it.uppercase() }}Protos"
     val task = project.tasks.register(taskName, WireTask::class.java) { task: WireTask ->
@@ -177,24 +183,23 @@ class WirePlugin : Plugin<Project> {
         }
       }
 
-      targets
-        // Emitted `.proto` files have a special treatment. Their root should be a resource, not
-        // a source. We exclude the `ProtoTarget` and we'll add its output to the resources
-        // below.
-        .filterNot { it is ProtoTarget }.forEach { target ->
-          val dir = project.objects.directoryProperty()
-          dir.set(
-            project.tasks.named(taskName).map {
-              project.layout.projectDirectory.dir(target.outDirectory)
-            },
-          )
-          task.outputDirectoriesList.add(dir)
-        }
+      nonProtoOutputs.forEach { output ->
+        val dir = project.objects.directoryProperty()
+        dir.set(
+          project.tasks.named(taskName).map {
+            projectDirectory.dir(output.outputDirectory(projectDir, defaultOutputDirectory).get())
+          },
+        )
+        task.outputDirectoriesList.add(dir)
+      }
       task.protoSourceConfiguration.setFrom(project.configurations.getByName("protoSource"))
       task.protoPathConfiguration.setFrom(project.configurations.getByName("protoPath"))
       task.projectDependenciesJvmConfiguration.setFrom(project.configurations.getByName("protoProjectDependenciesJvm"))
-      if (protoTarget != null) {
-        task.protoLibraryOutput.set(project.file(protoTarget.outDirectory))
+      if (protoOutput != null) {
+        task.protoLibraryOutput.set(
+          protoOutput.outputDirectory(projectDir, defaultOutputDirectory)
+            .map { projectDirectory.dir(it) },
+        )
       }
       task.sourceInput.set(project.provider { protoSourceProtoRootSets.inputLocations })
       task.protoInput.set(project.provider { protoPathProtoRootSets.inputLocations })
@@ -219,10 +224,10 @@ class WirePlugin : Plugin<Project> {
       task.eventListenerFactories.set(factories)
     }
 
-    source.registerGeneratedSources(project, task, targets)
+    source.registerGeneratedSources(project, task, nonProtoOutputs)
 
     val protoOutputDirectory = task.map { it.protoLibraryOutput }
-    if (protoTarget != null) {
+    if (protoOutput != null) {
       val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
       // Note that there are no source sets for some platforms such as native.
       // TODO(Benoit) Probably should be checking for other names than `main`. As well, source
