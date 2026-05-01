@@ -25,7 +25,14 @@ import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.SchemaHandler
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.newSchemaHandler
+import java.io.File
 import javax.inject.Inject
+import kotlin.LazyThreadSafetyMode.NONE
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 
 /**
  * Specifies Wire's outputs (expressed as a list of [Target] objects) using Gradle's DSL (expressed
@@ -33,14 +40,46 @@ import javax.inject.Inject
  * directories with the project so they can be compiled after they are generated.
  */
 abstract class WireOutput {
+  // Gradle decorates this getter for instances created with ObjectFactory.newInstance().
+  @get:Inject
+  protected open val objectFactory: ObjectFactory
+    get() = throw UnsupportedOperationException("Injected by Gradle")
+
+  val outProperty: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java)
+  }
+
   /** Set this to override the default output directory for this [WireOutput]. */
-  var out: String? = null
+  @Deprecated(
+    "Use outProperty to support Gradle lazy configuration",
+    ReplaceWith("outProperty"),
+  )
+  var out: String?
+    get() = outProperty.orNull
+    set(value) {
+      outProperty.set(value)
+    }
+
+  internal fun outputDirectory(
+    projectDir: File,
+    defaultOutputDirectory: Provider<String>,
+  ): Provider<String> = outProperty.map { relativizeOutputDirectory(it, projectDir) }.orElse(defaultOutputDirectory)
 
   /**
    * Transforms this [WireOutput] into a [Target] for which Wire will generate code. The [Target]
    * should use [outputDirectory] instead of [WireOutput.out] in all cases for its output directory.
    */
   abstract fun toTarget(outputDirectory: String): Target
+}
+
+internal fun relativizeOutputDirectory(
+  outputDirectory: String,
+  projectDir: File,
+): String {
+  val file = File(outputDirectory)
+  if (!file.isAbsolute) return outputDirectory
+  return runCatching { file.relativeTo(projectDir).path }
+    .getOrElse { outputDirectory }
 }
 
 open class JavaOutput @Inject constructor() : WireOutput() {
@@ -228,40 +267,114 @@ open class ProtoOutput @Inject constructor() : WireOutput() {
 }
 
 open class CustomOutput @Inject constructor() : WireOutput() {
+  val includesProperty: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val excludesProperty: ListProperty<String> by lazy(NONE) {
+    objectFactory.listProperty(String::class.java)
+  }
+
+  val exclusiveProperty: Property<Boolean> by lazy(NONE) {
+    objectFactory.property(Boolean::class.java).convention(true)
+  }
+
+  val optionsProperty: MapProperty<String, String> by lazy(NONE) {
+    objectFactory.mapProperty(String::class.java, String::class.java)
+  }
+
+  val schemaHandlerFactoryProperty: Property<SchemaHandler.Factory> by lazy(NONE) {
+    objectFactory.property(SchemaHandler.Factory::class.java)
+  }
+
+  val schemaHandlerFactoryClassProperty: Property<String> by lazy(NONE) {
+    objectFactory.property(String::class.java)
+  }
+
   /** See [com.squareup.wire.schema.Target.includes] */
-  var includes: List<String>? = null
+  @Deprecated(
+    "Use includesProperty to support Gradle lazy configuration",
+    ReplaceWith("includesProperty"),
+  )
+  var includes: List<String>?
+    get() = includesProperty.orNull
+    set(value) {
+      includesProperty.set(value)
+    }
 
   /** See [com.squareup.wire.schema.Target.excludes] */
-  var excludes: List<String>? = null
+  @Deprecated(
+    "Use excludesProperty to support Gradle lazy configuration",
+    ReplaceWith("excludesProperty"),
+  )
+  var excludes: List<String>?
+    get() = excludesProperty.orNull
+    set(value) {
+      excludesProperty.set(value)
+    }
 
   /** See [com.squareup.wire.schema.Target.exclusive] */
-  var exclusive: Boolean = true
+  @Deprecated(
+    "Use exclusiveProperty to support Gradle lazy configuration",
+    ReplaceWith("exclusiveProperty"),
+  )
+  var exclusive: Boolean
+    get() = exclusiveProperty.orElse(true).get()
+    set(value) {
+      exclusiveProperty.set(value)
+    }
 
-  /**
-   * Black boxed payload which a caller can set for the custom [SchemaHandler.Factory] to receive.
-   */
-  var options: Map<String, String>? = null
+  /** Black boxed payload which a caller can set for the custom [SchemaHandler.Factory] to receive. */
+  @Deprecated(
+    "Use optionsProperty to support Gradle lazy configuration",
+    ReplaceWith("optionsProperty"),
+  )
+  var options: Map<String, String>?
+    get() = optionsProperty.orNull
+    set(value) {
+      optionsProperty.set(value)
+    }
 
   /** Assign the schema handler factory instance. */
-  var schemaHandlerFactory: SchemaHandler.Factory? = null
+  @Deprecated(
+    "Use schemaHandlerFactoryProperty to support Gradle lazy configuration",
+    ReplaceWith("schemaHandlerFactoryProperty"),
+  )
+  var schemaHandlerFactory: SchemaHandler.Factory?
+    get() = schemaHandlerFactoryProperty.orNull
+    set(value) {
+      schemaHandlerFactoryProperty.set(value)
+    }
 
   /**
    * Assign the schema handler factory by name. If you use a class name, that class must have a
    * no-arguments constructor.
    */
-  var schemaHandlerFactoryClass: String? = null
+  @Deprecated(
+    "Use schemaHandlerFactoryClassProperty to support Gradle lazy configuration",
+    ReplaceWith("schemaHandlerFactoryClassProperty"),
+  )
+  var schemaHandlerFactoryClass: String?
+    get() = schemaHandlerFactoryClassProperty.orNull
+    set(value) {
+      schemaHandlerFactoryClassProperty.set(value)
+    }
 
   override fun toTarget(outputDirectory: String): CustomTarget {
-    check((schemaHandlerFactory != null) || (schemaHandlerFactoryClass != null)) {
+    val configuredSchemaHandlerFactory = schemaHandlerFactoryProperty.orNull
+    val configuredSchemaHandlerFactoryClass = schemaHandlerFactoryClassProperty.orNull
+
+    check(configuredSchemaHandlerFactory != null || configuredSchemaHandlerFactoryClass != null) {
       "schemaHandlerFactory or schemaHandlerFactoryClass required"
     }
+
     return CustomTarget(
-      includes = includes ?: listOf("*"),
-      excludes = excludes ?: listOf(),
-      exclusive = exclusive,
+      includes = includesProperty.orNull ?: listOf("*"),
+      excludes = excludesProperty.orNull ?: listOf(),
+      exclusive = exclusiveProperty.orElse(true).get(),
       outDirectory = outputDirectory,
-      options = options ?: mapOf(),
-      schemaHandlerFactory = schemaHandlerFactory ?: newSchemaHandler(schemaHandlerFactoryClass!!),
+      options = optionsProperty.orNull ?: mapOf(),
+      schemaHandlerFactory = configuredSchemaHandlerFactory ?: newSchemaHandler(configuredSchemaHandlerFactoryClass!!),
     )
   }
 }

@@ -954,6 +954,15 @@ class WirePluginTest {
   }
 
   @Test
+  fun customOutputProviderBackedDsl() {
+    val fixtureRoot = File("src/test/projects/custom-output-provider-kotlin-dsl")
+
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
+    assertThat(result.output)
+      .contains("Couldn't find SchemaHandlerClass 'NoSuchClass'")
+  }
+
+  @Test
   fun sinceUntil() {
     val fixtureRoot = File("src/test/projects/since-until")
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
