@@ -2299,6 +2299,39 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test fun sealedOneofGeneratesFieldAccessors() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message PaymentMethodChoice {
+        |  oneof method {
+        |    string card_id = 1;
+        |    // Access through `value_`.
+        |    int32 value = 2 [deprecated = true];
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.SEALED_CLASS)
+    assertThat(code).contains(
+      """
+      |public inline val PaymentMethodChoice.Method.card_id: String?
+      |  get() = (this as? PaymentMethodChoice.Method.CardId)?.value
+      |
+      |/**
+      | * Access through `value_`.
+      | */
+      |@Deprecated(message = "value is deprecated")
+      |public inline val PaymentMethodChoice.Method.value_: Int?
+      |  get() = (this as? PaymentMethodChoice.Method.Value)?.value
+      """.trimMargin(),
+    )
+  }
+
   @Test fun sealedOneofGeneratesCamelCaseClassName() {
     val schema = buildSchema {
       add(
@@ -2425,6 +2458,13 @@ class KotlinGeneratorTest {
     assertThat(code).contains("@SensitiveOption(true)")
     assertThat(code).contains("public data class CardId(")
     assertThat(code).contains("public data class Cash(")
+    assertThat(code).contains(
+      """
+      |@SensitiveOption(true)
+      |public inline val PaymentMethodChoice.Method.card_id: String?
+      |  get() = (this as? PaymentMethodChoice.Method.CardId)?.value
+      """.trimMargin(),
+    )
   }
 
   @Test fun sealedOneofOptionsAppliedAsAnnotationsOnSealedClass() {

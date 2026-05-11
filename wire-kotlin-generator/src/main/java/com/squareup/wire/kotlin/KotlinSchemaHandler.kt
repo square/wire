@@ -19,6 +19,7 @@ import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.AnnotationSpec.UseSiteTarget.FILE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
@@ -143,12 +144,20 @@ class KotlinSchemaHandler(
     if (KotlinGenerator.builtInType(type.type)) return null
 
     val typeSpec = kotlinGenerator.generateType(type)
+    val topLevelProperties = kotlinGenerator.generateSealedOneOfAccessors(type)
     val className = kotlinGenerator.generatedTypeName(type)
-    return write(className, typeSpec, type.type, type.location, context)
+    return write(
+      className,
+      typeSpec,
+      type.type,
+      type.location,
+      context,
+      topLevelProperties = topLevelProperties,
+    )
   }
 
   override fun handle(service: Service, context: Context): List<Path> {
-    if (rpcRole === RpcRole.NONE) return emptyList()
+    if (rpcRole === RpcRole.NONE) return listOf()
 
     val generatedPaths = mutableListOf<Path>()
 
@@ -183,6 +192,7 @@ class KotlinSchemaHandler(
     source: Any,
     location: Location,
     context: Context,
+    topLevelProperties: List<PropertySpec> = listOf(),
   ): Path {
     val modulePath = context.outDirectory
     val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
@@ -198,6 +208,11 @@ class KotlinSchemaHandler(
           .build(),
       )
       .addType(typeSpec)
+      .apply {
+        for (propertySpec in topLevelProperties) {
+          addProperty(propertySpec)
+        }
+      }
       .build()
     val filePath = modulePath /
       kotlinFile.packageName.replace(".", "/") /
@@ -205,7 +220,7 @@ class KotlinSchemaHandler(
 
     context.logger.artifactHandled(
       modulePath,
-      "${kotlinFile.packageName}.${(kotlinFile.members.first() as TypeSpec).name}",
+      "${kotlinFile.packageName}.${name.simpleName}",
       "Kotlin",
     )
     try {
