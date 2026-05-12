@@ -78,5 +78,15 @@ class ProtoReader32Test {
     }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
   }
 
+  /** We had a bug where negative lengths in skipped groups crashed with runtime exceptions. */
+  @Test fun testSkipGroupRejectsNegativeLength() {
+    val data = "9b060a80ffffff0f9c06".decodeHex()
+
+    assertFailure {
+      Person.ADAPTER.decode(data)
+    }.isInstanceOf<IOException>()
+      .hasMessage("Negative length: -128. Reader position: 8. Last read tag: 1.")
+  }
+
   // Consider pasting new tests into ProtoReaderTest.kt also.
 }

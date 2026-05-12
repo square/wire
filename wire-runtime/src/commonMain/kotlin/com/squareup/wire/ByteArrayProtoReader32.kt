@@ -228,6 +228,7 @@ internal class ByteArrayProtoReader32(
         }
         STATE_LENGTH_DELIMITED -> {
           val length = internalReadVarint32()
+          if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
           skip(length)
         }
         STATE_VARINT -> {
