@@ -267,6 +267,7 @@ open class ProtoReader(private val source: BufferedSource) {
         }
         STATE_LENGTH_DELIMITED -> {
           val length = internalReadVarint32()
+          if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
           pos += length.toLong()
           source.skip(length.toLong())
         }
