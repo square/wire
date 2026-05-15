@@ -1462,6 +1462,29 @@ class KotlinGeneratorTest {
     assertThat(input.sanitizeKdoc()).isEqualTo(expected)
   }
 
+  @Test fun generatedOptionTypeSanitizesKdoc() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "google/protobuf/descriptor.proto";
+        |message Message {
+        |  extend google.protobuf.MessageOptions {
+        |    // */ class Cheeky { } /*
+        |    optional string owner = 55682;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
+
+    assertThat(code).contains("&#42;/ class Cheeky { } /&#42;")
+    assertThat(code).doesNotContain("*/ class Cheeky")
+  }
+
   @Test fun handleLongIdentifiers() {
     val longType =
       "MessageWithNameLongerThan100Chars00000000000000000000000000000000000000000000000000000000000000000000"

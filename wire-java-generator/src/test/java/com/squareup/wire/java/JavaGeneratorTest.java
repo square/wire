@@ -46,8 +46,56 @@ public final class JavaGeneratorTest {
   @Test
   public void sanitizeJavadocStarSlash() {
     String input = "/* comment inside comment. */";
-    String expected = "/* comment inside comment. &#42;/";
+    String expected = "/&#42; comment inside comment. &#42;/";
     assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
+  }
+
+  @Test
+  public void generatedOptionTypeSanitizesJavadoc() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto2\";\n"
+                    + "import \"google/protobuf/descriptor.proto\";\n"
+                    + "message Message {\n"
+                    + "  extend google.protobuf.MessageOptions {\n"
+                    + "    // */ class Cheeky { } /*\n"
+                    + "    optional string owner = 55682;\n"
+                    + "  }\n"
+                    + "}\n")
+            .build();
+
+    String javaOutput =
+        new JavaWithProfilesGenerator(schema).generateJava("Message", null, false, true);
+
+    assertThat(javaOutput).contains("&#42;/ class Cheeky { } /&#42;");
+    assertThat(javaOutput).doesNotContain("*/ class Cheeky");
+  }
+
+  @Test
+  public void enclosingTypeSanitizesJavadoc() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "// */ class Cheeky { } /*\n"
+                    + "message A {\n"
+                    + "  message B {\n"
+                    + "  }\n"
+                    + "  optional B b = 1;\n"
+                    + "}\n")
+            .build();
+
+    Schema pruned = schema.prune(new PruningRules.Builder().addRoot("A.B").build());
+    JavaGenerator javaGenerator = JavaGenerator.get(schema);
+    TypeSpec typeSpec = javaGenerator.generateType(pruned.getType("A"));
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+
+    assertThat(javaOutput).contains("&#42;/ class Cheeky { } /&#42;");
+    assertThat(javaOutput).doesNotContain("*/ class Cheeky");
   }
 
   @Test

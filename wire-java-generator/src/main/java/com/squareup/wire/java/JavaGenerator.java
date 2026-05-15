@@ -623,6 +623,7 @@ public final class JavaGenerator {
     documentation = documentation.replaceAll("[^\\S\n]+\n", "\n");
     documentation = documentation.replaceAll("\\s+$", "");
     documentation = documentation.replaceAll("\\*/", "&#42;/");
+    documentation = documentation.replaceAll("/\\*", "/&#42;");
     // Rewrite '@see <url>' to use an html anchor tag
     documentation =
         documentation.replaceAll("@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
@@ -829,7 +830,9 @@ public final class JavaGenerator {
       }
       fieldBuilder.addAnnotation(wireFieldAnnotation(nameAllocator, field, type));
       if (field.isExtension()) {
-        fieldBuilder.addJavadoc("Extension source: $L\n", field.getLocation().withPathOnly());
+        fieldBuilder.addJavadoc(
+            "Extension source: $L\n",
+            sanitizeJavadoc(field.getLocation().withPathOnly().toString()));
       }
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
@@ -900,7 +903,7 @@ public final class JavaGenerator {
     documentation +=
         "<b>NOTE:</b> This type only exists to maintain class structure"
             + " for its nested types and is not an actual message.";
-    builder.addJavadoc("$L\n", documentation);
+    builder.addJavadoc("$L\n", sanitizeJavadoc(documentation));
 
     builder.addMethod(
         MethodSpec.constructorBuilder()
@@ -2377,7 +2380,7 @@ public final class JavaGenerator {
                     .build());
 
     if (!field.getDocumentation().isEmpty()) {
-      builder.addJavadoc("$L\n", field.getDocumentation());
+      builder.addJavadoc("$L\n", sanitizeJavadoc(field.getDocumentation()));
     }
 
     builder.addMethod(

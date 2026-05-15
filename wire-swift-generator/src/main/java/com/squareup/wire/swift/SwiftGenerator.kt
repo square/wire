@@ -1190,7 +1190,7 @@ class SwiftGenerator private constructor(
                 if (field.documentation.isNotBlank()) {
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
                 }
-                addDoc("\nSource: %L\n", field.location.withPathOnly())
+                addDoc("\nSource: %L\n", field.location.withPathOnly().toString().sanitizeDoc())
 
                 if (field.isDeprecated) {
                   addAttribute(deprecated)
@@ -1256,7 +1256,7 @@ class SwiftGenerator private constructor(
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
                 }
                 if (!forStorageType) {
-                  addDoc("\nSource: %L\n", field.location.withPathOnly())
+                  addDoc("\nSource: %L\n", field.location.withPathOnly().toString().sanitizeDoc())
                 }
 
                 if (field.isDeprecated) {
