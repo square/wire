@@ -7,6 +7,9 @@ on:
     - 'gradlew.bat'
     - 'gradle/wrapper/**'
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
