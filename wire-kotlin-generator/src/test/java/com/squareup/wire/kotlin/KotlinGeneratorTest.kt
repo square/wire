@@ -2000,6 +2000,12 @@ class KotlinGeneratorTest {
         """
         |syntax = "proto3";
         |import "option_redacted.proto";
+        |enum Country {
+        |  COUNTRY_INVALID = 0;
+        |  US = 1;
+        |  DE = 2;
+        |}
+        |
         |message RedactedFields {
         |  string a = 1 [(squareup.protos.redacted_option.redacted) = true];
         |  int32  b = 2 [(squareup.protos.redacted_option.redacted) = true];
@@ -2008,6 +2014,7 @@ class KotlinGeneratorTest {
         |    int32  d = 4 [(squareup.protos.redacted_option.redacted) = true];
         |  }
         |  SecretData secret_data = 5 [(squareup.protos.redacted_option.redacted) = true];
+        |  Country country = 6 [(squareup.protos.redacted_option.redacted) = true];
         |}
         |
         |message SecretData {}
@@ -2038,6 +2045,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("""public val c: String? = null,""")
     assertThat(code).contains("""public val d: Int? = null,""")
     assertThat(code).contains("""public val secret_data: SecretData? = null,""")
+    assertThat(code).contains("""public val country: Country = Country.COUNTRY_INVALID,""")
     assertThat(code).contains(
       """
       |      override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
@@ -2046,6 +2054,7 @@ class KotlinGeneratorTest {
       |        c = null,
       |        d = null,
       |        secret_data = null,
+      |        country = Country.COUNTRY_INVALID,
       |        unknownFields = ByteString.EMPTY
       |      )
       """.trimMargin(),

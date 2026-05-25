@@ -2395,6 +2395,7 @@ class KotlinGenerator private constructor(
         isMap -> CodeBlock.of("emptyMap()")
         encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
         isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[type!!]
+        type!!.isEnum -> (schema.getType(type!!) as EnumType).identity()
         else -> CodeBlock.of("null")
       }
     } else if (!type!!.isScalar && !type!!.isEnum) {
