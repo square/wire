@@ -36,6 +36,7 @@ import com.squareup.wire.testing.withPlatformSlashes
 import com.squareup.wire.wireVersion
 import java.io.File
 import java.io.IOException
+import java.util.Properties
 import java.util.zip.ZipFile
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
@@ -1477,15 +1478,44 @@ class WirePluginTest {
   fun androidKotlinSourceReleaseJarNoDuplicates() {
     val fixtureRoot = File("src/test/projects/android-kotlin-source-release-jar")
 
-    val localProperties = File(fixtureRoot, "local.properties")
-    if (!localProperties.exists()) {
-      val androidHome = System.getenv("ANDROID_HOME")
-        ?: "${System.getProperty("user.home")}/Library/Android/sdk"
-      localProperties.writeText("sdk.dir=$androidHome\n")
-    }
+    writeAndroidSdkLocalProperties(fixtureRoot)
 
     val result = fixtureGradleRunner(fixtureRoot, "sourceReleaseJar", "--no-build-cache").build()
     assertThat(result.task(":sourceReleaseJar")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+  }
+
+  /** Regression test for https://github.com/square/wire/issues/3607 */
+  @Test
+  fun androidKspSeesKotlinSourcesThatImportWireTypes() {
+    val fixtureRoot = File("src/test/projects/android-kotlin-ksp-source-set")
+
+    writeAndroidSdkLocalProperties(fixtureRoot)
+
+    val result = fixtureGradleRunner(
+      fixtureRoot,
+      ":library:clean",
+      ":library:compileReleaseKotlin",
+      "--no-build-cache",
+      "--no-configuration-cache",
+    ).build()
+
+    assertThat(result.task(":library:generateReleaseProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(result.task(":library:kspReleaseKotlin")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(result.task(":library:compileReleaseKotlin")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(File(fixtureRoot, "library/build/generated/ksp/release/kotlin/org/koin/ksp/generated")).exists()
+  }
+
+  private fun writeAndroidSdkLocalProperties(fixtureRoot: File) {
+    val localProperties = File(fixtureRoot, "local.properties")
+    if (localProperties.exists()) return
+
+    val androidHome = System.getenv("ANDROID_HOME")
+      ?: "${System.getProperty("user.home")}/Library/Android/sdk"
+    localProperties.outputStream().use {
+      Properties().apply {
+        setProperty("sdk.dir", androidHome)
+      }.store(it, null)
+    }
   }
 
   @Test

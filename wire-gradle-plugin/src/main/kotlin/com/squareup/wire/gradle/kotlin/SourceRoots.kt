@@ -177,7 +177,9 @@ private class AndroidSource(
           variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
         }
         is KotlinOutput -> {
-          variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
+          // Android Kotlin compilation and KSP also consume .kt files from Java source roots.
+          // Registering with variant.sources.kotlin can hide handwritten sources from KSP.
+          variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
         }
         is CustomOutput -> {
           // Custom targets are wildcards, so we add all output directories.
