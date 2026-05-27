@@ -1,0 +1,7 @@
+syntax = "proto3";
+option java_package = "com.example.repro.proto";
+option java_multiple_files = true;
+
+message PBMessage {
+  string field = 1;
+}

@@ -1,0 +1,38 @@
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.android'
+  id 'com.google.devtools.ksp'
+  id 'com.squareup.wire'
+}
+
+def wireVersion = gradle.startParameter.projectProperties.get('wireVersion')
+
+android {
+  namespace = 'com.example.repro'
+  compileSdk = 35
+
+  defaultConfig {
+    minSdk = 28
+  }
+
+  kotlin {
+    jvmToolchain(21)
+  }
+}
+
+dependencies {
+  implementation("com.squareup.wire:wire-runtime:${wireVersion}")
+  // We're using Koin as our source-consuming KSP processor in order to reproduce #3607.
+  implementation("io.insert-koin:koin-core:4.1.0")
+  implementation("io.insert-koin:koin-annotations:2.1.0")
+  ksp("io.insert-koin:koin-ksp-compiler:2.1.0")
+}
+
+wire {
+  kotlin {
+    javaInterop = true
+  }
+  sourcePath {
+    srcDir("src/main/proto")
+  }
+}

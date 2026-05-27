@@ -1,0 +1,19 @@
+def wireVersion = gradle.startParameter.projectProperties.get('wireVersion')
+
+buildscript {
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+  }
+
+  dependencies {
+    classpath("com.squareup.wire:wire-gradle-plugin:${wireVersion}")
+    classpath("com.android.tools.build:gradle:8.13.2")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
+    classpath("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.2.21-2.0.5")
+  }
+}
