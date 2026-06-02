@@ -183,8 +183,7 @@ public final class ProtoReader {
                 throw ProtoDecoder.Error.unexpectedEndGroupFieldNumber(expected: nil, found: tag)
 
             case .lengthDelimited:
-                let length = try Int32(truncatingIfNeeded: buffer.readVarint())
-                state = .lengthDelimited(length: Int(length))
+                state = .lengthDelimited(length: try readLengthDelimitedLength(tag: tag))
                 currentTag = tag
                 return tag
 
@@ -793,8 +792,7 @@ public final class ProtoReader {
                 return
 
             case .lengthDelimited:
-                let length = try Int32(truncatingIfNeeded: buffer.readVarint())
-                state = .lengthDelimited(length: Int(length))
+                state = .lengthDelimited(length: try readLengthDelimitedLength(tag: tag))
                 let data = try readData()
                 try unknownFieldsWriter.encode(tag: tag, value: data)
 
@@ -854,6 +852,16 @@ public final class ProtoReader {
         }
 
         return (tag, wireType)
+    }
+
+    private func readLengthDelimitedLength(tag: UInt32) throws -> Int {
+        let length = try Int32(truncatingIfNeeded: buffer.readVarint())
+        if length < 0 {
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Negative length: \(length). Reader position: \(buffer.position). Last read tag: \(tag)."
+            )
+        }
+        return Int(length)
     }
 
     // MARK: - Private Methods - Decoding - Repeated Field

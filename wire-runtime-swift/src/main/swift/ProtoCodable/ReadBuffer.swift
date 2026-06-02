@@ -67,7 +67,7 @@ final class ReadBuffer {
     }
 
     func verifyAdditional(count: Int) throws {
-        guard pointer.advanced(by: count) <= end else {
+        guard count >= 0, pointer.advanced(by: count) <= end else {
             throw ProtoDecoder.Error.unexpectedEndOfData
         }
     }
