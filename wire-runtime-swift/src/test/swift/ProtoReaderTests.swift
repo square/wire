@@ -1111,6 +1111,42 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testLengthDelimitedRejectsNegativeLength() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A         // (Tag 1 | Length Delimited)
+            80FFFFFF0F // Length -128
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { _ in
+                    XCTFail("The negative length should have thrown before returning a tag")
+                }
+            }
+        ) { error in
+            assertNegativeLengthError(error, readerPosition: 6)
+        }
+    }
+
+    func testSkipGroupRejectsNegativeLengthDelimited() throws {
+        let data = Foundation.Data(hexEncoded: """
+            9B06       // (Tag 99 | Start Group)
+            0A         // (Tag 1 | Length Delimited)
+            80FFFFFF0F // Length -128
+            9C06       // (Tag 99 | End Group)
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { _ in
+                    XCTFail("The group should have been skipped or rejected")
+                }
+            }
+        ) { error in
+            assertNegativeLengthError(error, readerPosition: 8)
+        }
+    }
+
     // MARK: - Tests - Unknown Fields
 
     func testUnknownFields() throws {
@@ -1329,6 +1365,14 @@ final class ProtoReaderTests: XCTestCase {
             let reader = ProtoReader(buffer: readBuffer, enumDecodingStrategy: enumStrategy)
             try test(reader)
         }
+    }
+
+    private func assertNegativeLengthError(_ error: Error, readerPosition: Int) {
+        guard case let ProtoDecoder.Error.invalidStructure(message) = error else {
+            XCTFail("Unexpected error: \(error)")
+            return
+        }
+        XCTAssertEqual(message, "Negative length: -128. Reader position: \(readerPosition). Last read tag: 1.")
     }
 }
 
