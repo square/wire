@@ -18,10 +18,10 @@ package com.squareup.wire.whiteboard.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.graphics.toColorInt
 import com.squareup.wire.whiteboard.OnBoardEventListener
 import com.squareup.wire.whiteboard.Point
 import kotlin.math.roundToInt
@@ -96,7 +96,7 @@ class WhiteboardView(
     val centerY = height / 2
     val text = "WIRE ♡ gRPC"
     val paint = Paint().apply {
-      color = "#f46e38".toColorInt()
+      color = Color.parseColor("#f46e38")
       textSize = 90f
     }
 

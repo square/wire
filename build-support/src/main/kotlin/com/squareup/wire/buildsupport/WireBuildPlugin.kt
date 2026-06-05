@@ -187,7 +187,7 @@ class WireBuildPlugin : Plugin<Project> {
   private fun Project.configureCommonAndroid() {
     plugins.withId("com.android.base") {
       project.extensions.getByType(CommonExtension::class.java).apply {
-        compileSdk = 36
+        compileSdk = 37
         compileOptions.apply {
           sourceCompatibility = JavaVersion.VERSION_1_8
           targetCompatibility = JavaVersion.VERSION_1_8
