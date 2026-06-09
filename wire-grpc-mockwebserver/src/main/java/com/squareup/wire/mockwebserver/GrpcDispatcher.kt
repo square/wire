@@ -33,6 +33,7 @@ import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.EventListener
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -197,6 +198,7 @@ class GrpcDispatcher(
 
   companion object {
     object NullCall : Call {
+      override fun addEventListener(eventListener: EventListener) = error("unexpected call")
       override fun cancel() = error("unexpected call")
       override fun clone() = error("unexpected call")
       override fun enqueue(responseCallback: Callback) = error("unexpected call")
