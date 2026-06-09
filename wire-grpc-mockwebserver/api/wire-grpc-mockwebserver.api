@@ -10,6 +10,8 @@ public final class com/squareup/wire/mockwebserver/GrpcDispatcher$Companion {
 
 public final class com/squareup/wire/mockwebserver/GrpcDispatcher$Companion$NullCall : okhttp3/Call {
 	public static final field INSTANCE Lcom/squareup/wire/mockwebserver/GrpcDispatcher$Companion$NullCall;
+	public fun addEventListener (Lokhttp3/EventListener;)Ljava/lang/Void;
+	public synthetic fun addEventListener (Lokhttp3/EventListener;)V
 	public fun cancel ()Ljava/lang/Void;
 	public synthetic fun cancel ()V
 	public synthetic fun clone ()Ljava/lang/Object;
