@@ -21,7 +21,7 @@ expect interface Multimap<K, V> {
   fun containsKey(key: Any?): Boolean
   fun containsValue(value: Any?): Boolean
 
-  operator fun get(key: K?): Collection<V>
+  operator fun get(key: K): Collection<V>
   fun values(): Collection<V>
   fun asMap(): Map<K, Collection<V>>
 }
