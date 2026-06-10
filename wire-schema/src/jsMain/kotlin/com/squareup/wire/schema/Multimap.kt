@@ -20,7 +20,7 @@ actual interface Multimap<K, V> {
   actual fun isEmpty(): Boolean
   actual fun containsKey(key: Any?): Boolean
   actual fun containsValue(value: Any?): Boolean
-  actual operator fun get(key: K?): Collection<V>
+  actual operator fun get(key: K): Collection<V>
   actual fun values(): Collection<V>
   actual fun asMap(): Map<K, Collection<V>>
 }
@@ -30,7 +30,7 @@ private class SimpleMultimap<K, V>(private val map: Map<K, Collection<V>>) : Mul
   override fun isEmpty() = map.isEmpty()
   override fun containsKey(key: Any?) = map.containsKey(key)
   override fun containsValue(value: Any?) = map.values.any { it.contains(value) }
-  override fun get(key: K?) = map[key] ?: emptyList()
+  override fun get(key: K) = map[key] ?: emptyList()
   override fun values() = map.values.flatten()
   override fun asMap() = map
 }
