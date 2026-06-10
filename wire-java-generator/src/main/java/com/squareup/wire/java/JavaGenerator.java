@@ -624,6 +624,8 @@ public final class JavaGenerator {
     documentation = documentation.replaceAll("\\s+$", "");
     documentation = documentation.replaceAll("\\*/", "&#42;/");
     documentation = documentation.replaceAll("/\\*", "/&#42;");
+    // Java translates Unicode escapes before lexing, including inside comments.
+    documentation = documentation.replace("\\", "&#92;");
     // Rewrite '@see <url>' to use an html anchor tag
     documentation =
         documentation.replaceAll("@see (http:" + URL_CHARS + "+)", "@see <a href=\"$1\">$1</a>");
