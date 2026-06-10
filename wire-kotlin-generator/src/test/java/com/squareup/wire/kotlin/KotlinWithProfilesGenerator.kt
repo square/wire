@@ -70,6 +70,11 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     val typeSpec = kotlinGenerator.generateType(type)
     val packageName = kotlinGenerator.generatedTypeName(type).packageName
     val fileSpec = FileSpec.builder(packageName, "_")
+      .apply {
+        for (propertySpec in kotlinGenerator.generateSealedOneOfAccessors(type)) {
+          addProperty(propertySpec)
+        }
+      }
       .addType(typeSpec)
       .addImport("com.squareup.wire.kotlin", "decodeMessage")
       .build()

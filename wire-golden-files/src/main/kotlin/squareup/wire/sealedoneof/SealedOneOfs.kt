@@ -195,3 +195,17 @@ public class SealedOneOfs private constructor(
     public inline fun build(body: Builder.() -> Unit): SealedOneOfs = Builder().apply(body).build()
   }
 }
+
+public inline val SealedOneOfs.Value.first_value: SealedMessage?
+  get() = (this as? SealedOneOfs.Value.FirstValue)?.value
+
+@Deprecated(message = "second_value is deprecated")
+public inline val SealedOneOfs.Value.second_value: String?
+  get() = (this as? SealedOneOfs.Value.SecondValue)?.value
+
+/**
+ * This one is a good candidate.
+ */
+@FieldOptionOption(806)
+public inline val SealedOneOfs.Value.value_: Int?
+  get() = (this as? SealedOneOfs.Value.Value)?.value

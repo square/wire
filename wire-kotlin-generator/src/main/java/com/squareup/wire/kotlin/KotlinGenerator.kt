@@ -338,6 +338,16 @@ class KotlinGenerator private constructor(
     }
   }
 
+  fun generateSealedOneOfAccessors(type: Type): List<PropertySpec> {
+    if (oneofMode != OneofMode.SEALED_CLASS) return listOf()
+
+    return when (type) {
+      is MessageType -> type.sealedOneOfAccessors()
+      is EnclosingType -> type.nestedTypes.flatMap(::generateSealedOneOfAccessors)
+      is EnumType -> listOf()
+    }
+  }
+
   /**
    * Generates all [TypeSpec]s for the given [Service].
    *
@@ -3071,6 +3081,69 @@ class KotlinGenerator private constructor(
   }
 
   /**
+   * Generates top-level extension properties that read values from sealed oneof instances.
+   *
+   * Example:
+   * ```
+   * public val PaymentMethodChoice.Method.card_id: String?
+   *   get() = (this as? PaymentMethodChoice.Method.CardId)?.value
+   *
+   * public val PaymentMethodChoice.Method.bank_account: BankAccount?
+   *   get() = (this as? PaymentMethodChoice.Method.BankAccount)?.value
+   * ```
+   */
+  private fun MessageType.sealedOneOfAccessors(): List<PropertySpec> {
+    val accessors = mutableListOf<PropertySpec>()
+    val className = typeName as ClassName
+    val nameAllocator = nameAllocator(this)
+
+    for (oneOf in sealedOneOfs()) {
+      val sealedClassName = className.nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
+      val subclassNameAllocator = sealedSubclassNameAllocator(oneOf)
+      val accessorNameAllocator = NameAllocator(preallocateKeywords = !escapeKotlinKeywords)
+
+      for (field in oneOf.fields) {
+        val fieldName = if (field.name == field.type!!.simpleName || hasEponymousType(schema, field)) {
+          accessorNameAllocator.newName(legacyQualifiedFieldName(field), field)
+        } else {
+          accessorNameAllocator.newName(field.name, field)
+        }
+        val subclassName = sealedClassName.nestedClass(subclassNameAllocator[field])
+        accessors += PropertySpec.builder(fieldName, field.type!!.typeName.copy(nullable = true))
+          .receiver(sealedClassName)
+          .apply {
+            if (field.isDeprecated) {
+              addAnnotation(
+                AnnotationSpec.builder(Deprecated::class)
+                  .addMember("message = %S", "${field.name} is deprecated")
+                  .build(),
+              )
+            }
+            for (annotation in optionAnnotations(field.options)) {
+              addAnnotation(annotation)
+            }
+            if (field.documentation.isNotBlank()) {
+              addKdoc("%L\n", field.documentation.sanitizeKdoc())
+            }
+          }
+          .getter(
+            FunSpec.getterBuilder()
+              .addModifiers(INLINE)
+              .addStatement("return (this as? %T)?.value", subclassName)
+              .build(),
+          )
+          .build()
+      }
+    }
+
+    for (nestedType in nestedTypes) {
+      accessors += generateSealedOneOfAccessors(nestedType)
+    }
+
+    return accessors
+  }
+
+  /**
    * Generates a sealed class for a oneof.
    *
    * Example:
@@ -3321,18 +3394,18 @@ class KotlinGenerator private constructor(
 
   private fun MessageType.flatOneOfs(): List<OneOf> = when (oneofMode) {
     OneofMode.FLAT -> oneOfs.filter { it.fields.size < boxOneOfsMinSize }
-    else -> emptyList()
+    else -> listOf()
   }
 
   private fun MessageType.boxOneOfs(): List<OneOf> = when (oneofMode) {
     OneofMode.FLAT -> oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
     OneofMode.BOXED -> oneOfs
-    OneofMode.SEALED_CLASS -> emptyList()
+    OneofMode.SEALED_CLASS -> listOf()
   }
 
   private fun MessageType.sealedOneOfs(): List<OneOf> = when (oneofMode) {
     OneofMode.SEALED_CLASS -> oneOfs
-    else -> emptyList()
+    else -> listOf()
   }
 
   private fun sealedSubclassNameAllocator(oneOf: OneOf): NameAllocator = sealedSubclassNameAllocatorStore.getOrPut(oneOf) {
@@ -3552,7 +3625,7 @@ class KotlinGenerator private constructor(
             AnnotationTarget.FIELD,
           )
         METHOD_OPTIONS -> listOf(AnnotationTarget.FUNCTION)
-        else -> emptyList()
+        else -> listOf()
       }
 
     internal fun String.sanitizeKdoc(): String = this
