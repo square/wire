@@ -51,6 +51,13 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void sanitizeJavadocUnicodeEscapes() {
+    String input = "\\u002a\\u002f class Cheeky { } \\u002f\\u002a";
+    String expected = "&#92;u002a&#92;u002f class Cheeky { } &#92;u002f&#92;u002a";
+    assertThat(JavaGenerator.sanitizeJavadoc(input)).isEqualTo(expected);
+  }
+
+  @Test
   public void generatedOptionTypeSanitizesJavadoc() throws Exception {
     Schema schema =
         new SchemaBuilder()
@@ -72,6 +79,26 @@ public final class JavaGeneratorTest {
 
     assertThat(javaOutput).contains("&#42;/ class Cheeky { } /&#42;");
     assertThat(javaOutput).doesNotContain("*/ class Cheeky");
+  }
+
+  @Test
+  public void generatedFieldSanitizesJavadocUnicodeEscapes() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto2\";\n"
+                    + "message Message {\n"
+                    + "  // \\u002a\\u002f class Cheeky { } \\u002f\\u002a\n"
+                    + "  optional string owner = 1;\n"
+                    + "}\n")
+            .build();
+
+    String javaOutput = new JavaWithProfilesGenerator(schema).generateJava("Message");
+
+    assertThat(javaOutput).contains("&#92;u002a&#92;u002f class Cheeky { } &#92;u002f&#92;u002a");
+    assertThat(javaOutput).doesNotContain("\\u002a\\u002f class Cheeky");
   }
 
   @Test
