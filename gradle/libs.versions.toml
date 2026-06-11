@@ -21,7 +21,7 @@ ktlint = "1.5.0"
 moshi = "1.15.2"
 okhttp = "5.4.0"
 okio = "3.17.0"
-protobuf = "4.35.0"
+protobuf = "4.35.1"
 protobufGradlePlugin = "0.10.0"
 
 [libraries]
