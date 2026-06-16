@@ -149,6 +149,8 @@ class SwiftGenerator private constructor(
     get() = type!!.keyType!!
   internal val Field.valueType: ProtoType
     get() = type!!.valueType!!
+  private val Field.extensionAccessorType: TypeName
+    get() = if (isMap || isRepeated) typeName else typeName.makeOptional()
 
   private val Field.isRequiredParameter: Boolean
     get() = !isOptional && !isRepeated && !isMap
@@ -1195,7 +1197,7 @@ class SwiftGenerator private constructor(
         .addDoc("Extensions of %T\n", structType)
         .apply {
           type.extensionFields.forEach { field ->
-            val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
+            val property = PropertySpec.varBuilder(field.safeName, field.extensionAccessorType, PUBLIC)
               .apply {
                 if (field.documentation.isNotBlank()) {
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
@@ -1260,7 +1262,7 @@ class SwiftGenerator private constructor(
             addDoc("Extensions of %T\n", structType)
           }
           type.extensionFields.forEach { field ->
-            val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
+            val property = PropertySpec.varBuilder(field.safeName, field.extensionAccessorType, PUBLIC)
               .apply {
                 if (!forStorageType && field.documentation.isNotBlank()) {
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
