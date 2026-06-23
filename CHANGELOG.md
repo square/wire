@@ -4,6 +4,17 @@ Change Log
 Unreleased
 ----------
 
+Version 6.4.4
+---------------------
+
+_2026-06-23_
+
+### Common
+
+* Security: Reject negative lengths when skipping groups in Swift, so crafted protobuf payloads
+  throw `ProtocolException` instead of unchecked runtime exceptions (#3616,
+  [GHSA-86wm-r4c5-2rc9][GHSA-86wm-r4c5-2rc9], reported by [tonghuaroot][tonghuaroot])
+
 Version 6.4.0
 ---------------------
 
@@ -21,8 +32,8 @@ _2026-05-14_
 
 ### Common
 
-* Security: Reject negative lengths when skipping groups, so crafted protobuf payloads throw
-  `ProtocolException` instead of unchecked runtime exceptions (#3597,
+* Security: Reject negative lengths when skipping groups in Java/Kotlin, so crafted protobuf
+  payloads throw `ProtocolException` instead of unchecked runtime exceptions (#3597,
   [GHSA-7xpr-hc2w-34m9][GHSA-7xpr-hc2w-34m9], reported by [TrekLaps][TrekLaps])
 
 Version 6.3.0
@@ -1958,12 +1969,14 @@ Initial version.
  [Egorand]: https://github.com/Egorand
  [Endeavour233]: https://github.com/Endeavour233
  [GHSA-7xpr-hc2w-34m9]: https://github.com/square/wire/security/advisories/GHSA-7xpr-hc2w-34m9
+ [GHSA-86wm-r4c5-2rc9]: https://github.com/square/wire/security/advisories/GHSA-86wm-r4c5-2rc9
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
  [JustinBis]: https://github.com/JustinBis
  [MariusVolkhart]: https://github.com/MariusVolkhart
  [ShayOinif]: https://github.com/ShayOinif
  [TrekLaps]: https://github.com/TrekLaps
+ [tonghuaroot]: https://github.com/tonghuaroot
  [aaron-edwards]: https://github.com/aaron-edwards
  [amorde]: https://github.com/amorde
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
