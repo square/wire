@@ -24,6 +24,7 @@ import com.squareup.wire.SchemaBuilder;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.PruningRules;
 import com.squareup.wire.schema.Schema;
+import com.squareup.wire.schema.SchemaException;
 import java.io.IOException;
 import okio.Path;
 import org.junit.Test;
@@ -608,21 +609,20 @@ public final class JavaGeneratorTest {
 
   @Test
   public void defaultValuesMustNotBeOctal() throws IOException {
-    Schema schema =
-        new SchemaBuilder()
-            .add(
-                Path.get("message.proto"),
-                ""
-                    + "message Message {\n"
-                    + "  optional int32 a = 1 [default = 020 ];\n"
-                    + "  optional int64 b = 2 [default = 021 ];\n"
-                    + "}\n")
-            .build();
     try {
-      new JavaWithProfilesGenerator(schema).generateJava("Message");
+      new SchemaBuilder()
+          .add(
+              Path.get("message.proto"),
+              ""
+                  + "message Message {\n"
+                  + "  optional int32 a = 1 [default = 020 ];\n"
+                  + "  optional int64 b = 2 [default = 021 ];\n"
+                  + "}\n")
+          .build();
       fail();
-    } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessageThat().contains("Octal literal unsupported: 020");
+    } catch (SchemaException expected) {
+      assertThat(expected).hasMessageThat().contains("invalid default value \"020\" for int32");
+      assertThat(expected).hasMessageThat().contains("invalid default value \"021\" for int64");
     }
   }
 

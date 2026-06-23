@@ -162,6 +162,7 @@ data class Field(
       }
     }
     syntaxRules.validateDefaultValue(default != null, linker.errors)
+    validateDefaultValue(linker)
     if (type!!.isMap) {
       val valueType = linker.get(type!!.valueType!!)
       if (valueType is EnumType && valueType.constants[0].tag != 0) {
@@ -169,6 +170,15 @@ data class Field(
       }
     }
     linker.validateImportForType(location, type!!)
+  }
+
+  private fun validateDefaultValue(linker: Linker) {
+    val default = default ?: return
+    val type = type!!
+
+    if (!isValidLiteral(linker, type, default)) {
+      linker.errors += "invalid default value \"$default\" for $type"
+    }
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Field? {

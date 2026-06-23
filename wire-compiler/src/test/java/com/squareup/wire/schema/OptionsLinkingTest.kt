@@ -18,12 +18,14 @@
 package com.squareup.wire.schema
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.squareup.wire.testing.add
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
+import org.junit.Assert.fail
 import org.junit.Test
 
 class OptionsLinkingTest {
@@ -167,6 +169,62 @@ class OptionsLinkingTest {
 
     val typeRange = schema.getType("Range") as MessageType
     assertThat(typeRange.field("max")).isNotNull()
+  }
+
+  @Test
+  fun rejectsInvalidOptionScalarLiterals() {
+    fs.add(
+      "source-path/a.proto",
+      """
+             |import "formatting_options.proto";
+             |
+             |message A {
+             |  option (message_options).enabled = "false; static { } //";
+             |  optional string s = 1 [
+             |    (formatting_options).max = "80; static { } //",
+             |    (formatting_options).casing = "LOWER_CASE; static { } //"
+             |  ];
+             |}
+      """.trimMargin(),
+    )
+    fs.add(
+      "source-path/formatting_options.proto",
+      """
+             |import "google/protobuf/descriptor.proto";
+             |
+             |message MessageOptions {
+             |  optional bool enabled = 1;
+             |}
+             |
+             |message FormattingOptions {
+             |  optional int32 max = 1;
+             |  optional StringCasing casing = 2;
+             |  optional string documentation = 3;
+             |}
+             |
+             |enum StringCasing {
+             |  LOWER_CASE = 1;
+             |}
+             |
+             |extend google.protobuf.MessageOptions {
+             |  optional MessageOptions message_options = 22001;
+             |}
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional FormattingOptions formatting_options = 22002;
+             |}
+      """.trimMargin(),
+    )
+
+    try {
+      loadAndLinkSchema()
+      fail()
+    } catch (expected: SchemaException) {
+      val message = expected.message!!
+      assertThat(message).contains("invalid option value \"false; static { } //\" for bool")
+      assertThat(message).contains("invalid option value \"80; static { } //\" for int32")
+      assertThat(message).contains("invalid option value \"LOWER_CASE; static { } //\" for StringCasing")
+    }
   }
 
   @Test

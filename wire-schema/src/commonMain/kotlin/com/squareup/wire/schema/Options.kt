@@ -220,6 +220,7 @@ class Options(
       }
 
       is String -> {
+        validateOptionValue(linker, context, value)
         return coerceValueForField(context, value, isRepeated)
       }
 
@@ -230,6 +231,12 @@ class Options(
       else -> {
         throw IllegalArgumentException("Unexpected option value: $value")
       }
+    }
+  }
+
+  private fun validateOptionValue(linker: Linker, context: ProtoType, value: String) {
+    if (!isValidLiteral(linker, context, value)) {
+      linker.errors += "invalid option value \"$value\" for $context"
     }
   }
 
