@@ -2163,6 +2163,68 @@ class SchemaTest {
   }
 
   @Test
+  fun proto2AllowsValidDefaultValues() {
+    buildSchema {
+      add(
+        "defaults.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Defaults {
+        |  optional bool bool_field = 1 [default = false];
+        |  optional int32 int32_field = 2 [default = -0x80000000];
+        |  optional uint32 uint32_field = 3 [default = 4294967295];
+        |  optional int64 int64_field = 4 [default = -9223372036854775808];
+        |  optional uint64 uint64_field = 5 [default = 18446744073709551615];
+        |  optional float float_field = 6 [default = inf];
+        |  optional double double_field = 7 [default = -1.23e45];
+        |  optional string string_field = 8 [default = "source syntax is just data here"];
+        |  optional bytes bytes_field = 9 [default = "abc"];
+        |  optional Choice enum_field = 10 [default = TWO];
+        |
+        |  enum Choice {
+        |    ONE = 0;
+        |    TWO = 1;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+  }
+
+  @Test
+  fun proto2RejectsInvalidDefaultValues() {
+    try {
+      buildSchema {
+        add(
+          "defaults.proto".toPath(),
+          """
+        |syntax = "proto2";
+        |
+        |message Defaults {
+        |  optional bool bool_field = 1 [default = "false; static { } //"];
+        |  optional float float_field = 2 [default = "0.0f; init { } //"];
+        |  optional double double_field = 3 [default = "0.0d; static { } //"];
+        |  optional Choice enum_field = 4 [default = "ONE; static { } //"];
+        |
+        |  enum Choice {
+        |    ONE = 0;
+        |  }
+        |}
+          """.trimMargin(),
+        )
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      val message = expected.message!!
+      assertThat(message).contains("invalid default value \"false; static { } //\" for bool")
+      assertThat(message).contains("invalid default value \"0.0f; init { } //\" for float")
+      assertThat(message).contains("invalid default value \"0.0d; static { } //\" for double")
+      assertThat(message).contains("invalid default value \"ONE; static { } //\" for Defaults.Choice")
+    }
+  }
+
+  @Test
   fun repeatedNumericScalarsShouldBePackedByDefaultForProto3() {
     val schema = buildSchema {
       add(
