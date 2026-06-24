@@ -61,15 +61,22 @@ final class ReadBuffer {
     }
 
     init(storage: UnsafePointer<UInt8>, count: Int) {
+        precondition(count >= 0)
         self.start = storage
         self.end = storage.advanced(by: count)
         self.pointer = storage
     }
 
     func verifyAdditional(count: Int) throws {
-        guard count >= 0, pointer.advanced(by: count) <= end else {
+        _ = try endPointer(count: count)
+    }
+
+    func endPointer(count: Int) throws -> UnsafePointer<UInt8> {
+        let remainingCount = end - pointer
+        guard count >= 0, remainingCount >= 0, count <= remainingCount else {
             throw ProtoDecoder.Error.unexpectedEndOfData
         }
+        return pointer.advanced(by: count)
     }
 
 }
@@ -79,39 +86,39 @@ extension ReadBuffer {
     // MARK: - Reading
 
     func readBuffer(count: Int) throws -> UnsafeRawBufferPointer {
-        try verifyAdditional(count: count)
+        let newPointer = try endPointer(count: count)
         let buffer = UnsafeRawBufferPointer(start: pointer, count: count)
-        pointer = pointer.advanced(by: count)
+        pointer = newPointer
 
         return buffer
     }
 
     func readData(count: Int) throws -> Data {
-        try verifyAdditional(count: count)
+        let newPointer = try endPointer(count: count)
         let data = Data(bytes: pointer, count: count)
-        pointer = pointer.advanced(by: count)
+        pointer = newPointer
 
         return data
     }
 
     func readFixed32() throws -> UInt32 {
-        try verifyAdditional(count: 4)
+        let newPointer = try endPointer(count: 4)
         var value: UInt32 = 0
         withUnsafeMutableBytes(of: &value) { dest -> Void in
             dest.copyMemory(from: UnsafeRawBufferPointer(start: pointer, count: 4))
         }
-        pointer = pointer.advanced(by: 4)
+        pointer = newPointer
 
         return UInt32(littleEndian: value)
     }
 
     func readFixed64() throws -> UInt64 {
-        try verifyAdditional(count: 8)
+        let newPointer = try endPointer(count: 8)
         var value: UInt64 = 0
         withUnsafeMutableBytes(of: &value) { dest -> Void in
             dest.copyMemory(from: UnsafeRawBufferPointer(start: pointer, count: 8))
         }
-        pointer = pointer.advanced(by: 8)
+        pointer = newPointer
 
         return UInt64(littleEndian: value)
     }
@@ -122,6 +129,7 @@ extension ReadBuffer {
         var result: UInt64 = 0
 
         while shift < 64 {
+            try verifyAdditional(count: 1)
             let byte = pointer.pointee
             pointer = pointer.advanced(by: 1)
 
@@ -130,8 +138,6 @@ extension ReadBuffer {
                 return result
             }
             shift += 7
-
-            try verifyAdditional(count: 1)
         }
         throw ProtoDecoder.Error.malformedVarint
     }

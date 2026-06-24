@@ -154,12 +154,12 @@ open class ProtoReader(private val source: BufferedSource) {
     nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED
     state = STATE_LENGTH_DELIMITED
     val length = internalReadVarint32()
-    if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
+    requireNonNegativeLength(length)
     if (pushedLimit != -1L) throw IllegalStateException()
+    val newLimit = checkedLimit(length.toLong())
     // Push the current limit, and set a new limit to the length of this value.
     pushedLimit = limit
-    limit = pos + length
-    if (limit > pushedLimit) throw EOFException()
+    limit = newLimit
     return length
   }
 
@@ -267,9 +267,8 @@ open class ProtoReader(private val source: BufferedSource) {
         }
         STATE_LENGTH_DELIMITED -> {
           val length = internalReadVarint32()
-          if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
-          pos += length.toLong()
-          source.skip(length.toLong())
+          requireNonNegativeLength(length, tag)
+          skip(length.toLong())
         }
         STATE_VARINT -> {
           state = STATE_VARINT
@@ -349,44 +348,32 @@ open class ProtoReader(private val source: BufferedSource) {
   }
 
   private fun internalReadVarint32(): Int {
-    source.require(1) // Throws EOFException if insufficient bytes are available.
-    pos++
-    var tmp = source.readByte()
+    var tmp = readByte()
     if (tmp >= 0) {
       return tmp.toInt()
     }
     var result = tmp and 0x7f
-    source.require(1) // Throws EOFException if insufficient bytes are available.
-    pos++
-    tmp = source.readByte()
+    tmp = readByte()
     if (tmp >= 0) {
       result = result or (tmp shl 7)
     } else {
       result = result or (tmp and 0x7f shl 7)
-      source.require(1) // Throws EOFException if insufficient bytes are available.
-      pos++
-      tmp = source.readByte()
+      tmp = readByte()
       if (tmp >= 0) {
         result = result or (tmp shl 14)
       } else {
         result = result or (tmp and 0x7f shl 14)
-        source.require(1) // Throws EOFException if insufficient bytes are available.
-        pos++
-        tmp = source.readByte()
+        tmp = readByte()
         if (tmp >= 0) {
           result = result or (tmp shl 21)
         } else {
           result = result or (tmp and 0x7f shl 21)
-          source.require(1) // Throws EOFException if insufficient bytes are available.
-          pos++
-          tmp = source.readByte()
+          tmp = readByte()
           result = result or (tmp shl 28)
           if (tmp < 0) {
             // Discard upper 32 bits.
             for (i in 0..4) {
-              source.require(1) // Throws EOFException if insufficient bytes are available.
-              pos++
-              if (source.readByte() >= 0) {
+              if (readByte() >= 0) {
                 return result
               }
             }
@@ -407,9 +394,7 @@ open class ProtoReader(private val source: BufferedSource) {
     var shift = 0
     var result: Long = 0
     while (shift < 64) {
-      source.require(1) // Throws EOFException if insufficient bytes are available.
-      pos++
-      val b = source.readByte()
+      val b = readByte()
       result = result or ((b and 0x7F).toLong() shl shift)
       if (b and 0x80 == 0) {
         afterPackableScalar(STATE_VARINT)
@@ -426,6 +411,7 @@ open class ProtoReader(private val source: BufferedSource) {
     if (state != STATE_FIXED32 && state != STATE_LENGTH_DELIMITED) {
       throw ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
+    checkedLimit(4)
     source.require(4) // Throws EOFException if insufficient bytes are available.
     pos += 4
     val result = source.readIntLe()
@@ -439,6 +425,7 @@ open class ProtoReader(private val source: BufferedSource) {
     if (state != STATE_FIXED64 && state != STATE_LENGTH_DELIMITED) {
       throw ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
+    checkedLimit(8)
     source.require(8) // Throws EOFException if insufficient bytes are available.
     pos += 8
     val result = source.readLongLe()
@@ -469,7 +456,7 @@ open class ProtoReader(private val source: BufferedSource) {
     if (state != STATE_LENGTH_DELIMITED) {
       throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
-    val byteCount = limit - pos
+    val byteCount = remainingInLimit()
     source.require(byteCount) // Throws EOFException if insufficient bytes are available.
     state = STATE_TAG
     // We've completed a length-delimited scalar. Pop the limit.
@@ -524,12 +511,41 @@ open class ProtoReader(private val source: BufferedSource) {
    */
   open fun nextFieldMinLengthInBytes(): Long {
     return when (nextFieldEncoding) {
-      FieldEncoding.LENGTH_DELIMITED -> limit - pos
+      FieldEncoding.LENGTH_DELIMITED -> remainingInLimit()
       FieldEncoding.FIXED32 -> 4
       FieldEncoding.FIXED64 -> 8
       FieldEncoding.VARINT -> 1
       null -> throw IllegalStateException("nextFieldEncoding is not set")
     }
+  }
+
+  private fun skip(byteCount: Long) {
+    val newPos = checkedLimit(byteCount)
+    source.skip(byteCount)
+    pos = newPos
+  }
+
+  private fun readByte(): Byte {
+    checkedLimit(1)
+    source.require(1) // Throws EOFException if insufficient bytes are available.
+    pos++
+    return source.readByte()
+  }
+
+  private fun requireNonNegativeLength(length: Int, lastReadTag: Int = tag) {
+    if (length < 0) {
+      throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $lastReadTag.")
+    }
+  }
+
+  private fun checkedLimit(byteCount: Long): Long {
+    if (byteCount < 0L || byteCount > remainingInLimit()) throw EOFException()
+    return pos + byteCount
+  }
+
+  private fun remainingInLimit(): Long {
+    if (pos > limit) throw EOFException()
+    return limit - pos
   }
 
   companion object {
