@@ -646,6 +646,23 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testDecodePackedRepeatedFixedUInt32RejectsPartialValue() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A       // (Tag 1 | Length Delimited)
+            02       // Length 2
+            01000000 // Enough bytes in the message, but not in the packed value
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                var values: [UInt32] = []
+                try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
+            }
+        ) { error in
+            assertUnexpectedEndError(error)
+        }
+    }
+
     func testDecodePackedRepeatedFixedUInt32Empty() throws {
         let data = Foundation.Data(hexEncoded: """
             0A       // (Tag 1 | Length Delimited)
@@ -1147,6 +1164,64 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testReadVarintRejectsMissingValue() throws {
+        let data = Foundation.Data(hexEncoded: """
+            08 // (Tag 1 | Varint)
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { tag in
+                    XCTAssertEqual(tag, 1)
+                    _ = try reader.readVarint()
+                }
+            }
+        ) { error in
+            assertUnexpectedEndError(error)
+        }
+    }
+
+    func testNestedMessageRejectsOversizedLength() throws {
+        let data = Foundation.Data(hexEncoded: """
+            12         // (Tag 2 | Length Delimited)
+            FFFFFFFF07 // Length Int32.max
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { tag in
+                    switch tag {
+                    case 2: _ = try reader.decode(NestedMessage.self)
+                    default: XCTFail("Unexpected field")
+                    }
+                }
+            }
+        ) { error in
+            assertUnexpectedEndError(error)
+        }
+    }
+
+    func testPackedRepeatedRejectsOversizedLengthBeforePreallocation() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A         // (Tag 1 | Length Delimited)
+            FFFFFFFF07 // Length Int32.max
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                var values: [Bool] = []
+                _ = try reader.forEachTag { tag in
+                    switch tag {
+                    case 1: try reader.decode(into: &values)
+                    default: XCTFail("Unexpected field")
+                    }
+                }
+            }
+        ) { error in
+            assertUnexpectedEndError(error)
+        }
+    }
+
     // MARK: - Tests - Unknown Fields
 
     func testUnknownFields() throws {
@@ -1373,6 +1448,13 @@ final class ProtoReaderTests: XCTestCase {
             return
         }
         XCTAssertEqual(message, "Negative length: -128. Reader position: \(readerPosition). Last read tag: 1.")
+    }
+
+    private func assertUnexpectedEndError(_ error: Error) {
+        guard case ProtoDecoder.Error.unexpectedEndOfData = error else {
+            XCTFail("Unexpected error: \(error)")
+            return
+        }
     }
 }
 

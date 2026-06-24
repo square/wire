@@ -23,6 +23,7 @@ import assertk.assertions.isInstanceOf
 import com.squareup.wire.ReverseProtoWriterTest.Person
 import kotlin.test.Test
 import okio.ByteString.Companion.decodeHex
+import okio.EOFException
 import okio.IOException
 
 class ProtoReader32Test {
@@ -86,6 +87,41 @@ class ProtoReader32Test {
       Person.ADAPTER.decode(data)
     }.isInstanceOf<IOException>()
       .hasMessage("Negative length: -128. Reader position: 8. Last read tag: 1.")
+  }
+
+  /** We had a bug where positive lengths near Int.MAX_VALUE overflowed cursor math. */
+  @Test fun lengthDelimitedRejectsPositiveLengthOverflow() {
+    val knownString = "0affffffff07".decodeHex()
+    val unknownBytes = "1affffffff07".decodeHex()
+    val skippedGroup = "0b0affffffff070c".decodeHex()
+
+    assertFailure {
+      Person.ADAPTER.decode(knownString)
+    }.isInstanceOf<IOException>()
+
+    assertFailure {
+      Person.ADAPTER.decode(unknownBytes)
+    }.isInstanceOf<IOException>()
+
+    assertFailure {
+      Person.ADAPTER.decode(skippedGroup)
+    }.isInstanceOf<IOException>()
+  }
+
+  @Test fun fixed32CannotReadPastLengthDelimitedLimit() {
+    val encoded = (
+      "02" + // varint32 length = 2
+        "0d" + // 1: fixed32
+        "05000000" // enough bytes in the source, but not in the current message
+      ).decodeHex()
+    val reader = ProtoReader32(encoded)
+
+    assertThat(reader.nextLengthDelimited()).isEqualTo(2)
+    reader.beginMessage()
+    assertThat(reader.nextTag()).isEqualTo(1)
+    assertFailure {
+      reader.readFixed32()
+    }.isInstanceOf<EOFException>()
   }
 
   // Consider pasting new tests into ProtoReaderTest.kt also.
