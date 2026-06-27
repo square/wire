@@ -18,17 +18,28 @@ package com.squareup.wire
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.squareup.wire.mockwebserver.GrpcDispatcher
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
+import okhttp3.Headers.Companion.headersOf
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -80,6 +91,105 @@ class GrpcOnMockWebServerTest {
       .baseUrl(mockWebServer.url("/"))
       .build()
     routeGuideService = grpcClient.create(RouteGuideClient::class)
+  }
+
+  @Test
+  fun serverStreamingDoesNotNeedDispatchersIoToSendRequest() {
+    enqueueListFeaturesResponse()
+
+    val ioParallelism = System.getProperty("kotlinx.coroutines.io.parallelism")?.toInt()
+      ?: maxOf(64, Runtime.getRuntime().availableProcessors())
+    val started = CountDownLatch(ioParallelism)
+    val release = CountDownLatch(1)
+
+    @Suppress("OPT_IN_USAGE")
+    val blockers = List(ioParallelism) {
+      GlobalScope.launch(Dispatchers.IO) {
+        started.countDown()
+        release.await()
+      }
+    }
+    var callThread: Thread? = null
+
+    try {
+      assertThat(started.await(10, TimeUnit.SECONDS)).isTrue()
+
+      val received = AtomicReference<Any?>()
+      val done = CountDownLatch(1)
+      callThread = Thread {
+        try {
+          runBlocking {
+            val listFeatures = routeGuideService.ListFeatures()
+            val responses = listFeatures.executeIn(
+              this,
+              Rectangle(lo = Point(latitude = 1, longitude = 2), hi = Point(latitude = 3, longitude = 4)),
+            )
+            received.set(responses.receive())
+            responses.cancel()
+          }
+        } catch (e: Throwable) {
+          received.set(e)
+        } finally {
+          done.countDown()
+        }
+      }
+      callThread.start()
+
+      assertThat(done.await(1, TimeUnit.SECONDS)).isTrue()
+      assertThat(received.get()).isEqualTo(Feature(name = "peak"))
+    } finally {
+      release.countDown()
+      callThread?.join(10_000)
+      runBlocking {
+        blockers.joinAll()
+      }
+    }
+  }
+
+  @Test
+  fun legacyServerStreamingListFeatures() {
+    enqueueListFeaturesResponse()
+
+    val listFeatures = grpcClient.newStreamingCall(
+      GrpcMethod(
+        path = "/routeguide.RouteGuide/ListFeatures",
+        requestAdapter = Rectangle.ADAPTER,
+        responseAdapter = Feature.ADAPTER,
+        responseStreaming = true,
+      ),
+    )
+
+    runBlocking {
+      val (requests, responses) = listFeatures.executeIn(this)
+      requests.send(Rectangle(lo = Point(latitude = 1, longitude = 2), hi = Point(latitude = 3, longitude = 4)))
+      requests.close()
+      assertThat(responses.receive()).isEqualTo(Feature(name = "peak"))
+      assertThat(responses.receive()).isEqualTo(Feature(name = "valley"))
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+      assertThat(listFeatures.isCanceled()).isFalse()
+    }
+  }
+
+  private fun enqueueListFeaturesResponse() {
+    val responseBody = Buffer()
+    for (feature in listOf(Feature(name = "peak"), Feature(name = "valley"))) {
+      val encoded = Feature.ADAPTER.encodeByteString(feature)
+      responseBody.writeByte(0) // not compressed
+      responseBody.writeInt(encoded.size)
+      responseBody.write(encoded)
+    }
+    val grpcDispatcher = mockWebServer.dispatcher
+    mockWebServer.dispatcher = object : okhttp3.mockwebserver.Dispatcher() {
+      override fun dispatch(request: okhttp3.mockwebserver.RecordedRequest): MockResponse {
+        if (request.path == "/routeguide.RouteGuide/ListFeatures") {
+          return MockResponse()
+            .setHeader("Content-Type", "application/grpc")
+            .setTrailers(headersOf("grpc-status", "0"))
+            .setBody(responseBody)
+        }
+        return grpcDispatcher.dispatch(request)
+      }
+    }
   }
 
   @Test
