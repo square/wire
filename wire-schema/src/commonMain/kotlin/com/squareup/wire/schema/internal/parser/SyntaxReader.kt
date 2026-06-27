@@ -306,7 +306,7 @@ class SyntaxReader(
     }
   }
 
-  fun tryAppendTrailingDocumentation(documentation: String): String {
+  internal fun tryAppendTrailingDocumentation(documentation: String): DocumentationWithTrailing {
     // Search for a '/' character ignoring spaces and tabs.
     loop@ while (pos < data.size) {
       when (data[pos]) {
@@ -318,7 +318,7 @@ class SyntaxReader(
         }
 
         // Not a whitespace or comment-starting character. Return original documentation.
-        else -> return documentation
+        else -> return DocumentationWithTrailing(documentation, "")
       }
     }
 
@@ -381,11 +381,11 @@ class SyntaxReader(
       end--
     }
 
-    if (end == start) return documentation
+    if (end == start) return DocumentationWithTrailing(documentation, "")
 
     val trailingDocumentation = data.concatToString(start, end + 1)
-    if (documentation.isEmpty()) return trailingDocumentation
-    return "$documentation\n$trailingDocumentation"
+    if (documentation.isEmpty()) return DocumentationWithTrailing(trailingDocumentation, trailingDocumentation)
+    return DocumentationWithTrailing("$documentation\n$trailingDocumentation", trailingDocumentation)
   }
 
   /**
@@ -425,3 +425,10 @@ class SyntaxReader(
     location: Location? = location(),
   ): RuntimeException = throw IllegalStateException("Syntax error in $location: $message")
 }
+
+internal data class DocumentationWithTrailing(
+  /** The merged documentation (leading + trailing), matching the pre-refactor return value. */
+  val merged: String,
+  /** The trailing (same-line) comment only, or "" if no trailing comment was found. */
+  val trailing: String,
+)
