@@ -103,6 +103,28 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void nestedTypeNamedBuilderIsRenamed() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto2\";\n"
+                    + "message Foo {\n"
+                    + "  optional string name = 1;\n"
+                    + "  message Builder {\n"
+                    + "    optional string value = 1;\n"
+                    + "  }\n"
+                    + "}\n")
+            .build();
+
+    String javaOutput = new JavaWithProfilesGenerator(schema).generateJava("Foo");
+
+    assertThat(javaOutput).contains("class Builder_");
+    assertThat(javaOutput).doesNotContain("class Builder extends Message<");
+  }
+
+  @Test
   public void enclosingTypeSanitizesJavadoc() throws Exception {
     Schema schema =
         new SchemaBuilder()

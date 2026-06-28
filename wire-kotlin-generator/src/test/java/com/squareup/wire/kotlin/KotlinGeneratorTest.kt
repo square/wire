@@ -68,6 +68,47 @@ class KotlinGeneratorTest {
     assertThat(code).contains("WORK(1),")
   }
 
+  @Test fun nestedTypeNamedBuilderIsRenamed() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Foo {
+        |	optional string name = 1;
+        |	message Builder {
+        |		optional string value = 1;
+        |	}
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Foo", javaInterop = true)
+    assertThat(code).contains("public class Builder_")
+    assertThat(code).doesNotContain("public class Builder(")
+  }
+
+  @Test fun nestedTypeNamedBuilderIsRenamedInBuildersOnlyMode() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Foo {
+        |	optional string name = 1;
+        |	message Builder {
+        |		optional string value = 1;
+        |	}
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("Foo", buildersOnly = true, javaInterop = false)
+    assertThat(code).contains("public class Builder_")
+    assertThat(code).doesNotContain("public class Builder(")
+  }
+
   @Test fun generateSealedClassEnumForProto2() {
     val schema = buildSchema {
       add(

@@ -3516,9 +3516,14 @@ class KotlinGenerator private constructor(
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
+        val nameAllocator = NameAllocator(preallocateKeywords = false)
+        // A message emits a nested `Builder` in javaInterop or buildersOnly mode. Reserve that
+        // name so a nested proto type named `Builder` is renamed `Builder_` instead of clashing.
+        if (enclosingClassName != null && (javaInterop || buildersOnly)) nameAllocator.newName("Builder")
         for (type in types) {
           val simpleName = type.type.simpleName
-          val name = if (mutableTypes && type !is EnumType) "Mutable$simpleName" else simpleName
+          val candidate = if (mutableTypes && type !is EnumType) "Mutable$simpleName" else simpleName
+          val name = nameAllocator.newName(candidate)
           val className = enclosingClassName?.nestedClass(name)
             ?: ClassName(kotlinPackage, name)
           typeToKotlinName[type.type] = className

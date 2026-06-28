@@ -467,11 +467,16 @@ public final class JavaGenerator {
       String javaPackage,
       ClassName enclosingClassName,
       List<Type> types) {
+    NameAllocator nameAllocator = new NameAllocator();
+    // A message always emits a nested Builder. Reserve that name so a nested proto type
+    // named Builder is renamed Builder_ instead of clashing with the generated builder.
+    if (enclosingClassName != null) nameAllocator.newName("Builder");
     for (Type type : types) {
+      String simpleName = nameAllocator.newName(type.getType().getSimpleName());
       ClassName className =
           enclosingClassName != null
-              ? enclosingClassName.nestedClass(type.getType().getSimpleName())
-              : ClassName.get(javaPackage, type.getType().getSimpleName());
+              ? enclosingClassName.nestedClass(simpleName)
+              : ClassName.get(javaPackage, simpleName);
       wireToJava.put(type.getType(), className);
       putAll(wireToJava, javaPackage, className, type.getNestedTypes());
     }

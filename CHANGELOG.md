@@ -4,6 +4,14 @@ Change Log
 Unreleased
 ----------
 
+### Java
+
+* Fix a naming collision when a message has a nested type named `Builder` (#593)
+
+### Kotlin
+
+* Fix a naming collision when a message has a nested type named `Builder` (#593)
+
 Version 6.4.4
 ---------------------
 
