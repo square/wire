@@ -385,7 +385,7 @@ public final class JavaGenerator {
 
     for (ProtoFile protoFile : schema.getProtoFiles()) {
       String javaPackage = javaPackage(protoFile);
-      putAll(nameToJavaName, javaPackage, null, protoFile.getTypes());
+      putAll(nameToJavaName, javaPackage, null, false, protoFile.getTypes());
 
       for (Service service : protoFile.getServices()) {
         ClassName className = ClassName.get(javaPackage, service.type().getSimpleName());
@@ -466,19 +466,28 @@ public final class JavaGenerator {
       Map<ProtoType, TypeName> wireToJava,
       String javaPackage,
       ClassName enclosingClassName,
+      boolean enclosingTypeEmitsBuilder,
       List<Type> types) {
     NameAllocator nameAllocator = new NameAllocator();
     // A message always emits a nested Builder. Reserve that name so a nested proto type
     // named Builder is renamed Builder_ instead of clashing with the generated builder.
-    if (enclosingClassName != null) nameAllocator.newName("Builder");
+    if (enclosingTypeEmitsBuilder) nameAllocator.newName("Builder");
     for (Type type : types) {
-      String simpleName = nameAllocator.newName(type.getType().getSimpleName());
+      String candidateName = type.getType().getSimpleName();
+      // A message named Builder also collides with its own generated nested Builder.
+      if (!enclosingTypeEmitsBuilder
+          && type instanceof MessageType
+          && candidateName.equals("Builder")) {
+        candidateName = "Builder_";
+      }
+      String simpleName = nameAllocator.newName(candidateName);
       ClassName className =
           enclosingClassName != null
               ? enclosingClassName.nestedClass(simpleName)
               : ClassName.get(javaPackage, simpleName);
       wireToJava.put(type.getType(), className);
-      putAll(wireToJava, javaPackage, className, type.getNestedTypes());
+      putAll(
+          wireToJava, javaPackage, className, type instanceof MessageType, type.getNestedTypes());
     }
   }
 

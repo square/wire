@@ -125,6 +125,73 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void topLevelMessageNamedBuilderIsRenamed() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto2\";\n"
+                    + "message Builder {\n"
+                    + "  optional string value = 1;\n"
+                    + "}\n")
+            .build();
+
+    String javaOutput = new JavaWithProfilesGenerator(schema).generateJava("Builder");
+
+    assertThat(javaOutput).contains("class Builder_ extends Message<Builder_, Builder_.Builder>");
+    assertThat(javaOutput)
+        .doesNotContain("class Builder extends Message<Builder, Builder.Builder>");
+  }
+
+  @Test
+  public void prunedNestedMessageNamedBuilderIsRenamed() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto2\";\n"
+                    + "message A {\n"
+                    + "  message Builder {\n"
+                    + "    optional string value = 1;\n"
+                    + "  }\n"
+                    + "}\n")
+            .build();
+    Schema pruned = schema.prune(new PruningRules.Builder().addRoot("A.Builder").build());
+    JavaGenerator javaGenerator = JavaGenerator.get(pruned);
+    TypeSpec typeSpec = javaGenerator.generateType(pruned.getType("A"));
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+
+    assertThat(javaOutput).contains("class Builder_ extends Message<Builder_, Builder_.Builder>");
+    assertThat(javaOutput)
+        .doesNotContain("class Builder extends Message<Builder, Builder.Builder>");
+  }
+
+  @Test
+  public void prunedNestedEnumNamedBuilderIsNotRenamed() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto2\";\n"
+                    + "message A {\n"
+                    + "  enum Builder {\n"
+                    + "    VALUE = 0;\n"
+                    + "  }\n"
+                    + "}\n")
+            .build();
+    Schema pruned = schema.prune(new PruningRules.Builder().addRoot("A.Builder").build());
+    JavaGenerator javaGenerator = JavaGenerator.get(pruned);
+    TypeSpec typeSpec = javaGenerator.generateType(pruned.getType("A"));
+    String javaOutput = JavaFile.builder("", typeSpec).build().toString();
+
+    assertThat(javaOutput).contains("enum Builder implements WireEnum");
+    assertThat(javaOutput).doesNotContain("enum Builder_ implements WireEnum");
+  }
+
+  @Test
   public void enclosingTypeSanitizesJavadoc() throws Exception {
     Schema schema =
         new SchemaBuilder()

@@ -3515,25 +3515,43 @@ class KotlinGenerator private constructor(
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
 
-      fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
+      fun putAll(
+        kotlinPackage: String,
+        enclosingClassName: ClassName?,
+        enclosingTypeEmitsBuilder: Boolean,
+        types: List<Type>,
+      ) {
         val nameAllocator = NameAllocator(preallocateKeywords = false)
         // A message emits a nested `Builder` in javaInterop or buildersOnly mode. Reserve that
         // name so a nested proto type named `Builder` is renamed `Builder_` instead of clashing.
-        if (enclosingClassName != null && (javaInterop || buildersOnly)) nameAllocator.newName("Builder")
+        if (enclosingTypeEmitsBuilder) nameAllocator.newName("Builder")
         for (type in types) {
           val simpleName = type.type.simpleName
-          val candidate = if (mutableTypes && type !is EnumType) "Mutable$simpleName" else simpleName
+          var candidate = if (mutableTypes && type !is EnumType) "Mutable$simpleName" else simpleName
+          // A message named Builder also collides with its own generated nested Builder.
+          if (!enclosingTypeEmitsBuilder &&
+            (javaInterop || buildersOnly) &&
+            type is MessageType &&
+            candidate == "Builder"
+          ) {
+            candidate = "Builder_"
+          }
           val name = nameAllocator.newName(candidate)
           val className = enclosingClassName?.nestedClass(name)
             ?: ClassName(kotlinPackage, name)
           typeToKotlinName[type.type] = className
-          putAll(kotlinPackage, className, type.nestedTypes)
+          putAll(
+            kotlinPackage,
+            className,
+            enclosingTypeEmitsBuilder = (javaInterop || buildersOnly) && type is MessageType,
+            type.nestedTypes,
+          )
         }
       }
 
       for (protoFile in schema.protoFiles) {
         val kotlinPackage = javaPackage(protoFile)
-        putAll(kotlinPackage, null, protoFile.types)
+        putAll(kotlinPackage, null, enclosingTypeEmitsBuilder = false, protoFile.types)
 
         for (service in protoFile.services) {
           val className = ClassName(kotlinPackage, service.type.simpleName)

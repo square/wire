@@ -109,6 +109,69 @@ class KotlinGeneratorTest {
     assertThat(code).doesNotContain("public class Builder(")
   }
 
+  @Test fun topLevelMessageNamedBuilderIsRenamed() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Builder {
+        |	optional string value = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Builder", javaInterop = true)
+    assertThat(code).contains("public class Builder_")
+    assertThat(code).doesNotContain("public class Builder(")
+  }
+
+  @Test fun prunedNestedMessageNamedBuilderIsRenamed() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message A {
+        |	message Builder {
+        |		optional string value = 1;
+        |	}
+        |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(PruningRules.Builder().addRoot("A.Builder").build())
+    val kotlinGenerator = KotlinGenerator.invoke(pruned, javaInterop = true)
+    val typeSpec = kotlinGenerator.generateType(pruned.getType("A")!!)
+    val code = FileSpec.get("", typeSpec).toString()
+
+    assertThat(code).contains("public class Builder_")
+    assertThat(code).doesNotContain("public class Builder(")
+  }
+
+  @Test fun prunedNestedEnumNamedBuilderIsNotRenamed() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message A {
+        |	enum Builder {
+        |		VALUE = 0;
+        |	}
+        |}
+        """.trimMargin(),
+      )
+    }
+    val pruned = schema.prune(PruningRules.Builder().addRoot("A.Builder").build())
+    val kotlinGenerator = KotlinGenerator.invoke(pruned, javaInterop = true)
+    val typeSpec = kotlinGenerator.generateType(pruned.getType("A")!!)
+    val code = FileSpec.get("", typeSpec).toString()
+
+    assertThat(code).contains("public enum class Builder(")
+    assertThat(code).doesNotContain("public enum class Builder_(")
+  }
+
   @Test fun generateSealedClassEnumForProto2() {
     val schema = buildSchema {
       add(
