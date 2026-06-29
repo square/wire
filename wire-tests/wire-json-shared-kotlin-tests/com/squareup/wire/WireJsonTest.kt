@@ -342,6 +342,44 @@ class WireJsonTest {
     assertThat(parsed).isEqualTo(expected)
   }
 
+  /**
+   * A literal `null` element inside a repeated message field is not representable in proto, so it's
+   * dropped rather than passed to `Internal.immutableCopyOf` (which would throw `contains(null)`).
+   * https://github.com/square/wire/issues/3353
+   */
+  @Test fun nullElementInRepeatedMessageFieldIsDropped() {
+    val json = """{"pizzas":[{"toppings":["pineapple"]},null]}"""
+    val expected = PizzaDelivery.Builder()
+      .pizzas(listOf(Pizza.Builder().toppings(listOf("pineapple")).build()))
+      .build()
+    val parsed = jsonLibrary.fromJson(json, PizzaDelivery::class.java)
+    assertThat(parsed).isEqualTo(expected)
+  }
+
+  /** Same as above but for a repeated scalar field. */
+  @Test fun nullElementInRepeatedScalarFieldIsDropped() {
+    val json = """{"toppings":["pineapple",null,"onion"]}"""
+    val expected = Pizza.Builder().toppings(listOf("pineapple", "onion")).build()
+    val parsed = jsonLibrary.fromJson(json, Pizza::class.java)
+    assertThat(parsed).isEqualTo(expected)
+  }
+
+  /**
+   * Struct values legitimately represent null entries (e.g. inside a `google.protobuf.ListValue`),
+   * so a null element in a struct list must be preserved rather than stripped along with the stray
+   * nulls above.
+   */
+  @Test fun nullElementsInStructListArePreserved() {
+    if (jsonLibrary.writeIdentityValues) return
+
+    val json = """{"list":["a",null,3.0]}"""
+    val expected = AllStructs.Builder()
+      .list(listOf("a", null, 3.0))
+      .build()
+    val parsed = jsonLibrary.fromJson(json, AllStructs::class.java)
+    assertThat(parsed).isEqualTo(expected)
+  }
+
   @Test fun enumCanBeDecodedFromInt() {
     val json = """{"drink":9}"""
     val value = jsonLibrary.fromJson(json, FreeDrinkPromotion::class.java)

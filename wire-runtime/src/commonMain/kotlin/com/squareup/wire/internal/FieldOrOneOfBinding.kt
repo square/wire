@@ -89,4 +89,23 @@ abstract class FieldOrOneOfBinding<M, B> {
     if (isMap && syntax == Syntax.PROTO_3) return true
     return false
   }
+
+  /**
+   * Returns [value] with any null elements removed when it's the decoded JSON value for a repeated
+   * field. A literal `null` in a JSON array (e.g. `"items": [{...}, null]`) decodes to a null list
+   * element that isn't representable in a proto repeated field; left in place it would trip the
+   * `null !in result` check in [immutableCopyOf]. Struct fields (such as
+   * `repeated google.protobuf.NullValue`) are decoded by the struct adapter and may legitimately
+   * carry null entries, so they're returned unchanged.
+   */
+  fun withoutStrayNullElements(value: Any?): Any? {
+    if (!label.isRepeated || singleAdapter.isStructAdapter() || value !is List<*>) return value
+    if (null !in value) return value
+    return value.filterNotNull()
+  }
+
+  private fun ProtoAdapter<*>.isStructAdapter(): Boolean = this == ProtoAdapter.STRUCT_MAP ||
+    this == ProtoAdapter.STRUCT_LIST ||
+    this == ProtoAdapter.STRUCT_VALUE ||
+    this == ProtoAdapter.STRUCT_NULL
 }
