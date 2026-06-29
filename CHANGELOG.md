@@ -4,13 +4,47 @@ Change Log
 Unreleased
 ----------
 
+Version 7.0.0-alpha04
+---------------------
+
+_2026-06-29_
+
+### Common
+
+* Security: Escape comment delimiters in generated documentation for Java, Kotlin, and Swift,
+  preventing malicious proto documentation from injecting source code into generated files (#3600,
+  [GHSA-9rm7-3qhh-h2mc][GHSA-9rm7-3qhh-h2mc] reported by Ta Duc Thien and Duc Anh Nguyen)
+* Security: Validate scalar and enum literals in default values and options during schema linking,
+  preventing invalid literals from being emitted into generated code (#3633)
+* Security: Reject oversized lengths and fixed-width values that exceed the current reader limit in
+  Java/Kotlin and Swift runtimes (#3635)
+
+### Gradle plugin
+
+* Fix generated Kotlin source registration in Android projects so KSP can see sources that import
+  Wire types (#3611)
+
 ### Java
 
-* Fix a naming collision when a message has a nested type named `Builder` (#593)
+* Security: Escape Java Unicode escapes in generated Javadocs, preventing injected source from
+  being hidden inside comments (#3622)
+* Fix naming collisions when generated message types are named `Builder` or have nested message
+  types named `Builder` (#3639 by [Eyüp Can Akman][eyupcanakman])
 
 ### Kotlin
 
-* Fix a naming collision when a message has a nested type named `Builder` (#593)
+* Add accessor properties for sealed-class oneof values (#3594)
+* Set redacted proto3 enum fields to their identity value instead of `null` (#3610)
+* Fix naming collisions when generated message types are named `Builder` or have nested message
+  types named `Builder` (#3639 by [Eyüp Can Akman][eyupcanakman])
+* Remove trailing spaces in generated Kotlin types (#3599)
+
+### Swift
+
+* Security: Reject negative lengths when skipping groups in Swift, so crafted protobuf payloads
+  throw `ProtocolException` instead of unchecked runtime exceptions (#3616,
+  [GHSA-86wm-r4c5-2rc9][GHSA-86wm-r4c5-2rc9], reported by [tonghuaroot][tonghuaroot])
+* Fix generated Swift proto3 singular extension accessors to be optional (#3629)
 
 Version 6.4.4
 ---------------------
@@ -1977,6 +2011,7 @@ Initial version.
  [Egorand]: https://github.com/Egorand
  [Endeavour233]: https://github.com/Endeavour233
  [GHSA-7xpr-hc2w-34m9]: https://github.com/square/wire/security/advisories/GHSA-7xpr-hc2w-34m9
+ [GHSA-9rm7-3qhh-h2mc]: https://github.com/square/wire/security/advisories/GHSA-9rm7-3qhh-h2mc
  [GHSA-86wm-r4c5-2rc9]: https://github.com/square/wire/security/advisories/GHSA-86wm-r4c5-2rc9
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
@@ -1985,6 +2020,7 @@ Initial version.
  [ShayOinif]: https://github.com/ShayOinif
  [TrekLaps]: https://github.com/TrekLaps
  [tonghuaroot]: https://github.com/tonghuaroot
+ [eyupcanakman]: https://github.com/eyupcanakman
  [aaron-edwards]: https://github.com/aaron-edwards
  [amorde]: https://github.com/amorde
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
