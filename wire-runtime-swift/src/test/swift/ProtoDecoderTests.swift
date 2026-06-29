@@ -32,6 +32,38 @@ final class ProtoDecoderTests: XCTestCase {
         XCTAssertEqual(object, [])
     }
 
+    func testDecodeSizeDelimitedRejectsUnrepresentableSize() throws {
+        let decoder = ProtoDecoder()
+        let data = Foundation.Data(hexEncoded: """
+            FFFFFFFFFFFFFFFFFF01 // UInt64.max
+        """)!
+
+        XCTAssertThrowsError(
+            try decoder.decodeSizeDelimited(SimpleOptional2.self, from: data)
+        ) { error in
+            guard case ProtoDecoder.Error.unexpectedEndOfData = error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+        }
+    }
+
+    func testDecodeSizeDelimitedRejectsTruncatedSize() throws {
+        let decoder = ProtoDecoder()
+        let data = Foundation.Data(hexEncoded: """
+            80 // Truncated size varint
+        """)!
+
+        XCTAssertThrowsError(
+            try decoder.decodeSizeDelimited(SimpleOptional2.self, from: data)
+        ) { error in
+            guard case ProtoDecoder.Error.unexpectedEndOfData = error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+        }
+    }
+
     func testDecodeEmptyDataTwice() throws {
         let decoder = ProtoDecoder()
         // The empty message case is optimized to reuse objects, so make sure

@@ -62,6 +62,15 @@ internal class ByteArrayProtoReader32(
   /** The absolute position of the end of the current message. */
   private var limit: Int = source.size,
 ) : ProtoReader32 {
+  init {
+    require(pos in 0..source.size) {
+      "pos=$pos must be between 0 and source size ${source.size}"
+    }
+    require(limit in pos..source.size) {
+      "limit=$limit must be between pos=$pos and source size ${source.size}"
+    }
+  }
+
   /** The current number of levels of message nesting. */
   private var recursionDepth = 0
 
@@ -129,12 +138,12 @@ internal class ByteArrayProtoReader32(
     nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED
     state = STATE_LENGTH_DELIMITED
     val length = internalReadVarint32()
-    if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
+    requireNonNegativeLength(length)
     if (pushedLimit != -1) throw IllegalStateException()
+    val newLimit = checkedLimit(length)
     // Push the current limit, and set a new limit to the length of this value.
     pushedLimit = limit
-    limit = pos + length
-    if (limit > pushedLimit) throw EOFException()
+    limit = newLimit
     return length
   }
 
@@ -228,7 +237,7 @@ internal class ByteArrayProtoReader32(
         }
         STATE_LENGTH_DELIMITED -> {
           val length = internalReadVarint32()
-          if (length < 0) throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $tag.")
+          requireNonNegativeLength(length, tag)
           skip(length)
         }
         STATE_VARINT -> {
@@ -386,7 +395,7 @@ internal class ByteArrayProtoReader32(
     if (state != STATE_LENGTH_DELIMITED) {
       throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
-    val byteCount = limit - pos
+    val byteCount = remainingInLimit()
     state = STATE_TAG
     // We've completed a length-delimited scalar. Pop the limit.
     limit = pushedLimit
@@ -414,7 +423,7 @@ internal class ByteArrayProtoReader32(
 
   override fun nextFieldMinLengthInBytes(): Int {
     return when (nextFieldEncoding) {
-      FieldEncoding.LENGTH_DELIMITED -> limit - pos
+      FieldEncoding.LENGTH_DELIMITED -> remainingInLimit()
       FieldEncoding.FIXED32 -> 4
       FieldEncoding.FIXED64 -> 8
       FieldEncoding.VARINT -> 1
@@ -423,34 +432,30 @@ internal class ByteArrayProtoReader32(
   }
 
   private fun skip(byteCount: Int) {
-    val newPos = pos + byteCount
-    if (newPos > limit) throw EOFException()
-    pos = newPos
+    pos = checkedLimit(byteCount)
   }
 
   private fun readByteString(byteCount: Int): ByteString {
-    val newPos = pos + byteCount
-    if (newPos > limit) throw EOFException()
+    val newPos = checkedLimit(byteCount)
     val result = source.toByteString(pos, byteCount)
     pos = newPos
     return result
   }
 
   private fun readUtf8(byteCount: Int): String {
-    val newPos = pos + byteCount
-    if (newPos > limit) throw EOFException()
+    val newPos = checkedLimit(byteCount)
     val result = source.decodeToString(startIndex = pos, endIndex = newPos)
     pos = newPos
     return result
   }
 
   private fun readByte(): Byte {
-    if (pos == limit) throw EOFException()
+    checkedLimit(1)
     return source[pos++]
   }
 
   private fun readIntLe(): Int {
-    if (pos + 4 > limit) throw EOFException()
+    checkedLimit(4)
 
     val result = (
       (source[pos++] and 0xff)
@@ -463,7 +468,7 @@ internal class ByteArrayProtoReader32(
   }
 
   private fun readLongLe(): Long {
-    if (pos + 8 > limit) throw EOFException()
+    checkedLimit(8)
 
     val result = (
       (source[pos++] and 0xffL)
@@ -477,5 +482,21 @@ internal class ByteArrayProtoReader32(
       )
 
     return result
+  }
+
+  private fun requireNonNegativeLength(length: Int, lastReadTag: Int = tag) {
+    if (length < 0) {
+      throw ProtocolException("Negative length: $length. Reader position: $pos. Last read tag: $lastReadTag.")
+    }
+  }
+
+  private fun checkedLimit(byteCount: Int): Int {
+    if (byteCount < 0 || byteCount > remainingInLimit()) throw EOFException()
+    return pos + byteCount
+  }
+
+  private fun remainingInLimit(): Int {
+    if (pos > limit) throw EOFException()
+    return limit - pos
   }
 }

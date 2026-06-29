@@ -304,12 +304,17 @@ public final class ProtoDecoder {
                 count: buffer.count
             )
 
-            while fullBuffer.isDataRemaining, let size = try? fullBuffer.readVarint() {
+            while fullBuffer.isDataRemaining {
+                let size = try fullBuffer.readVarint()
                 if size == 0 { break }
+                guard let size = Int(exactly: size) else {
+                    throw ProtoDecoder.Error.unexpectedEndOfData
+                }
+                try fullBuffer.verifyAdditional(count: size)
 
                 let messageBuffer = ReadBuffer(
                     storage: fullBuffer.pointer,
-                    count: Int(size)
+                    count: size
                 )
 
                 let reader = ProtoReader(
@@ -320,7 +325,7 @@ public final class ProtoDecoder {
                 values.append(try reader.decode(type))
 
                 // Advance the buffer before reading the next item in the stream.
-                _ = try fullBuffer.readBuffer(count: Int(size))
+                _ = try fullBuffer.readBuffer(count: size)
             }
         }
 

@@ -24,6 +24,7 @@ import com.squareup.wire.ReverseProtoWriterTest.Person
 import kotlin.test.Test
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
+import okio.EOFException
 import okio.IOException
 
 class ProtoReaderTest {
@@ -87,6 +88,22 @@ class ProtoReaderTest {
       Person.ADAPTER.decode(Buffer().write(data))
     }.isInstanceOf<IOException>()
       .hasMessage("Negative length: -128. Reader position: 8. Last read tag: 1.")
+  }
+
+  @Test fun fixed32CannotReadPastLengthDelimitedLimit() {
+    val encoded = (
+      "02" + // varint32 length = 2
+        "0d" + // 1: fixed32
+        "05000000" // enough bytes in the source, but not in the current message
+      ).decodeHex()
+    val reader = ProtoReader(Buffer().write(encoded))
+
+    assertThat(reader.nextLengthDelimited()).isEqualTo(2)
+    reader.beginMessage()
+    assertThat(reader.nextTag()).isEqualTo(1)
+    assertFailure {
+      reader.readFixed32()
+    }.isInstanceOf<EOFException>()
   }
 
   // Consider pasting new tests into ProtoReader32Test.kt also.

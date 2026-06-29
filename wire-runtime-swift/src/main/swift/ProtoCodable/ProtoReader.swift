@@ -141,7 +141,7 @@ public final class ProtoReader {
 
         let frame = MessageFrame(
             isProto3: isProto3Message,
-            messageEnd: buffer.pointer.advanced(by: length)
+            messageEnd: try buffer.endPointer(count: length)
         )
         messageStack.advanced(by: messageStackIndex).initialize(to: frame)
 
@@ -875,6 +875,8 @@ public final class ProtoReader {
                 return
             }
 
+            let messageEnd = try buffer.endPointer(count: length)
+
             // Preallocate space for the unpacked data.
             // It's allowable to have a packed field spread across multiple places
             // in the buffer, so add to the existing capacity.
@@ -885,13 +887,16 @@ public final class ProtoReader {
             array.reserveCapacity(array.count + (length / MemoryLayout<T>.size))
 
             // This is a packed field, so keep decoding until we're out of bytes.
-            let messageEnd = buffer.pointer.advanced(by: length)
             while buffer.pointer < messageEnd {
                 // Reading a scalar will set the state to `.tag` because we assume
                 // we're reading a single value most of the time and are then done.
                 // Since we're in a repeated field we'll keep reading values though.
                 state = .packedValue
-                if let decodedVal = try decode() {
+                let decodedVal = try decode()
+                guard buffer.pointer <= messageEnd else {
+                    throw ProtoDecoder.Error.unexpectedEndOfData
+                }
+                if let decodedVal = decodedVal {
                     array.append(decodedVal)
                 }
             }
