@@ -20,3 +20,5 @@ dependencyResolutionManagement {
     mavenCentral()
   }
 }
+
+include ':library'

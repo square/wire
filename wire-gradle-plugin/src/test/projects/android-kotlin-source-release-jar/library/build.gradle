@@ -7,13 +7,29 @@ buildscript {
     }
     google()
     mavenCentral()
-    gradlePluginPortal()
   }
 
   dependencies {
     classpath("com.squareup.wire:wire-gradle-plugin:${wireVersion}")
     classpath("com.android.tools.build:gradle:9.2.1")
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
-    classpath("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.2.21-2.0.5")
   }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.squareup.wire'
+apply plugin: 'maven-publish'
+
+android {
+  namespace = "com.example.producer"
+  compileSdk = 36
+
+  publishing {
+    singleVariant('release') {
+      withSourcesJar()
+    }
+  }
+}
+
+wire {
+  kotlin {}
 }
