@@ -11,13 +11,11 @@ _2026-06-29_
 
 ### Common
 
-* Security: Escape comment delimiters in generated documentation for Java, Kotlin, and Swift,
-  preventing malicious proto documentation from injecting source code into generated files (#3600,
-  [GHSA-9rm7-3qhh-h2mc][GHSA-9rm7-3qhh-h2mc] reported by Ta Duc Thien and Duc Anh Nguyen)
 * Security: Validate scalar and enum literals in default values and options during schema linking,
   preventing invalid literals from being emitted into generated code (#3633)
 * Security: Reject oversized lengths and fixed-width values that exceed the current reader limit in
-  Java/Kotlin and Swift runtimes (#3635)
+  Java/Kotlin and Swift runtimes (#3635, [GHSA-9rm7-3qhh-h2mc][GHSA-9rm7-3qhh-h2mc] reported by
+  Ta Duc Thien and Duc Anh Nguyen)
 
 ### Gradle plugin
 
@@ -45,6 +43,17 @@ _2026-06-29_
   throw `ProtocolException` instead of unchecked runtime exceptions (#3616,
   [GHSA-86wm-r4c5-2rc9][GHSA-86wm-r4c5-2rc9], reported by [tonghuaroot][tonghuaroot])
 * Fix generated Swift proto3 singular extension accessors to be optional (#3629)
+
+Version 6.4.5
+---------------------
+
+_2026-06-29_
+
+### Common
+
+* Security: Reject oversized lengths and fixed-width values that exceed the current reader limit in
+  Java/Kotlin and Swift runtimes (#3635, [GHSA-9rm7-3qhh-h2mc][GHSA-9rm7-3qhh-h2mc] reported by
+  Ta Duc Thien and Duc Anh Nguyen)
 
 Version 6.4.4
 ---------------------
