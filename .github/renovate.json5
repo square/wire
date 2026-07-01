@@ -3,6 +3,9 @@
   extends: [
     'config:recommended',
   ],
+  addLabels: [
+    'task-list-completed-disable',
+  ],
   packageRules: [
     {
       matchManagers: [
