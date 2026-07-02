@@ -155,6 +155,14 @@ public struct AllTypes {
             storage.opt_nested_message = newValue
         }
     }
+    public var opt_field_mask: FieldMask? {
+        get {
+            storage.opt_field_mask
+        }
+        set {
+            storage.opt_field_mask = newValue
+        }
+    }
     public var req_int32: Int32 {
         get {
             storage.req_int32
@@ -427,6 +435,14 @@ public struct AllTypes {
             storage.rep_nested_message = newValue
         }
     }
+    public var rep_field_mask: [FieldMask] {
+        get {
+            storage.rep_field_mask
+        }
+        set {
+            storage.rep_field_mask = newValue
+        }
+    }
     public var pack_int32: [Int32] {
         get {
             storage.pack_int32
@@ -697,6 +713,14 @@ public struct AllTypes {
         }
         set {
             storage.map_string_enum = newValue
+        }
+    }
+    public var map_int32_field_mask: [Int32 : FieldMask] {
+        get {
+            storage.map_int32_field_mask
+        }
+        set {
+            storage.map_int32_field_mask = newValue
         }
     }
     public var array_int32: [Int32] {
@@ -2080,6 +2104,7 @@ extension AllTypes {
         public var opt_nested_enum: AllTypes.NestedEnum?
         @ProtoDefaulted
         public var opt_nested_message: AllTypes.NestedMessage?
+        public var opt_field_mask: FieldMask?
         public var req_int32: Int32
         public var req_uint32: UInt32
         public var req_sint32: Int32
@@ -2114,6 +2139,7 @@ extension AllTypes {
         public var rep_bytes: [Foundation.Data] = []
         public var rep_nested_enum: [AllTypes.NestedEnum] = []
         public var rep_nested_message: [AllTypes.NestedMessage] = []
+        public var rep_field_mask: [FieldMask] = []
         public var pack_int32: [Int32] = []
         public var pack_uint32: [UInt32] = []
         public var pack_sint32: [Int32] = []
@@ -2164,6 +2190,7 @@ extension AllTypes {
         public var map_string_string: [String : String] = [:]
         public var map_string_message: [String : AllTypes.NestedMessage] = [:]
         public var map_string_enum: [String : AllTypes.NestedEnum] = [:]
+        public var map_int32_field_mask: [Int32 : FieldMask] = [:]
         public var array_int32: [Int32] = []
         public var array_uint32: [UInt32] = []
         public var array_sint32: [Int32] = []
@@ -2263,6 +2290,7 @@ extension AllTypes.Storage : Proto2Codable {
         var opt_bytes: Foundation.Data? = nil
         var opt_nested_enum: AllTypes.NestedEnum? = nil
         var opt_nested_message: AllTypes.NestedMessage? = nil
+        var opt_field_mask: FieldMask? = nil
         var req_int32: Int32? = nil
         var req_uint32: UInt32? = nil
         var req_sint32: Int32? = nil
@@ -2297,6 +2325,7 @@ extension AllTypes.Storage : Proto2Codable {
         var rep_bytes: [Foundation.Data] = []
         var rep_nested_enum: [AllTypes.NestedEnum] = []
         var rep_nested_message: [AllTypes.NestedMessage] = []
+        var rep_field_mask: [FieldMask] = []
         var pack_int32: [Int32] = []
         var pack_uint32: [UInt32] = []
         var pack_sint32: [Int32] = []
@@ -2331,6 +2360,7 @@ extension AllTypes.Storage : Proto2Codable {
         var map_string_string: [String : String] = [:]
         var map_string_message: [String : AllTypes.NestedMessage] = [:]
         var map_string_enum: [String : AllTypes.NestedEnum] = [:]
+        var map_int32_field_mask: [Int32 : FieldMask] = [:]
         var array_int32: [Int32] = []
         var array_uint32: [UInt32] = []
         var array_sint32: [Int32] = []
@@ -2364,6 +2394,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 15: opt_bytes = try protoReader.decode(Foundation.Data.self)
             case 16: opt_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
             case 17: opt_nested_message = try protoReader.decode(AllTypes.NestedMessage.self)
+            case 18: opt_field_mask = try protoReader.decode(FieldMask.self)
             case 101: req_int32 = try protoReader.decode(Int32.self, encoding: .variable)
             case 102: req_uint32 = try protoReader.decode(UInt32.self, encoding: .variable)
             case 103: req_sint32 = try protoReader.decode(Int32.self, encoding: .signed)
@@ -2398,6 +2429,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 215: try protoReader.decode(into: &rep_bytes)
             case 216: try protoReader.decode(into: &rep_nested_enum)
             case 217: try protoReader.decode(into: &rep_nested_message)
+            case 218: try protoReader.decode(into: &rep_field_mask)
             case 301: try protoReader.decode(into: &pack_int32, encoding: .variable)
             case 302: try protoReader.decode(into: &pack_uint32, encoding: .variable)
             case 303: try protoReader.decode(into: &pack_sint32, encoding: .signed)
@@ -2432,6 +2464,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 502: try protoReader.decode(into: &map_string_string)
             case 503: try protoReader.decode(into: &map_string_message)
             case 504: try protoReader.decode(into: &map_string_enum)
+            case 505: try protoReader.decode(into: &map_int32_field_mask, keyEncoding: .variable)
             case 601: try protoReader.decode(into: &array_int32, encoding: .variable)
             case 602: try protoReader.decode(into: &array_uint32, encoding: .variable)
             case 603: try protoReader.decode(into: &array_sint32, encoding: .signed)
@@ -2466,6 +2499,7 @@ extension AllTypes.Storage : Proto2Codable {
         self._opt_bytes.wrappedValue = opt_bytes
         self.opt_nested_enum = opt_nested_enum
         self._opt_nested_message.wrappedValue = opt_nested_message
+        self.opt_field_mask = opt_field_mask
         self.req_int32 = try AllTypes.checkIfMissing(req_int32, "req_int32")
         self.req_uint32 = try AllTypes.checkIfMissing(req_uint32, "req_uint32")
         self.req_sint32 = try AllTypes.checkIfMissing(req_sint32, "req_sint32")
@@ -2500,6 +2534,7 @@ extension AllTypes.Storage : Proto2Codable {
         self.rep_bytes = rep_bytes
         self.rep_nested_enum = rep_nested_enum
         self.rep_nested_message = rep_nested_message
+        self.rep_field_mask = rep_field_mask
         self.pack_int32 = pack_int32
         self.pack_uint32 = pack_uint32
         self.pack_sint32 = pack_sint32
@@ -2534,6 +2569,7 @@ extension AllTypes.Storage : Proto2Codable {
         self.map_string_string = map_string_string
         self.map_string_message = map_string_message
         self.map_string_enum = map_string_enum
+        self.map_int32_field_mask = map_int32_field_mask
         self.array_int32 = array_int32
         self.array_uint32 = array_uint32
         self.array_sint32 = array_sint32
@@ -2566,6 +2602,7 @@ extension AllTypes.Storage : Proto2Codable {
         try protoWriter.encode(tag: 15, value: self.opt_bytes)
         try protoWriter.encode(tag: 16, value: self.opt_nested_enum)
         try protoWriter.encode(tag: 17, value: self.opt_nested_message)
+        try protoWriter.encode(tag: 18, value: self.opt_field_mask)
         try protoWriter.encode(tag: 101, value: self.req_int32, encoding: .variable)
         try protoWriter.encode(tag: 102, value: self.req_uint32, encoding: .variable)
         try protoWriter.encode(tag: 103, value: self.req_sint32, encoding: .signed)
@@ -2600,6 +2637,7 @@ extension AllTypes.Storage : Proto2Codable {
         try protoWriter.encode(tag: 215, value: self.rep_bytes)
         try protoWriter.encode(tag: 216, value: self.rep_nested_enum)
         try protoWriter.encode(tag: 217, value: self.rep_nested_message)
+        try protoWriter.encode(tag: 218, value: self.rep_field_mask)
         try protoWriter.encode(tag: 301, value: self.pack_int32, encoding: .variable, packed: true)
         try protoWriter.encode(tag: 302, value: self.pack_uint32, encoding: .variable, packed: true)
         try protoWriter.encode(tag: 303, value: self.pack_sint32, encoding: .signed, packed: true)
@@ -2634,6 +2672,7 @@ extension AllTypes.Storage : Proto2Codable {
         try protoWriter.encode(tag: 502, value: self.map_string_string)
         try protoWriter.encode(tag: 503, value: self.map_string_message)
         try protoWriter.encode(tag: 504, value: self.map_string_enum)
+        try protoWriter.encode(tag: 505, value: self.map_int32_field_mask, keyEncoding: .variable)
         try protoWriter.encode(tag: 601, value: self.array_int32, encoding: .variable, packed: true)
         try protoWriter.encode(tag: 602, value: self.array_uint32, encoding: .variable, packed: true)
         try protoWriter.encode(tag: 603, value: self.array_sint32, encoding: .signed, packed: true)
@@ -2673,6 +2712,7 @@ extension AllTypes.Storage : Codable {
         self._opt_bytes.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, firstOfKeys: "optBytes", "opt_bytes")
         self.opt_nested_enum = try container.decodeIfPresent(AllTypes.NestedEnum.self, firstOfKeys: "optNestedEnum", "opt_nested_enum")
         self._opt_nested_message.wrappedValue = try container.decodeIfPresent(AllTypes.NestedMessage.self, firstOfKeys: "optNestedMessage", "opt_nested_message")
+        self.opt_field_mask = try container.decodeIfPresent(FieldMask.self, firstOfKeys: "optFieldMask", "opt_field_mask")
         self.req_int32 = try container.decode(Int32.self, firstOfKeys: "reqInt32", "req_int32")
         self.req_uint32 = try container.decode(UInt32.self, firstOfKeys: "reqUint32", "req_uint32")
         self.req_sint32 = try container.decode(Int32.self, firstOfKeys: "reqSint32", "req_sint32")
@@ -2707,6 +2747,7 @@ extension AllTypes.Storage : Codable {
         self.rep_bytes = try container.decodeProtoArray(Foundation.Data.self, firstOfKeys: "repBytes", "rep_bytes")
         self.rep_nested_enum = try container.decodeProtoArray(AllTypes.NestedEnum.self, firstOfKeys: "repNestedEnum", "rep_nested_enum")
         self.rep_nested_message = try container.decodeProtoArray(AllTypes.NestedMessage.self, firstOfKeys: "repNestedMessage", "rep_nested_message")
+        self.rep_field_mask = try container.decodeProtoArray(FieldMask.self, firstOfKeys: "repFieldMask", "rep_field_mask")
         self.pack_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packInt32", "pack_int32")
         self.pack_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "packUint32", "pack_uint32")
         self.pack_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "packSint32", "pack_sint32")
@@ -2741,6 +2782,7 @@ extension AllTypes.Storage : Codable {
         self.map_string_string = try container.decodeProtoMap([String : String].self, firstOfKeys: "mapStringString", "map_string_string")
         self.map_string_message = try container.decodeProtoMap([String : AllTypes.NestedMessage].self, firstOfKeys: "mapStringMessage", "map_string_message")
         self.map_string_enum = try container.decodeProtoMap([String : AllTypes.NestedEnum].self, firstOfKeys: "mapStringEnum", "map_string_enum")
+        self.map_int32_field_mask = try container.decodeProtoMap([Int32 : FieldMask].self, firstOfKeys: "mapInt32FieldMask", "map_int32_field_mask")
         self.array_int32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arrayInt32", "array_int32")
         self.array_uint32 = try container.decodeProtoArray(UInt32.self, firstOfKeys: "arrayUint32", "array_uint32")
         self.array_sint32 = try container.decodeProtoArray(Int32.self, firstOfKeys: "arraySint32", "array_sint32")
@@ -2777,6 +2819,7 @@ extension AllTypes.Storage : Codable {
         try container.encodeIfPresent(stringEncoded: self.opt_bytes, forKey: preferCamelCase ? "optBytes" : "opt_bytes")
         try container.encodeIfPresent(self.opt_nested_enum, forKey: preferCamelCase ? "optNestedEnum" : "opt_nested_enum")
         try container.encodeIfPresent(self.opt_nested_message, forKey: preferCamelCase ? "optNestedMessage" : "opt_nested_message")
+        try container.encodeIfPresent(self.opt_field_mask, forKey: preferCamelCase ? "optFieldMask" : "opt_field_mask")
         if includeDefaults || self.req_int32 != 0 {
             try container.encode(self.req_int32, forKey: preferCamelCase ? "reqInt32" : "req_int32")
         }
@@ -2877,6 +2920,9 @@ extension AllTypes.Storage : Codable {
         if includeDefaults || !self.rep_nested_message.isEmpty {
             try container.encodeProtoArray(self.rep_nested_message, forKey: preferCamelCase ? "repNestedMessage" : "rep_nested_message")
         }
+        if includeDefaults || !self.rep_field_mask.isEmpty {
+            try container.encodeProtoArray(self.rep_field_mask, forKey: preferCamelCase ? "repFieldMask" : "rep_field_mask")
+        }
         if includeDefaults || !self.pack_int32.isEmpty {
             try container.encodeProtoArray(self.pack_int32, forKey: preferCamelCase ? "packInt32" : "pack_int32")
         }
@@ -2946,6 +2992,9 @@ extension AllTypes.Storage : Codable {
         }
         if includeDefaults || !self.map_string_enum.isEmpty {
             try container.encodeProtoMap(self.map_string_enum, forKey: preferCamelCase ? "mapStringEnum" : "map_string_enum")
+        }
+        if includeDefaults || !self.map_int32_field_mask.isEmpty {
+            try container.encodeProtoMap(self.map_int32_field_mask, forKey: preferCamelCase ? "mapInt32FieldMask" : "map_int32_field_mask")
         }
         if includeDefaults || !self.array_int32.isEmpty {
             try container.encodeProtoArray(self.array_int32, forKey: preferCamelCase ? "arrayInt32" : "array_int32")
