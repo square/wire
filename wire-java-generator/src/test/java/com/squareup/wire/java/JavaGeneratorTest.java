@@ -925,11 +925,19 @@ public final class JavaGeneratorTest {
                     + "import \"google/protobuf/field_mask.proto\";\n"
                     + "message Message {\n"
                     + "  optional google.protobuf.FieldMask mask = 1;\n"
+                    + "  repeated google.protobuf.FieldMask masks = 2;\n"
+                    + "  map<int32, google.protobuf.FieldMask> masks_by_id = 3;\n"
                     + "}\n")
             .build();
     String code = new JavaWithProfilesGenerator(schema).generateJava("common.proto.Message");
     assertThat(code).contains("import com.squareup.wire.FieldMask;");
+    assertThat(code).contains("public final FieldMask mask;");
+    assertThat(code).contains("public final List<FieldMask> masks;");
+    assertThat(code).contains("public final Map<Integer, FieldMask> masks_by_id;");
     assertThat(code).contains("ProtoAdapter.FIELD_MASK");
+    assertThat(code).contains("ProtoAdapter.FIELD_MASK.asRepeated()");
+    assertThat(code)
+        .contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)");
   }
 
   @Test
