@@ -239,6 +239,22 @@ class TestAllTypes {
     assertThat(parsed).isEqualTo(allTypes)
   }
 
+  @Test fun testFieldMaskFields() {
+    val fieldMask = FieldMask(listOf("user.display_name", "photo"))
+    val otherFieldMask = FieldMask(listOf("updated_at.seconds"))
+    val allTypes = allTypes.copy(
+      opt_field_mask = fieldMask,
+      rep_field_mask = listOf(fieldMask, otherFieldMask),
+      map_int32_field_mask = mapOf(1 to fieldMask, 2 to otherFieldMask),
+    )
+
+    val parsed = adapter.decode(adapter.encode(allTypes))
+
+    assertThat(parsed.opt_field_mask).isEqualTo(fieldMask)
+    assertThat(parsed.rep_field_mask).isEqualTo(listOf(fieldMask, otherFieldMask))
+    assertThat(parsed.map_int32_field_mask).isEqualTo(mapOf(1 to fieldMask, 2 to otherFieldMask))
+  }
+
   @Test fun testReadNonPacked() {
     val parsed = adapter.decode(Buffer().write(TestAllTypesData.nonPacked))
     assertThat(parsed).isEqualTo(allTypes)

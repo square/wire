@@ -15,6 +15,7 @@
  */
 package squareup.protos.kotlin.alltypes;
 
+import "google/protobuf/field_mask.proto";
 import "wire/extensions.proto";
 
 option java_package = "com.squareup.wire.protos.kotlin.alltypes";
@@ -50,6 +51,7 @@ message AllTypes {
   optional bytes opt_bytes = 15;
   optional NestedEnum opt_nested_enum = 16;
   optional NestedMessage opt_nested_message = 17;
+  optional google.protobuf.FieldMask opt_field_mask = 18;
 
   required int32 req_int32 = 101;
   required uint32 req_uint32 = 102;
@@ -86,6 +88,7 @@ message AllTypes {
   repeated bytes rep_bytes = 215;
   repeated NestedEnum rep_nested_enum = 216;
   repeated NestedMessage rep_nested_message = 217;
+  repeated google.protobuf.FieldMask rep_field_mask = 218;
 
   repeated int32 pack_int32 = 301 [packed = true];
   repeated uint32 pack_uint32 = 302 [packed = true];
@@ -123,6 +126,7 @@ message AllTypes {
   map<string, string> map_string_string = 502;
   map<string, NestedMessage> map_string_message = 503;
   map<string, NestedEnum> map_string_enum = 504;
+  map<int32, google.protobuf.FieldMask> map_int32_field_mask = 505;
 
   repeated int32 array_int32 = 601 [packed = true, (wire.use_array) = true];
   repeated uint32 array_uint32 = 602 [packed = true, (wire.use_array) = true];
