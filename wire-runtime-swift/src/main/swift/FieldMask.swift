@@ -79,14 +79,17 @@ extension FieldMask: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        self.paths = value.isEmpty
-            ? []
-            : value.split(separator: ",").map { FieldMask.protoName(String($0)) }
+        self.paths = value.split(separator: ",").map { FieldMask.protoName(String($0)) }
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(paths.map(FieldMask.jsonName).joined(separator: ","))
+        try container.encode(
+            paths
+                .filter { !$0.isEmpty }
+                .map(FieldMask.jsonName)
+                .joined(separator: ",")
+        )
     }
 
     private static func jsonName(_ path: String) -> String {
@@ -113,7 +116,7 @@ extension FieldMask: Codable {
                 result.append(String(scalar).uppercased())
                 capitalizeNext = false
             } else {
-                result.append(String(scalar))
+                result.append(String(scalar).lowercased())
             }
         }
         return result
@@ -128,7 +131,7 @@ extension FieldMask: Codable {
                 }
                 result.append(String(scalar).lowercased())
             } else {
-                result.append(String(scalar))
+                result.append(String(scalar).lowercased())
             }
         }
         return result
