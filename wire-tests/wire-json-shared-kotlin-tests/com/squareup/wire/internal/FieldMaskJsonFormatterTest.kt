@@ -34,6 +34,11 @@ class FieldMaskJsonFormatterTest {
       .isEqualTo(FieldMask(listOf("user.display_name", "photo", "foo_bar.baz_qux")))
   }
 
+  @Test fun `leading uppercase path segment decodes with leading underscore`() {
+    assertThat(fromString("foo.Bar"))
+      .isEqualTo(FieldMask(listOf("foo._bar")))
+  }
+
   @Test fun `empty paths are skipped`() {
     assertThat(toStringOrNumber(FieldMask(listOf("", "photo", ""))))
       .isEqualTo("photo")

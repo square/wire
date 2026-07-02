@@ -2394,7 +2394,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 15: opt_bytes = try protoReader.decode(Foundation.Data.self)
             case 16: opt_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
             case 17: opt_nested_message = try protoReader.decode(AllTypes.NestedMessage.self)
-            case 18: opt_field_mask = try protoReader.decode(FieldMask.self)
+            case 18: opt_field_mask = try protoReader.decode(FieldMask.self, mergingInto: opt_field_mask)
             case 101: req_int32 = try protoReader.decode(Int32.self, encoding: .variable)
             case 102: req_uint32 = try protoReader.decode(UInt32.self, encoding: .variable)
             case 103: req_sint32 = try protoReader.decode(Int32.self, encoding: .signed)

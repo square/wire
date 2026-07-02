@@ -169,13 +169,24 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       val field = fields[tag]
       try {
         if (field != null) {
-          val adapter = if (field.isMap) {
-            field.adapter
+          if (field.isMap) {
+            val value = field.adapter.decode(reader)
+            field.value(builder, value)
           } else {
-            field.singleAdapter
+            val singleAdapter = field.singleAdapter
+            if ((field.isMessage || singleAdapter == ProtoAdapter.FIELD_MASK) &&
+              !field.label.isRepeated &&
+              !field.label.isOneOf
+            ) {
+              @Suppress("UNCHECKED_CAST")
+              val adapter = singleAdapter as ProtoAdapter<Any>
+              val value = decodeMessageOrMerge(adapter, reader, field.getFromBuilder(builder))
+              field.set(builder, value)
+            } else {
+              val value = singleAdapter.decode(reader)
+              field.value(builder, value!!)
+            }
           }
-          val value = adapter.decode(reader)
-          field.value(builder, value!!)
         } else {
           val fieldEncoding = reader.peekFieldEncoding()!!
           val value = fieldEncoding.rawProtoAdapter().decode(reader)
