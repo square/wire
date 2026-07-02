@@ -198,6 +198,7 @@ class SwiftGenerator private constructor(
       // @ProtoDefaulted support. STRUCT_NULL is intentionally omitted -- it's an
       // enum, so it falls through to the isEnum check below.
       if (type == ProtoType.ANY ||
+        type == ProtoType.FIELD_MASK ||
         type == ProtoType.STRUCT_MAP ||
         type == ProtoType.STRUCT_VALUE ||
         type == ProtoType.STRUCT_LIST
@@ -1874,6 +1875,7 @@ class SwiftGenerator private constructor(
       ProtoType.UINT32 to UINT32,
       ProtoType.UINT64 to UINT64,
       ProtoType.ANY to DeclaredTypeName.typeName("Wire.AnyMessage"),
+      ProtoType.FIELD_MASK to DeclaredTypeName.typeName("Wire.FieldMask"),
       ProtoType.STRUCT_LIST to DeclaredTypeName.typeName("Wire.ListValue"),
       ProtoType.STRUCT_MAP to DeclaredTypeName.typeName("Wire.StructMessage"),
       ProtoType.STRUCT_NULL to DeclaredTypeName.typeName("Wire.StructNull"),

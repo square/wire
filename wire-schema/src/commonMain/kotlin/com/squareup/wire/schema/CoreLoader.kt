@@ -33,6 +33,7 @@ fun isWireRuntimeProto(path: String): Boolean = path == ANY_PROTO ||
   path == DESCRIPTOR_PROTO ||
   path == DURATION_PROTO ||
   path == EMPTY_PROTO ||
+  path == FIELD_MASK_PROTO ||
   path == STRUCT_PROTO ||
   path == TIMESTAMP_PROTO ||
   path == WRAPPERS_PROTO ||
@@ -44,6 +45,7 @@ internal const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
 private const val ANY_PROTO = "google/protobuf/any.proto"
 private const val DURATION_PROTO = "google/protobuf/duration.proto"
 private const val EMPTY_PROTO = "google/protobuf/empty.proto"
+private const val FIELD_MASK_PROTO = "google/protobuf/field_mask.proto"
 private const val STRUCT_PROTO = "google/protobuf/struct.proto"
 private const val TIMESTAMP_PROTO = "google/protobuf/timestamp.proto"
 private const val WRAPPERS_PROTO = "google/protobuf/wrappers.proto"

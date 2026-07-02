@@ -1505,6 +1505,24 @@ class KotlinGeneratorTest {
     assertThat(code).contains("import com.squareup.wire.AnyMessage")
   }
 
+  @Test fun usesFieldMask() {
+    val schema = buildSchema {
+      add(
+        "a.proto".toPath(),
+        """
+        |package common.proto;
+        |import "google/protobuf/field_mask.proto";
+        |message Message {
+        |  optional google.protobuf.FieldMask mask = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
+    assertThat(code).contains("import com.squareup.wire.FieldMask")
+    assertThat(code).contains("ProtoAdapter.FIELD_MASK")
+  }
+
   @Test fun wildCommentsAreEscaped() {
     val schema = buildSchema {
       add(

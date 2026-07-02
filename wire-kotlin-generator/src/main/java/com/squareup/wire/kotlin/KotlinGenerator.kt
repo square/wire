@@ -2463,6 +2463,9 @@ class KotlinGenerator private constructor(
       this == ProtoType.EMPTY -> {
         CodeBlock.of("%T${adapterFieldDelimiterName}EMPTY", ProtoAdapter::class)
       }
+      this == ProtoType.FIELD_MASK -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}FIELD_MASK", ProtoAdapter::class)
+      }
       this == ProtoType.STRUCT_MAP -> {
         CodeBlock.of("%T${adapterFieldDelimiterName}STRUCT_MAP", ProtoAdapter::class)
       }
@@ -3450,6 +3453,7 @@ class KotlinGenerator private constructor(
       ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
       ProtoType.TIMESTAMP to ClassName("com.squareup.wire", "Instant"),
       ProtoType.EMPTY to ClassName("kotlin", "Unit"),
+      ProtoType.FIELD_MASK to ClassName("com.squareup.wire", "FieldMask"),
       ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
         .parameterizedBy(ClassName("kotlin", "String"), STAR).copy(nullable = true),
       ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any").copy(nullable = true),

@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.squareup.wire.FieldMask
 import com.squareup.wire.buildSchema
 import com.squareup.wire.durationOfSeconds
 import com.squareup.wire.ofEpochSecond
@@ -36,6 +37,7 @@ class DynamicSerializationTest {
        |import "google/protobuf/duration.proto";
        |import "google/protobuf/timestamp.proto";
        |import "google/protobuf/empty.proto";
+       |import "google/protobuf/field_mask.proto";
        |import "google/protobuf/struct.proto";
        |import "google/protobuf/wrappers.proto";
        |
@@ -56,6 +58,7 @@ class DynamicSerializationTest {
        |  google.protobuf.BoolValue bool_value_field = 14;
        |  google.protobuf.StringValue string_value_field = 15;
        |  google.protobuf.BytesValue bytes_value_field = 16;
+       |  google.protobuf.FieldMask field_mask_field = 17;
        |}
        |
         """.trimMargin(),
@@ -79,6 +82,7 @@ class DynamicSerializationTest {
       "bool_value_field" to true,
       "string_value_field" to "πάμε",
       "bytes_value_field" to "πάμε".encodeUtf8(),
+      "field_mask_field" to FieldMask(listOf("user.display_name", "photo")),
     )
     assertThat(adapter.decode(adapter.encode(expected))).isEqualTo(expected)
   }

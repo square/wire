@@ -248,6 +248,8 @@ expect abstract class ProtoAdapter<E>(
 
     val EMPTY: ProtoAdapter<Unit>
 
+    val FIELD_MASK: ProtoAdapter<FieldMask>
+
     val STRUCT_MAP: ProtoAdapter<Map<String, *>?>
 
     val STRUCT_LIST: ProtoAdapter<List<*>?>
@@ -1329,6 +1331,57 @@ internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
   }
 
   override fun redact(value: Unit): Unit = value
+}
+
+internal fun commonFieldMask(): ProtoAdapter<FieldMask> = object : ProtoAdapter<FieldMask>(
+  LENGTH_DELIMITED,
+  FieldMask::class,
+  "type.googleapis.com/google.protobuf.FieldMask",
+  Syntax.PROTO_3,
+) {
+  override fun encodedSize(value: FieldMask): Int {
+    var result = 0
+    for (path in value.paths) {
+      result += STRING.encodedSizeWithTag(1, path)
+    }
+    return result
+  }
+
+  override fun encode(writer: ProtoWriter, value: FieldMask) {
+    for (path in value.paths) {
+      STRING.encodeWithTag(writer, 1, path)
+    }
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: FieldMask) {
+    for (i in value.paths.size - 1 downTo 0) {
+      STRING.encodeWithTag(writer, 1, value.paths[i])
+    }
+  }
+
+  override fun decode(reader: ProtoReader): FieldMask {
+    val paths = mutableListOf<String>()
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> paths += STRING.decode(reader)
+        else -> reader.readUnknownField(tag)
+      }
+    }
+    return FieldMask(paths)
+  }
+
+  override fun decode(reader: ProtoReader32): FieldMask {
+    val paths = mutableListOf<String>()
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> paths += STRING.decode(reader)
+        else -> reader.readUnknownField(tag)
+      }
+    }
+    return FieldMask(paths)
+  }
+
+  override fun redact(value: FieldMask): FieldMask = value
 }
 
 internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAdapter<Map<String, *>?>(

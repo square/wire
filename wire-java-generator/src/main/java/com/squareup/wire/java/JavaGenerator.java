@@ -156,6 +156,7 @@ public final class JavaGenerator {
           .put(ProtoType.DURATION, ClassName.get("java.time", "Duration"))
           .put(ProtoType.TIMESTAMP, ClassName.get("java.time", "Instant"))
           .put(ProtoType.EMPTY, ClassName.get("kotlin", "Unit"))
+          .put(ProtoType.FIELD_MASK, ClassName.get("com.squareup.wire", "FieldMask"))
           .put(
               ProtoType.STRUCT_MAP,
               ParameterizedTypeName.get(
@@ -549,6 +550,8 @@ public final class JavaGenerator {
       result.add("$T.$L", ADAPTER, "INSTANT");
     } else if (type.equals(ProtoType.EMPTY)) {
       result.add("$T.$L", ADAPTER, "EMPTY");
+    } else if (type.equals(ProtoType.FIELD_MASK)) {
+      result.add("$T.$L", ADAPTER, "FIELD_MASK");
     } else if (type.equals(ProtoType.STRUCT_MAP)) {
       result.add("$T.$L", ADAPTER, "STRUCT_MAP");
     } else if (type.equals(ProtoType.STRUCT_VALUE)) {

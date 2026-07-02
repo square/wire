@@ -64,6 +64,32 @@ class SwiftGeneratorTest {
     assertThat(code).contains("self.parseUnknownField(fieldNumber: 50003)")
   }
 
+  @Test fun usesFieldMask() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package squareup.protos3;
+        |
+        |import "google/protobuf/field_mask.proto";
+        |
+        |message Message {
+        |  google.protobuf.FieldMask mask = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos3.Message")
+
+    assertThat(code).contains("import Wire")
+    assertThat(code).contains("public var mask: FieldMask?")
+    assertThat(code).contains("mask = try protoReader.decode(FieldMask.self)")
+    assertThat(code).doesNotContain("@ProtoDefaulted")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))

@@ -318,6 +318,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
     @JvmField actual val EMPTY: ProtoAdapter<Unit> = commonEmpty()
 
+    @JvmField actual val FIELD_MASK: ProtoAdapter<FieldMask> = commonFieldMask()
+
     @JvmField actual val STRUCT_MAP: ProtoAdapter<Map<String, *>?> = commonStructMap()
 
     @JvmField actual val STRUCT_LIST: ProtoAdapter<List<*>?> = commonStructList()

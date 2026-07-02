@@ -58,6 +58,7 @@ internal class SchemaProtoAdapterFactory(
     ProtoType.DURATION to ProtoAdapter.DURATION,
     ProtoType.TIMESTAMP to ProtoAdapter.INSTANT,
     ProtoType.EMPTY to ProtoAdapter.EMPTY,
+    ProtoType.FIELD_MASK to ProtoAdapter.FIELD_MASK,
     ProtoType.STRUCT_MAP to ProtoAdapter.STRUCT_MAP,
     ProtoType.STRUCT_VALUE to ProtoAdapter.STRUCT_VALUE,
     ProtoType.STRUCT_NULL to ProtoAdapter.STRUCT_NULL,

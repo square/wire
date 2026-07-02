@@ -64,6 +64,7 @@ fun builtInAdapterString(type: ProtoType, useArray: Boolean = false): String? {
     ProtoType.DURATION -> ProtoAdapter::class.java.name + "#DURATION"
     ProtoType.TIMESTAMP -> ProtoAdapter::class.java.name + "#INSTANT"
     ProtoType.EMPTY -> ProtoAdapter::class.java.name + "#EMPTY"
+    ProtoType.FIELD_MASK -> ProtoAdapter::class.java.name + "#FIELD_MASK"
     ProtoType.STRUCT_MAP -> ProtoAdapter::class.java.name + "#STRUCT_MAP"
     ProtoType.STRUCT_VALUE -> ProtoAdapter::class.java.name + "#STRUCT_VALUE"
     ProtoType.STRUCT_NULL -> ProtoAdapter::class.java.name + "#STRUCT_NULL"
