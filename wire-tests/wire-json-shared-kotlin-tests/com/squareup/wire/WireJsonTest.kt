@@ -269,6 +269,7 @@ class WireJsonTest {
   }
 
   @Test fun fieldMask() {
+    val anyFieldMask = FieldMask(listOf("masked_name"))
     val value = ContainsFieldMask.Builder()
       .mask(FieldMask(listOf("user.display_name", "photo", "foo_bar.baz_qux")))
       .masks(
@@ -277,11 +278,22 @@ class WireJsonTest {
           FieldMask(listOf("updated_at.seconds")),
         ),
       )
+      .any_mask(
+        AnyMessage(
+          ProtoAdapter.FIELD_MASK.typeUrl!!,
+          ProtoAdapter.FIELD_MASK.encodeByteString(anyFieldMask),
+        ),
+      )
       .build()
+    val anyFieldName = if (jsonLibrary.preservingProtoFieldNames) "any_mask" else "anyMask"
     val json = """
       |{
       |  "mask": "user.displayName,photo,fooBar.bazQux",
-      |  "masks": ["displayName", "updatedAt.seconds"]
+      |  "masks": ["displayName", "updatedAt.seconds"],
+      |  "$anyFieldName": {
+      |    "@type": "type.googleapis.com/google.protobuf.FieldMask",
+      |    "value": "maskedName"
+      |  }
       |}
     """.trimMargin()
 
@@ -293,6 +305,14 @@ class WireJsonTest {
       jsonLibrary.toJson(parsed, ContainsFieldMask::class.java),
       jsonLibrary.toJson(value, ContainsFieldMask::class.java),
     )
+  }
+
+  @Test fun rootFieldMask() {
+    val value = FieldMask(listOf("user.display_name", "photo", "foo_bar.baz_qux"))
+    val json = "\"user.displayName,photo,fooBar.bazQux\""
+
+    assertThat(jsonLibrary.toJson(value, FieldMask::class.java)).isEqualTo(json)
+    assertThat(jsonLibrary.fromJson(json, FieldMask::class.java)).isEqualTo(value)
   }
 
   @Test fun anyMessageWithUnregisteredTypeOnReading() {
@@ -1223,7 +1243,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
         )
         .build()
 
@@ -1245,7 +1265,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1268,7 +1288,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
         )
         .build()
 
@@ -1290,7 +1310,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1313,7 +1333,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
         )
         .build()
 
@@ -1335,7 +1355,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
         )
         .disableHtmlEscaping()
         .create()

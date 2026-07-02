@@ -43,6 +43,13 @@ class AnyMessageTypeAdapter(
     val protoAdapter = typeUrlToAdapter[value.typeUrl]
       ?: throw IOException("Cannot find type for url: ${value.typeUrl}")
 
+    if (protoAdapter == ProtoAdapter.FIELD_MASK) {
+      writer.name("value")
+      gson.getAdapter(FieldMask::class.java).write(writer, value.unpack(ProtoAdapter.FIELD_MASK))
+      writer.endObject()
+      return
+    }
+
     @Suppress("UNCHECKED_CAST")
     val delegate = gson.getAdapter(protoAdapter.type!!.java) as TypeAdapter<Message<*, *>>
 
@@ -68,6 +75,13 @@ class AnyMessageTypeAdapter(
 
     val protoAdapter = typeUrlToAdapter[typeUrl]
       ?: throw IOException("Cannot resolve type: $typeUrl in ${reader.path}")
+
+    if (protoAdapter == ProtoAdapter.FIELD_MASK) {
+      val fieldMask = jsonElement.asJsonObject.get("value")?.let {
+        gson.getAdapter(FieldMask::class.java).fromJsonTree(it)
+      } ?: FieldMask()
+      return AnyMessage(typeUrl, ProtoAdapter.FIELD_MASK.encodeByteString(fieldMask))
+    }
 
     @Suppress("UNCHECKED_CAST")
     val delegate = gson.getAdapter(protoAdapter.type!!.java) as TypeAdapter<Message<*, *>>
