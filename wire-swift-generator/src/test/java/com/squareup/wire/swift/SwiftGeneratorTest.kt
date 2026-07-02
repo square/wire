@@ -77,6 +77,8 @@ class SwiftGeneratorTest {
         |
         |message Message {
         |  google.protobuf.FieldMask mask = 1;
+        |  repeated google.protobuf.FieldMask masks = 2;
+        |  map<int32, google.protobuf.FieldMask> masks_by_id = 3;
         |}
         """.trimMargin(),
       )
@@ -86,7 +88,11 @@ class SwiftGeneratorTest {
 
     assertThat(code).contains("import Wire")
     assertThat(code).contains("public var mask: FieldMask?")
+    assertThat(code).contains("public var masks: [FieldMask]")
+    assertThat(code).contains("public var masks_by_id: [Int32 : FieldMask]")
     assertThat(code).contains("mask = try protoReader.decode(FieldMask.self)")
+    assertThat(code).contains("try protoReader.decode(into: &masks)")
+    assertThat(code).contains("try protoReader.decode(into: &masks_by_id, keyEncoding: .variable)")
     assertThat(code).doesNotContain("@ProtoDefaulted")
   }
 
