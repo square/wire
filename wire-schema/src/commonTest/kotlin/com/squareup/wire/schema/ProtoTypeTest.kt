@@ -118,6 +118,12 @@ class ProtoTypeTest {
   }
 
   @Test
+  fun fieldMask() {
+    assertThat(ProtoType.FIELD_MASK).isEqualTo(ProtoType.get("google.protobuf.FieldMask"))
+    assertThat(ProtoType.FIELD_MASK.typeUrl).isEqualTo("type.googleapis.com/google.protobuf.FieldMask")
+  }
+
+  @Test
   fun enclosingTypeOrPackage() {
     assertThat(ProtoType.STRING.enclosingTypeOrPackage).isNull()
 

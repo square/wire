@@ -648,6 +648,7 @@ public final class com/squareup/wire/schema/ProtoType {
 	public static final field DOUBLE_VALUE Lcom/squareup/wire/schema/ProtoType;
 	public static final field DURATION Lcom/squareup/wire/schema/ProtoType;
 	public static final field EMPTY Lcom/squareup/wire/schema/ProtoType;
+	public static final field FIELD_MASK Lcom/squareup/wire/schema/ProtoType;
 	public static final field FIXED32 Lcom/squareup/wire/schema/ProtoType;
 	public static final field FIXED64 Lcom/squareup/wire/schema/ProtoType;
 	public static final field FLOAT Lcom/squareup/wire/schema/ProtoType;
