@@ -26,6 +26,14 @@ final class AnyMessageTests: XCTestCase {
         XCTAssertEqual(any.value, try ProtoEncoder().encode(person))
     }
 
+    func testPackingFieldMask() throws {
+        let fieldMask = FieldMask(paths: ["user.display_name", "photo"])
+        let any = try AnyMessage.pack(fieldMask)
+        XCTAssertEqual(any.typeURL, FieldMask.protoMessageTypeURL())
+        XCTAssertEqual(any.value, try ProtoEncoder().encode(fieldMask))
+        XCTAssertEqual(fieldMask, try any.unpack(FieldMask.self))
+    }
+
     func testUnpackingAnyToCorrectType() throws {
         let data = Data(json_data: "")
         let person = Person(name: "foo bar", id: 12345, data: data)

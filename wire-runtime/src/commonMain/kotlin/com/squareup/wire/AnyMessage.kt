@@ -29,7 +29,9 @@ import okio.ByteString
  * Example
  * ```
  * val person: Person = anyMessage.unpack(Person.ADAPTER)
- * val anyMessage: AnyMessage = AnyMessage.ADAPTER.pack(person)
+ * val anyMessage: AnyMessage = AnyMessage.pack(person)
+ * val fieldMask = FieldMask(listOf("name"))
+ * val fieldMaskAny: AnyMessage = AnyMessage.pack(ProtoAdapter.FIELD_MASK, fieldMask)
  * ```
  */
 class AnyMessage(
@@ -80,6 +82,12 @@ class AnyMessage(
       val typeUrl = message.adapter.typeUrl
         ?: error("recompile ${message::class} to use it with AnyMessage")
       return AnyMessage(typeUrl, message.encodeByteString())
+    }
+
+    fun <T> pack(adapter: ProtoAdapter<T>, value: T): AnyMessage {
+      val typeUrl = adapter.typeUrl
+        ?: error("recompile ${adapter.type ?: "type"} to use it with AnyMessage")
+      return AnyMessage(typeUrl, adapter.encodeByteString(value))
     }
 
     @JvmField

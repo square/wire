@@ -59,6 +59,15 @@ class AnyMessageTest {
     assertThat(usesAny.just_one.unpackOrNull(ProtoAdapter.BOOL)).isEqualTo(null)
   }
 
+  @Test fun packAndUnpackRuntimeValue() {
+    val fieldMask = FieldMask(listOf("user.display_name", "photo"))
+    val any = AnyMessage.pack(ProtoAdapter.FIELD_MASK, fieldMask)
+
+    assertThat(any.typeUrl).isEqualTo(ProtoAdapter.FIELD_MASK.typeUrl)
+    assertThat(any.value).isEqualTo(ProtoAdapter.FIELD_MASK.encodeByteString(fieldMask))
+    assertThat(any.unpack(ProtoAdapter.FIELD_MASK)).isEqualTo(fieldMask)
+  }
+
   @Test fun encodeAndDecode() {
     val hex = "0a430a3d747970652e676f6f676c65617069732e636f6d2f73717561726575702e70726f746f732e6b" +
       "6f746c696e2e6564676563617365732e4f6e654669656c641202080312430a3d747970652e676f6f676c6561" +
