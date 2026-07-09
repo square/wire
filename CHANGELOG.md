@@ -4,6 +4,36 @@ Change Log
 Unreleased
 ----------
 
+### Common
+
+* New: Support `google.protobuf.FieldMask` (#3644, #3645, #3646, #3647, #3648, #3649, #3650, #3651,
+  #3652). Fields of this type map to the new `com.squareup.wire.FieldMask` class and are encoded
+  with `ProtoAdapter.FIELD_MASK`. JSON uses the spec's string encoding
+  (`"user.displayName,photo"`), including when a field mask is packed in a `google.protobuf.Any`.
+  `ProtoAdapter.FIELD_MASK` is registered by default in `WireJsonAdapterFactory` and
+  `WireTypeAdapterFactory` for use with `AnyMessage`. If your build previously supplied its own
+  `google/protobuf/field_mask.proto`, Wire's bundled copy now takes precedence: the `FieldMask`
+  message class is no longer generated, fields reference `com.squareup.wire.FieldMask` instead,
+  `Schema.protoAdapter(...)` decodes such fields to `FieldMask` instances instead of maps, and
+  JSON switches from an object to the specification's string encoding.
+* New: `AnyMessage.pack(adapter, value)` packs values whose adapters aren't generated message
+  adapters, such as `ProtoAdapter.FIELD_MASK` (#3648).
+* Behavior change: `ProtoAdapter.newMessageAdapter(Class)`, `Schema.protoAdapter(...)`, and the
+  moshi/gson runtime adapters now merge duplicated occurrences of a singular message field per the
+  protobuf specification, instead of keeping only the last occurrence (#3652). This includes fields
+  of well-known types that map to platform types, such as `google.protobuf.Duration` and the
+  wrapper types. Generated Java/Kotlin code already behaved this way.
+
+### Swift
+
+* New: Support `google.protobuf.FieldMask` via the new `FieldMask` struct, with proto and Codable
+  (JSON) encodings (#3645, #3646, #3652). `AnyMessage` values whose type URL is
+  `type.googleapis.com/google.protobuf.FieldMask` now use the specification's string encoding for
+  their JSON `value` instead of base64 data.
+* Behavior change: generated code now merges duplicated occurrences of a singular message field
+  per the protobuf specification, instead of keeping only the last occurrence. This matches
+  generated Java/Kotlin code. The new `ProtoReader.decode(_:mergingInto:)` implements the merge.
+
 Version 7.0.0-alpha04
 ---------------------
 

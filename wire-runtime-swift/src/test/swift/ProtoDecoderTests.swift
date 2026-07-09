@@ -25,6 +25,28 @@ final class ProtoDecoderTests: XCTestCase {
         XCTAssertEqual(object, SimpleOptional2())
     }
 
+    func testDuplicatedSingularMessageFieldsAreMerged() throws {
+        // Encoding two messages back to back is equivalent to a single message in which the
+        // singular message field `nested` appears twice. Per the protobuf specification the
+        // occurrences merge: `name` takes the value of the last occurrence while
+        // `partially_redacted`, absent from the last occurrence, is kept from the first.
+        let first = Redacted(name: "message") {
+            $0.nested = Redacted2(name: "first") {
+                $0.partially_redacted = Redacted3(name: "kept")
+            }
+        }
+        let second = Redacted(name: "message") {
+            $0.nested = Redacted2(name: "last")
+        }
+
+        var data = try ProtoEncoder().encode(first)
+        data.append(try ProtoEncoder().encode(second))
+        let decoded = try ProtoDecoder().decode(Redacted.self, from: data)
+
+        XCTAssertEqual(decoded.nested?.name, "last")
+        XCTAssertEqual(decoded.nested?.partially_redacted?.name, "kept")
+    }
+
     func testDecodeEmptySizeDelimitedData() throws {
         let decoder = ProtoDecoder()
         let object = try decoder.decodeSizeDelimited(SimpleOptional2.self, from: Foundation.Data())

@@ -86,7 +86,7 @@ class AnyMessage(
 
     fun <T> pack(adapter: ProtoAdapter<T>, value: T): AnyMessage {
       val typeUrl = adapter.typeUrl
-        ?: error("recompile ${adapter.type ?: "type"} to use it with AnyMessage")
+        ?: error("cannot pack ${adapter.type ?: "value"}: the adapter has no type URL")
       return AnyMessage(typeUrl, adapter.encodeByteString(value))
     }
 

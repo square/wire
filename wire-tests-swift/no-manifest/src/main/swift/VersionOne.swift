@@ -56,7 +56,7 @@ extension VersionOne : Proto2Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: i = try protoReader.decode(Int32.self, encoding: .variable)
-            case 7: obj = try protoReader.decode(NestedVersionOne.self)
+            case 7: obj = try protoReader.decode(NestedVersionOne.self, mergingInto: obj)
             case 8: en = try protoReader.decode(EnumVersionOne.self)
             default: try protoReader.readUnknownField(tag: tag)
             }

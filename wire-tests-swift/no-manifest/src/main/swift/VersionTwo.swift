@@ -75,7 +75,7 @@ extension VersionTwo : Proto2Codable {
             case 4: v2_f32 = try protoReader.decode(UInt32.self, encoding: .fixed)
             case 5: v2_f64 = try protoReader.decode(UInt64.self, encoding: .fixed)
             case 6: try protoReader.decode(into: &v2_rs)
-            case 7: obj = try protoReader.decode(NestedVersionTwo.self)
+            case 7: obj = try protoReader.decode(NestedVersionTwo.self, mergingInto: obj)
             case 8: en = try protoReader.decode(EnumVersionTwo.self)
             default: try protoReader.readUnknownField(tag: tag)
             }

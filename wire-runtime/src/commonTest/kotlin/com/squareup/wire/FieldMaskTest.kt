@@ -65,4 +65,11 @@ class FieldMaskTest {
     assertThat(ProtoAdapter.FIELD_MASK.typeUrl)
       .isEqualTo("type.googleapis.com/google.protobuf.FieldMask")
   }
+
+  @Test fun protoAdapterDiscardsUnknownFields() {
+    // Path "a", followed by unknown field 2 with varint value 5.
+    val bytes = "0a01611005".decodeHex()
+
+    assertThat(ProtoAdapter.FIELD_MASK.decode(bytes)).isEqualTo(FieldMask(listOf("a")))
+  }
 }

@@ -112,6 +112,31 @@ class DynamicSerializationTest {
       .isEqualTo(mapOf("field_mask_field" to FieldMask(listOf("a", "b"))))
   }
 
+  @Test
+  fun singularDurationOccurrencesAreMerged() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+       |syntax = "proto3";
+       |import "google/protobuf/duration.proto";
+       |
+       |message Message {
+       |  google.protobuf.Duration duration_field = 1;
+       |}
+       |
+        """.trimMargin(),
+      )
+    }
+
+    val adapter = schema.protoAdapter(typeName = "Message", includeUnknown = true)
+    // Tag 1 twice: `{seconds: 5}` then `{nanos: 3}`.
+    val encoded = "0a0208050a021003".decodeHex()
+
+    assertThat(adapter.decode(encoded))
+      .isEqualTo(mapOf("duration_field" to durationOfSeconds(5L, 3L)))
+  }
+
   @Ignore // Not supported.
   @Test
   fun mapTest() {

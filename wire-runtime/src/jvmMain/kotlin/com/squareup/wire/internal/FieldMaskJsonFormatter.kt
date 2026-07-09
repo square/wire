@@ -17,7 +17,13 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.FieldMask
 
-/** Encodes a field mask as a JSON string like "user.displayName,photo". */
+/**
+ * Encodes a field mask as a JSON string like "user.displayName,photo".
+ *
+ * The case conversions match protobuf-java's `FieldMaskUtil` and are not lossless for paths that
+ * violate the protobuf style guide: underscores followed by numbers, consecutive underscores, and
+ * leading, trailing, or uppercase characters do not survive a round trip.
+ */
 object FieldMaskJsonFormatter : JsonFormatter<FieldMask> {
   override fun toStringOrNumber(value: FieldMask): String = value.paths
     .filter { it.isNotEmpty() }

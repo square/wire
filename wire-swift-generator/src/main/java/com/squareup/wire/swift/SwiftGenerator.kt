@@ -635,7 +635,9 @@ class SwiftGenerator private constructor(
             } else {
               if (field.isRepeated) {
                 decoder.add("try $reader.decode(into: &%N", field.safeName)
-              } else if (field.type == ProtoType.FIELD_MASK) {
+              } else if (field.isMessage) {
+                // Duplicated occurrences of a singular message field are merged per the protobuf
+                // specification, matching generated Kotlin and Java.
                 val typeName = field.typeName.makeNonOptional()
 
                 decoder.add("%N = try $reader.decode(%T.self, mergingInto: %N", field.safeName, typeName, field.safeName)
