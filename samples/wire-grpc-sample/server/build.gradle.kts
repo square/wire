@@ -19,7 +19,7 @@ tasks.withType<JavaCompile>().configureEach {
 tasks.withType<KotlinCompile>().configureEach {
   compilerOptions {
     jvmTarget.set(JvmTarget.JVM_17)
-    freeCompilerArgs.add("-Xjvm-default=all")
+    freeCompilerArgs.add("-jvm-default=no-compatibility")
   }
 }
 

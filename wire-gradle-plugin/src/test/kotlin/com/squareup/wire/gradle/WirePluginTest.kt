@@ -1266,7 +1266,7 @@ class WirePluginTest {
     }
     assertThat(buildCacheDir.exists()).isFalse()
 
-    val generatedProto = "build/generated/source/wire/com/squareup/geology/Period.kt"
+    val generatedProto = "build/generated/source/wire/com/squareup/geology/Period.java"
 
     val fixtureRoot = File("src/test/projects/cache-relocation-1")
     val result = fixtureGradleRunner(fixtureRoot)
@@ -1319,7 +1319,7 @@ class WirePluginTest {
     }
     assertThat(buildCacheDir.exists()).isFalse()
 
-    val generatedStatus = "build/generated/source/wire/com/google/rpc/Status.kt"
+    val generatedStatus = "build/generated/source/wire/com/google/rpc/Status.java"
 
     val fixtureRoot = File("src/test/projects/cache-source-relocation-1")
     val result = fixtureGradleRunner(fixtureRoot)

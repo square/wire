@@ -133,7 +133,9 @@ data class Service(
       )
     }
 
-    @JvmStatic internal fun fromElements(
+    @JvmStatic
+    @JvmName("fromElements\$wire_schema") // Preserve the Kotlin 2.3 internal JVM name.
+    internal fun fromElements(
       packageName: String?,
       elements: List<ServiceElement>,
     ): List<Service> = elements.map { service ->
@@ -141,7 +143,9 @@ data class Service(
       fromElement(protoType, service)
     }
 
-    @JvmStatic internal fun toElements(services: List<Service>): List<ServiceElement> = services.map { service ->
+    @JvmStatic
+    @JvmName("toElements\$wire_schema") // Preserve the Kotlin 2.3 internal JVM name.
+    internal fun toElements(services: List<Service>): List<ServiceElement> = services.map { service ->
       ServiceElement(
         service.location,
         service.name,

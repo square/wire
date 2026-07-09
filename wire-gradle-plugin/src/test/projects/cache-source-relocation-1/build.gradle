@@ -1,7 +1,6 @@
 buildscript {
   dependencies {
     classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
-    classpath libs.pluginz.kotlin
   }
 
   repositories {
@@ -14,7 +13,6 @@ buildscript {
 }
 
 apply plugin: 'application'
-apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'com.squareup.wire'
 
 // The code in this test project should be identical to
@@ -36,6 +34,6 @@ wire {
     srcJar("com.google.api.grpc:proto-google-common-protos:2.57.0")
     include("google/rpc/status.proto")
   }
-  kotlin {
+  java {
   }
 }
