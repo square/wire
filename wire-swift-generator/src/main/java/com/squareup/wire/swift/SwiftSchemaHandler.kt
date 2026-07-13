@@ -49,6 +49,7 @@ class SwiftSchemaHandler : SchemaHandler() {
       .build()
 
     val filePath = modulePath / "${swiftFile.name}.swift"
+    checkPathInOutDirectory(filePath, modulePath)
     try {
       context.fileSystem.write(filePath) {
         writeUtf8(swiftFile.toString())

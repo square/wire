@@ -23,8 +23,11 @@ import assertk.assertions.doesNotContain
 import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
+import assertk.assertions.isNotNull
+import assertk.assertions.message
 import assertk.assertions.prop
 import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
@@ -70,6 +73,25 @@ class WireRunTest {
       .contains("public final class Blue extends Message")
     assertThat(fs.readUtf8("generated/java/squareup/colors/Red.java"))
       .contains("public final class Red extends Message")
+  }
+
+  @Test
+  fun javaPackageOptionCannotEscapeOutDirectory() {
+    writeEscapingJavaPackageProto()
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      targets = listOf(JavaTarget(outDirectory = "generated/java")),
+    )
+
+    assertFailure { wireRun.execute(fs, logger) }
+      .isInstanceOf<IllegalArgumentException>()
+      .message()
+      .isNotNull()
+      .contains("Refusing to write a generated file outside the output directory")
+
+    // Nothing was written outside the configured output directory.
+    assertThat(fs.exists("/tmp/wire-escape/EscapeMe.java".toPath())).isFalse()
   }
 
   @Test
@@ -1750,6 +1772,20 @@ class WireRunTest {
           |message Blue {
           |  optional string circle = 1;
           |  optional squareup.polygons.Triangle triangle = 2;
+          |}
+      """.trimMargin(),
+    )
+  }
+
+  private fun writeEscapingJavaPackageProto() {
+    fs.add(
+      "colors/src/main/proto/squareup/colors/escape.proto",
+      """
+          |syntax = "proto2";
+          |package squareup.colors;
+          |option java_package = "/tmp/wire-escape";
+          |message EscapeMe {
+          |  optional string circle = 1;
           |}
       """.trimMargin(),
     )
