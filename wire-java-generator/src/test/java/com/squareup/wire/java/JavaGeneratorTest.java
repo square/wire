@@ -927,6 +927,10 @@ public final class JavaGeneratorTest {
                     + "  optional google.protobuf.FieldMask mask = 1;\n"
                     + "  repeated google.protobuf.FieldMask masks = 2;\n"
                     + "  map<int32, google.protobuf.FieldMask> masks_by_id = 3;\n"
+                    + "  oneof choice {\n"
+                    + "    google.protobuf.FieldMask oneof_mask = 4;\n"
+                    + "    string name = 5;\n"
+                    + "  }\n"
                     + "}\n")
             .build();
     String code = new JavaWithProfilesGenerator(schema).generateJava("common.proto.Message");
@@ -938,6 +942,9 @@ public final class JavaGeneratorTest {
     assertThat(code).contains("ProtoAdapter.FIELD_MASK.asRepeated()");
     assertThat(code)
         .contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)");
+    assertThat(code)
+        .contains(
+            "builder.oneof_mask(Internal.decodeMessageOrMerge(ProtoAdapter.FIELD_MASK, reader, builder.oneof_mask))");
   }
 
   @Test

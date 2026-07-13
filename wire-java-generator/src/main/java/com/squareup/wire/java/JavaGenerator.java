@@ -1347,7 +1347,7 @@ public final class JavaGenerator {
       if (isEnum(field.getType()) && !field.getType().equals(ProtoType.STRUCT_NULL)) {
         result.beginControlFlow("case $L:", fieldTag);
         result.beginControlFlow("try");
-        result.addCode(decodeAndAssign(field, nameAllocator, useBuilder));
+        result.addCode(decodeAndAssign(type, field, nameAllocator, useBuilder));
         result.addCode(";\n");
         if (useBuilder) {
           result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
@@ -1362,7 +1362,9 @@ public final class JavaGenerator {
         result.endControlFlow(); // case
       } else {
         result.addCode(
-            "case $L: $L; break;\n", fieldTag, decodeAndAssign(field, nameAllocator, useBuilder));
+            "case $L: $L; break;\n",
+            fieldTag,
+            decodeAndAssign(type, field, nameAllocator, useBuilder));
       }
     }
 
@@ -1398,46 +1400,81 @@ public final class JavaGenerator {
     return result.build();
   }
 
-  private CodeBlock decodeAndAssign(Field field, NameAllocator nameAllocator, boolean useBuilder) {
+  private CodeBlock decodeAndAssign(
+      MessageType message, Field field, NameAllocator nameAllocator, boolean useBuilder) {
     String fieldName = nameAllocator.get(field);
     CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field, nameAllocator));
+    CodeBlock assignment;
     if (field.isPacked()) {
       CodeBlock adapter = singleAdapterFor(field, nameAllocator);
-      return useBuilder
-          ? CodeBlock.of("$L.tryDecode(reader, builder.$L)", adapter, fieldName)
-          : CodeBlock.of("$L.tryDecode(reader, $L)", adapter, fieldName);
+      assignment =
+          useBuilder
+              ? CodeBlock.of("$L.tryDecode(reader, builder.$L)", adapter, fieldName)
+              : CodeBlock.of("$L.tryDecode(reader, $L)", adapter, fieldName);
     } else if (field.isRepeated()) {
-      return useBuilder
-          ? field.getType().equals(ProtoType.STRUCT_NULL)
-              ? CodeBlock.of("builder.$L.add(($T) $L)", fieldName, Void.class, decode)
-              : CodeBlock.of("builder.$L.add($L)", fieldName, decode)
-          : CodeBlock.of("$L.add($L)", fieldName, decode);
+      assignment =
+          useBuilder
+              ? field.getType().equals(ProtoType.STRUCT_NULL)
+                  ? CodeBlock.of("builder.$L.add(($T) $L)", fieldName, Void.class, decode)
+                  : CodeBlock.of("builder.$L.add($L)", fieldName, decode)
+              : CodeBlock.of("$L.add($L)", fieldName, decode);
     } else if (field.getType().isMap()) {
-      return useBuilder
-          ? CodeBlock.of("builder.$L.putAll($L)", fieldName, decode)
-          : CodeBlock.of("$L.putAll($L)", fieldName, decode);
-    } else if (schema.getType(field.getType()) instanceof MessageType && !field.isOneOf()) {
+      assignment =
+          useBuilder
+              ? CodeBlock.of("builder.$L.putAll($L)", fieldName, decode)
+              : CodeBlock.of("$L.putAll($L)", fieldName, decode);
+    } else if (schema.getType(field.getType()) instanceof MessageType) {
       CodeBlock adapter = singleAdapterFor(field, nameAllocator);
-      return useBuilder
-          ? CodeBlock.of(
-              "builder.$L($T.decodeMessageOrMerge($L, reader, builder.$L))",
-              fieldName,
-              Internal.class,
-              adapter,
-              fieldName)
-          : CodeBlock.of(
-              "$L = $T.decodeMessageOrMerge($L, reader, $L)",
-              fieldName,
-              Internal.class,
-              adapter,
-              fieldName);
+      assignment =
+          useBuilder
+              ? CodeBlock.of(
+                  "builder.$L($T.decodeMessageOrMerge($L, reader, builder.$L))",
+                  fieldName,
+                  Internal.class,
+                  adapter,
+                  fieldName)
+              : CodeBlock.of(
+                  "$L = $T.decodeMessageOrMerge($L, reader, $L)",
+                  fieldName,
+                  Internal.class,
+                  adapter,
+                  fieldName);
     } else {
-      return useBuilder
-          ? field.getType().equals(ProtoType.STRUCT_NULL)
-              ? CodeBlock.of("builder.$L(($T) $L)", fieldName, Void.class, decode)
-              : CodeBlock.of("builder.$L($L)", fieldName, decode)
-          : CodeBlock.of("$L = $L", fieldName, decode);
+      assignment =
+          useBuilder
+              ? field.getType().equals(ProtoType.STRUCT_NULL)
+                  ? CodeBlock.of("builder.$L(($T) $L)", fieldName, Void.class, decode)
+                  : CodeBlock.of("builder.$L($L)", fieldName, decode)
+              : CodeBlock.of("$L = $L", fieldName, decode);
     }
+
+    if (useBuilder || !field.isOneOf()) return assignment;
+
+    OneOf oneOf = null;
+    for (OneOf candidate : message.getOneOfs()) {
+      if (candidate.getFields().contains(field)) {
+        oneOf = candidate;
+        break;
+      }
+    }
+    if (oneOf == null) return assignment;
+
+    CodeBlock.Builder result = CodeBlock.builder();
+    if (schema.getType(field.getType()) instanceof MessageType) {
+      boolean first = true;
+      for (Field other : oneOf.getFields()) {
+        if (other == field) continue;
+        result.add(first ? "if (" : " || ");
+        result.add("$N != null", nameAllocator.get(other));
+        first = false;
+      }
+      if (!first) result.add(") $N = null;\n", fieldName);
+    }
+    result.add("$L;\n", assignment);
+    for (Field other : oneOf.getFields()) {
+      if (other != field) result.add("$N = null;\n", nameAllocator.get(other));
+    }
+    return result.build();
   }
 
   private MethodSpec messageAdapterRedact(

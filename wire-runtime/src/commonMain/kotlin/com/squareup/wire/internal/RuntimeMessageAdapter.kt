@@ -175,8 +175,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
           } else {
             val singleAdapter = field.singleAdapter
             if ((field.isMessage || singleAdapter in MESSAGE_BACKED_BUILT_IN_ADAPTERS) &&
-              !field.label.isRepeated &&
-              !field.label.isOneOf
+              !field.label.isRepeated
             ) {
               @Suppress("UNCHECKED_CAST")
               val adapter = singleAdapter as ProtoAdapter<Any>

@@ -585,6 +585,28 @@ class SwiftGenerator private constructor(
         .addParameter("from", reader, protoReader)
         .throws(true)
         .apply {
+          val localNames = propertyNames.toMutableSet().apply {
+            add(reader)
+            add(token)
+            add(tag)
+          }
+          fun allocateLocalName(suggested: String): String {
+            var result = suggested
+            while (!localNames.add(result)) result = "_$result"
+            return result
+          }
+
+          val messageDataNames = type.declaredFields
+            .filter { it.isMessage && !it.isRepeated && !it.isMap }
+            .associateWith { allocateLocalName("${it.safeName}ProtoData") }
+          val oneOfMessageDataNames = type.oneOfs
+            .flatMap { it.fields }
+            .filter { it.isMessage }
+            .associateWith { allocateLocalName("${it.safeName}ProtoData") }
+          val oneOfTagNames = type.oneOfs
+            .filter { oneOf -> oneOf.fields.any { it.isMessage } }
+            .associateWith { allocateLocalName("${it.name}ProtoTag") }
+
           // Declare locals into which everything is written before promoting to members.
           type.declaredFields.forEach { field ->
             val localType = when (type.syntax) {
@@ -611,9 +633,20 @@ class SwiftGenerator private constructor(
 
             addStatement("var %N: %T = %L", field.safeName, localType, initializer)
           }
+          messageDataNames.values.forEach { dataName ->
+            addStatement("var %N: %T = nil", dataName, FOUNDATION_DATA.makeOptional())
+          }
           type.oneOfs.forEach { oneOf ->
             val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
             addStatement("var %N: %T = nil", oneOf.name, enumName.makeOptional())
+            oneOfTagNames[oneOf]?.let { tagName ->
+              addStatement("var %N: %T = nil", tagName, UINT32.makeOptional())
+            }
+            oneOf.fields.forEach { field ->
+              oneOfMessageDataNames[field]?.let { dataName ->
+                addStatement("var %N: %T = nil", dataName, FOUNDATION_DATA.makeOptional())
+              }
+            }
           }
           if (type.declaredFieldsAndOneOfFields.isNotEmpty()) {
             addStatement("")
@@ -636,11 +669,7 @@ class SwiftGenerator private constructor(
               if (field.isRepeated) {
                 decoder.add("try $reader.decode(into: &%N", field.safeName)
               } else if (field.isMessage) {
-                // Duplicated occurrences of a singular message field are merged per the protobuf
-                // specification, matching generated Kotlin and Java.
-                val typeName = field.typeName.makeNonOptional()
-
-                decoder.add("%N = try $reader.decode(%T.self, mergingInto: %N", field.safeName, typeName, field.safeName)
+                decoder.add("try $reader.decodeMessage(into: &%N", messageDataNames.getValue(field))
               } else {
                 val typeName = field.typeName.makeNonOptional()
 
@@ -656,24 +685,58 @@ class SwiftGenerator private constructor(
           type.oneOfs.forEach { oneOf ->
             oneOf.fields.forEach { field ->
               when {
-                // ProtoReader.decode() return optional for enums. Handle that specially.
-                field.isEnum -> {
+                field.isMessage -> {
+                  val tagName = oneOfTagNames.getValue(oneOf)
+                  val dataName = oneOfMessageDataNames.getValue(field)
                   addStatement(
-                    "case %1L: %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
+                    "case %1L: if %2N != %1L { %3N = nil }; %2N = %1L; try $reader.decodeMessage(into: &%3N)",
                     field.tag,
-                    oneOf.name,
-                    field.safeName,
-                    field.typeName.makeNonOptional(),
+                    tagName,
+                    dataName,
                   )
                 }
+                // ProtoReader.decode() return optional for enums. Handle that specially.
+                field.isEnum -> {
+                  val tagName = oneOfTagNames[oneOf]
+                  if (tagName != null) {
+                    addStatement(
+                      "case %1L: %5N = %1L; %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
+                      field.tag,
+                      oneOf.name,
+                      field.safeName,
+                      field.typeName.makeNonOptional(),
+                      tagName,
+                    )
+                  } else {
+                    addStatement(
+                      "case %1L: %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
+                      field.tag,
+                      oneOf.name,
+                      field.safeName,
+                      field.typeName.makeNonOptional(),
+                    )
+                  }
+                }
                 else -> {
-                  addStatement(
-                    "case %1L: %2N = .%3N(try $reader.decode(%4T.self))",
-                    field.tag,
-                    oneOf.name,
-                    field.safeName,
-                    field.typeName.makeNonOptional(),
-                  )
+                  val tagName = oneOfTagNames[oneOf]
+                  if (tagName != null) {
+                    addStatement(
+                      "case %1L: %5N = %1L; %2N = .%3N(try $reader.decode(%4T.self))",
+                      field.tag,
+                      oneOf.name,
+                      field.safeName,
+                      field.typeName.makeNonOptional(),
+                      tagName,
+                    )
+                  } else {
+                    addStatement(
+                      "case %1L: %2N = .%3N(try $reader.decode(%4T.self))",
+                      field.tag,
+                      oneOf.name,
+                      field.safeName,
+                      field.typeName.makeNonOptional(),
+                    )
+                  }
                 }
               }
             }
@@ -681,6 +744,32 @@ class SwiftGenerator private constructor(
           addStatement("default: try $reader.readUnknownField(tag: $tag)")
           endControlFlow("switch")
           endControlFlow("while")
+
+          messageDataNames.forEach { (field, dataName) ->
+            beginControlFlow("if", "let %N", dataName)
+            addStatement(
+              "%N = try $reader.decodeMergedMessage(%T.self, from: %N)",
+              field.safeName,
+              field.typeName.makeNonOptional(),
+              dataName,
+            )
+            endControlFlow("if")
+          }
+          type.oneOfs.forEach { oneOf ->
+            val tagName = oneOfTagNames[oneOf] ?: return@forEach
+            oneOf.fields.forEach { field ->
+              val dataName = oneOfMessageDataNames[field] ?: return@forEach
+              beginControlFlow("if", "%N == %L, let %N", tagName, field.tag, dataName)
+              addStatement(
+                "%N = .%N(try $reader.decodeMergedMessage(%T.self, from: %N))",
+                oneOf.name,
+                field.safeName,
+                field.typeName.makeNonOptional(),
+                dataName,
+              )
+              endControlFlow("if")
+            }
+          }
           addStatement("self.unknownFields = try $reader.endMessage(token: $token)")
 
           // Check required and bind members.

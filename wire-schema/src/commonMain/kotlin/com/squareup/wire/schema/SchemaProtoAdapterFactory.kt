@@ -269,6 +269,7 @@ internal class SchemaProtoAdapterFactory(
     }
 
     override fun set(builder: MutableMap<String, Any>, value: Any?) {
+      oneOf?.fields?.forEach { builder.remove(it.name) }
       builder[field.name] = value!!
     }
 

@@ -65,6 +65,7 @@ public final class ProtoReader {
 
     private let buffer: ReadBuffer
     private let enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy
+    private let recursionDepthOffset: Int
 
     /**
      A stack of frames where each frame represents a level of message nesting.
@@ -93,8 +94,13 @@ public final class ProtoReader {
 
     // MARK: - Initialization
 
-    init(buffer: ReadBuffer, enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError) {
+    init(
+        buffer: ReadBuffer,
+        enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError,
+        recursionDepthOffset: Int = 0
+    ) {
         self.enumDecodingStrategy = enumDecodingStrategy
+        self.recursionDepthOffset = recursionDepthOffset
         self.buffer = buffer
         self.state = .lengthDelimited(length: buffer.count)
 
@@ -127,7 +133,7 @@ public final class ProtoReader {
             return -1
         }
 
-        if (messageStackIndex + 1) >= ProtoReader.recursionLimit {
+        if recursionDepthOffset + messageStackIndex + 1 >= ProtoReader.recursionLimit {
             throw ProtoDecoder.Error.recursionLimitExceeded
         }
 
@@ -338,21 +344,39 @@ public final class ProtoReader {
         return try T(from: self)
     }
 
+    /** Append the encoded payload of a singular message occurrence for deferred merging. */
+    public func decodeMessage(into data: inout Data?) throws {
+        let occurrence = try decode(Data.self)
+        if data == nil {
+            data = occurrence
+        } else {
+            data!.append(occurrence)
+        }
+    }
+
+    /**
+     Decode message occurrences accumulated by `decodeMessage(into:)` while preserving the current
+     nesting depth for recursion-limit enforcement.
+     */
+    public func decodeMergedMessage<T: ProtoCodable>(_ type: T.Type, from data: Data) throws -> T {
+        return try ProtoDecoder(enumDecodingStrategy: enumDecodingStrategy).decode(
+            type,
+            from: data,
+            recursionDepthOffset: recursionDepthOffset + messageStackIndex + 1
+        )
+    }
+
     /**
      Decode a message field, merging it with an existing value if one is present.
 
-     Per the protobuf specification, when a singular embedded-message field appears multiple
-     times in the encoded input the occurrences are merged: singular scalar fields take the
-     value from the last occurrence, singular embedded-message fields are merged recursively,
-     and repeated fields are concatenated.
+     Generated code uses `decodeMessage(into:)` and `decodeMergedMessage(_:from:)` to accumulate
+     all occurrences before decoding. This method remains available for source compatibility with
+     previously generated code.
      */
     public func decode<T: ProtoCodable>(_ type: T.Type, mergingInto existing: T?) throws -> T {
-        guard let existing = existing else {
-            return try decode(type)
-        }
-        var data = try ProtoEncoder().encode(existing)
+        var data = try existing.map { try ProtoEncoder().encode($0) } ?? Data()
         data.append(try decode(Data.self))
-        return try ProtoDecoder(enumDecodingStrategy: enumDecodingStrategy).decode(type, from: data)
+        return try decodeMergedMessage(type, from: data)
     }
 
     internal func decode<T: ProtoDecodable>(_ type: T.Type, withTag tag: UInt32) throws -> T {

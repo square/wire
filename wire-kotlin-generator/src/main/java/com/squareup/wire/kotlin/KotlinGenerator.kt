@@ -2062,11 +2062,12 @@ class KotlinGenerator private constructor(
         fields.forEach { field ->
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
+          val flatOneOf = message.flatOneOfs().firstOrNull { field in it.fields }
 
           when {
             field.type!!.isEnum -> {
               beginControlFlow("%L -> try", field.tag)
-              addStatement("%L", decodeAndAssign(protoReaderType, field, fieldName, adapterName))
+              add("%L\n", decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, nameAllocator))
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
               addStatement(
                 "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())",
@@ -2077,14 +2078,14 @@ class KotlinGenerator private constructor(
             }
             field.isPacked && field.isScalar -> {
               beginControlFlow("%L ->", field.tag)
-              add(decodeAndAssign(protoReaderType, field, fieldName, adapterName))
+              add(decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, nameAllocator))
               endControlFlow()
             }
             else -> {
-              addStatement(
-                "%L -> %L",
+              add(
+                "%L -> %L\n",
                 field.tag,
-                decodeAndAssign(protoReaderType, field, fieldName, adapterName),
+                decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, nameAllocator),
               )
             }
           }
@@ -2167,6 +2168,8 @@ class KotlinGenerator private constructor(
     field: Field,
     fieldName: String,
     adapterName: CodeBlock,
+    oneOf: OneOf?,
+    nameAllocator: NameAllocator,
   ): CodeBlock {
     val decode = if (field.useArray) {
       CodeBlock.of(
@@ -2181,7 +2184,7 @@ class KotlinGenerator private constructor(
       )
     }
 
-    return when {
+    val assignment = when {
       field.useArray -> {
         buildCodeBlock {
           beginControlFlow("if (%N == null)", fieldName)
@@ -2217,7 +2220,7 @@ class KotlinGenerator private constructor(
 
       field.isRepeated -> CodeBlock.of("%N.add(%L)", fieldName, decode)
       field.isMap -> CodeBlock.of("%N.putAll(%L)", fieldName, decode)
-      field.type!!.isMessage && !field.isOneOf -> {
+      field.type!!.isMessage -> {
         val decodeMessageOrMerge = MemberName("com.squareup.wire.internal", "decodeMessageOrMerge")
         if (buildersOnly) {
           CodeBlock.of("builder.%N(%M(%L, reader, builder.%N))", fieldName, decodeMessageOrMerge, adapterName, fieldName)
@@ -2226,6 +2229,26 @@ class KotlinGenerator private constructor(
         }
       }
       else -> CodeBlock.of(if (buildersOnly) "builder.%N(%L)" else "%N·= %L", fieldName, decode)
+    }
+
+    if (buildersOnly || oneOf == null) return assignment
+
+    val otherFields = oneOf.fields.filter { it != field }
+    return buildCodeBlock {
+      beginControlFlow("run")
+      if (field.type!!.isMessage && otherFields.isNotEmpty()) {
+        beginControlFlow(
+          "if (%L)",
+          otherFields.joinToCode(separator = " || ") { CodeBlock.of("%N != null", nameAllocator[it]) },
+        )
+        addStatement("%N = null", fieldName)
+        endControlFlow()
+      }
+      addStatement("%L", assignment)
+      for (other in otherFields) {
+        addStatement("%N = null", nameAllocator[other])
+      }
+      endControlFlow()
     }
   }
 

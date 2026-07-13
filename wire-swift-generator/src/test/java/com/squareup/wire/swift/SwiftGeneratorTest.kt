@@ -95,10 +95,14 @@ class SwiftGeneratorTest {
     assertThat(code).contains("public var masks: [FieldMask]")
     assertThat(code).contains("public var masks_by_id: [Int32 : FieldMask]")
     assertThat(code).contains("case oneof_mask(FieldMask)")
-    assertThat(code).contains("mask = try protoReader.decode(FieldMask.self, mergingInto: mask)")
+    assertThat(code).contains("case 1: try protoReader.decodeMessage(into: &maskProtoData)")
+    assertThat(code).contains("mask = try protoReader.decodeMergedMessage(FieldMask.self, from: maskProtoData)")
     assertThat(code).contains("try protoReader.decode(into: &masks)")
     assertThat(code).contains("try protoReader.decode(into: &masks_by_id, keyEncoding: .variable)")
-    assertThat(code).contains("case 4: choice = .oneof_mask(try protoReader.decode(FieldMask.self))")
+    assertThat(code).contains("case 4: if choiceProtoTag != 4 { oneof_maskProtoData = nil }")
+    assertThat(code).contains(
+      "choice = .oneof_mask(try protoReader.decodeMergedMessage(FieldMask.self, from: oneof_maskProtoData))",
+    )
     assertThat(code).doesNotContain("@ProtoDefaulted")
   }
 
@@ -128,10 +132,13 @@ class SwiftGeneratorTest {
 
     val code = schema.generateSwift("squareup.protos3.Message")
 
-    assertThat(code).contains("other = try protoReader.decode(Other.self, mergingInto: other)")
-    // Repeated and oneof message fields don't merge.
+    assertThat(code).contains("case 1: try protoReader.decodeMessage(into: &otherProtoData)")
+    assertThat(code).contains("other = try protoReader.decodeMergedMessage(Other.self, from: otherProtoData)")
     assertThat(code).contains("try protoReader.decode(into: &others)")
-    assertThat(code).contains("case 3: choice = .oneof_other(try protoReader.decode(Other.self))")
+    assertThat(code).contains("case 3: if choiceProtoTag != 3 { oneof_otherProtoData = nil }")
+    assertThat(code).contains(
+      "choice = .oneof_other(try protoReader.decodeMergedMessage(Other.self, from: oneof_otherProtoData))",
+    )
   }
 
   private fun Schema.generateSwift(typeName: String): String {

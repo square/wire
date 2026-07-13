@@ -21,8 +21,41 @@ package com.squareup.wire
  * Field masks are used to specify a subset of fields on a target message. Each path uses proto
  * field names, separated by dots for nested fields.
  */
-class FieldMask(paths: List<String> = emptyList()) {
-  val paths: List<String> = paths.toList()
+class FieldMask private constructor(
+  private val pathChunks: PathChunks?,
+) {
+  constructor() : this(emptyList())
+
+  constructor(paths: List<String> = emptyList()) : this(
+    paths.takeIf { it.isNotEmpty() }?.let { PathChunks(previous = null, paths = it.toList()) },
+  )
+
+  /**
+   * The paths in this mask. This is flattened lazily so merging encoded occurrences can append
+   * chunks in constant time without repeatedly copying all paths accumulated so far.
+   */
+  val paths: List<String> by lazy {
+    if (pathChunks == null) {
+      emptyList()
+    } else {
+      val chunks = mutableListOf<List<String>>()
+      var chunk: PathChunks? = pathChunks
+      while (chunk != null) {
+        chunks += chunk.paths
+        chunk = chunk.previous
+      }
+      buildList(pathChunks.size) {
+        for (i in chunks.size - 1 downTo 0) {
+          addAll(chunks[i])
+        }
+      }
+    }
+  }
+
+  internal fun append(paths: List<String>): FieldMask {
+    if (paths.isEmpty()) return this
+    return FieldMask(PathChunks(pathChunks, paths, (pathChunks?.size ?: 0) + paths.size))
+  }
 
   fun copy(paths: List<String> = this.paths): FieldMask = FieldMask(paths)
 
@@ -35,3 +68,9 @@ class FieldMask(paths: List<String> = emptyList()) {
 
   override fun toString(): String = "FieldMask{paths=$paths}"
 }
+
+private class PathChunks(
+  val previous: PathChunks?,
+  val paths: List<String>,
+  val size: Int = paths.size,
+)

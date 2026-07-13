@@ -78,12 +78,17 @@ class AnyMessage(
   ) = AnyMessage(typeUrl, value)
 
   companion object {
+    /** Packs a generated [Message] using its built-in adapter. Use this for regular Wire messages. */
     fun pack(message: Message<*, *>): AnyMessage {
       val typeUrl = message.adapter.typeUrl
         ?: error("recompile ${message::class} to use it with AnyMessage")
       return AnyMessage(typeUrl, message.encodeByteString())
     }
 
+    /**
+     * Packs [value] using an explicit [adapter]. Use this for types that aren't [Message] subtypes,
+     * such as well-known types like `FieldMask` with [ProtoAdapter.FIELD_MASK].
+     */
     fun <T> pack(adapter: ProtoAdapter<T>, value: T): AnyMessage {
       val typeUrl = adapter.typeUrl
         ?: error("cannot pack ${adapter.type ?: "value"}: the adapter has no type URL")
