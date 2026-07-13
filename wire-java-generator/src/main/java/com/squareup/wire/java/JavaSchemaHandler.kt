@@ -100,6 +100,7 @@ class JavaSchemaHandler(
     val filePath = outDirectory /
       javaFile.packageName().replace(".", "/") /
       "${javaTypeName.simpleName()}.java"
+    checkPathInOutDirectory(filePath, outDirectory)
 
     context.logger.artifactHandled(
       outDirectory,

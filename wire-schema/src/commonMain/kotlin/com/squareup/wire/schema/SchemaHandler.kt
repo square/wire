@@ -194,6 +194,32 @@ abstract class SchemaHandler {
       }
   }
 
+  /**
+   * Confirms that [filePath] resolves to a location inside [outDirectory], throwing otherwise.
+   *
+   * Some segments of a generated file's path are derived from proto-controlled input, such as the
+   * `java_package`, `kotlin_package`, and `wire_package` options. Without this check, a value that
+   * is an absolute path or that traverses upward with `..` would redirect the generated file
+   * outside the configured [outDirectory] and could overwrite arbitrary files on the build host.
+   * This is possible because [okio.Path.div] replaces the left-hand side entirely when the
+   * right-hand side is absolute, and normalizes `..` upward otherwise.
+   */
+  protected fun checkPathInOutDirectory(filePath: Path, outDirectory: Path) {
+    val normalizedOut = outDirectory.normalized()
+    val normalizedPath = filePath.normalized()
+    val escapes = normalizedPath.root != normalizedOut.root ||
+      normalizedPath.volumeLetter != normalizedOut.volumeLetter ||
+      normalizedPath.segments.size <= normalizedOut.segments.size ||
+      normalizedPath.segments.subList(0, normalizedOut.segments.size) != normalizedOut.segments
+    require(!escapes) {
+      "Refusing to write a generated file outside the output directory. A package option " +
+        "(such as java_package, kotlin_package, or wire_package) resolved to an absolute path or " +
+        "one that traverses outside the output directory.\n" +
+        "  output directory: $normalizedOut\n" +
+        "  resolved path:    $normalizedPath"
+    }
+  }
+
   /** Implementations of this interface must have a no-arguments public constructor. */
   @JvmDefaultWithCompatibility
   interface Factory : Serializable {

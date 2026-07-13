@@ -217,6 +217,7 @@ class KotlinSchemaHandler(
     val filePath = modulePath /
       kotlinFile.packageName.replace(".", "/") /
       "${kotlinFile.name}.kt"
+    checkPathInOutDirectory(filePath, modulePath)
 
     context.logger.artifactHandled(
       modulePath,
