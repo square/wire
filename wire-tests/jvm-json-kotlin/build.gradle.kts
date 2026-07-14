@@ -37,6 +37,7 @@ wire {
       "all_structs.proto",
       "all_wrappers.proto",
       "camel_case.proto",
+      "contains_field_mask.proto",
       "map_types.proto",
       "pizza.proto",
     )

@@ -103,6 +103,7 @@ abstract class JsonIntegration<F, A> {
       ProtoAdapter.BYTES_VALUE,
       -> return ByteStringJsonFormatter
       ProtoAdapter.DURATION -> return DurationJsonFormatter
+      ProtoAdapter.FIELD_MASK -> return FieldMaskJsonFormatter
       ProtoAdapter.INSTANT -> return InstantJsonFormatter
       is EnumAdapter<*> -> return EnumJsonFormatter(protoAdapter)
     }

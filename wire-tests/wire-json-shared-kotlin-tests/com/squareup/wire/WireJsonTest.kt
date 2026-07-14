@@ -45,6 +45,7 @@ import squareup.proto3.AllWrappers
 import squareup.proto3.BuyOneGetOnePromotion
 import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
+import squareup.proto3.ContainsFieldMask
 import squareup.proto3.FreeDrinkPromotion
 import squareup.proto3.FreeGarlicBreadPromotion
 import squareup.proto3.MapTypes
@@ -264,6 +265,33 @@ class WireJsonTest {
     assertJsonEquals(
       jsonLibrary.toJson(parsed, PizzaDelivery::class.java),
       jsonLibrary.toJson(value, PizzaDelivery::class.java),
+    )
+  }
+
+  @Test fun fieldMask() {
+    val value = ContainsFieldMask.Builder()
+      .mask(FieldMask(listOf("user.display_name", "photo", "foo_bar.baz_qux")))
+      .masks(
+        listOf(
+          FieldMask(listOf("display_name")),
+          FieldMask(listOf("updated_at.seconds")),
+        ),
+      )
+      .build()
+    val json = """
+      |{
+      |  "mask": "user.displayName,photo,fooBar.bazQux",
+      |  "masks": ["displayName", "updatedAt.seconds"]
+      |}
+    """.trimMargin()
+
+    assertJsonEquals(json, jsonLibrary.toJson(value, ContainsFieldMask::class.java))
+
+    val parsed = jsonLibrary.fromJson(json, ContainsFieldMask::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertJsonEquals(
+      jsonLibrary.toJson(parsed, ContainsFieldMask::class.java),
+      jsonLibrary.toJson(value, ContainsFieldMask::class.java),
     )
   }
 

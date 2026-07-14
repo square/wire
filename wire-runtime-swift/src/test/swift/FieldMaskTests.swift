@@ -54,6 +54,19 @@ final class FieldMaskTests: XCTestCase {
         XCTAssertEqual(String(data: encoded, encoding: .utf8), #""user.displayName,photo""#)
     }
 
+    func testJSONSkipsEmptyPaths() throws {
+        let fieldMask = FieldMask(paths: ["", "photo", ""])
+
+        let encoded = try JSONEncoder().encode(fieldMask)
+        let decoded = try JSONDecoder().decode(
+            FieldMask.self,
+            from: Foundation.Data("\",photo,\"".utf8)
+        )
+
+        XCTAssertEqual(String(data: encoded, encoding: .utf8), #""photo""#)
+        XCTAssertEqual(decoded, FieldMask(paths: ["photo"]))
+    }
+
     func testGeneratedMessageWithFieldMask() throws {
         let message = MessageContainingFieldMask {
             $0.mask = FieldMask(paths: ["user.display_name", "photo"])
