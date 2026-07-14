@@ -21,6 +21,7 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.Duration
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.FieldMask
 import com.squareup.wire.Instant
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
@@ -333,6 +334,10 @@ fun encodeArray_double(array: DoubleArray, writer: ReverseProtoWriter, tag: Int)
  */
 fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader, existing: E?): E {
   if (existing == null) return adapter.decode(reader)
+  if (adapter === ProtoAdapter.FIELD_MASK) {
+    @Suppress("UNCHECKED_CAST")
+    return (existing as FieldMask).append(ProtoAdapter.FIELD_MASK.decode(reader).paths) as E
+  }
   val bytes = reader.readBytes()
   val buffer = Buffer()
   adapter.encode(buffer, existing)
@@ -342,6 +347,10 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader, exis
 
 fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, existing: E?): E {
   if (existing == null) return adapter.decode(reader)
+  if (adapter === ProtoAdapter.FIELD_MASK) {
+    @Suppress("UNCHECKED_CAST")
+    return (existing as FieldMask).append(ProtoAdapter.FIELD_MASK.decode(reader).paths) as E
+  }
   val bytes = reader.readBytes()
   val buffer = Buffer()
   adapter.encode(buffer, existing)

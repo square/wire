@@ -2373,6 +2373,9 @@ extension AllTypes.Storage : Proto2Codable {
         var array_sfixed64: [Int64] = []
         var array_float: [Float] = []
         var array_double: [Double] = []
+        var opt_nested_messageProtoData: Foundation.Data? = nil
+        var opt_field_maskProtoData: Foundation.Data? = nil
+        var req_nested_messageProtoData: Foundation.Data? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -2393,8 +2396,8 @@ extension AllTypes.Storage : Proto2Codable {
             case 14: opt_string = try protoReader.decode(String.self)
             case 15: opt_bytes = try protoReader.decode(Foundation.Data.self)
             case 16: opt_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
-            case 17: opt_nested_message = try protoReader.decode(AllTypes.NestedMessage.self, mergingInto: opt_nested_message)
-            case 18: opt_field_mask = try protoReader.decode(FieldMask.self, mergingInto: opt_field_mask)
+            case 17: try protoReader.decodeMessage(into: &opt_nested_messageProtoData)
+            case 18: try protoReader.decodeMessage(into: &opt_field_maskProtoData)
             case 101: req_int32 = try protoReader.decode(Int32.self, encoding: .variable)
             case 102: req_uint32 = try protoReader.decode(UInt32.self, encoding: .variable)
             case 103: req_sint32 = try protoReader.decode(Int32.self, encoding: .signed)
@@ -2411,7 +2414,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 114: req_string = try protoReader.decode(String.self)
             case 115: req_bytes = try protoReader.decode(Foundation.Data.self)
             case 116: req_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
-            case 117: req_nested_message = try protoReader.decode(AllTypes.NestedMessage.self, mergingInto: req_nested_message)
+            case 117: try protoReader.decodeMessage(into: &req_nested_messageProtoData)
             case 201: try protoReader.decode(into: &rep_int32, encoding: .variable)
             case 202: try protoReader.decode(into: &rep_uint32, encoding: .variable)
             case 203: try protoReader.decode(into: &rep_sint32, encoding: .signed)
@@ -2479,6 +2482,15 @@ extension AllTypes.Storage : Proto2Codable {
             case 612: try protoReader.decode(into: &array_double)
             default: try protoReader.readUnknownField(tag: tag)
             }
+        }
+        if let opt_nested_messageProtoData {
+            opt_nested_message = try protoReader.decodeMergedMessage(AllTypes.NestedMessage.self, from: opt_nested_messageProtoData)
+        }
+        if let opt_field_maskProtoData {
+            opt_field_mask = try protoReader.decodeMergedMessage(FieldMask.self, from: opt_field_maskProtoData)
+        }
+        if let req_nested_messageProtoData {
+            req_nested_message = try protoReader.decodeMergedMessage(AllTypes.NestedMessage.self, from: req_nested_messageProtoData)
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 

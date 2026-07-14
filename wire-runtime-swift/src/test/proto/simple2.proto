@@ -66,3 +66,12 @@ message SimpleRequired2 {
   repeated string repeated_string = 11;
   map<int32, string> map_int32_string = 12;
 }
+
+message RequiredPair {
+  required string a = 1;
+  required string b = 2;
+}
+
+message ContainsRequiredPair {
+  optional RequiredPair pair = 1;
+}

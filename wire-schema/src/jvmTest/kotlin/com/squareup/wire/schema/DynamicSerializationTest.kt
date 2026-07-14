@@ -113,6 +113,60 @@ class DynamicSerializationTest {
   }
 
   @Test
+  fun singularFieldMaskOccurrencesInSameOneOfMemberAreMerged() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+       |syntax = "proto3";
+       |import "google/protobuf/field_mask.proto";
+       |
+       |message Message {
+       |  oneof choice {
+       |    google.protobuf.FieldMask field_mask_field = 1;
+       |    string name = 2;
+       |  }
+       |}
+       |
+        """.trimMargin(),
+      )
+    }
+
+    val adapter = schema.protoAdapter(typeName = "Message", includeUnknown = true)
+
+    assertThat(adapter.decode("0a030a01610a030a0162".decodeHex()))
+      .isEqualTo(mapOf("field_mask_field" to FieldMask(listOf("a", "b"))))
+    assertThat(adapter.decode("0a030a01611201780a030a0162".decodeHex()))
+      .isEqualTo(mapOf("field_mask_field" to FieldMask(listOf("b"))))
+  }
+
+  @Test
+  fun manySingularFieldMaskOccurrencesAreMerged() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+       |syntax = "proto3";
+       |import "google/protobuf/field_mask.proto";
+       |
+       |message Message {
+       |  google.protobuf.FieldMask field_mask_field = 1;
+       |}
+       |
+        """.trimMargin(),
+      )
+    }
+
+    val adapter = schema.protoAdapter(typeName = "Message", includeUnknown = true)
+    val encoded = buildList {
+      repeat(10_000) { add("0a030a0178") }
+    }.joinToString(separator = "").decodeHex()
+
+    val decoded = adapter.decode(encoded) as Map<*, *>
+    assertThat((decoded["field_mask_field"] as FieldMask).paths.size).isEqualTo(10_000)
+  }
+
+  @Test
   fun singularDurationOccurrencesAreMerged() {
     val schema = buildSchema {
       add(

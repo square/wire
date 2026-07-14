@@ -1516,6 +1516,10 @@ class KotlinGeneratorTest {
         |  optional google.protobuf.FieldMask mask = 1;
         |  repeated google.protobuf.FieldMask masks = 2;
         |  map<int32, google.protobuf.FieldMask> masks_by_id = 3;
+        |  oneof choice {
+        |    google.protobuf.FieldMask oneof_mask = 4;
+        |    string name = 5;
+        |  }
         |}
         """.trimMargin(),
       )
@@ -1532,6 +1536,9 @@ class KotlinGeneratorTest {
     assertThat(code).contains("ProtoAdapter.FIELD_MASK")
     assertThat(code).contains("ProtoAdapter.FIELD_MASK.asRepeated()")
     assertThat(code).contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)")
+    assertThat(code).contains(
+      "oneof_mask = decodeMessageOrMerge(ProtoAdapter.FIELD_MASK, reader, oneof_mask)",
+    )
   }
 
   @Test fun wildCommentsAreEscaped() {

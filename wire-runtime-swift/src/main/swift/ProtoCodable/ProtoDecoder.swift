@@ -133,6 +133,21 @@ public final class ProtoDecoder {
 
     // MARK: - Internal Methods
 
+    /** Decode merged nested-message bytes while retaining the parent reader's recursion depth. */
+    internal func decode<T: ProtoDecodable>(
+        _ type: T.Type,
+        from data: Data,
+        recursionDepthOffset: Int
+    ) throws -> T {
+        try decodeWithReader(
+            from: data,
+            emptyValue: try T(from: .empty),
+            recursionDepthOffset: recursionDepthOffset
+        ) { reader in
+            try reader.decode(type)
+        }
+    }
+
     /** Decode a tagged `ProtoDecodable` field from raw data */
     internal func decode<T: ProtoDecodable>(_ type: T.Type, from data: Data, withTag tag: UInt32) throws -> T {
         try decodeWithReader(from: data, emptyValue: nil) { reader in
@@ -257,6 +272,7 @@ public final class ProtoDecoder {
     private func decodeWithReader<T>(
         from data: Data,
         emptyValue: @autoclosure () throws -> T?,
+        recursionDepthOffset: Int = 0,
         decoder: (ProtoReader) throws -> T
     ) throws -> T {
         var value: T?
@@ -271,7 +287,11 @@ public final class ProtoDecoder {
                 storage: baseAddress.bindMemory(to: UInt8.self, capacity: buffer.count),
                 count: buffer.count
             )
-            let reader = ProtoReader(buffer: readBuffer, enumDecodingStrategy: enumDecodingStrategy)
+            let reader = ProtoReader(
+                buffer: readBuffer,
+                enumDecodingStrategy: enumDecodingStrategy,
+                recursionDepthOffset: recursionDepthOffset
+            )
             value = try decoder(reader)
         }
         guard let value else {

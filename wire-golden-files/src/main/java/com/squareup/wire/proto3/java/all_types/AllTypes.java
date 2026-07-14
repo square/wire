@@ -3002,13 +3002,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 525: builder.map_int32_timestamp.putAll(map_int32_timestampAdapter().decode(reader)); break;
           case 601: builder.oneof_string(ProtoAdapter.STRING.decode(reader)); break;
           case 602: builder.oneof_int32(ProtoAdapter.INT32.decode(reader)); break;
-          case 603: builder.oneof_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
-          case 618: builder.oneof_any(AnyMessage.ADAPTER.decode(reader)); break;
-          case 619: builder.oneof_duration(ProtoAdapter.DURATION.decode(reader)); break;
-          case 620: builder.oneof_struct(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
-          case 621: builder.oneof_list_value(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
-          case 624: builder.oneof_empty(ProtoAdapter.EMPTY.decode(reader)); break;
-          case 625: builder.oneof_timestamp(ProtoAdapter.INSTANT.decode(reader)); break;
+          case 603: builder.oneof_nested_message(Internal.decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.oneof_nested_message)); break;
+          case 618: builder.oneof_any(Internal.decodeMessageOrMerge(AnyMessage.ADAPTER, reader, builder.oneof_any)); break;
+          case 619: builder.oneof_duration(Internal.decodeMessageOrMerge(ProtoAdapter.DURATION, reader, builder.oneof_duration)); break;
+          case 620: builder.oneof_struct(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_MAP, reader, builder.oneof_struct)); break;
+          case 621: builder.oneof_list_value(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_LIST, reader, builder.oneof_list_value)); break;
+          case 624: builder.oneof_empty(Internal.decodeMessageOrMerge(ProtoAdapter.EMPTY, reader, builder.oneof_empty)); break;
+          case 625: builder.oneof_timestamp(Internal.decodeMessageOrMerge(ProtoAdapter.INSTANT, reader, builder.oneof_timestamp)); break;
           default: {
             reader.readUnknownField(tag);
           }

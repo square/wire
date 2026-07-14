@@ -22,4 +22,12 @@ message MessageContainingFieldMask {
   google.protobuf.FieldMask mask = 1;
   repeated google.protobuf.FieldMask masks = 2;
   map<int32, google.protobuf.FieldMask> masks_by_id = 3;
+  oneof choice {
+    google.protobuf.FieldMask oneof_mask = 4;
+    string name = 5;
+  }
+}
+
+message RecursiveMessage {
+  RecursiveMessage child = 1;
 }

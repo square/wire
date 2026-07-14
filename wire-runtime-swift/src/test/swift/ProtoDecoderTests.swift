@@ -47,6 +47,26 @@ final class ProtoDecoderTests: XCTestCase {
         XCTAssertEqual(decoded.nested?.partially_redacted?.name, "kept")
     }
 
+    func testRequiredFieldsMayBeSplitAcrossDuplicatedMessageOccurrences() throws {
+        // The first RequiredPair occurrence supplies `a`; the second supplies `b`.
+        let data = Foundation.Data(hexEncoded: "0a030a01610a03120162")!
+
+        let decoded = try ProtoDecoder().decode(ContainsRequiredPair.self, from: data)
+
+        XCTAssertEqual(decoded.pair?.a, "a")
+        XCTAssertEqual(decoded.pair?.b, "b")
+    }
+
+    func testDuplicatedMessagesCannotResetRecursionLimit() throws {
+        let data = duplicatedNestedMessage(depth: 100)
+
+        XCTAssertThrowsError(try ProtoDecoder().decode(RecursiveMessage.self, from: data)) { error in
+            guard case ProtoDecoder.Error.recursionLimitExceeded = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
+    }
+
     func testDecodeEmptySizeDelimitedData() throws {
         let decoder = ProtoDecoder()
         let object = try decoder.decodeSizeDelimited(SimpleOptional2.self, from: Foundation.Data())
@@ -95,5 +115,25 @@ final class ProtoDecoderTests: XCTestCase {
 
         XCTAssertEqual(object1, SimpleOptional2())
         XCTAssertEqual(object2, SimpleOptional2())
+    }
+
+    private func duplicatedNestedMessage(depth: Int) -> Foundation.Data {
+        guard depth > 0 else { return Foundation.Data() }
+
+        let nested = duplicatedNestedMessage(depth: depth - 1)
+        var result = Foundation.Data([0x0a, 0x00]) // First child occurrence is empty.
+        result.append(0x0a) // Second child occurrence contains the next level.
+        appendVarint(UInt64(nested.count), to: &result)
+        result.append(nested)
+        return result
+    }
+
+    private func appendVarint(_ value: UInt64, to data: inout Foundation.Data) {
+        var value = value
+        while value >= 0x80 {
+            data.append(UInt8(truncatingIfNeeded: value) | 0x80)
+            value >>= 7
+        }
+        data.append(UInt8(value))
     }
 }

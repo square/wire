@@ -101,4 +101,26 @@ final class FieldMaskTests: XCTestCase {
 
         XCTAssertEqual(decoded.mask, FieldMask(paths: ["a", "b"]))
     }
+
+    func testGeneratedMessageMergesDuplicateFieldMaskInSameOneofMember() throws {
+        let data = Foundation.Data(hexEncoded: "22030a016122030a0162")!
+
+        let decoded = try ProtoDecoder().decode(MessageContainingFieldMask.self, from: data)
+
+        guard case let .oneof_mask(mask) = decoded.choice else {
+            return XCTFail("Expected oneof_mask, got \(String(describing: decoded.choice))")
+        }
+        XCTAssertEqual(mask, FieldMask(paths: ["a", "b"]))
+    }
+
+    func testGeneratedMessageClearsOneofMergeWhenMemberChanges() throws {
+        let data = Foundation.Data(hexEncoded: "22030a01612a017822030a0162")!
+
+        let decoded = try ProtoDecoder().decode(MessageContainingFieldMask.self, from: data)
+
+        guard case let .oneof_mask(mask) = decoded.choice else {
+            return XCTFail("Expected oneof_mask, got \(String(describing: decoded.choice))")
+        }
+        XCTAssertEqual(mask, FieldMask(paths: ["b"]))
+    }
 }
