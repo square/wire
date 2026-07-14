@@ -1514,13 +1514,24 @@ class KotlinGeneratorTest {
         |import "google/protobuf/field_mask.proto";
         |message Message {
         |  optional google.protobuf.FieldMask mask = 1;
+        |  repeated google.protobuf.FieldMask masks = 2;
+        |  map<int32, google.protobuf.FieldMask> masks_by_id = 3;
         |}
         """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
     assertThat(code).contains("import com.squareup.wire.FieldMask")
+    assertThat(code).contains("public val mask: FieldMask? = null")
+    assertThat(code).contains("masks: List<FieldMask> = emptyList()")
+    assertThat(code).contains("masks_by_id: Map<Int, FieldMask> = emptyMap()")
+    assertThat(code).contains("public val masks: List<FieldMask> = immutableCopyOf(\"masks\", masks)")
+    assertThat(code).contains(
+      "public val masks_by_id: Map<Int, FieldMask> = immutableCopyOf(\"masks_by_id\", masks_by_id)",
+    )
     assertThat(code).contains("ProtoAdapter.FIELD_MASK")
+    assertThat(code).contains("ProtoAdapter.FIELD_MASK.asRepeated()")
+    assertThat(code).contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)")
   }
 
   @Test fun wildCommentsAreEscaped() {
