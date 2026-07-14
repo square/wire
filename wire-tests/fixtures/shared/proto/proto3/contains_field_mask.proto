@@ -18,8 +18,10 @@ syntax = "proto3";
 package squareup.proto3;
 
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/any.proto";
 
 message ContainsFieldMask {
   google.protobuf.FieldMask mask = 1;
   repeated google.protobuf.FieldMask masks = 2;
+  google.protobuf.Any any_mask = 3;
 }

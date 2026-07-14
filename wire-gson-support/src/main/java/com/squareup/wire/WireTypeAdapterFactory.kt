@@ -20,6 +20,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.wire.internal.EnumJsonFormatter
+import com.squareup.wire.internal.FieldMaskJsonFormatter
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 
 /**
@@ -82,6 +83,7 @@ class WireTypeAdapterFactory @JvmOverloads constructor(
 
     return when {
       rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
+      rawType == FieldMask::class.java -> GsonJsonIntegration.formatterAdapter(FieldMaskJsonFormatter) as TypeAdapter<T>
       Message::class.java.isAssignableFrom(rawType) -> {
         val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(
           messageType = rawType as Class<Nothing>,

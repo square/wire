@@ -41,6 +41,15 @@ internal class AnyMessageJsonAdapter(
     val protoAdapter = typeUrlToAdapter[value.typeUrl]
       ?: throw JsonDataException("Cannot find type for url: ${value.typeUrl} in ${writer.path}")
 
+    if (protoAdapter == ProtoAdapter.FIELD_MASK) {
+      @Suppress("UNCHECKED_CAST")
+      val delegate = moshi.adapter(FieldMask::class.java) as JsonAdapter<FieldMask>
+      writer.name("value")
+      delegate.toJson(writer, value.unpack(ProtoAdapter.FIELD_MASK))
+      writer.endObject()
+      return
+    }
+
     @Suppress("UNCHECKED_CAST")
     val delegate = moshi.adapter(protoAdapter.type!!.java) as JsonAdapter<Message<*, *>>
 
@@ -62,6 +71,24 @@ internal class AnyMessageJsonAdapter(
 
     val protoAdapter = typeUrlToAdapter[typeUrl]
       ?: throw JsonDataException("Cannot resolve type: $typeUrl in ${reader.path}")
+
+    if (protoAdapter == ProtoAdapter.FIELD_MASK) {
+      @Suppress("UNCHECKED_CAST")
+      val delegate = moshi.adapter(FieldMask::class.java) as JsonAdapter<FieldMask>
+      var fieldMask = FieldMask()
+
+      reader.beginObject()
+      while (reader.hasNext()) {
+        when (reader.nextName()) {
+          "@type" -> reader.skipValue()
+          "value" -> fieldMask = delegate.fromJson(reader) ?: FieldMask()
+          else -> reader.skipValue()
+        }
+      }
+      reader.endObject()
+
+      return AnyMessage(typeUrl, ProtoAdapter.FIELD_MASK.encodeByteString(fieldMask))
+    }
 
     @Suppress("UNCHECKED_CAST")
     val delegate = moshi.adapter(protoAdapter.type!!.java) as JsonAdapter<Message<*, *>>
