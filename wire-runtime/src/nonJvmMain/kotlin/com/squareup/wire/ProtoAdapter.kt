@@ -182,6 +182,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual val DURATION: ProtoAdapter<Duration> = commonDuration()
     actual val INSTANT: ProtoAdapter<Instant> = commonInstant()
     actual val EMPTY: ProtoAdapter<Unit> = commonEmpty()
+    actual val FIELD_MASK: ProtoAdapter<FieldMask> = commonFieldMask()
     actual val STRUCT_MAP: ProtoAdapter<Map<String, *>?> = commonStructMap()
     actual val STRUCT_LIST: ProtoAdapter<List<*>?> = commonStructList()
     actual val STRUCT_NULL: ProtoAdapter<Nothing?> = commonStructNull()

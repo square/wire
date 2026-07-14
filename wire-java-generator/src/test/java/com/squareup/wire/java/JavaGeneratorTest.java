@@ -915,6 +915,24 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void usesFieldMask() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("a.proto"),
+                ""
+                    + "package common.proto;\n"
+                    + "import \"google/protobuf/field_mask.proto\";\n"
+                    + "message Message {\n"
+                    + "  optional google.protobuf.FieldMask mask = 1;\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("common.proto.Message");
+    assertThat(code).contains("import com.squareup.wire.FieldMask;");
+    assertThat(code).contains("ProtoAdapter.FIELD_MASK");
+  }
+
+  @Test
   public void fieldHasScalarName() throws Exception {
     Schema schema =
         new SchemaBuilder()

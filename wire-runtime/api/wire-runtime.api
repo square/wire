@@ -164,6 +164,7 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public static final field DOUBLE_VALUE Lcom/squareup/wire/ProtoAdapter;
 	public static final field DURATION Lcom/squareup/wire/ProtoAdapter;
 	public static final field EMPTY Lcom/squareup/wire/ProtoAdapter;
+	public static final field FIELD_MASK Lcom/squareup/wire/ProtoAdapter;
 	public static final field FIXED32 Lcom/squareup/wire/ProtoAdapter;
 	public static final field FIXED32_ARRAY Lcom/squareup/wire/ProtoAdapter;
 	public static final field FIXED64 Lcom/squareup/wire/ProtoAdapter;
