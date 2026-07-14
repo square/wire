@@ -138,6 +138,8 @@ class ProtoType {
 
     @JvmField val EMPTY = ProtoType(false, "google.protobuf.Empty")
 
+    @JvmField val FIELD_MASK = ProtoType(false, "google.protobuf.FieldMask")
+
     @JvmField val STRUCT_MAP = ProtoType(false, "google.protobuf.Struct")
 
     @JvmField val STRUCT_VALUE = ProtoType(false, "google.protobuf.Value")
