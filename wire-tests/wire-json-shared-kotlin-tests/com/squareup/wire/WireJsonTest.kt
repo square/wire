@@ -31,6 +31,7 @@ import com.squareup.wire.proto3.alltypes.AllTypes as AllTypesProto3
 import java.io.File
 import java.util.Collections
 import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 import okio.buffer
 import okio.source
 import org.junit.Assert.fail
@@ -313,6 +314,12 @@ class WireJsonTest {
 
     assertThat(jsonLibrary.toJson(value, FieldMask::class.java)).isEqualTo(json)
     assertThat(jsonLibrary.fromJson(json, FieldMask::class.java)).isEqualTo(value)
+  }
+
+  @Test fun singularFieldMaskOccurrencesAreMerged() {
+    val value = ContainsFieldMask.ADAPTER.decode("0a030a01610a030a0162".decodeHex())
+
+    assertThat(value.mask).isEqualTo(FieldMask(listOf("a", "b")))
   }
 
   @Test fun anyMessageWithUnregisteredTypeOnReading() {

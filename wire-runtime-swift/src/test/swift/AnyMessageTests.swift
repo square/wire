@@ -34,6 +34,23 @@ final class AnyMessageTests: XCTestCase {
         XCTAssertEqual(fieldMask, try any.unpack(FieldMask.self))
     }
 
+    func testFieldMaskJSONUsesSpecialValueEncoding() throws {
+        let fieldMask = FieldMask(paths: ["masked_name"])
+        let any = try AnyMessage.pack(fieldMask)
+
+        let encoded = try JSONEncoder().encode(any)
+        let decoded = try JSONDecoder().decode(
+            AnyMessage.self,
+            from: Foundation.Data(#"{"@type":"type.googleapis.com/google.protobuf.FieldMask","value":"maskedName"}"#.utf8)
+        )
+        let encodedObject = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: String])
+
+        XCTAssertEqual(encodedObject["@type"], FieldMask.protoMessageTypeURL())
+        XCTAssertEqual(encodedObject["value"], "maskedName")
+        XCTAssertEqual(try JSONDecoder().decode(AnyMessage.self, from: encoded), any)
+        XCTAssertEqual(decoded, any)
+    }
+
     func testUnpackingAnyToCorrectType() throws {
         let data = Data(json_data: "")
         let person = Person(name: "foo bar", id: 12345, data: data)

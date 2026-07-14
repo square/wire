@@ -23,6 +23,7 @@ import com.squareup.wire.durationOfSeconds
 import com.squareup.wire.ofEpochSecond
 import kotlin.test.Ignore
 import kotlin.test.Test
+import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.encodeUtf8
 import okio.Path.Companion.toPath
 
@@ -85,6 +86,30 @@ class DynamicSerializationTest {
       "field_mask_field" to FieldMask(listOf("user.display_name", "photo")),
     )
     assertThat(adapter.decode(adapter.encode(expected))).isEqualTo(expected)
+  }
+
+  @Test
+  fun singularFieldMaskOccurrencesAreMerged() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+       |syntax = "proto3";
+       |import "google/protobuf/field_mask.proto";
+       |
+       |message Message {
+       |  google.protobuf.FieldMask field_mask_field = 1;
+       |}
+       |
+        """.trimMargin(),
+      )
+    }
+
+    val adapter = schema.protoAdapter(typeName = "Message", includeUnknown = true)
+    val encoded = "0a030a01610a030a0162".decodeHex()
+
+    assertThat(adapter.decode(encoded))
+      .isEqualTo(mapOf("field_mask_field" to FieldMask(listOf("a", "b"))))
   }
 
   @Ignore // Not supported.

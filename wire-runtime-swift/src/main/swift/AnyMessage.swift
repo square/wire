@@ -117,5 +117,27 @@ extension AnyMessage: Codable {
         case typeURL = "@type"
         case value = "value"
     }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.typeURL = try container.decode(String.self, forKey: .typeURL)
+        if typeURL == FieldMask.protoMessageTypeURL() {
+            let fieldMask = try container.decode(FieldMask.self, forKey: .value)
+            self.value = try ProtoEncoder().encode(fieldMask)
+        } else {
+            self.value = try container.decode(Data.self, forKey: .value)
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(typeURL, forKey: .typeURL)
+        if typeURL == FieldMask.protoMessageTypeURL() {
+            let fieldMask = try ProtoDecoder().decode(FieldMask.self, from: value)
+            try container.encode(fieldMask, forKey: .value)
+        } else {
+            try container.encode(value, forKey: .value)
+        }
+    }
 }
 #endif

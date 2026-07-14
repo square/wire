@@ -126,9 +126,7 @@ extension FieldMask: Codable {
         var result = ""
         for scalar in value.unicodeScalars {
             if scalar.value >= 65 && scalar.value <= 90 {
-                if !result.isEmpty {
-                    result.append("_")
-                }
+                result.append("_")
                 result.append(String(scalar).lowercased())
             } else {
                 result.append(String(scalar).lowercased())
@@ -138,3 +136,13 @@ extension FieldMask: Codable {
     }
 }
 #endif
+
+extension ProtoReader {
+    public func decode(_ type: FieldMask.Type, mergingInto existing: FieldMask?) throws -> FieldMask {
+        let decoded = try decode(type)
+        guard let existing = existing else {
+            return decoded
+        }
+        return FieldMask(paths: existing.paths + decoded.paths)
+    }
+}

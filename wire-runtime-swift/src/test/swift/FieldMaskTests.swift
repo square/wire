@@ -67,6 +67,16 @@ final class FieldMaskTests: XCTestCase {
         XCTAssertEqual(decoded, FieldMask(paths: ["photo"]))
     }
 
+    func testJSONPreservesLeadingUppercaseAsUnderscore() throws {
+        let jsonData = Foundation.Data(#""foo.Bar""#.utf8)
+
+        let fieldMask = try JSONDecoder().decode(FieldMask.self, from: jsonData)
+        let encoded = try JSONEncoder().encode(fieldMask)
+
+        XCTAssertEqual(fieldMask, FieldMask(paths: ["foo._bar"]))
+        XCTAssertEqual(String(data: encoded, encoding: .utf8), #""foo.Bar""#)
+    }
+
     func testGeneratedMessageWithFieldMask() throws {
         let fieldMask = FieldMask(paths: ["user.display_name", "photo"])
         let otherFieldMask = FieldMask(paths: ["updated_at.seconds"])
@@ -82,5 +92,13 @@ final class FieldMaskTests: XCTestCase {
         XCTAssertEqual(decoded.mask, fieldMask)
         XCTAssertEqual(decoded.masks, [fieldMask, otherFieldMask])
         XCTAssertEqual(decoded.masks_by_id, [1: fieldMask, 2: otherFieldMask])
+    }
+
+    func testGeneratedMessageMergesDuplicateSingularFieldMask() throws {
+        let data = Foundation.Data(hexEncoded: "0a030a01610a030a0162")!
+
+        let decoded = try ProtoDecoder().decode(MessageContainingFieldMask.self, from: data)
+
+        XCTAssertEqual(decoded.mask, FieldMask(paths: ["a", "b"]))
     }
 }

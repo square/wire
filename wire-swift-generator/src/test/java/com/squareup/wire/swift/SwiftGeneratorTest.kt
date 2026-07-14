@@ -90,7 +90,7 @@ class SwiftGeneratorTest {
     assertThat(code).contains("public var mask: FieldMask?")
     assertThat(code).contains("public var masks: [FieldMask]")
     assertThat(code).contains("public var masks_by_id: [Int32 : FieldMask]")
-    assertThat(code).contains("mask = try protoReader.decode(FieldMask.self)")
+    assertThat(code).contains("mask = try protoReader.decode(FieldMask.self, mergingInto: mask)")
     assertThat(code).contains("try protoReader.decode(into: &masks)")
     assertThat(code).contains("try protoReader.decode(into: &masks_by_id, keyEncoding: .variable)")
     assertThat(code).doesNotContain("@ProtoDefaulted")
