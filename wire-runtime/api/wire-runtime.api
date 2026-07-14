@@ -30,6 +30,7 @@ public final class com/squareup/wire/AnyMessage : com/squareup/wire/Message {
 
 public final class com/squareup/wire/AnyMessage$Companion {
 	public final fun pack (Lcom/squareup/wire/Message;)Lcom/squareup/wire/AnyMessage;
+	public final fun pack (Lcom/squareup/wire/ProtoAdapter;Ljava/lang/Object;)Lcom/squareup/wire/AnyMessage;
 }
 
 public final class com/squareup/wire/DurationKt {
