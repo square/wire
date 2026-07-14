@@ -54,7 +54,7 @@ extension OuterMessage : Proto2Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: outer_number_before = try protoReader.decode(Int32.self, encoding: .variable)
-            case 2: embedded_message = try protoReader.decode(EmbeddedMessage.self)
+            case 2: embedded_message = try protoReader.decode(EmbeddedMessage.self, mergingInto: embedded_message)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

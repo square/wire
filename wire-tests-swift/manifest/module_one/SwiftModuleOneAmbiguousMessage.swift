@@ -57,8 +57,8 @@ extension SwiftModuleOneAmbiguousMessage : Proto2Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: name = try protoReader.decode(String.self)
-            case 2: address = try protoReader.decode(module_address.Address.self)
-            case 3: location = try protoReader.decode(Location.self)
+            case 2: address = try protoReader.decode(module_address.Address.self, mergingInto: address)
+            case 3: location = try protoReader.decode(Location.self, mergingInto: location)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

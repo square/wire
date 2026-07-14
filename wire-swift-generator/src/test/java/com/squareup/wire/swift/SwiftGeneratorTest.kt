@@ -79,6 +79,10 @@ class SwiftGeneratorTest {
         |  google.protobuf.FieldMask mask = 1;
         |  repeated google.protobuf.FieldMask masks = 2;
         |  map<int32, google.protobuf.FieldMask> masks_by_id = 3;
+        |  oneof choice {
+        |    google.protobuf.FieldMask oneof_mask = 4;
+        |    string name = 5;
+        |  }
         |}
         """.trimMargin(),
       )
@@ -90,10 +94,44 @@ class SwiftGeneratorTest {
     assertThat(code).contains("public var mask: FieldMask?")
     assertThat(code).contains("public var masks: [FieldMask]")
     assertThat(code).contains("public var masks_by_id: [Int32 : FieldMask]")
+    assertThat(code).contains("case oneof_mask(FieldMask)")
     assertThat(code).contains("mask = try protoReader.decode(FieldMask.self, mergingInto: mask)")
     assertThat(code).contains("try protoReader.decode(into: &masks)")
     assertThat(code).contains("try protoReader.decode(into: &masks_by_id, keyEncoding: .variable)")
+    assertThat(code).contains("case 4: choice = .oneof_mask(try protoReader.decode(FieldMask.self))")
     assertThat(code).doesNotContain("@ProtoDefaulted")
+  }
+
+  @Test fun mergesDuplicatedSingularMessageFields() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package squareup.protos3;
+        |
+        |message Other {
+        |  string name = 1;
+        |}
+        |
+        |message Message {
+        |  Other other = 1;
+        |  repeated Other others = 2;
+        |  oneof choice {
+        |    Other oneof_other = 3;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos3.Message")
+
+    assertThat(code).contains("other = try protoReader.decode(Other.self, mergingInto: other)")
+    // Repeated and oneof message fields don't merge.
+    assertThat(code).contains("try protoReader.decode(into: &others)")
+    assertThat(code).contains("case 3: choice = .oneof_other(try protoReader.decode(Other.self))")
   }
 
   private fun Schema.generateSwift(typeName: String): String {

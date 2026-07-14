@@ -174,7 +174,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
             field.value(builder, value)
           } else {
             val singleAdapter = field.singleAdapter
-            if ((field.isMessage || singleAdapter == ProtoAdapter.FIELD_MASK) &&
+            if ((field.isMessage || singleAdapter in MESSAGE_BACKED_BUILT_IN_ADAPTERS) &&
               !field.label.isRepeated &&
               !field.label.isOneOf
             ) {
@@ -234,5 +234,31 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
   companion object {
     private const val REDACTED = "\u2588\u2588"
+
+    /**
+     * Built-in adapters for the well-known message types that map to platform types instead of
+     * generated [Message] classes. Singular fields using these adapters merge duplicated
+     * occurrences like any other message field, matching generated code.
+     * [ProtoAdapter.STRUCT_NULL] is absent because `google.protobuf.NullValue` is an enum, not a
+     * message.
+     */
+    private val MESSAGE_BACKED_BUILT_IN_ADAPTERS: Set<ProtoAdapter<*>> = setOf(
+      ProtoAdapter.DURATION,
+      ProtoAdapter.INSTANT,
+      ProtoAdapter.EMPTY,
+      ProtoAdapter.FIELD_MASK,
+      ProtoAdapter.STRUCT_MAP,
+      ProtoAdapter.STRUCT_VALUE,
+      ProtoAdapter.STRUCT_LIST,
+      ProtoAdapter.DOUBLE_VALUE,
+      ProtoAdapter.FLOAT_VALUE,
+      ProtoAdapter.INT64_VALUE,
+      ProtoAdapter.UINT64_VALUE,
+      ProtoAdapter.INT32_VALUE,
+      ProtoAdapter.UINT32_VALUE,
+      ProtoAdapter.BOOL_VALUE,
+      ProtoAdapter.STRING_VALUE,
+      ProtoAdapter.BYTES_VALUE,
+    )
   }
 }

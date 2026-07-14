@@ -338,6 +338,23 @@ public final class ProtoReader {
         return try T(from: self)
     }
 
+    /**
+     Decode a message field, merging it with an existing value if one is present.
+
+     Per the protobuf specification, when a singular embedded-message field appears multiple
+     times in the encoded input the occurrences are merged: singular scalar fields take the
+     value from the last occurrence, singular embedded-message fields are merged recursively,
+     and repeated fields are concatenated.
+     */
+    public func decode<T: ProtoCodable>(_ type: T.Type, mergingInto existing: T?) throws -> T {
+        guard let existing = existing else {
+            return try decode(type)
+        }
+        var data = try ProtoEncoder().encode(existing)
+        data.append(try decode(Data.self))
+        return try ProtoDecoder(enumDecodingStrategy: enumDecodingStrategy).decode(type, from: data)
+    }
+
     internal func decode<T: ProtoDecodable>(_ type: T.Type, withTag tag: UInt32) throws -> T {
         isProto3Message = T.self.protoSyntax == .proto3
         return try decodeBoxed(tag: tag) {

@@ -285,8 +285,15 @@ class WireJsonTest {
           ProtoAdapter.FIELD_MASK.encodeByteString(anyFieldMask),
         ),
       )
+      .masks_by_name(
+        mapOf(
+          "profile" to FieldMask(listOf("user.display_name", "photo")),
+          "audit" to FieldMask(listOf("updated_at.seconds")),
+        ),
+      )
       .build()
     val anyFieldName = if (jsonLibrary.preservingProtoFieldNames) "any_mask" else "anyMask"
+    val mapFieldName = if (jsonLibrary.preservingProtoFieldNames) "masks_by_name" else "masksByName"
     val json = """
       |{
       |  "mask": "user.displayName,photo,fooBar.bazQux",
@@ -294,6 +301,10 @@ class WireJsonTest {
       |  "$anyFieldName": {
       |    "@type": "type.googleapis.com/google.protobuf.FieldMask",
       |    "value": "maskedName"
+      |  },
+      |  "$mapFieldName": {
+      |    "profile": "user.displayName,photo",
+      |    "audit": "updatedAt.seconds"
       |  }
       |}
     """.trimMargin()
@@ -308,18 +319,46 @@ class WireJsonTest {
     )
   }
 
+  @Test fun emptyFieldMask() {
+    val value = ContainsFieldMask.Builder()
+      .mask(FieldMask())
+      .build()
+    // An empty mask is present, so it is emitted as the empty string rather than omitted.
+    val mapFieldName = if (jsonLibrary.preservingProtoFieldNames) "masks_by_name" else "masksByName"
+    val json = if (jsonLibrary.writeIdentityValues) {
+      """{"mask": "", "masks": [], "$mapFieldName": {}}"""
+    } else {
+      """{"mask": ""}"""
+    }
+
+    assertJsonEquals(json, jsonLibrary.toJson(value, ContainsFieldMask::class.java))
+    assertThat(jsonLibrary.fromJson(json, ContainsFieldMask::class.java)).isEqualTo(value)
+  }
+
   @Test fun rootFieldMask() {
     val value = FieldMask(listOf("user.display_name", "photo", "foo_bar.baz_qux"))
     val json = "\"user.displayName,photo,fooBar.bazQux\""
 
     assertThat(jsonLibrary.toJson(value, FieldMask::class.java)).isEqualTo(json)
     assertThat(jsonLibrary.fromJson(json, FieldMask::class.java)).isEqualTo(value)
+
+    assertThat(jsonLibrary.toJson(FieldMask(), FieldMask::class.java)).isEqualTo("\"\"")
+    assertThat(jsonLibrary.fromJson("\"\"", FieldMask::class.java)).isEqualTo(FieldMask())
   }
 
   @Test fun singularFieldMaskOccurrencesAreMerged() {
     val value = ContainsFieldMask.ADAPTER.decode("0a030a01610a030a0162".decodeHex())
 
     assertThat(value.mask).isEqualTo(FieldMask(listOf("a", "b")))
+  }
+
+  @Test fun singularWellKnownTypeOccurrencesAreMergedByRuntimeMessageAdapter() {
+    val adapter = ProtoAdapter.newMessageAdapter(PizzaDelivery::class.java)
+
+    // Tag 5 (delivered_within_or_free) twice: `{seconds: 5}` then `{nanos: 3}`.
+    val value = adapter.decode("2a0208052a021003".decodeHex())
+
+    assertThat(value.delivered_within_or_free).isEqualTo(durationOfSeconds(5L, 3L))
   }
 
   @Test fun anyMessageWithUnregisteredTypeOnReading() {
@@ -1250,7 +1289,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .build()
 
@@ -1272,7 +1311,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1295,7 +1334,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .build()
 
@@ -1317,7 +1356,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1340,7 +1379,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .build()
 
@@ -1362,7 +1401,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, ProtoAdapter.FIELD_MASK)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()

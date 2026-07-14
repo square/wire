@@ -148,7 +148,7 @@ extension SwiftModuleTwoMessage.NestedMessage : Proto2Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: try protoReader.decode(into: &array_types)
-            case 2: module_type = try protoReader.decode(SwiftModuleOneMessage.self)
+            case 2: module_type = try protoReader.decode(SwiftModuleOneMessage.self, mergingInto: module_type)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

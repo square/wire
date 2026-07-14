@@ -130,7 +130,7 @@ extension FooBar : Proto2Codable {
             switch tag {
             case 1: foo = try protoReader.decode(Int32.self, encoding: .variable)
             case 2: bar = try protoReader.decode(String.self)
-            case 3: baz = try protoReader.decode(FooBar.Nested.self)
+            case 3: baz = try protoReader.decode(FooBar.Nested.self, mergingInto: baz)
             case 4: qux = try protoReader.decode(UInt64.self, encoding: .variable)
             case 5: try protoReader.decode(into: &fred)
             case 6: daisy = try protoReader.decode(Double.self)

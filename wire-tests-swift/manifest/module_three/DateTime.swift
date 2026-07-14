@@ -50,7 +50,7 @@ extension DateTime : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: value = try protoReader.decode(module_one.DateTime.self)
+            case 1: value = try protoReader.decode(module_one.DateTime.self, mergingInto: value)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

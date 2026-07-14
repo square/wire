@@ -136,13 +136,3 @@ extension FieldMask: Codable {
     }
 }
 #endif
-
-extension ProtoReader {
-    public func decode(_ type: FieldMask.Type, mergingInto existing: FieldMask?) throws -> FieldMask {
-        let decoded = try decode(type)
-        guard let existing = existing else {
-            return decoded
-        }
-        return FieldMask(paths: existing.paths + decoded.paths)
-    }
-}

@@ -49,7 +49,7 @@ extension ContainsTimestamp : Proto3Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: timestamp = try protoReader.decode(Timestamp.self)
+            case 1: timestamp = try protoReader.decode(Timestamp.self, mergingInto: timestamp)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
