@@ -68,13 +68,19 @@ final class FieldMaskTests: XCTestCase {
     }
 
     func testGeneratedMessageWithFieldMask() throws {
+        let fieldMask = FieldMask(paths: ["user.display_name", "photo"])
+        let otherFieldMask = FieldMask(paths: ["updated_at.seconds"])
         let message = MessageContainingFieldMask {
-            $0.mask = FieldMask(paths: ["user.display_name", "photo"])
+            $0.mask = fieldMask
+            $0.masks = [fieldMask, otherFieldMask]
+            $0.masks_by_id = [1: fieldMask, 2: otherFieldMask]
         }
 
         let data = try ProtoEncoder().encode(message)
         let decoded = try ProtoDecoder().decode(MessageContainingFieldMask.self, from: data)
 
-        XCTAssertEqual(decoded.mask, FieldMask(paths: ["user.display_name", "photo"]))
+        XCTAssertEqual(decoded.mask, fieldMask)
+        XCTAssertEqual(decoded.masks, [fieldMask, otherFieldMask])
+        XCTAssertEqual(decoded.masks_by_id, [1: fieldMask, 2: otherFieldMask])
     }
 }
