@@ -1,14 +1,20 @@
 Change Log
 ==========
 
-Unreleased
-----------
+Version 7.0.0-alpha05
+---------------------
+
+_2026-07-15_
 
 ### Common
 
-* New: Support `google.protobuf.FieldMask` (#3644, #3645, #3646, #3647, #3648, #3649, #3650, #3651,
-  #3652). Fields of this type map to the new `com.squareup.wire.FieldMask` class and are encoded
-  with `ProtoAdapter.FIELD_MASK`. JSON uses the spec's string encoding
+* Security: Refuse to write generated files outside the configured output directory. Without this
+  check, a package option controlled by proto input (such as `java_package`, `kotlin_package`, or
+  `wire_package`) resolving to an absolute path or traversing upward with `..` could overwrite
+  arbitrary files on the build host (#3657)
+* New: Support `google.protobuf.FieldMask` (#3644, #3645, #3646, #3647, #3648, #3649, #3650,
+  #3651, #3652, #3654, #3656). Fields of this type map to the new `com.squareup.wire.FieldMask`
+  class and are encoded with `ProtoAdapter.FIELD_MASK`. JSON uses the spec's string encoding
   (`"user.displayName,photo"`), including when a field mask is packed in a `google.protobuf.Any`.
   `ProtoAdapter.FIELD_MASK` is registered by default in `WireJsonAdapterFactory` and
   `WireTypeAdapterFactory` for use with `AnyMessage`. If your build previously supplied its own
@@ -20,19 +26,23 @@ Unreleased
   adapters, such as `ProtoAdapter.FIELD_MASK` (#3648).
 * Behavior change: `ProtoAdapter.newMessageAdapter(Class)`, `Schema.protoAdapter(...)`, and the
   moshi/gson runtime adapters now merge duplicated occurrences of a singular message field per the
-  protobuf specification, instead of keeping only the last occurrence (#3652). This includes fields
-  of well-known types that map to platform types, such as `google.protobuf.Duration` and the
-  wrapper types. Generated Java/Kotlin code already behaved this way.
+  protobuf specification, instead of keeping only the last occurrence (#3652, #3656). This includes
+  fields of well-known types that map to platform types, such as `google.protobuf.Duration` and the
+  wrapper types, and repeated occurrences of the same message member of a oneof. Generated
+  Java/Kotlin code already behaved this way for singular message fields, and now also merges
+  repeated occurrences of the same oneof message member (#3656).
 
 ### Swift
 
 * New: Support `google.protobuf.FieldMask` via the new `FieldMask` struct, with proto and Codable
-  (JSON) encodings (#3645, #3646, #3652). `AnyMessage` values whose type URL is
+  (JSON) encodings (#3645, #3646, #3650, #3652). `AnyMessage` values whose type URL is
   `type.googleapis.com/google.protobuf.FieldMask` now use the specification's string encoding for
   their JSON `value` instead of base64 data.
 * Behavior change: generated code now merges duplicated occurrences of a singular message field
-  per the protobuf specification, instead of keeping only the last occurrence. This matches
-  generated Java/Kotlin code. The new `ProtoReader.decode(_:mergingInto:)` implements the merge.
+  per the protobuf specification, instead of keeping only the last occurrence (#3652, #3656). This
+  matches generated Java/Kotlin code, and also applies to repeated occurrences of the same message
+  member of a oneof. The new `ProtoReader.decode(_:mergingInto:)` implements the merge, and proto2
+  required-field validation is deferred until all occurrences are merged.
 
 Version 7.0.0-alpha04
 ---------------------
