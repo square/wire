@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 7.0.0-alpha06
+---------------------
+
+_2026-07-21_
+
+* the Wire Gradle plugin doesn't transitively apply the Kotlin Gradle plugin anymore. (#3661)
+
 Version 7.0.0-alpha05
 ---------------------
 
