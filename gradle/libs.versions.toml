@@ -1,6 +1,6 @@
 [versions]
 android = "4.1.1.4"
-androidGradlePlugin = "9.2.1"
+androidGradlePlugin = "9.3.0"
 asm = "9.10.1"
 checkerQual = "4.2.1"
 coroutines = "1.11.0"
