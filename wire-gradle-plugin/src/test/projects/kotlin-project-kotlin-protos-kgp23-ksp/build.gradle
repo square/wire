@@ -1,0 +1,63 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    // Hardcoded to a Kotlin version where the KotlinSourceSet.generatedKotlin API is available.
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.10"
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:2.3.10"
+  }
+
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: 'application'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.google.devtools.ksp'
+apply plugin: 'com.squareup.wire'
+
+application.mainClass = "com.squareup.dinosaurs.Sample"
+
+repositories {
+  maven {
+    url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+  }
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.squareup.wire:wire-runtime:$wireVersion"
+  // Any processor will do: its presence creates the kspKotlin task, which consumes the
+  // main source set's Kotlin directories including Wire's generated sources.
+  ksp "com.squareup.moshi:moshi-kotlin-codegen:1.15.2"
+}
+
+// Mimics real-world builds which add Wire's output directory to a source set as a plain path,
+// with no task dependency. Wire's own registration of the same directory on the Kotlin source
+// set is what gives the task graph the edge from KSP to the Wire task.
+sourceSets {
+  main {
+    java.srcDir(layout.buildDirectory.dir("generated/source/wire"))
+  }
+}
+
+wire {
+  kotlin {}
+}
+
+tasks.withType(JavaCompile).configureEach {
+  sourceCompatibility = JavaVersion.VERSION_11.toString()
+  targetCompatibility = JavaVersion.VERSION_11.toString()
+}
+
+tasks.withType(KotlinCompile).configureEach {
+  kotlinOptions {
+    jvmTarget = "11"
+  }
+}

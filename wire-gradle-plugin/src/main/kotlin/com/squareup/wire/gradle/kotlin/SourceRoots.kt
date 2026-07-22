@@ -141,12 +141,12 @@ private class JvmOrKmpSource(
           javaSourceDirectorySet?.srcDir(outputDirectory)
         }
         is KotlinOutput -> {
-          registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
+          registerKotlinGeneratedSources(project, kotlinSourceSet, outputDirectory)
         }
         else -> {
           // Custom and third-party outputs are wildcards, so we add all output directories.
           javaSourceDirectorySet?.srcDir(outputDirectory)
-          registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
+          registerKotlinGeneratedSources(project, kotlinSourceSet, outputDirectory)
         }
       }
     }
@@ -185,23 +185,34 @@ private class AndroidSource(
   }
 }
 
+private const val KSP_PLUGIN_ID = "com.google.devtools.ksp"
+
 /**
  * Registers [outputDirectory] as a generated Kotlin source directory on [kotlinSourceSet].
  *
  * On Kotlin 2.3+, uses the [KotlinSourceSet.generatedKotlin] API so that IDEs can distinguish
  * generated sources from handwritten ones. Falls back to [KotlinSourceSet.kotlin] on older
- * versions of the Kotlin Gradle Plugin where the API is not available.
+ * versions of the Kotlin Gradle Plugin where the API is not available, and on projects using
+ * KSP, which doesn't know about `generatedKotlin`: sources registered there are invisible to
+ * symbol processors, and KSP tasks lose the dependency on the Wire task they used to get from
+ * the `kotlin.srcDir()` registration, failing Gradle's execution-time dependency validation in
+ * builds which also reference Wire's output directory from another source set.
  */
 private fun registerKotlinGeneratedSources(
+  project: Project,
   kotlinSourceSet: KotlinSourceSet?,
   outputDirectory: Provider<Directory>,
 ) {
   if (kotlinSourceSet == null) return
   // generatedKotlin was introduced experimentally in Kotlin 2.3. Detect it reflectively so that
   // Wire remains compatible with earlier Kotlin Gradle Plugin versions.
-  val generatedKotlinMethod = runCatching {
-    kotlinSourceSet.javaClass.getMethod("getGeneratedKotlin")
-  }.getOrNull()
+  val generatedKotlinMethod = if (project.pluginManager.hasPlugin(KSP_PLUGIN_ID)) {
+    null
+  } else {
+    runCatching {
+      kotlinSourceSet.javaClass.getMethod("getGeneratedKotlin")
+    }.getOrNull()
+  }
   if (generatedKotlinMethod != null) {
     val generatedKotlin = generatedKotlinMethod.invoke(kotlinSourceSet) as SourceDirectorySet
     generatedKotlin.srcDir(outputDirectory)
