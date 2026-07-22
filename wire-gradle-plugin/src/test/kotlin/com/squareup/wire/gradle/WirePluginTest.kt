@@ -713,6 +713,26 @@ class WirePluginTest {
     assertThat(result.task(":compileKotlin")).isNotNull()
   }
 
+  /**
+   * Verifies that projects using KSP build even though `KotlinSourceSet.generatedKotlin` is
+   * available. KSP doesn't know about `generatedKotlin`, so registering Wire's output there
+   * hides it from symbol processors and drops the task dependency KSP builds used to get from
+   * the `kotlin.srcDir()` registration, failing Gradle's dependency validation ("Task
+   * ':kspKotlin' uses this output of task ':generateMainProtos' without declaring an explicit
+   * or implicit dependency") when the output directory is also referenced from another source
+   * set. Wire falls back to `kotlin.srcDir()` on such projects.
+   */
+  @Test
+  fun kotlinProjectKotlinProtosWithGeneratedKotlinApiAndKsp() {
+    val fixtureRoot = File("src/test/projects/kotlin-project-kotlin-protos-kgp23-ksp")
+
+    val result = fixtureGradleRunner(fixtureRoot, "clean", "build").build()
+
+    assertThat(result.task(":generateMainProtos")).isNotNull()
+    assertThat(result.task(":kspKotlin")).isNotNull()
+    assertThat(result.task(":compileKotlin")).isNotNull()
+  }
+
   @Test
   fun protoLibrary() {
     val fixtureRoot = File("src/test/projects/proto-library")
