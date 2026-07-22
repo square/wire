@@ -469,6 +469,73 @@ class ProtoParserTest {
   }
 
   @Test
+  fun messageFieldLeadingAndTrailingCommentAreSeparable() {
+    val proto = """
+        |message Test {
+        |  // Leading.
+        |  optional string name = 1; // Trailing.
+        |}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    val field = (parsed.types[0] as MessageElement).fields[0]
+    assertThat(field.documentation).isEqualTo("Leading.\nTrailing.")
+    assertThat(field.trailingDocumentation).isEqualTo("Trailing.")
+  }
+
+  @Test
+  fun messageFieldTrailingOnlyDocumentation() {
+    val proto = """
+        |message Test {
+        |  optional string name = 1; // Trailing only.
+        |}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    val field = (parsed.types[0] as MessageElement).fields[0]
+    assertThat(field.documentation).isEqualTo("Trailing only.")
+    assertThat(field.trailingDocumentation).isEqualTo("Trailing only.")
+  }
+
+  @Test
+  fun messageFieldLeadingOnlyDocumentation() {
+    val proto = """
+        |message Test {
+        |  // Leading only.
+        |  optional string name = 1;
+        |}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    val field = (parsed.types[0] as MessageElement).fields[0]
+    assertThat(field.documentation).isEqualTo("Leading only.")
+    assertThat(field.trailingDocumentation).isEqualTo("")
+  }
+
+  @Test
+  fun messageFieldMultilineBlockTrailingPreservedInMessage() {
+    val proto = """
+        |message Test {
+        |  optional string name = 1; /* line one
+        |line two */
+        |}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    val field = (parsed.types[0] as MessageElement).fields[0]
+    assertThat(field.trailingDocumentation).isEqualTo("line one\nline two")
+
+    // Round-trip through toSchema: the message body should indent each line of the
+    // block comment so the continuation line is properly indented.
+    val reemitted = (parsed.types[0] as MessageElement).toSchema()
+    assertThat(reemitted).isEqualTo(
+      """
+        |message Test {
+        |  optional string name = 1; /* line one
+        |  line two */
+        |}
+        |
+      """.trimMargin(),
+    )
+  }
+
+  @Test
   fun trailingCommentNotAssignedToFollowingField() {
     val proto = """
         |message Test {
@@ -525,6 +592,34 @@ class ProtoParserTest {
     val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants[0]
     assertThat(value.documentation).isEqualTo("Test all the\nthings!")
+  }
+
+  @Test
+  fun enumValueLeadingAndTrailingCommentAreSeparable() {
+    val proto = """
+        |enum Test {
+        |  // Leading.
+        |  FOO = 1; // Trailing.
+        |}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    val constant = (parsed.types[0] as EnumElement).constants[0]
+    assertThat(constant.documentation).isEqualTo("Leading.\nTrailing.")
+    assertThat(constant.trailingDocumentation).isEqualTo("Trailing.")
+  }
+
+  @Test
+  fun enumValueMultilineBlockTrailingPreserved() {
+    val proto = """
+        |enum Test {
+        |  FOO = 1; /* Test all the
+        |things! */
+        |}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    val constant = (parsed.types[0] as EnumElement).constants[0]
+    assertThat(constant.documentation).isEqualTo("Test all the\nthings!")
+    assertThat(constant.trailingDocumentation).isEqualTo("Test all the\nthings!")
   }
 
   @Test
@@ -2453,6 +2548,7 @@ class ProtoParserTest {
           name = "a",
           tag = 1,
           documentation = "This is A.",
+          trailingDocumentation = "This is A.",
         ),
         FieldElement(
           location = location.at(4, 3),
@@ -2461,6 +2557,7 @@ class ProtoParserTest {
           name = "c",
           tag = 3,
           documentation = "This is C.",
+          trailingDocumentation = "This is C.",
         ),
       ),
       reserveds = listOf(
@@ -2468,6 +2565,7 @@ class ProtoParserTest {
           location = location.at(3, 3),
           values = listOf(2),
           documentation = "This is reserved.",
+          trailingDocumentation = "This is reserved.",
         ),
       ),
     )
@@ -2476,6 +2574,19 @@ class ProtoParserTest {
       types = listOf(message),
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test
+  fun reservedTrailingCommentSeparable() {
+    val proto = """
+        |message Test {
+        |  reserved 10; // trailing
+        |}
+    """.trimMargin()
+    val parsed = ProtoParser.parse(location, proto)
+    val reserved = (parsed.types[0] as MessageElement).reserveds[0]
+    assertThat(reserved.documentation).isEqualTo("trailing")
+    assertThat(reserved.trailingDocumentation).isEqualTo("trailing")
   }
 
   @Test
@@ -3227,6 +3338,7 @@ class ProtoParserTest {
               name = "IMAGE_STATE_UNSPECIFIED",
               tag = 0,
               documentation = "",
+              trailingDocumentation = "",
               options = listOf(),
             ),
             EnumConstantElement(
@@ -3234,6 +3346,7 @@ class ProtoParserTest {
               name = "IMAGE_STATE_READONLY",
               tag = 1,
               documentation = "unlocked",
+              trailingDocumentation = "unlocked",
               options = listOf(),
             ),
             EnumConstantElement(
@@ -3241,6 +3354,7 @@ class ProtoParserTest {
               name = "IMAGE_STATE_MUSTLOCK",
               tag = 2,
               documentation = "must be locked",
+              trailingDocumentation = "must be locked",
               options = listOf(),
             ),
           ),
@@ -3272,6 +3386,7 @@ class ProtoParserTest {
               name = "IMAGE_STATE_UNSPECIFIED",
               tag = 0,
               documentation = "",
+              trailingDocumentation = "",
               options = listOf(),
             ),
             EnumConstantElement(
@@ -3279,6 +3394,7 @@ class ProtoParserTest {
               name = "IMAGE_STATE_READONLY",
               tag = 1,
               documentation = "unlocked",
+              trailingDocumentation = "unlocked",
               options = listOf(),
             ),
             EnumConstantElement(
@@ -3286,6 +3402,7 @@ class ProtoParserTest {
               name = "IMAGE_STATE_MUSTLOCK",
               tag = 2,
               documentation = "must be locked",
+              trailingDocumentation = "must be locked",
               options = listOf(),
             ),
           ),
