@@ -955,6 +955,15 @@ class WirePluginTest {
   }
 
   @Test
+  fun thirdPartyOutputRegistersGeneratedSources() {
+    val fixtureRoot = File("src/test/projects/third-party-output")
+
+    val result = fixtureGradleRunner(fixtureRoot, "printSourceDirs").build()
+    assertThat(result.task(":printSourceDirs")).isNotNull()
+    assertThat(result.output).contains("generated${File.separator}thirdParty")
+  }
+
+  @Test
   fun customOutputProviderBackedDsl() {
     val fixtureRoot = File("src/test/projects/custom-output-provider-kotlin-dsl")
 
