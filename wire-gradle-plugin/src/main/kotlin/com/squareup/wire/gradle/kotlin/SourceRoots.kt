@@ -17,7 +17,6 @@ package com.squareup.wire.gradle.kotlin
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
-import com.squareup.wire.gradle.CustomOutput
 import com.squareup.wire.gradle.JavaOutput
 import com.squareup.wire.gradle.KotlinOutput
 import com.squareup.wire.gradle.WireOutput
@@ -144,15 +143,10 @@ private class JvmOrKmpSource(
         is KotlinOutput -> {
           registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
         }
-        is CustomOutput -> {
-          // Custom targets are wildcards, so we add all output directories.
+        else -> {
+          // Custom and third-party outputs are wildcards, so we add all output directories.
           javaSourceDirectorySet?.srcDir(outputDirectory)
           registerKotlinGeneratedSources(kotlinSourceSet, outputDirectory)
-        }
-        else -> {
-          throw IllegalArgumentException(
-            "Wire output ${output::class.simpleName} is not supported in project ${project.path}",
-          )
         }
       }
     }
@@ -181,15 +175,10 @@ private class AndroidSource(
           // Registering with variant.sources.kotlin can hide handwritten sources from KSP.
           variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
         }
-        is CustomOutput -> {
-          // Custom targets are wildcards, so we add all output directories.
+        else -> {
+          // Custom and third-party outputs are wildcards, so we add all output directories.
           variant.sources.java?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
           variant.sources.kotlin?.addGeneratedSourceDirectory(wireTask) { it.outputDirectoriesList[index] }
-        }
-        else -> {
-          throw IllegalArgumentException(
-            "Wire output ${output::class.simpleName} is not supported in Android project ${project.path}",
-          )
         }
       }
     }

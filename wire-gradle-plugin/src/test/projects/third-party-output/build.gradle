@@ -1,0 +1,53 @@
+import com.squareup.wire.gradle.WireOutput
+import com.squareup.wire.schema.CustomTarget
+import com.squareup.wire.schema.SchemaHandler
+import com.squareup.wire.schema.Target
+import org.jetbrains.annotations.NotNull
+
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+  }
+
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: 'application'
+apply plugin: 'com.squareup.wire'
+
+class ThirdPartyHandlerFactory implements SchemaHandler.Factory {
+  @Override
+  SchemaHandler create(@NotNull List<String> includes, @NotNull List<String> excludes,
+      boolean exclusive, @NotNull String outDirectory, @NotNull Map<String, String> options) {
+    throw new RuntimeException("this test only configures the project; the handler never runs")
+  }
+}
+
+// A third-party WireOutput subclass, as plugins building on top of Wire define them.
+abstract class ThirdPartyOutput extends WireOutput {
+  @Override
+  Target toTarget(String outputDirectory) {
+    return new CustomTarget(['*'], [], false, outputDirectory, [:], new ThirdPartyHandlerFactory())
+  }
+}
+
+wire {
+  sourcePath 'src/main/proto'
+}
+
+def thirdPartyOutput = project.objects.newInstance(ThirdPartyOutput)
+thirdPartyOutput.setOut("${buildDir}/generated/thirdParty")
+wire.outputs.add(thirdPartyOutput)
+
+tasks.register('printSourceDirs') {
+  def srcDirs = project.provider { sourceSets.main.java.srcDirs }
+  doLast {
+    println "sourceDirs: ${srcDirs.get()}"
+  }
+}
