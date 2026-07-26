@@ -15,8 +15,12 @@
  */
 package com.squareup.wire
 
-class GrpcMethod<S : Any, R : Any>(
+import kotlin.jvm.JvmOverloads
+
+class GrpcMethod<S : Any, R : Any> @JvmOverloads constructor(
   val path: String,
   val requestAdapter: ProtoAdapter<S>,
   val responseAdapter: ProtoAdapter<R>,
+  val requestStreaming: Boolean = false,
+  val responseStreaming: Boolean = false,
 )
