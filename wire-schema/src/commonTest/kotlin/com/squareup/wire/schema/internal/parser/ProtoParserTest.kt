@@ -2549,6 +2549,54 @@ class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
+  // https://github.com/square/wire/issues/3672
+  @Test
+  fun deepOptionAssignmentWithParenthesizedExtensionAfterFieldPathComponent() {
+    val proto = """
+      |message Foo {
+      |  optional string a = 1 [(foo.field).string.(foo.datetime) = true];
+      |}
+      |
+    """.trimMargin()
+    val expected = ProtoFileElement(
+      location = location,
+      types = listOf(
+        MessageElement(
+          location = location.at(1, 1),
+          name = "Foo",
+          fields = listOf(
+            FieldElement(
+              location = location.at(2, 3),
+              label = OPTIONAL,
+              type = "string",
+              name = "a",
+              tag = 1,
+              options = listOf(
+                OptionElement(
+                  name = "foo.field",
+                  kind = Kind.OPTION,
+                  isParenthesized = true,
+                  value = OptionElement(
+                    name = "string",
+                    kind = Kind.OPTION,
+                    isParenthesized = false,
+                    value = OptionElement(
+                      name = "foo.datetime",
+                      kind = Kind.BOOLEAN,
+                      isParenthesized = true,
+                      value = "true",
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
   @Test fun protoKeywordAsEnumConstants() {
     // Note: this is consistent with protoc.
     val proto = """
