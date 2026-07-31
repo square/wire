@@ -207,7 +207,14 @@ class SyntaxReader(
     val start = pos
     loop@ while (pos < data.size) {
       when (data[pos]) {
-        in 'a'..'z', in 'A'..'Z', in '0'..'9', '_', '-', '.' -> pos++
+        in 'a'..'z', in 'A'..'Z', in '0'..'9', '_', '-' -> pos++
+        // A dot immediately followed by '(' or '[' is a separator before a parenthesized or
+        // bracketed extension (e.g. the second dot in "(foo.field).string.(foo.datetime)"), not
+        // part of this word.
+        '.' -> {
+          if (pos + 1 < data.size && (data[pos + 1] == '(' || data[pos + 1] == '[')) break@loop
+          pos++
+        }
         else -> break@loop
       }
     }
