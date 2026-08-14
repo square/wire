@@ -738,9 +738,14 @@ class KotlinGenerator private constructor(
         val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
         // FIXME(egor): Revert back to function reference once KotlinPoet compiled with Kotlin
         // 1.4 is released. See https://youtrack.jetbrains.com/issue/KT-37435.
-        val fieldNames = oneOf.fields.joinToString(", ") { field -> nameAllocator[field] }
-        beginControlFlow("require(%M(%L)·<=·1)", countNonNull, fieldNames)
-        addStatement("%S", "At most one of $fieldNames may be non-null")
+        val fieldNames = oneOf.fields.map { field -> nameAllocator[field] }
+        val placeholders = fieldNames.joinToString(", ") { "%N" }
+        beginControlFlow(
+          "require(%M($placeholders)·<=·1)",
+          countNonNull,
+          *fieldNames.toTypedArray(),
+        )
+        addStatement("%S", "At most one of ${fieldNames.joinToString(", ")} may be non-null")
         endControlFlow()
       }
   }
@@ -1170,7 +1175,7 @@ class KotlinGenerator private constructor(
     }
 
     return funBuilder
-      .addStatement("this.%1L = %1L", fieldName)
+      .addStatement("this.%1N = %1N", fieldName)
       .addStatement("return this")
       .build()
   }
@@ -1537,7 +1542,7 @@ class KotlinGenerator private constructor(
                     add("=$DOUBLE_FULL_BLOCK")
                   } else {
                     add("=\$")
-                    add(fieldName)
+                    add("%N", fieldName)
                   }
                 },
               )
@@ -1652,7 +1657,7 @@ class KotlinGenerator private constructor(
       val nameAllocator = nameAllocator(schema.getType(protoType)!!)
       if (!first) add(",")
       first = false
-      add("\n⇥%L·= %L⇤", nameAllocator[field], valueInitializer)
+      add("\n⇥%N·= %L⇤", nameAllocator[field], valueInitializer)
     }
     add("\n)")
   }
@@ -1889,7 +1894,7 @@ class KotlinGenerator private constructor(
       val fieldName = nameAllocator[boxOneOf]
       encodeCalls += buildCodeBlock {
         add("if (value.%N != %L) ", fieldName, "null")
-        addStatement("value.%L.encodeWithTag(writer)", fieldName)
+        addStatement("value.%N.encodeWithTag(writer)", fieldName)
       }
     }
     for (sealedOneOf in message.sealedOneOfs()) {
@@ -2134,7 +2139,7 @@ class KotlinGenerator private constructor(
             val choiceKeys = boxedOneOfKeysFieldName(fieldName)
             beginControlFlow("for (%L in %L)", choiceKey, choiceKeys)
             beginControlFlow("if (%L == %L.tag)", tag, choiceKey)
-            addStatement("${if (buildersOnly) "builder.%L" else "%L"} = %L.decode(reader)", fieldName, choiceKey)
+            addStatement("${if (buildersOnly) "builder.%N" else "%N"} = %L.decode(reader)", fieldName, choiceKey)
             addStatement("return@forEachTag %T", Unit::class)
             endControlFlow()
             endControlFlow()
@@ -2346,14 +2351,14 @@ class KotlinGenerator private constructor(
               val fieldName = nameAllocator[fieldOrOneOf]
               val redactedField = fieldOrOneOf.redact(fieldName)
               if (redactedField != null) {
-                add("\n.%1L(%2L)", fieldName, redactedField)
+                add("\n.%1N(%2L)", fieldName, redactedField)
               }
             }
 
             is OneOf -> {
               if (fieldOrOneOf.fields.none { it.isRedacted }) continue
               val fieldName = nameAllocator[fieldOrOneOf]
-              add("\n.%1L(null)", fieldName)
+              add("\n.%1N(null)", fieldName)
             }
 
             else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")

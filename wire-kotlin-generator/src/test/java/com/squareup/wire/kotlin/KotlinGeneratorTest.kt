@@ -2566,6 +2566,66 @@ class KotlinGeneratorTest {
     assertThat(code).doesNotContain("sealed class Method")
   }
 
+  @Test fun toStringEscapesKeywordNames() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message JwtLocation {
+        |  oneof in {
+        |    string header = 1;
+        |    string query = 2;
+        |  }
+        |  optional int32 object = 3;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin(
+      "JwtLocation",
+      oneofMode = OneofMode.SEALED_CLASS,
+      escapeKotlinKeywords = true,
+    )
+    assertThat(code).contains("""if (`in` != null) result += ""${'"'}in=${'$'}`in`""${'"'}""")
+    assertThat(code).contains("""if (`object` != null) result += ""${'"'}object=${'$'}`object`""${'"'}""")
+  }
+
+  @Test fun boxedOneofEscapesKeywordNames() {
+    val code = KotlinWithProfilesGenerator(keywordSchema()).generateKotlin(
+      "JwtLocation",
+      oneofMode = OneofMode.BOXED,
+      escapeKotlinKeywords = true,
+    )
+    // Both the null check and the encode call must be escaped.
+    assertThat(code).contains("if (value.`in` != null) value.`in`.encodeWithTag(writer)")
+    assertThat(code).contains("`in` = choiceKey.decode(reader)")
+  }
+
+  @Test fun flatOneofRequireEscapesKeywordNames() {
+    val code = KotlinWithProfilesGenerator(keywordSchema()).generateKotlin(
+      "JwtLocation",
+      oneofMode = OneofMode.FLAT,
+      escapeKotlinKeywords = true,
+    )
+    assertThat(code).contains("require(countNonNull(`object`, `is`, cookie) <= 1)")
+  }
+
+  @Test fun buildersEscapeKeywordNames() {
+    val code = KotlinWithProfilesGenerator(keywordSchema()).generateKotlin(
+      "JwtLocation",
+      oneofMode = OneofMode.BOXED,
+      escapeKotlinKeywords = true,
+      buildersOnly = true,
+      javaInterop = true,
+    )
+    assertThat(code).contains("this.`in` = `in`")
+    assertThat(code).contains("builder.`in` = choiceKey.decode(reader)")
+    // Redacted keyword-named fields and oneofs in the redact() builder chain.
+    assertThat(code).contains(".`as`(null)")
+    assertThat(code).contains(".`for`(null)")
+  }
+
   @Test fun sealedOneofFieldOptionsAppliedAsAnnotationsOnSubtypes() {
     val schema = buildSchema {
       add(
@@ -2827,6 +2887,41 @@ class KotlinGeneratorTest {
   }
 
   companion object {
+    /** A message whose fields and oneofs are all named after Kotlin keywords. */
+    private fun keywordSchema() = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "option_redacted.proto";
+        |message JwtLocation {
+        |  oneof in {
+        |    string object = 1;
+        |    string is = 2;
+        |    string cookie = 3;
+        |  }
+        |  oneof for {
+        |    string val = 4 [(squareup.protos.redacted_option.redacted) = true];
+        |    string in2 = 5;
+        |  }
+        |  optional string as = 6 [(squareup.protos.redacted_option.redacted) = true];
+        |  optional int32 fun = 7;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "option_redacted.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package squareup.protos.redacted_option;
+        |import "google/protobuf/descriptor.proto";
+        |extend google.protobuf.FieldOptions {
+        |  optional bool redacted = 22200;
+        |}
+        """.trimMargin(),
+      )
+    }
+
     private val pointMessage = """
           |message Point {
           |  optional int32 latitude = 1;

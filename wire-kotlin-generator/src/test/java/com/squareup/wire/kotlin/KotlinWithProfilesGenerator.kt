@@ -54,6 +54,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     oneofMode: OneofMode = OneofMode.FLAT,
     mutableTypes: Boolean = false,
     makeImmutableCopies: Boolean = true,
+    escapeKotlinKeywords: Boolean = false,
   ): String {
     val kotlinGenerator = KotlinGenerator(
       schema,
@@ -61,6 +62,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       boxOneOfsMinSize = boxOneOfsMinSize,
       buildersOnly = buildersOnly,
       javaInterop = javaInterop,
+      escapeKotlinKeywords = escapeKotlinKeywords,
       enumMode = enumMode,
       oneofMode = oneofMode,
       mutableTypes = mutableTypes,
