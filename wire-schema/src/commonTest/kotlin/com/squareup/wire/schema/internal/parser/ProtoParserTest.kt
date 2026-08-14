@@ -2549,6 +2549,79 @@ class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
+  // https://github.com/square/wire/issues/3672
+  @Test
+  fun deepOptionAssignmentWithParenthesizedExtensionAfterFieldPathComponent() {
+    val proto = """
+      |message Foo {
+      |  optional string a = 1 [(foo.field).string.(foo.datetime) = true];
+      |}
+      |
+    """.trimMargin()
+    val expected = ProtoFileElement(
+      location = location,
+      types = listOf(
+        MessageElement(
+          location = location.at(1, 1),
+          name = "Foo",
+          fields = listOf(
+            FieldElement(
+              location = location.at(2, 3),
+              label = OPTIONAL,
+              type = "string",
+              name = "a",
+              tag = 1,
+              options = listOf(
+                OptionElement(
+                  name = "foo.field",
+                  kind = Kind.OPTION,
+                  isParenthesized = true,
+                  value = OptionElement(
+                    name = "string",
+                    kind = Kind.OPTION,
+                    isParenthesized = false,
+                    value = OptionElement(
+                      name = "foo.datetime",
+                      kind = Kind.BOOLEAN,
+                      isParenthesized = true,
+                      value = "true",
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  // https://github.com/square/wire/issues/3672
+  @Test
+  fun deepOptionAssignmentDotsAreSeparators() {
+    // The dots between the components of an option name are separators, so whitespace and comments
+    // around them are insignificant, as they are between any other two tokens.
+    val optionNames = listOf(
+      "(foo.field).string.(foo.datetime)",
+      "(foo.field).string. (foo.datetime)",
+      "(foo.field).string . (foo.datetime)",
+      "(foo.field) . string . (foo.datetime)",
+      "(foo.field).string./* comment */(foo.datetime)",
+      "(foo.field).string.\n      (foo.datetime)",
+    )
+    val canonical = parseOptionOnFieldA(optionNames.first())
+    for (optionName in optionNames) {
+      assertThat(parseOptionOnFieldA(optionName), name = optionName).isEqualTo(canonical)
+    }
+  }
+
+  /** Parses a message whose only field carries `optionName` set to `true`. */
+  private fun parseOptionOnFieldA(optionName: String): ProtoFileElement = ProtoParser.parse(
+    location,
+    "message Foo {\n  optional string a = 1 [$optionName = true];\n}\n",
+  )
+
   @Test fun protoKeywordAsEnumConstants() {
     // Note: this is consistent with protoc.
     val proto = """

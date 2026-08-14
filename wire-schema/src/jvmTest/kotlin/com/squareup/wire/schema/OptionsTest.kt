@@ -61,6 +61,45 @@ class OptionsTest {
       .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "456", opt2 to "quux")))
   }
 
+  // https://github.com/square/wire/issues/3672
+  @Test
+  fun parenthesizedExtensionAfterFieldPathComponent() {
+    // Shaped after protovalidate's "(buf.validate.field).string.(buf.validate.predefined)".
+    val schema = buildSchema {
+      add(
+        "foo.proto".toPath(),
+        """
+            |import "google/protobuf/descriptor.proto";
+            |message FieldConstraints {
+            |  optional StringRules string = 1;
+            |}
+            |message StringRules {
+            |  extensions 1000 to max;
+            |}
+            |
+            |extend StringRules {
+            |  optional bool datetime = 1000;
+            |}
+            |extend google.protobuf.FieldOptions {
+            |  optional FieldConstraints field = 1234;
+            |}
+            |
+            |message Bar {
+            |  optional string a = 1 [(field).string.(datetime) = true];
+            |}
+        """.trimMargin(),
+      )
+    }
+
+    val field = ProtoMember.get(Options.FIELD_OPTIONS, "field")
+    val string = ProtoMember.get(ProtoType.get("FieldConstraints"), "string")
+    val datetime = ProtoMember.get(ProtoType.get("StringRules"), "datetime")
+
+    val bar = schema.getType("Bar") as MessageType
+    assertThat(bar.field("a")!!.options.map)
+      .isEqualTo(mapOf(field to mapOf(string to mapOf(datetime to "true"))))
+  }
+
   @Test
   fun textFormatCanOmitMapValueSeparator() {
     val schema = buildSchema {
