@@ -46,6 +46,10 @@ extension FooBar {
         }
     }
     /**
+     * Field number for the ext extension field.
+     */
+    public static let fieldNumber_ext: UInt32 = 101
+    /**
      *
      * Source: custom_options.proto
      */
@@ -57,6 +61,10 @@ extension FooBar {
             self.setUnknownField(fieldNumber: 102, newValue: newValue)
         }
     }
+    /**
+     * Field number for the rep extension field.
+     */
+    public static let fieldNumber_rep: UInt32 = 102
     /**
      *
      * Source: custom_options.proto
@@ -73,6 +81,10 @@ extension FooBar {
      * Default value for more_string extension field.
      */
     public static let default_more_string: String = .defaultedValue
+    /**
+     * Field number for the more_string extension field.
+     */
+    public static let fieldNumber_more_string: UInt32 = 150
 }
 
 #if !WIRE_REMOVE_EQUATABLE

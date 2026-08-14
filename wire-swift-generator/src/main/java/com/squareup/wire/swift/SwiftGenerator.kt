@@ -1328,6 +1328,8 @@ class SwiftGenerator private constructor(
 
               addProperty(defaultProperty)
             }
+
+            addProperty(extensionFieldNumberProperty(field))
           }
         }
         .build()
@@ -1336,6 +1338,12 @@ class SwiftGenerator private constructor(
         .build()
     }
   }
+
+  private fun extensionFieldNumberProperty(field: Field): PropertySpec = PropertySpec.varBuilder("fieldNumber_${field.safeName}", UINT32, PUBLIC, STATIC)
+    .addDoc("Field number for the %L extension field.\n", field.safeName)
+    .mutable(false)
+    .initializer("%L", field.tag)
+    .build()
 
   private fun generateMessageExtensions(
     type: MessageType,
@@ -1415,6 +1423,10 @@ class SwiftGenerator private constructor(
                   .build()
 
               addProperty(defaultProperty)
+            }
+
+            if (!forStorageType) {
+              addProperty(extensionFieldNumberProperty(field))
             }
           }
         }
