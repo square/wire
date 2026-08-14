@@ -61,12 +61,12 @@ class OptionReader(internal val reader: SyntaxReader) {
         break
       }
       // Read nested field name. For example "baz" in "(foo.bar).baz = 12".
-      val subName = reader.readName(retainWrap = true)
-      if (subName.startsWith("(")) {
-        subNames.add(subName)
-      } else {
-        subNames.addAll(subName.split("."))
-      }
+      //
+      // The dots in an option name are separators, so a component must not absorb the ones that
+      // follow it: in "(foo.field).string.(foo.datetime)" this reads "string" and leaves the next
+      // dot for the loop above. Consuming dots here rather than inside the word is also what makes
+      // whitespace and comments around them insignificant, as they are everywhere else.
+      subNames += reader.readName(retainWrap = true, allowDots = false)
     }
     if (keyValueSeparator == ':' && c == '{') {
       // In text format, values which are maps can omit a separator. Backtrack so it can be re-read.

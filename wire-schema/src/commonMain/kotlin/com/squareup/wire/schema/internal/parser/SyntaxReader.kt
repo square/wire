@@ -146,8 +146,15 @@ class SyntaxReader(
    * If {@code retainWrap} is true and the symbol was wrapped in parens
    * or square brackets, the returned string retains the wrapping
    * punctuation. Otherwise, just the symbol is returned.
+   *
+   * @param allowDots whether a naked name may span '.' characters. Wrapped names always may; they
+   *     are delimited by their wrapping punctuation rather than by dots.
    */
-  fun readName(allowLeadingDigit: Boolean = true, retainWrap: Boolean = false): String {
+  fun readName(
+    allowLeadingDigit: Boolean = true,
+    retainWrap: Boolean = false,
+    allowDots: Boolean = true,
+  ): String {
     return when (peekChar()) {
       '(' -> {
         pos++
@@ -165,7 +172,7 @@ class SyntaxReader(
         if (retainWrap) "[$word]" else word
       }
 
-      else -> readWord(allowLeadingDigit)
+      else -> readWord(allowLeadingDigit, allowDots)
     }
   }
 
@@ -201,20 +208,20 @@ class SyntaxReader(
     }
   }
 
-  /** Reads a non-empty word and returns it. */
-  fun readWord(allowLeadingDigit: Boolean = true): String {
+  /**
+   * Reads a non-empty word and returns it.
+   *
+   * @param allowDots true for the word to span '.' characters, as in the qualified name `foo.Bar`.
+   *     When false the word ends at the first '.', leaving it for the caller to consume as a
+   *     separator between the components of a path.
+   */
+  fun readWord(allowLeadingDigit: Boolean = true, allowDots: Boolean = true): String {
     skipWhitespace(skipComments = true)
     val start = pos
     loop@ while (pos < data.size) {
       when (data[pos]) {
         in 'a'..'z', in 'A'..'Z', in '0'..'9', '_', '-' -> pos++
-        // A dot immediately followed by '(' or '[' is a separator before a parenthesized or
-        // bracketed extension (e.g. the second dot in "(foo.field).string.(foo.datetime)"), not
-        // part of this word.
-        '.' -> {
-          if (pos + 1 < data.size && (data[pos + 1] == '(' || data[pos + 1] == '[')) break@loop
-          pos++
-        }
+        '.' -> if (allowDots) pos++ else break@loop
         else -> break@loop
       }
     }
