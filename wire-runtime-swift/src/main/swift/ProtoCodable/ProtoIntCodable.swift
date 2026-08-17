@@ -52,3 +52,6 @@ public enum ProtoIntEncoding {
     case signed
     case variable
 }
+
+extension ProtoIntEncoding : Sendable {
+}
