@@ -90,6 +90,40 @@ class SwiftGeneratorTest {
     assertThat(code).contains("public static let fieldNumber_repeated_scalar: UInt32 = 50003")
   }
 
+  @Test fun extensionFieldEncodingsAreExposedAsConstants() {
+    val schema = buildSchema {
+      add(
+        "extensible_message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package squareup.protos2.kotlin;
+        |
+        |message ExtensibleMessage {
+        |  extensions 100 to 200;
+        |}
+        |
+        |extend ExtensibleMessage {
+        |  optional int32 ext_int32 = 100;
+        |  optional sint32 ext_sint32 = 101;
+        |  optional fixed32 ext_fixed32 = 102;
+        |  repeated sint64 rep_ext_sint64 = 103;
+        |  optional string ext_string = 104;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos2.kotlin.ExtensibleMessage")
+
+    assertThat(code).contains("public static let fieldEncoding_ext_int32: ProtoIntEncoding = .variable")
+    assertThat(code).contains("public static let fieldEncoding_ext_sint32: ProtoIntEncoding = .signed")
+    assertThat(code).contains("public static let fieldEncoding_ext_fixed32: ProtoIntEncoding = .fixed")
+    assertThat(code).contains("public static let fieldEncoding_rep_ext_sint64: ProtoIntEncoding = .signed")
+    // Only integer fields take an explicit encoding in parseUnknownField/setUnknownField.
+    assertThat(code).doesNotContain("fieldEncoding_ext_string")
+  }
+
   @Test fun extensionFieldNumberConstantsAreGeneratedOnceForHeapAllocatedMessages() {
     val schema = buildSchema {
       add(
@@ -122,6 +156,7 @@ class SwiftGeneratorTest {
         |
         |extend BigMessage {
         |  optional string extra = 1000;
+        |  optional sint32 extra_signed = 1001;
         |}
         """.trimMargin(),
       )
@@ -133,6 +168,10 @@ class SwiftGeneratorTest {
     assertThat(code).contains(constant)
     // The constant belongs on the extended type only, not on its CopyOnWrite storage type.
     assertThat(code.indexOf(constant)).isEqualTo(code.lastIndexOf(constant))
+
+    val encodingConstant = "public static let fieldEncoding_extra_signed: ProtoIntEncoding = .signed"
+    assertThat(code).contains(encodingConstant)
+    assertThat(code.indexOf(encodingConstant)).isEqualTo(code.lastIndexOf(encodingConstant))
   }
 
   @Test fun usesFieldMask() {
