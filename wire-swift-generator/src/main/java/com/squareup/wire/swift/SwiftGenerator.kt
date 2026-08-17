@@ -1438,6 +1438,7 @@ class SwiftGenerator private constructor(
               addProperty(defaultProperty)
             }
 
+            // The constants belong on the extended type; the storage pass must skip them or they'd be declared twice.
             if (!forStorageType) {
               addProperty(extensionFieldNumberProperty(field))
               extensionFieldEncodingProperty(field)?.let { addProperty(it) }
