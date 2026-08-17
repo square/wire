@@ -164,6 +164,10 @@ class SwiftGeneratorTest {
 
     val code = schema.generateSwift("squareup.protos2.kotlin.BigMessage")
 
+    // Precondition: the message must actually be heap-allocated, or the single-emission
+    // assertion below passes trivially because only one extension block is generated at all.
+    assertThat(code).contains("public struct Storage")
+
     val constant = "public static let fieldNumber_extra: UInt32 = 1000"
     assertThat(code).contains(constant)
     // The constant belongs on the extended type only, not on its CopyOnWrite storage type.
