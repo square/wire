@@ -1285,6 +1285,14 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_int32: Int32 = .defaultedValue
     /**
+     * Field number for the ext_opt_int32 extension field.
+     */
+    public static let fieldNumber_ext_opt_int32: UInt32 = 1001
+    /**
+     * Integer encoding for the ext_opt_int32 extension field.
+     */
+    public static let fieldEncoding_ext_opt_int32: ProtoIntEncoding = .variable
+    /**
      *
      * Source: all_types.proto
      */
@@ -1300,6 +1308,14 @@ extension AllTypes : ProtoExtensible {
      * Default value for ext_opt_uint32 extension field.
      */
     public static let default_ext_opt_uint32: UInt32 = .defaultedValue
+    /**
+     * Field number for the ext_opt_uint32 extension field.
+     */
+    public static let fieldNumber_ext_opt_uint32: UInt32 = 1002
+    /**
+     * Integer encoding for the ext_opt_uint32 extension field.
+     */
+    public static let fieldEncoding_ext_opt_uint32: ProtoIntEncoding = .variable
     /**
      *
      * Source: all_types.proto
@@ -1317,6 +1333,14 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_sint32: Int32 = .defaultedValue
     /**
+     * Field number for the ext_opt_sint32 extension field.
+     */
+    public static let fieldNumber_ext_opt_sint32: UInt32 = 1003
+    /**
+     * Integer encoding for the ext_opt_sint32 extension field.
+     */
+    public static let fieldEncoding_ext_opt_sint32: ProtoIntEncoding = .signed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1332,6 +1356,14 @@ extension AllTypes : ProtoExtensible {
      * Default value for ext_opt_fixed32 extension field.
      */
     public static let default_ext_opt_fixed32: UInt32 = .defaultedValue
+    /**
+     * Field number for the ext_opt_fixed32 extension field.
+     */
+    public static let fieldNumber_ext_opt_fixed32: UInt32 = 1004
+    /**
+     * Integer encoding for the ext_opt_fixed32 extension field.
+     */
+    public static let fieldEncoding_ext_opt_fixed32: ProtoIntEncoding = .fixed
     /**
      *
      * Source: all_types.proto
@@ -1349,6 +1381,14 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_sfixed32: Int32 = .defaultedValue
     /**
+     * Field number for the ext_opt_sfixed32 extension field.
+     */
+    public static let fieldNumber_ext_opt_sfixed32: UInt32 = 1005
+    /**
+     * Integer encoding for the ext_opt_sfixed32 extension field.
+     */
+    public static let fieldEncoding_ext_opt_sfixed32: ProtoIntEncoding = .fixed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1364,6 +1404,14 @@ extension AllTypes : ProtoExtensible {
      * Default value for ext_opt_int64 extension field.
      */
     public static let default_ext_opt_int64: Int64 = .defaultedValue
+    /**
+     * Field number for the ext_opt_int64 extension field.
+     */
+    public static let fieldNumber_ext_opt_int64: UInt32 = 1006
+    /**
+     * Integer encoding for the ext_opt_int64 extension field.
+     */
+    public static let fieldEncoding_ext_opt_int64: ProtoIntEncoding = .variable
     /**
      *
      * Source: all_types.proto
@@ -1381,6 +1429,14 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_uint64: UInt64 = .defaultedValue
     /**
+     * Field number for the ext_opt_uint64 extension field.
+     */
+    public static let fieldNumber_ext_opt_uint64: UInt32 = 1007
+    /**
+     * Integer encoding for the ext_opt_uint64 extension field.
+     */
+    public static let fieldEncoding_ext_opt_uint64: ProtoIntEncoding = .variable
+    /**
      *
      * Source: all_types.proto
      */
@@ -1396,6 +1452,14 @@ extension AllTypes : ProtoExtensible {
      * Default value for ext_opt_sint64 extension field.
      */
     public static let default_ext_opt_sint64: Int64 = .defaultedValue
+    /**
+     * Field number for the ext_opt_sint64 extension field.
+     */
+    public static let fieldNumber_ext_opt_sint64: UInt32 = 1008
+    /**
+     * Integer encoding for the ext_opt_sint64 extension field.
+     */
+    public static let fieldEncoding_ext_opt_sint64: ProtoIntEncoding = .signed
     /**
      *
      * Source: all_types.proto
@@ -1413,6 +1477,14 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_fixed64: UInt64 = .defaultedValue
     /**
+     * Field number for the ext_opt_fixed64 extension field.
+     */
+    public static let fieldNumber_ext_opt_fixed64: UInt32 = 1009
+    /**
+     * Integer encoding for the ext_opt_fixed64 extension field.
+     */
+    public static let fieldEncoding_ext_opt_fixed64: ProtoIntEncoding = .fixed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1428,6 +1500,14 @@ extension AllTypes : ProtoExtensible {
      * Default value for ext_opt_sfixed64 extension field.
      */
     public static let default_ext_opt_sfixed64: Int64 = .defaultedValue
+    /**
+     * Field number for the ext_opt_sfixed64 extension field.
+     */
+    public static let fieldNumber_ext_opt_sfixed64: UInt32 = 1010
+    /**
+     * Integer encoding for the ext_opt_sfixed64 extension field.
+     */
+    public static let fieldEncoding_ext_opt_sfixed64: ProtoIntEncoding = .fixed
     /**
      *
      * Source: all_types.proto
@@ -1445,6 +1525,10 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_bool: Bool = .defaultedValue
     /**
+     * Field number for the ext_opt_bool extension field.
+     */
+    public static let fieldNumber_ext_opt_bool: UInt32 = 1011
+    /**
      *
      * Source: all_types.proto
      */
@@ -1460,6 +1544,10 @@ extension AllTypes : ProtoExtensible {
      * Default value for ext_opt_float extension field.
      */
     public static let default_ext_opt_float: Float = .defaultedValue
+    /**
+     * Field number for the ext_opt_float extension field.
+     */
+    public static let fieldNumber_ext_opt_float: UInt32 = 1012
     /**
      *
      * Source: all_types.proto
@@ -1477,6 +1565,10 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_double: Double = .defaultedValue
     /**
+     * Field number for the ext_opt_double extension field.
+     */
+    public static let fieldNumber_ext_opt_double: UInt32 = 1013
+    /**
      *
      * Source: all_types.proto
      */
@@ -1492,6 +1584,10 @@ extension AllTypes : ProtoExtensible {
      * Default value for ext_opt_string extension field.
      */
     public static let default_ext_opt_string: String = .defaultedValue
+    /**
+     * Field number for the ext_opt_string extension field.
+     */
+    public static let fieldNumber_ext_opt_string: UInt32 = 1014
     /**
      *
      * Source: all_types.proto
@@ -1509,6 +1605,10 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_bytes: Foundation.Data = .defaultedValue
     /**
+     * Field number for the ext_opt_bytes extension field.
+     */
+    public static let fieldNumber_ext_opt_bytes: UInt32 = 1015
+    /**
      *
      * Source: all_types.proto
      */
@@ -1520,6 +1620,10 @@ extension AllTypes : ProtoExtensible {
             storage.ext_opt_nested_enum = newValue
         }
     }
+    /**
+     * Field number for the ext_opt_nested_enum extension field.
+     */
+    public static let fieldNumber_ext_opt_nested_enum: UInt32 = 1016
     /**
      *
      * Source: all_types.proto
@@ -1537,6 +1641,10 @@ extension AllTypes : ProtoExtensible {
      */
     public static let default_ext_opt_nested_message: AllTypes.NestedMessage = .defaultedValue
     /**
+     * Field number for the ext_opt_nested_message extension field.
+     */
+    public static let fieldNumber_ext_opt_nested_message: UInt32 = 1017
+    /**
      *
      * Source: all_types.proto
      */
@@ -1548,6 +1656,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_int32 = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_int32 extension field.
+     */
+    public static let fieldNumber_ext_rep_int32: UInt32 = 1101
+    /**
+     * Integer encoding for the ext_rep_int32 extension field.
+     */
+    public static let fieldEncoding_ext_rep_int32: ProtoIntEncoding = .variable
     /**
      *
      * Source: all_types.proto
@@ -1561,6 +1677,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_uint32 extension field.
+     */
+    public static let fieldNumber_ext_rep_uint32: UInt32 = 1102
+    /**
+     * Integer encoding for the ext_rep_uint32 extension field.
+     */
+    public static let fieldEncoding_ext_rep_uint32: ProtoIntEncoding = .variable
+    /**
      *
      * Source: all_types.proto
      */
@@ -1572,6 +1696,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_sint32 = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_sint32 extension field.
+     */
+    public static let fieldNumber_ext_rep_sint32: UInt32 = 1103
+    /**
+     * Integer encoding for the ext_rep_sint32 extension field.
+     */
+    public static let fieldEncoding_ext_rep_sint32: ProtoIntEncoding = .signed
     /**
      *
      * Source: all_types.proto
@@ -1585,6 +1717,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_fixed32 extension field.
+     */
+    public static let fieldNumber_ext_rep_fixed32: UInt32 = 1104
+    /**
+     * Integer encoding for the ext_rep_fixed32 extension field.
+     */
+    public static let fieldEncoding_ext_rep_fixed32: ProtoIntEncoding = .fixed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1596,6 +1736,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_sfixed32 = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_sfixed32 extension field.
+     */
+    public static let fieldNumber_ext_rep_sfixed32: UInt32 = 1105
+    /**
+     * Integer encoding for the ext_rep_sfixed32 extension field.
+     */
+    public static let fieldEncoding_ext_rep_sfixed32: ProtoIntEncoding = .fixed
     /**
      *
      * Source: all_types.proto
@@ -1609,6 +1757,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_int64 extension field.
+     */
+    public static let fieldNumber_ext_rep_int64: UInt32 = 1106
+    /**
+     * Integer encoding for the ext_rep_int64 extension field.
+     */
+    public static let fieldEncoding_ext_rep_int64: ProtoIntEncoding = .variable
+    /**
      *
      * Source: all_types.proto
      */
@@ -1620,6 +1776,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_uint64 = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_uint64 extension field.
+     */
+    public static let fieldNumber_ext_rep_uint64: UInt32 = 1107
+    /**
+     * Integer encoding for the ext_rep_uint64 extension field.
+     */
+    public static let fieldEncoding_ext_rep_uint64: ProtoIntEncoding = .variable
     /**
      *
      * Source: all_types.proto
@@ -1633,6 +1797,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_sint64 extension field.
+     */
+    public static let fieldNumber_ext_rep_sint64: UInt32 = 1108
+    /**
+     * Integer encoding for the ext_rep_sint64 extension field.
+     */
+    public static let fieldEncoding_ext_rep_sint64: ProtoIntEncoding = .signed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1644,6 +1816,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_fixed64 = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_fixed64 extension field.
+     */
+    public static let fieldNumber_ext_rep_fixed64: UInt32 = 1109
+    /**
+     * Integer encoding for the ext_rep_fixed64 extension field.
+     */
+    public static let fieldEncoding_ext_rep_fixed64: ProtoIntEncoding = .fixed
     /**
      *
      * Source: all_types.proto
@@ -1657,6 +1837,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_sfixed64 extension field.
+     */
+    public static let fieldNumber_ext_rep_sfixed64: UInt32 = 1110
+    /**
+     * Integer encoding for the ext_rep_sfixed64 extension field.
+     */
+    public static let fieldEncoding_ext_rep_sfixed64: ProtoIntEncoding = .fixed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1668,6 +1856,10 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_bool = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_bool extension field.
+     */
+    public static let fieldNumber_ext_rep_bool: UInt32 = 1111
     /**
      *
      * Source: all_types.proto
@@ -1681,6 +1873,10 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_float extension field.
+     */
+    public static let fieldNumber_ext_rep_float: UInt32 = 1112
+    /**
      *
      * Source: all_types.proto
      */
@@ -1692,6 +1888,10 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_double = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_double extension field.
+     */
+    public static let fieldNumber_ext_rep_double: UInt32 = 1113
     /**
      *
      * Source: all_types.proto
@@ -1705,6 +1905,10 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_string extension field.
+     */
+    public static let fieldNumber_ext_rep_string: UInt32 = 1114
+    /**
      *
      * Source: all_types.proto
      */
@@ -1716,6 +1920,10 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_bytes = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_bytes extension field.
+     */
+    public static let fieldNumber_ext_rep_bytes: UInt32 = 1115
     /**
      *
      * Source: all_types.proto
@@ -1729,6 +1937,10 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_rep_nested_enum extension field.
+     */
+    public static let fieldNumber_ext_rep_nested_enum: UInt32 = 1116
+    /**
      *
      * Source: all_types.proto
      */
@@ -1740,6 +1952,10 @@ extension AllTypes : ProtoExtensible {
             storage.ext_rep_nested_message = newValue
         }
     }
+    /**
+     * Field number for the ext_rep_nested_message extension field.
+     */
+    public static let fieldNumber_ext_rep_nested_message: UInt32 = 1117
     /**
      *
      * Source: all_types.proto
@@ -1753,6 +1969,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_pack_int32 extension field.
+     */
+    public static let fieldNumber_ext_pack_int32: UInt32 = 1201
+    /**
+     * Integer encoding for the ext_pack_int32 extension field.
+     */
+    public static let fieldEncoding_ext_pack_int32: ProtoIntEncoding = .variable
+    /**
      *
      * Source: all_types.proto
      */
@@ -1764,6 +1988,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_pack_uint32 = newValue
         }
     }
+    /**
+     * Field number for the ext_pack_uint32 extension field.
+     */
+    public static let fieldNumber_ext_pack_uint32: UInt32 = 1202
+    /**
+     * Integer encoding for the ext_pack_uint32 extension field.
+     */
+    public static let fieldEncoding_ext_pack_uint32: ProtoIntEncoding = .variable
     /**
      *
      * Source: all_types.proto
@@ -1777,6 +2009,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_pack_sint32 extension field.
+     */
+    public static let fieldNumber_ext_pack_sint32: UInt32 = 1203
+    /**
+     * Integer encoding for the ext_pack_sint32 extension field.
+     */
+    public static let fieldEncoding_ext_pack_sint32: ProtoIntEncoding = .signed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1788,6 +2028,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_pack_fixed32 = newValue
         }
     }
+    /**
+     * Field number for the ext_pack_fixed32 extension field.
+     */
+    public static let fieldNumber_ext_pack_fixed32: UInt32 = 1204
+    /**
+     * Integer encoding for the ext_pack_fixed32 extension field.
+     */
+    public static let fieldEncoding_ext_pack_fixed32: ProtoIntEncoding = .fixed
     /**
      *
      * Source: all_types.proto
@@ -1801,6 +2049,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_pack_sfixed32 extension field.
+     */
+    public static let fieldNumber_ext_pack_sfixed32: UInt32 = 1205
+    /**
+     * Integer encoding for the ext_pack_sfixed32 extension field.
+     */
+    public static let fieldEncoding_ext_pack_sfixed32: ProtoIntEncoding = .fixed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1812,6 +2068,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_pack_int64 = newValue
         }
     }
+    /**
+     * Field number for the ext_pack_int64 extension field.
+     */
+    public static let fieldNumber_ext_pack_int64: UInt32 = 1206
+    /**
+     * Integer encoding for the ext_pack_int64 extension field.
+     */
+    public static let fieldEncoding_ext_pack_int64: ProtoIntEncoding = .variable
     /**
      *
      * Source: all_types.proto
@@ -1825,6 +2089,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_pack_uint64 extension field.
+     */
+    public static let fieldNumber_ext_pack_uint64: UInt32 = 1207
+    /**
+     * Integer encoding for the ext_pack_uint64 extension field.
+     */
+    public static let fieldEncoding_ext_pack_uint64: ProtoIntEncoding = .variable
+    /**
      *
      * Source: all_types.proto
      */
@@ -1836,6 +2108,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_pack_sint64 = newValue
         }
     }
+    /**
+     * Field number for the ext_pack_sint64 extension field.
+     */
+    public static let fieldNumber_ext_pack_sint64: UInt32 = 1208
+    /**
+     * Integer encoding for the ext_pack_sint64 extension field.
+     */
+    public static let fieldEncoding_ext_pack_sint64: ProtoIntEncoding = .signed
     /**
      *
      * Source: all_types.proto
@@ -1849,6 +2129,14 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_pack_fixed64 extension field.
+     */
+    public static let fieldNumber_ext_pack_fixed64: UInt32 = 1209
+    /**
+     * Integer encoding for the ext_pack_fixed64 extension field.
+     */
+    public static let fieldEncoding_ext_pack_fixed64: ProtoIntEncoding = .fixed
+    /**
      *
      * Source: all_types.proto
      */
@@ -1860,6 +2148,14 @@ extension AllTypes : ProtoExtensible {
             storage.ext_pack_sfixed64 = newValue
         }
     }
+    /**
+     * Field number for the ext_pack_sfixed64 extension field.
+     */
+    public static let fieldNumber_ext_pack_sfixed64: UInt32 = 1210
+    /**
+     * Integer encoding for the ext_pack_sfixed64 extension field.
+     */
+    public static let fieldEncoding_ext_pack_sfixed64: ProtoIntEncoding = .fixed
     /**
      *
      * Source: all_types.proto
@@ -1873,6 +2169,10 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_pack_bool extension field.
+     */
+    public static let fieldNumber_ext_pack_bool: UInt32 = 1211
+    /**
      *
      * Source: all_types.proto
      */
@@ -1884,6 +2184,10 @@ extension AllTypes : ProtoExtensible {
             storage.ext_pack_float = newValue
         }
     }
+    /**
+     * Field number for the ext_pack_float extension field.
+     */
+    public static let fieldNumber_ext_pack_float: UInt32 = 1212
     /**
      *
      * Source: all_types.proto
@@ -1897,6 +2201,10 @@ extension AllTypes : ProtoExtensible {
         }
     }
     /**
+     * Field number for the ext_pack_double extension field.
+     */
+    public static let fieldNumber_ext_pack_double: UInt32 = 1213
+    /**
      *
      * Source: all_types.proto
      */
@@ -1908,6 +2216,10 @@ extension AllTypes : ProtoExtensible {
             storage.ext_pack_nested_enum = newValue
         }
     }
+    /**
+     * Field number for the ext_pack_nested_enum extension field.
+     */
+    public static let fieldNumber_ext_pack_nested_enum: UInt32 = 1216
 }
 
 #if !WIRE_REMOVE_EQUATABLE

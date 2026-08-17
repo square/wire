@@ -18,6 +18,7 @@ package com.squareup.wire.swift
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.doesNotContain
+import assertk.assertions.isEqualTo
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.Schema
 import io.outfoxx.swiftpoet.FileSpec
@@ -62,6 +63,119 @@ class SwiftGeneratorTest {
 
     assertThat(code).contains("public var repeated_scalar: [String] {")
     assertThat(code).contains("self.parseUnknownField(fieldNumber: 50003)")
+  }
+
+  @Test fun extensionFieldNumbersAreExposedAsConstants() {
+    val schema = buildSchema {
+      add(
+        "custom_options.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package squareup.protos3.kotlin.custom_options;
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MessageOptions {
+        |  string implicit_scalar = 50001;
+        |  repeated string repeated_scalar = 50003;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("google.protobuf.MessageOptions")
+
+    assertThat(code).contains("public static let fieldNumber_implicit_scalar: UInt32 = 50001")
+    assertThat(code).contains("public static let fieldNumber_repeated_scalar: UInt32 = 50003")
+  }
+
+  @Test fun extensionFieldEncodingsAreExposedAsConstants() {
+    val schema = buildSchema {
+      add(
+        "extensible_message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package squareup.protos2.kotlin;
+        |
+        |message ExtensibleMessage {
+        |  extensions 100 to 200;
+        |}
+        |
+        |extend ExtensibleMessage {
+        |  optional int32 ext_int32 = 100;
+        |  optional sint32 ext_sint32 = 101;
+        |  optional fixed32 ext_fixed32 = 102;
+        |  repeated sint64 rep_ext_sint64 = 103;
+        |  optional string ext_string = 104;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos2.kotlin.ExtensibleMessage")
+
+    assertThat(code).contains("public static let fieldEncoding_ext_int32: ProtoIntEncoding = .variable")
+    assertThat(code).contains("public static let fieldEncoding_ext_sint32: ProtoIntEncoding = .signed")
+    assertThat(code).contains("public static let fieldEncoding_ext_fixed32: ProtoIntEncoding = .fixed")
+    assertThat(code).contains("public static let fieldEncoding_rep_ext_sint64: ProtoIntEncoding = .signed")
+    // Only integer fields take an explicit encoding in parseUnknownField/setUnknownField.
+    assertThat(code).doesNotContain("fieldEncoding_ext_string")
+  }
+
+  @Test fun extensionFieldNumberConstantsAreGeneratedOnceForHeapAllocatedMessages() {
+    val schema = buildSchema {
+      add(
+        "big_message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package squareup.protos2.kotlin;
+        |
+        |message BigMessage {
+        |  optional int32 f1 = 1;
+        |  optional int32 f2 = 2;
+        |  optional int32 f3 = 3;
+        |  optional int32 f4 = 4;
+        |  optional int32 f5 = 5;
+        |  optional int32 f6 = 6;
+        |  optional int32 f7 = 7;
+        |  optional int32 f8 = 8;
+        |  optional int32 f9 = 9;
+        |  optional int32 f10 = 10;
+        |  optional int32 f11 = 11;
+        |  optional int32 f12 = 12;
+        |  optional int32 f13 = 13;
+        |  optional int32 f14 = 14;
+        |  optional int32 f15 = 15;
+        |  optional int32 f16 = 16;
+        |
+        |  extensions 1000 to 1999;
+        |}
+        |
+        |extend BigMessage {
+        |  optional string extra = 1000;
+        |  optional sint32 extra_signed = 1001;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos2.kotlin.BigMessage")
+
+    // Precondition: the message must actually be heap-allocated, or the single-emission
+    // assertion below passes trivially because only one extension block is generated at all.
+    assertThat(code).contains("public struct Storage")
+
+    val constant = "public static let fieldNumber_extra: UInt32 = 1000"
+    assertThat(code).contains(constant)
+    // The constant belongs on the extended type only, not on its CopyOnWrite storage type.
+    assertThat(code.indexOf(constant)).isEqualTo(code.lastIndexOf(constant))
+
+    val encodingConstant = "public static let fieldEncoding_extra_signed: ProtoIntEncoding = .signed"
+    assertThat(code).contains(encodingConstant)
+    assertThat(code.indexOf(encodingConstant)).isEqualTo(code.lastIndexOf(encodingConstant))
   }
 
   @Test fun usesFieldMask() {

@@ -133,4 +133,35 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(LargeExtensible.default_ext_value17, "my extension default value")
         XCTAssertEqual(LargeExtensible.default_ext_value18, "")
     }
+
+    func testExtensionFieldNumberAndEncodingConstants() {
+        XCTAssertEqual(Extensible.fieldNumber_ext_int32, 1001)
+        XCTAssertEqual(Extensible.fieldEncoding_ext_int32, .variable)
+        XCTAssertEqual(Extensible.fieldNumber_ext_sint32, 1003)
+        XCTAssertEqual(Extensible.fieldEncoding_ext_sint32, .signed)
+        XCTAssertEqual(Extensible.fieldNumber_ext_fixed32, 1004)
+        XCTAssertEqual(Extensible.fieldEncoding_ext_fixed32, .fixed)
+        XCTAssertEqual(Extensible.fieldNumber_ext_string, 1014)
+        XCTAssertEqual(LargeExtensible.fieldNumber_ext_value17, 17)
+        XCTAssertEqual(LargeExtensible.fieldNumber_rep_ext_sint32, 21)
+        XCTAssertEqual(LargeExtensible.fieldEncoding_rep_ext_sint32, .signed)
+
+        // Round-trip a value through the raw APIs using only generated constants.
+        var message = Extensible()
+        message.setUnknownField(
+            fieldNumber: Extensible.fieldNumber_ext_sint32,
+            newValue: Int32(-42),
+            encoding: Extensible.fieldEncoding_ext_sint32
+        )
+        XCTAssertEqual(
+            message.parseUnknownField(
+                fieldNumber: Extensible.fieldNumber_ext_sint32,
+                type: Int32.self,
+                encoding: Extensible.fieldEncoding_ext_sint32
+            ),
+            -42
+        )
+        // The generated accessor reads the same field the raw APIs just wrote.
+        XCTAssertEqual(message.ext_sint32, -42)
+    }
 }

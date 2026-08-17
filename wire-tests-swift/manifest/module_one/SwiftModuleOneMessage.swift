@@ -38,6 +38,10 @@ extension SwiftModuleOneMessage {
      * Default value for extension_message extension field.
      */
     public static let default_extension_message: ExtensionMessage = .defaultedValue
+    /**
+     * Field number for the extension_message extension field.
+     */
+    public static let fieldNumber_extension_message: UInt32 = 1000
 }
 
 #if !WIRE_REMOVE_EQUATABLE

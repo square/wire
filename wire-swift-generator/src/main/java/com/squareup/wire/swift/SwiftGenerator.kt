@@ -93,6 +93,7 @@ class SwiftGenerator private constructor(
   private val unknownFields = DeclaredTypeName.typeName("Wire.UnknownFields")
   private val extensibleUnknownFields = DeclaredTypeName.typeName("Wire.ExtensibleUnknownFields")
   private val protoExtensible = DeclaredTypeName.typeName("Wire.ProtoExtensible")
+  private val protoIntEncoding = DeclaredTypeName.typeName("Wire.ProtoIntEncoding")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
 
@@ -1328,6 +1329,9 @@ class SwiftGenerator private constructor(
 
               addProperty(defaultProperty)
             }
+
+            addProperty(extensionFieldNumberProperty(field))
+            extensionFieldEncodingProperty(field)?.let { addProperty(it) }
           }
         }
         .build()
@@ -1335,6 +1339,23 @@ class SwiftGenerator private constructor(
       fileMembers += FileMemberSpec.builder(extensibleExtension)
         .build()
     }
+  }
+
+  private fun extensionFieldNumberProperty(field: Field): PropertySpec = PropertySpec.varBuilder("fieldNumber_${field.safeName}", UINT32, PUBLIC, STATIC)
+    .addDoc("Field number for the %L extension field.\n", field.safeName)
+    .mutable(false)
+    .initializer("%L", field.tag)
+    .build()
+
+  // Emitted whenever the accessor passes `encoding:` to parseUnknownField/setUnknownField, so
+  // callers of those APIs can source the (fieldNumber, encoding) pair entirely from codegen.
+  private fun extensionFieldEncodingProperty(field: Field): PropertySpec? {
+    val encoding = field.type!!.encoding ?: return null
+    return PropertySpec.varBuilder("fieldEncoding_${field.safeName}", protoIntEncoding, PUBLIC, STATIC)
+      .addDoc("Integer encoding for the %L extension field.\n", field.safeName)
+      .mutable(false)
+      .initializer(".%N", encoding)
+      .build()
   }
 
   private fun generateMessageExtensions(
@@ -1415,6 +1436,12 @@ class SwiftGenerator private constructor(
                   .build()
 
               addProperty(defaultProperty)
+            }
+
+            // The constants belong on the extended type; the storage pass must skip them or they'd be declared twice.
+            if (!forStorageType) {
+              addProperty(extensionFieldNumberProperty(field))
+              extensionFieldEncodingProperty(field)?.let { addProperty(it) }
             }
           }
         }
