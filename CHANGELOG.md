@@ -1,6 +1,38 @@
 Change Log
 ==========
 
+Version 7.0.0-alpha07
+---------------------
+
+_2026-08-18_
+
+### Common
+
+* Fix: parse an option name component that is followed by a parenthesized extension, such as
+  protovalidate's `[(buf.validate.field).string.(buf.validate.predefined) = true]` (#3673 by
+  [Thomas Manninger][tmanninger])
+
+### Gradle plugin
+
+* Fix: register generated sources for third-party `WireOutput` subclasses instead of failing with
+  "Wire output ... is not supported". This restores the Wire 6 behavior for plugins that add their
+  own outputs (#3663)
+* Fix: do not register generated sources via Kotlin 2.3's `generatedKotlin` on projects that apply
+  KSP. KSP does not see that source directory set, so symbol processors missed Wire's generated
+  sources, and KSP tasks lost their task dependency on the Wire task. Wire falls back to
+  `kotlin.srcDir()` on such projects (#3665)
+
+### Kotlin
+
+* Fix: escape a oneof named with a Kotlin keyword in the generated `toString()` (#3675)
+
+### Swift
+
+* New: generate `fieldNumber_<name>` and `fieldEncoding_<name>` constants for extension fields, on
+  the extended type. They let consumers call `parseUnknownField` and `setUnknownField` without
+  hard-coding field numbers. `ProtoIntEncoding` is now `Sendable` so that these constants compile
+  under strict concurrency checking (#3676)
+
 Version 7.0.0-alpha06
 ---------------------
 
@@ -2075,6 +2107,7 @@ Initial version.
  [MariusVolkhart]: https://github.com/MariusVolkhart
  [ShayOinif]: https://github.com/ShayOinif
  [TrekLaps]: https://github.com/TrekLaps
+ [tmanninger]: https://github.com/tmanninger
  [tonghuaroot]: https://github.com/tonghuaroot
  [eyupcanakman]: https://github.com/eyupcanakman
  [aaron-edwards]: https://github.com/aaron-edwards
