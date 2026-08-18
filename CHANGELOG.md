@@ -1,7 +1,16 @@
 Change Log
 ==========
 
-Version 7.0.0-alpha07
+Version 6.4.6
+---------------------
+
+_2026-08-18_
+
+### Gradle plugin
+
+* Register generated Kotlin sources with Kotlin 2.3's `generatedKotlin` API when available (#3573)
+
+* Version 7.0.0-alpha07
 ---------------------
 
 _2026-08-18_
