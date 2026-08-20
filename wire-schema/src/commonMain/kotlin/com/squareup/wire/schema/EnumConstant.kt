@@ -28,7 +28,13 @@ data class EnumConstant(
   val isDeprecated: Boolean
     get() = "true" == options.get(DEPRECATED)
 
-  internal fun toElement() = EnumConstantElement(location, name, tag, documentation, options.elements)
+  internal fun toElement() = EnumConstantElement(
+    location = location,
+    name = name,
+    tag = tag,
+    documentation = documentation,
+    options = options.elements,
+  )
 
   internal fun linkOptions(linker: Linker, validate: Boolean) {
     @Suppress("NAME_SHADOWING")
