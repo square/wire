@@ -1,5 +1,5 @@
 plugins {
-  kotlin("js")
+  kotlin("multiplatform")
   id("com.squareup.wire")
 }
 

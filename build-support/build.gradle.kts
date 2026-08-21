@@ -81,7 +81,7 @@ allprojects {
   tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
       jvmTarget.set(JvmTarget.JVM_11)
-      freeCompilerArgs.add("-Xjvm-default=all")
+      freeCompilerArgs.add("-jvm-default=no-compatibility")
     }
   }
 }

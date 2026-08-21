@@ -50,7 +50,6 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -231,7 +230,7 @@ class WireBuildPlugin : Plugin<Project> {
     tasks.withType(KotlinJvmCompile::class.java).configureEach {
       compilerOptions {
         jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-        freeCompilerArgs.add("-Xjvm-default=all")
+        freeCompilerArgs.add("-jvm-default=no-compatibility")
       }
     }
     // Kotlin requires the Java compatibility matches.
@@ -252,48 +251,46 @@ class WireBuildPlugin : Plugin<Project> {
       kotlin.configureWebKotlinLibraries()
     }
     plugins.withId("org.jetbrains.kotlin.js") {
-      val kotlin = extensions.getByName("kotlin") as KotlinJsProjectExtension
-      kotlin.configureWebKotlinLibraries()
+      val kotlin = extensions.getByName("kotlin") as KotlinProjectExtension
+      kotlin.configureJsKotlinLibraries()
     }
   }
 
   // For KotlinWasm/Js, versions of toolchain and stdlib need to be the same:
   // https://youtrack.jetbrains.com/issue/KT-71032
-  private fun KotlinProjectExtension.configureWebKotlinLibraries() {
+  private fun KotlinProjectExtension.configureJsKotlinLibraries() {
     val kotlinVersion = project.getVersionByName("kotlin")
 
-    when (this) {
-      is KotlinJsProjectExtension -> {
-        val suffix = "js"
-        sourceSets.apply {
-          getByName("main").dependencies {
-            implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
-          }
-          getByName("test").dependencies {
-            implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
-            implementation("org.jetbrains.kotlin:kotlin-test-$suffix:$kotlinVersion")
-          }
-        }
+    val suffix = "js"
+    sourceSets.apply {
+      getByName("main").dependencies {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+      }
+      getByName("test").dependencies {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+        implementation("org.jetbrains.kotlin:kotlin-test-$suffix:$kotlinVersion")
+      }
+    }
+  }
+
+  private fun KotlinMultiplatformExtension.configureWebKotlinLibraries() {
+    val kotlinVersion = project.getVersionByName("kotlin")
+
+    targets.matching { it.platformType in listOf(KotlinPlatformType.js, KotlinPlatformType.wasm) }.configureEach {
+      val suffix = when (platformType) {
+        KotlinPlatformType.js -> "js"
+        KotlinPlatformType.wasm -> if (targetName.contains("wasi", true)) "wasm-wasi" else "wasm-js"
+        else -> return@configureEach
       }
 
-      is KotlinMultiplatformExtension -> {
-        targets.matching { it.platformType in listOf(KotlinPlatformType.js, KotlinPlatformType.wasm) }.configureEach {
-          val suffix = when (platformType) {
-            KotlinPlatformType.js -> "js"
-            KotlinPlatformType.wasm -> if (targetName.contains("wasi", true)) "wasm-wasi" else "wasm-js"
-            else -> return@configureEach
-          }
+      this@configureWebKotlinLibraries.sourceSets.apply {
+        getByName("${targetName}Main").dependencies {
+          implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+        }
 
-          this@configureWebKotlinLibraries.sourceSets.apply {
-            getByName("${targetName}Main").dependencies {
-              implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
-            }
-
-            getByName("${targetName}Test").dependencies {
-              implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
-              implementation("org.jetbrains.kotlin:kotlin-test-$suffix:$kotlinVersion")
-            }
-          }
+        getByName("${targetName}Test").dependencies {
+          implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
+          implementation("org.jetbrains.kotlin:kotlin-test-$suffix:$kotlinVersion")
         }
       }
     }
