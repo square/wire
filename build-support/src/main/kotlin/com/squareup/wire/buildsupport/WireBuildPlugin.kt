@@ -50,7 +50,6 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -251,10 +250,6 @@ class WireBuildPlugin : Plugin<Project> {
       }
       kotlin.configureWebKotlinLibraries()
     }
-    plugins.withId("org.jetbrains.kotlin.js") {
-      val kotlin = extensions.getByName("kotlin") as KotlinJsProjectExtension
-      kotlin.configureWebKotlinLibraries()
-    }
   }
 
   // For KotlinWasm/Js, versions of toolchain and stdlib need to be the same:
@@ -263,19 +258,6 @@ class WireBuildPlugin : Plugin<Project> {
     val kotlinVersion = project.getVersionByName("kotlin")
 
     when (this) {
-      is KotlinJsProjectExtension -> {
-        val suffix = "js"
-        sourceSets.apply {
-          getByName("main").dependencies {
-            implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
-          }
-          getByName("test").dependencies {
-            implementation("org.jetbrains.kotlin:kotlin-stdlib-$suffix:$kotlinVersion")
-            implementation("org.jetbrains.kotlin:kotlin-test-$suffix:$kotlinVersion")
-          }
-        }
-      }
-
       is KotlinMultiplatformExtension -> {
         targets.matching { it.platformType in listOf(KotlinPlatformType.js, KotlinPlatformType.wasm) }.configureEach {
           val suffix = when (platformType) {
