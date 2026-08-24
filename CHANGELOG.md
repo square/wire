@@ -1,6 +1,26 @@
 Change Log
 ==========
 
+Version 7.0.0-alpha08
+---------------------
+
+_2026-08-24_
+
+### Kotlin
+
+* Fix: Decode oneofs in constant size per field in Kotlin (#3691)
+
+Version 6.4.7
+---------------------
+
+_2026-08-24_
+
+### Common
+
+* Fix: parse an option name component that is followed by a parenthesized extension, such as
+  protovalidate's `[(buf.validate.field).string.(buf.validate.predefined) = true]` (#3673 by
+  [Thomas Manninger][tmanninger])
+
 Version 6.4.6
 ---------------------
 
