@@ -67,8 +67,6 @@ class WirePlugin : Plugin<Project> {
     val kotlinPluginHandler = { _: Plugin<*> -> kotlin.set(true) }
     project.plugins.withId("org.jetbrains.kotlin.multiplatform", kotlinPluginHandler)
     project.plugins.withId("org.jetbrains.kotlin.jvm", kotlinPluginHandler)
-    project.plugins.withId("org.jetbrains.kotlin.js", kotlinPluginHandler)
-    project.plugins.withId("kotlin2js", kotlinPluginHandler)
     // When `android.builtInKotlin`` property is disabled, the users  will need to apply either the
     // `com.android.experimental.built-in-kotlin` plugin or the `org.jetbrains.kotlin.android` plugin to have Kotlin.
     project.plugins.withId("com.android.experimental.built-in-kotlin", kotlinPluginHandler)
@@ -255,8 +253,6 @@ class WirePlugin : Plugin<Project> {
     // Indicates when the plugin is applied inside the Wire repo to Wire's own modules.
     val isInternalBuild = project.providers.gradleProperty("com.squareup.wire.internal").getOrElse("false").toBoolean()
     val isMultiplatform = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
-    val isJsOnly =
-      if (isMultiplatform) false else project.plugins.hasPlugin("org.jetbrains.kotlin.js")
     val runtimeDependency = wireRuntimeDependency(isInternalBuild)
 
     when {
@@ -264,18 +260,6 @@ class WirePlugin : Plugin<Project> {
         val sourceSets =
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
-        project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
-      }
-
-      isJsOnly -> {
-        // KotlinJsProjectExtension is deprecated with level ERROR in Kotlin 2.4, but consumers can
-        // still apply the Kotlin/JS plugin.
-        @Suppress("DEPRECATION_ERROR")
-        val sourceSets =
-          project.extensions
-            .getByType(org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension::class.java)
-            .sourceSets
-        val sourceSet = (sourceSets.getByName("main") as DefaultKotlinSourceSet)
         project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
       }
 
