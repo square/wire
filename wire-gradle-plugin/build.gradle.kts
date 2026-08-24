@@ -1,3 +1,4 @@
+import org.gradle.api.attributes.java.TargetJvmVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -109,5 +110,13 @@ tasks.withType<KotlinJvmCompile>().configureEach {
         "-Xjdk-release=11"
       ),
     )
+  }
+}
+
+// AGP 9.3+ publishes its artifacts with Java 17 metadata. AGP is compileOnly here and this module
+// keeps Java 11 bytecode for its consumers, so only relax the resolution attribute.
+configurations.named("compileClasspath") {
+  attributes {
+    attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
   }
 }
