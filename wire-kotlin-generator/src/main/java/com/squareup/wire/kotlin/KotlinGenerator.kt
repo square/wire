@@ -1941,6 +1941,18 @@ class KotlinGenerator private constructor(
   private fun decodeFun(protoReaderType: ClassName, message: MessageType): FunSpec {
     val className = typeToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message).copy()
+    // Each flat oneof with multiple fields gets a local variable which tracks the tag of the last
+    // decoded field of that oneof. Each decoding branch resets at most its own field, and the
+    // constructor call keeps the last decoded field only. Resetting all other fields of the oneof
+    // in every branch instead would emit code quadratic in the number of fields, which can exceed
+    // the JVM method size limit on large oneofs.
+    val oneOfTagNames: Map<OneOf, String> = if (buildersOnly) {
+      emptyMap()
+    } else {
+      message.flatOneOfs()
+        .filter { it.fields.size > 1 }
+        .associateWith { nameAllocator.newName(it.name + "_tag") }
+    }
     // The builder's fields will be of immutable types. In order to optimize decoding, we'll create
     // mutable collections into which values will be aggregated to later be set to the builder via
     // its setters.
@@ -1977,6 +1989,9 @@ class KotlinGenerator private constructor(
             }
             else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
           }
+        }
+        for (tagName in oneOfTagNames.values) {
+          addStatement("var %N: %T = 0", tagName, INT)
         }
       }
     }
@@ -2023,12 +2038,18 @@ class KotlinGenerator private constructor(
                   CodeBlock.of("")
                 }
 
+              val oneOfTagName = message.flatOneOfs()
+                .firstOrNull { fieldOrOneOf in it.fields }
+                ?.let { oneOfTagNames[it] }
+
               if (fieldOrOneOf.isPacked && fieldOrOneOf.isScalar) {
                 if (fieldOrOneOf.useArray) {
                   addStatement("%1N = %1N?.toArray() ?: %2L,", fieldName, fieldOrOneOf.emptyPrimitiveArrayForType)
                 } else {
                   addStatement("%1N = %1N ?: listOf(),", fieldName)
                 }
+              } else if (oneOfTagName != null) {
+                addStatement("%1N = if (%2N == %3L) %1N else null,", fieldName, oneOfTagName, fieldOrOneOf.tag)
               } else {
                 addStatement("%1N = %1N%2L,", fieldName, throwExceptionBlock)
               }
@@ -2068,11 +2089,12 @@ class KotlinGenerator private constructor(
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
           val flatOneOf = message.flatOneOfs().firstOrNull { field in it.fields }
+          val oneOfTagName = flatOneOf?.let { oneOfTagNames[it] }
 
           when {
             field.type!!.isEnum -> {
               beginControlFlow("%L -> try", field.tag)
-              add("%L\n", decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, nameAllocator))
+              add("%L\n", decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName))
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
               addStatement(
                 "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())",
@@ -2083,14 +2105,14 @@ class KotlinGenerator private constructor(
             }
             field.isPacked && field.isScalar -> {
               beginControlFlow("%L ->", field.tag)
-              add(decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, nameAllocator))
+              add(decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName))
               endControlFlow()
             }
             else -> {
               add(
                 "%L -> %L\n",
                 field.tag,
-                decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, nameAllocator),
+                decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName),
               )
             }
           }
@@ -2174,7 +2196,7 @@ class KotlinGenerator private constructor(
     fieldName: String,
     adapterName: CodeBlock,
     oneOf: OneOf?,
-    nameAllocator: NameAllocator,
+    oneOfTagName: String?,
   ): CodeBlock {
     val decode = if (field.useArray) {
       CodeBlock.of(
@@ -2238,20 +2260,20 @@ class KotlinGenerator private constructor(
 
     if (buildersOnly || oneOf == null) return assignment
 
-    val otherFields = oneOf.fields.filter { it != field }
     return buildCodeBlock {
       beginControlFlow("run")
-      if (field.type!!.isMessage && otherFields.isNotEmpty()) {
-        beginControlFlow(
-          "if (%L)",
-          otherFields.joinToCode(separator = " || ") { CodeBlock.of("%N != null", nameAllocator[it]) },
-        )
-        addStatement("%N = null", fieldName)
-        endControlFlow()
-      }
-      addStatement("%L", assignment)
-      for (other in otherFields) {
-        addStatement("%N = null", nameAllocator[other])
+      if (oneOfTagName == null) {
+        addStatement("%L", assignment)
+      } else {
+        // Merging only applies to repeated occurrences of this same field. If another field of
+        // the oneof was decoded since, this field's stale value must not be merged with.
+        if (field.type!!.isMessage) {
+          beginControlFlow("if (%N != %L)", oneOfTagName, field.tag)
+          addStatement("%N = null", fieldName)
+          endControlFlow()
+        }
+        addStatement("%L", assignment)
+        addStatement("%N = %L", oneOfTagName, field.tag)
       }
       endControlFlow()
     }

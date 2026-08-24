@@ -1541,6 +1541,38 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test fun flatOneOfDecodingIsConstantSizePerField() {
+    val schema = buildSchema {
+      add(
+        "a.proto".toPath(),
+        """
+        |package common.proto;
+        |message Form {
+        |  message ShippingAddress {}
+        |  message BillingAddress {}
+        |  oneof choice {
+        |    ShippingAddress shipping = 1;
+        |    BillingAddress billing = 2;
+        |    string note = 3;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Form")
+    // Each decoding branch tracks the last decoded field of the oneof by tag, and resets at most
+    // its own field. Resetting all other fields of the oneof in every branch instead is quadratic
+    // in the number of fields and can exceed the JVM method size limit on large oneofs.
+    assertThat(code).contains("var choice_tag: Int = 0")
+    assertThat(code).contains("if (choice_tag != 1)")
+    assertThat(code).contains("shipping = decodeMessageOrMerge(ShippingAddress.ADAPTER, reader, shipping)")
+    assertThat(code).contains("choice_tag = 1")
+    assertThat(code).contains("shipping = if (choice_tag == 1) shipping else null,")
+    assertThat(code).contains("billing = if (choice_tag == 2) billing else null,")
+    assertThat(code).contains("note = if (choice_tag == 3) note else null,")
+    assertThat(code).doesNotContain("if (billing != null || note != null)")
+  }
+
   @Test fun wildCommentsAreEscaped() {
     val schema = buildSchema {
       add(

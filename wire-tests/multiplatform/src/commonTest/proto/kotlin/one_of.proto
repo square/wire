@@ -32,3 +32,20 @@ message OneOfMessage {
     string baz = 4;
   }
 }
+
+/**
+ * A one of with message fields, to test merging of repeated occurrences on the wire.
+ */
+message OneOfMessageWithMessages {
+
+  message Inner {
+    optional string a = 1;
+    optional string b = 2;
+  }
+
+  oneof choice {
+    Inner first = 1;
+    Inner second = 2;
+    string note = 3;
+  }
+}

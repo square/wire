@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2025 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +15,18 @@
  */
 package com.squareup.wire
 
-import assertk.assertThat
-import assertk.assertions.hasMessage
-import com.squareup.wire.protos.kotlin.OneOfMessage
 import com.squareup.wire.protos.kotlin.OneOfMessageWithMessages
 import com.squareup.wire.protos.kotlin.OneOfMessageWithMessages.Inner
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.fail
 
-class OneOfTest {
-  @Test
-  fun constructorFailsWhenBothFieldsAreNonNull() {
-    try {
-      OneOfMessage(foo = 1, bar = "two", baz = null)
-      fail()
-    } catch (expected: IllegalArgumentException) {
-      assertThat(expected).hasMessage("At most one of foo, bar, baz may be non-null")
-    }
-  }
-
+class ProtoReader32OneOfTest {
   @Test
   fun repeatedOccurrencesOfTheSameOneOfFieldMerge() {
     val bytes = OneOfMessageWithMessages(first = Inner(a = "a")).encode() +
       OneOfMessageWithMessages(first = Inner(b = "b")).encode()
 
-    val decoded = OneOfMessageWithMessages.ADAPTER.decode(bytes)
+    val decoded = OneOfMessageWithMessages.ADAPTER.decode(ProtoReader32(bytes))
 
     assertEquals(OneOfMessageWithMessages(first = Inner(a = "a", b = "b")), decoded)
   }
@@ -50,7 +36,7 @@ class OneOfTest {
     val bytes = OneOfMessageWithMessages(first = Inner(a = "a")).encode() +
       OneOfMessageWithMessages(second = Inner(b = "b")).encode()
 
-    val decoded = OneOfMessageWithMessages.ADAPTER.decode(bytes)
+    val decoded = OneOfMessageWithMessages.ADAPTER.decode(ProtoReader32(bytes))
 
     assertEquals(OneOfMessageWithMessages(second = Inner(b = "b")), decoded)
   }
@@ -60,7 +46,7 @@ class OneOfTest {
     val bytes = OneOfMessageWithMessages(first = Inner(a = "a")).encode() +
       OneOfMessageWithMessages(note = "note").encode()
 
-    val decoded = OneOfMessageWithMessages.ADAPTER.decode(bytes)
+    val decoded = OneOfMessageWithMessages.ADAPTER.decode(ProtoReader32(bytes))
 
     assertEquals(OneOfMessageWithMessages(note = "note"), decoded)
   }
@@ -71,7 +57,7 @@ class OneOfTest {
       OneOfMessageWithMessages(second = Inner(a = "x")).encode() +
       OneOfMessageWithMessages(first = Inner(b = "b")).encode()
 
-    val decoded = OneOfMessageWithMessages.ADAPTER.decode(bytes)
+    val decoded = OneOfMessageWithMessages.ADAPTER.decode(ProtoReader32(bytes))
 
     assertEquals(OneOfMessageWithMessages(first = Inner(b = "b")), decoded)
   }
