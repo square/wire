@@ -28,7 +28,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 
@@ -269,8 +268,13 @@ class WirePlugin : Plugin<Project> {
       }
 
       isJsOnly -> {
+        // KotlinJsProjectExtension is deprecated with level ERROR in Kotlin 2.4, but consumers can
+        // still apply the Kotlin/JS plugin.
+        @Suppress("DEPRECATION_ERROR")
         val sourceSets =
-          project.extensions.getByType(KotlinJsProjectExtension::class.java).sourceSets
+          project.extensions
+            .getByType(org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension::class.java)
+            .sourceSets
         val sourceSet = (sourceSets.getByName("main") as DefaultKotlinSourceSet)
         project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
       }

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("DEPRECATION_ERROR")
+
 package com.squareup.wire.buildsupport
 
 import com.android.build.api.dsl.ApplicationExtension

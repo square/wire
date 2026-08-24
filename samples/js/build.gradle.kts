@@ -1,5 +1,5 @@
 plugins {
-  kotlin("js")
+  kotlin("multiplatform")
   id("com.squareup.wire")
 }
 
@@ -8,7 +8,7 @@ repositories {
 }
 
 kotlin {
-  js(IR) {
+  js {
     binaries.executable()
     browser {
       commonWebpackConfig {
