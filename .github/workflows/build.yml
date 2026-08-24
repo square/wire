@@ -38,11 +38,11 @@ jobs:
 
       - name: Test Native, JS and Wasm
         run: |
-          ./gradlew -Dkjs=true -Dknative=true -Dkwasm=true -Pswift=false samples:native:build samples:js:build samples:multi-target:build --stacktrace --warning-mode all
+          ./gradlew -Dkjs=true -Dknative=true -Dkwasm=true -Pswift=false samples:native:build samples:multi-target:build --stacktrace --warning-mode all
 
       - name: Test
         run: |
-          ./gradlew -Dkjs=false -Dknative=false -Dkwasm=false -Pswift=false build --stacktrace --warning-mode all -x samples:native:build -x samples:js:build -x samples:multi-target:build
+          ./gradlew -Dkjs=false -Dknative=false -Dkwasm=false -Pswift=false build --stacktrace --warning-mode all -x samples:native:build -x samples:multi-target:build
 
   multiplatform:
     runs-on: macos-latest
