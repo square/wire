@@ -10,7 +10,6 @@ wire {
 }
 
 dependencies {
-  implementation(libs.androidx.appcompat)
   implementation(libs.androidx.constraintLayout)
   implementation(libs.moshi)
   implementation(projects.wire)
