@@ -15,14 +15,14 @@
  */
 package com.squareup.wire.android.app.kotlin.minsdk
 
+import android.app.Activity
 import android.os.Bundle
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.squareup.wire.WireJsonAdapterFactory
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
   @OptIn(ExperimentalStdlibApi::class)
   private val jsonAdapter = Moshi.Builder()
