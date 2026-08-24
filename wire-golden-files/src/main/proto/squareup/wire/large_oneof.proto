@@ -1,0 +1,189 @@
+/*
+ * Copyright 2025 Block Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+
+package squareup.wire.largeoneof;
+
+// A oneof large enough that decoding branches which reset every other field would exceed the JVM
+// method size limit. Its generated code compiling at all is what this file tests.
+message LargeOneOf {
+  message Item {
+    string value = 1;
+  }
+
+  oneof choice {
+    Item field001 = 1;
+    Item field002 = 2;
+    Item field003 = 3;
+    Item field004 = 4;
+    Item field005 = 5;
+    Item field006 = 6;
+    Item field007 = 7;
+    Item field008 = 8;
+    Item field009 = 9;
+    Item field010 = 10;
+    Item field011 = 11;
+    Item field012 = 12;
+    Item field013 = 13;
+    Item field014 = 14;
+    Item field015 = 15;
+    Item field016 = 16;
+    Item field017 = 17;
+    Item field018 = 18;
+    Item field019 = 19;
+    Item field020 = 20;
+    Item field021 = 21;
+    Item field022 = 22;
+    Item field023 = 23;
+    Item field024 = 24;
+    Item field025 = 25;
+    Item field026 = 26;
+    Item field027 = 27;
+    Item field028 = 28;
+    Item field029 = 29;
+    Item field030 = 30;
+    Item field031 = 31;
+    Item field032 = 32;
+    Item field033 = 33;
+    Item field034 = 34;
+    Item field035 = 35;
+    Item field036 = 36;
+    Item field037 = 37;
+    Item field038 = 38;
+    Item field039 = 39;
+    Item field040 = 40;
+    Item field041 = 41;
+    Item field042 = 42;
+    Item field043 = 43;
+    Item field044 = 44;
+    Item field045 = 45;
+    Item field046 = 46;
+    Item field047 = 47;
+    Item field048 = 48;
+    Item field049 = 49;
+    Item field050 = 50;
+    Item field051 = 51;
+    Item field052 = 52;
+    Item field053 = 53;
+    Item field054 = 54;
+    Item field055 = 55;
+    Item field056 = 56;
+    Item field057 = 57;
+    Item field058 = 58;
+    Item field059 = 59;
+    Item field060 = 60;
+    Item field061 = 61;
+    Item field062 = 62;
+    Item field063 = 63;
+    Item field064 = 64;
+    Item field065 = 65;
+    Item field066 = 66;
+    Item field067 = 67;
+    Item field068 = 68;
+    Item field069 = 69;
+    Item field070 = 70;
+    Item field071 = 71;
+    Item field072 = 72;
+    Item field073 = 73;
+    Item field074 = 74;
+    Item field075 = 75;
+    Item field076 = 76;
+    Item field077 = 77;
+    Item field078 = 78;
+    Item field079 = 79;
+    Item field080 = 80;
+    Item field081 = 81;
+    Item field082 = 82;
+    Item field083 = 83;
+    Item field084 = 84;
+    Item field085 = 85;
+    Item field086 = 86;
+    Item field087 = 87;
+    Item field088 = 88;
+    Item field089 = 89;
+    Item field090 = 90;
+    Item field091 = 91;
+    Item field092 = 92;
+    Item field093 = 93;
+    Item field094 = 94;
+    Item field095 = 95;
+    Item field096 = 96;
+    Item field097 = 97;
+    Item field098 = 98;
+    Item field099 = 99;
+    Item field100 = 100;
+    Item field101 = 101;
+    Item field102 = 102;
+    Item field103 = 103;
+    Item field104 = 104;
+    Item field105 = 105;
+    Item field106 = 106;
+    Item field107 = 107;
+    Item field108 = 108;
+    Item field109 = 109;
+    Item field110 = 110;
+    Item field111 = 111;
+    Item field112 = 112;
+    Item field113 = 113;
+    Item field114 = 114;
+    Item field115 = 115;
+    Item field116 = 116;
+    Item field117 = 117;
+    Item field118 = 118;
+    Item field119 = 119;
+    Item field120 = 120;
+    Item field121 = 121;
+    Item field122 = 122;
+    Item field123 = 123;
+    Item field124 = 124;
+    Item field125 = 125;
+    Item field126 = 126;
+    Item field127 = 127;
+    Item field128 = 128;
+    Item field129 = 129;
+    Item field130 = 130;
+    Item field131 = 131;
+    Item field132 = 132;
+    Item field133 = 133;
+    Item field134 = 134;
+    Item field135 = 135;
+    Item field136 = 136;
+    Item field137 = 137;
+    Item field138 = 138;
+    Item field139 = 139;
+    Item field140 = 140;
+    Item field141 = 141;
+    Item field142 = 142;
+    Item field143 = 143;
+    Item field144 = 144;
+    Item field145 = 145;
+    Item field146 = 146;
+    Item field147 = 147;
+    Item field148 = 148;
+    Item field149 = 149;
+    Item field150 = 150;
+    Item field151 = 151;
+    Item field152 = 152;
+    Item field153 = 153;
+    Item field154 = 154;
+    Item field155 = 155;
+    Item field156 = 156;
+    Item field157 = 157;
+    Item field158 = 158;
+    Item field159 = 159;
+    Item field160 = 160;
+  }
+}
