@@ -1,10 +1,23 @@
 Change Log
 ==========
 
+Version 7.0.0-alpha09
+---------------------
+
+_2026-08-25_
+
+### Gradle plugin
+
+* Revert Kotlin to 2.3.21 and pin the JVM module name (#3693)
+
 Version 7.0.0-alpha08
 ---------------------
 
 _2026-08-24_
+
+### Gradle plugin
+
+* Bump to Kotlin to 2.4.10 (#3681)
 
 ### Kotlin
 
