@@ -233,6 +233,19 @@ class WireBuildPlugin : Plugin<Project> {
         freeCompilerArgs.add("-Xjvm-default=all")
       }
     }
+    // Kotlin 2.4 changed the default JVM module name from the project name to a name derived
+    // from the Maven coordinates. The compiler mangles the module name into the accessors of
+    // internal members, so `getCachedSerializedSize$wire_runtime` became
+    // `getCachedSerializedSize$com_squareup_wire_wire_runtime`. Reflection-based serializers can
+    // embed those accessor names in persisted payloads, so pin the module name to keep the
+    // mangling stable across Kotlin versions. Main compilations only ("compileKotlin" in JVM
+    // modules, "compileKotlinJvm" in the jvm target of multiplatform modules); test module names
+    // keep their defaults.
+    tasks.withType(KotlinJvmCompile::class.java).configureEach {
+      if (name == "compileKotlin" || name == "compileKotlinJvm") {
+        compilerOptions.moduleName.set(project.name)
+      }
+    }
     // Kotlin requires the Java compatibility matches.
     tasks.withType(JavaCompile::class.java).configureEach {
       sourceCompatibility = javaVersion.toString()

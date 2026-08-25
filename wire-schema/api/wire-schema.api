@@ -917,7 +917,7 @@ public final class com/squareup/wire/schema/Service {
 	public static synthetic fun copy$default (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Location;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/squareup/wire/schema/Options;ILjava/lang/Object;)Lcom/squareup/wire/schema/Service;
 	public final fun documentation ()Ljava/lang/String;
 	public fun equals (Ljava/lang/Object;)Z
-	public static final fun fromElements$com_squareup_wire_wire_schema (Ljava/lang/String;Ljava/util/List;)Ljava/util/List;
+	public static final fun fromElements$wire_schema (Ljava/lang/String;Ljava/util/List;)Ljava/util/List;
 	public fun hashCode ()I
 	public final fun link (Lcom/squareup/wire/schema/Linker;)V
 	public final fun linkOptions (Lcom/squareup/wire/schema/Linker;Z)V
@@ -927,7 +927,7 @@ public final class com/squareup/wire/schema/Service {
 	public final fun retainAll (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/MarkSet;)Lcom/squareup/wire/schema/Service;
 	public final fun rpc (Ljava/lang/String;)Lcom/squareup/wire/schema/Rpc;
 	public final fun rpcs ()Ljava/util/List;
-	public static final fun toElements$com_squareup_wire_wire_schema (Ljava/util/List;)Ljava/util/List;
+	public static final fun toElements$wire_schema (Ljava/util/List;)Ljava/util/List;
 	public fun toString ()Ljava/lang/String;
 	public final fun type ()Lcom/squareup/wire/schema/ProtoType;
 	public final fun validate (Lcom/squareup/wire/schema/Linker;)V
