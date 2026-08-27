@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
@@ -35,6 +36,12 @@ kotlin {
     tvosX64()
     tvosArm64()
     tvosSimulatorArm64()
+  }
+  if (System.getProperty("kwasm", "true").toBoolean()) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+      nodejs()
+    }
   }
   sourceSets {
     val commonMain by getting {
