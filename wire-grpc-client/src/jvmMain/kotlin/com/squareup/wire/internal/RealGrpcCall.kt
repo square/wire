@@ -144,11 +144,17 @@ internal class RealGrpcCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
-    // If the timeout doesn't have a deadline or timeout, then the user
-    // didn't set the timeout on this Call manually.
-    if (!timeout.hasDeadline() && (timeout.timeoutNanos() == 0L)) {
-      (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    // Copy the user-set timeout and deadline onto the OkHttp timeout, which enforces them by
+    // canceling the call. The grpc-timeout header alone is not enforced if the server or a proxy
+    // ignores it.
+    val okHttpTimeout = result.timeout()
+    if (timeout.timeoutNanos() != 0L) {
+      okHttpTimeout.timeout(timeout.timeoutNanos(), TimeUnit.NANOSECONDS)
     }
+    if (timeout.hasDeadline()) {
+      okHttpTimeout.deadlineNanoTime(timeout.deadlineNanoTime())
+    }
+    (timeout as ForwardingTimeout).setDelegate(okHttpTimeout)
     return result
   }
 }
