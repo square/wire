@@ -1,0 +1,55 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
+    classpath libs.pluginz.android
+  }
+
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'com.android.library'
+apply plugin: 'com.squareup.wire'
+
+repositories {
+  maven {
+    url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+  }
+  mavenCentral()
+  google()
+}
+
+android {
+  namespace = 'com.squareup.wire.kmpandroid'
+  compileSdk = 36
+}
+
+kotlin {
+  jvm()
+  androidTarget()
+}
+
+wire {
+  kotlin {
+  }
+}
+
+tasks.withType(JavaCompile).configureEach {
+  sourceCompatibility = JavaVersion.VERSION_11.toString()
+  targetCompatibility = JavaVersion.VERSION_11.toString()
+}
+
+tasks.withType(KotlinCompile).configureEach {
+  kotlinOptions {
+    jvmTarget = "11"
+  }
+}
