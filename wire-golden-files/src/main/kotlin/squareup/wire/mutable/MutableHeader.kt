@@ -52,8 +52,7 @@ public class MutableHeader(
   }
 
   override fun hashCode(): Int {
-    var result = 0
-    result = unknownFields.hashCode()
+    var result = unknownFields.hashCode()
     result = result * 37 + (id?.hashCode() ?: 0)
     return result
   }

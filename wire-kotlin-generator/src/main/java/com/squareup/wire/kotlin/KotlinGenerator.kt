@@ -889,10 +889,10 @@ class KotlinGenerator private constructor(
       if (!mutableTypes) {
         addStatement("var %N = super.hashCode", resultName)
         beginControlFlow("if (%N == 0)", resultName)
+        addStatement("%N = unknownFields.hashCode()", resultName)
       } else {
-        addStatement("var %N = 0", resultName)
+        addStatement("var %N = unknownFields.hashCode()", resultName)
       }
-      addStatement("%N = unknownFields.hashCode()", resultName)
 
       for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
         when (fieldOrOneOf) {
@@ -1784,8 +1784,13 @@ class KotlinGenerator private constructor(
     val sizeName = localNameAllocator.newName("size")
 
     val body = buildCodeBlock {
+      val fieldsAndOneOfs = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()
+      if (fieldsAndOneOfs.isEmpty()) {
+        addStatement("return value.unknownFields.size")
+        return@buildCodeBlock
+      }
       addStatement("var %N = value.unknownFields.size", sizeName)
-      for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      for (fieldOrOneOf in fieldsAndOneOfs) {
         when (fieldOrOneOf) {
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]

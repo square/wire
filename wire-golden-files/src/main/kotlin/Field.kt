@@ -57,10 +57,7 @@ public class Field(
       null,
       "squareup/wire/hundreds_redacted.proto"
     ) {
-      override fun encodedSize(`value`: Field): Int {
-        var size = value.unknownFields.size
-        return size
-      }
+      override fun encodedSize(`value`: Field): Int = value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, `value`: Field) {
         writer.writeBytes(value.unknownFields)
