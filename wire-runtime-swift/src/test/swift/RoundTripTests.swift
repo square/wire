@@ -77,4 +77,44 @@ final class RoundTripTests: XCTestCase {
 
         XCTAssertEqual(decodedValues, values)
     }
+
+    // ensure that an unknown value in a singular enum field decoded with the .returnNil strategy
+    // is preserved in unknown fields and reemitted when the message is reencoded
+    func testUnknownEnumValueInSingularFieldRoundTrip() throws {
+        let data = Foundation.Data(hexEncoded: """
+            20 // (Tag 4 | Varint)
+            05 // Unknown enum value 5
+        """)!
+
+        let decoder = ProtoDecoder(enumDecodingStrategy: .returnNil)
+        let decoded = try decoder.decode(OneOfs.self, from: data)
+
+        XCTAssertNil(decoded.standalone_enum)
+        XCTAssertEqual(decoded.unknownFields, [4: data])
+
+        let encoder = ProtoEncoder()
+        XCTAssertEqual(try encoder.encode(decoded), data)
+    }
+
+    // in proto3 the field itself backfills to the zero-value default while the raw unknown
+    // value is preserved in unknown fields, keeping the reencoded bytes identical
+    func testUnknownEnumValueInProto3SingularFieldRoundTrip() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A     // (Tag 1 | Length Delimited)
+            03     // Length 3
+            616263 // "abc"
+            10     // (Tag 2 | Varint)
+            05     // Unknown enum value 5
+        """)!
+
+        let decoder = ProtoDecoder(enumDecodingStrategy: .returnNil)
+        let decoded = try decoder.decode(Person3.PhoneNumber.self, from: data)
+
+        XCTAssertEqual(decoded.number, "abc")
+        XCTAssertEqual(decoded.type, .MOBILE)
+        XCTAssertEqual(decoded.unknownFields, [2: Foundation.Data(hexEncoded: "10_05")!])
+
+        let encoder = ProtoEncoder()
+        XCTAssertEqual(try encoder.encode(decoded), data)
+    }
 }

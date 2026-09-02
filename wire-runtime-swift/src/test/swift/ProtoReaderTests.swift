@@ -301,8 +301,23 @@ final class ProtoReaderTests: XCTestCase {
     func testDecodeUnknownEnumNilStrategy() throws {
         let data = Foundation.Data(hexEncoded: "08_05")!
         try test(data: data, enumStrategy: .returnNil) { reader in
-            let value = try reader.decode(tag: 1) { try reader.decode(Person.PhoneType.self) }
+            var value: Person.PhoneType? = nil
+
+            let fields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    value = try reader.decode(Person.PhoneType.self)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
             XCTAssertNil(value)
+            let expectedData = Foundation.Data(hexEncoded: """
+                08       // (tag 1 | Varint)
+                05       // Unknown enum
+            """)!
+            XCTAssertEqual(fields, [1: expectedData])
         }
     }
 
@@ -348,6 +363,12 @@ final class ProtoReaderTests: XCTestCase {
         try test(data: data, enumStrategy: .returnNil) { reader in
             let message = OneOfs {
                 $0.standalone_enum = .A
+                $0.unknownFields = [
+                    2: Foundation.Data(hexEncoded: """
+                        10 // (Tag 2 | Varint)
+                        02 // Value 2
+                    """)!
+                ]
             }
             XCTAssertEqual(try reader.decode(OneOfs.self), message)
         }

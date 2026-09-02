@@ -35,7 +35,9 @@ public final class ProtoDecoder {
         case throwError
         /// Defaults the unknown enum value to nil for single-value fields.
         /// With this option, unknown values in collections are removed from the collection in which they originated.
-        /// When decoding a Proto, unknown values are then added to a collection for the same tag in unknown fields.
+        /// When decoding a Proto, unknown values from both single-value fields and collections are added to
+        /// unknown fields for the same tag (for map fields, the whole key-value entry is added), so they
+        /// are preserved when the message is reencoded.
         case returnNil
     }
 
