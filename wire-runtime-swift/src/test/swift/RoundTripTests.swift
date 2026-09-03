@@ -96,6 +96,28 @@ final class RoundTripTests: XCTestCase {
         XCTAssertEqual(try encoder.encode(decoded), data)
     }
 
+    // a preserved unknown enum value reemits after known fields, so a stale client's edit of the
+    // same field is shadowed for last-wins readers — matching generated Kotlin/Java and GPB proto2
+    func testEditedSingularEnumFieldReemitsPreservedUnknownValue() throws {
+        let data = Foundation.Data(hexEncoded: """
+            20 // (Tag 4 | Varint)
+            05 // Unknown enum value 5
+        """)!
+
+        let decoder = ProtoDecoder(enumDecodingStrategy: .returnNil)
+        var decoded = try decoder.decode(OneOfs.self, from: data)
+        decoded.standalone_enum = .A
+
+        let expected = Foundation.Data(hexEncoded: """
+            20 // (Tag 4 | Varint)
+            01 // Value 1
+            20 // (Tag 4 | Varint)
+            05 // Unknown enum value 5
+        """)!
+        let encoder = ProtoEncoder()
+        XCTAssertEqual(try encoder.encode(decoded), expected)
+    }
+
     // in proto3 the field itself backfills to the zero-value default while the raw unknown
     // value is preserved in unknown fields, keeping the reencoded bytes identical
     func testUnknownEnumValueInProto3SingularFieldRoundTrip() throws {
