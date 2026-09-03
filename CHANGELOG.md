@@ -1,12 +1,26 @@
 Change Log
 ==========
 
-Unreleased
-----------
+Version 7.0.0-RC01
+---------------------
+
+_2026-09-03_
+
+### Common
+
+* New: add `wasmJs` and `wasmWasi` targets to `wire-grpc-client` (#3696)
 
 ### Gradle plugin
 
 * Fix: generate protos into commonMain again for Kotlin multiplatform projects with an Android target (#3688)
+
+### Kotlin
+
+* Fix: keep generated Kotlin code warning-free under Kotlin 2.1's extra compiler warnings (#3704)
+
+### Swift
+
+* Fix: preserve unknown singular enum values in unknown fields (#3708 by [Logan Blevins][loganblevins])
 
 Version 7.0.0-alpha09
 ---------------------
@@ -2178,6 +2192,7 @@ Initial version.
  [jszumski]: https://github.com/jszumski
  [lickel]: https://github.com/lickel
  [liutikas]: https://github.com/liutikas
+ [loganblevins]: https://github.com/loganblevins
  [mpawliszyn]: https://github.com/mpawliszyn
  [mpeyper]: https://github.com/mpeyper
  [mrtryhard]: https://github.com/mrtryhard
