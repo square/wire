@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+### Gradle plugin
+
+* Fix: generate protos into commonMain again for Kotlin multiplatform projects with an Android target (#3688)
+
 Version 7.0.0-alpha09
 ---------------------
 

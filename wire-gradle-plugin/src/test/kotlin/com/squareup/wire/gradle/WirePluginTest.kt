@@ -1057,6 +1057,31 @@ class WirePluginTest {
     assertThat(generatedProto2).exists()
   }
 
+  @Test
+  fun kotlinMultiplatformWithAndroidTarget() {
+    val fixtureRoot = File("src/test/projects/kotlin-multiplatform-android")
+
+    val result = fixtureGradleRunner(
+      fixtureRoot,
+      "assemble",
+      "--info",
+      "--no-build-cache",
+    ).build()
+
+    // Wire generates once into commonMain. The Android target consumes commonMain like every
+    // other target, so there must be no per-variant generation task.
+    assertThat(result.task(":generateCommonMainProtos")).isNotNull()
+    assertThat(result.task(":generateDebugProtos")).isNull()
+    assertThat(result.task(":generateReleaseProtos")).isNull()
+
+    val generatedProto1 =
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+    val generatedProto2 =
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+  }
+
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
     val protoFieldPattern = "@field:WireField.*?(val .*?):"
     val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))

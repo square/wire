@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+package squareup.dinosaurs;
+
+option java_package = "com.squareup.dinosaurs";
+
+import "squareup/geology/period.proto";
+
+message Dinosaur {
+  /** Common name of this dinosaur, like "Stegosaurus". */
+  optional string name = 1;
+
+  /** URLs with images of this dinosaur. */
+  repeated string picture_urls = 2;
+
+  optional double length_meters = 3;
+  optional double mass_kilograms = 4;
+  optional squareup.geology.Period period = 5;
+}

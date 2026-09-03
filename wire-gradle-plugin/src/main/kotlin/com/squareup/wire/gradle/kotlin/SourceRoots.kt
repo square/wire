@@ -41,6 +41,13 @@ internal fun forEachWireSource(
   sourceHandler: (WireSource) -> Unit,
 ) {
   when {
+    // A multiplatform project can also have an Android target which applies an Android plugin.
+    // The Kotlin Multiplatform check has to come first: Wire generates once into commonMain, and
+    // the Android target consumes commonMain like every other target.
+    hasKotlin && project.extensions.findByType(KotlinMultiplatformExtension::class.java) != null -> {
+      val extension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
+      extension.sourceRoots().forEach(sourceHandler)
+    }
     hasAndroid -> {
       val extension = project.extensions.getByType(AndroidComponentsExtension::class.java)
       extension.onVariants { variant ->
@@ -56,10 +63,6 @@ internal fun forEachWireSource(
         )
         sourceHandler(source)
       }
-    }
-    hasKotlin && project.extensions.findByType(KotlinMultiplatformExtension::class.java) != null -> {
-      val extension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
-      extension.sourceRoots().forEach(sourceHandler)
     }
     hasKotlin -> {
       val kotlinSourceSets = project.extensions.findByType(KotlinProjectExtension::class.java)?.sourceSets

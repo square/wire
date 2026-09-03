@@ -56,7 +56,16 @@ class WirePlugin : Plugin<Project> {
       // When `android.builtInKotlin` property is enabled, AGP provides Kotlin support for all projects without
       // requiring users to apply the `org.jetbrains.kotlin.android` plugin.
       project.extensions.findByName("kotlin")?.let { kotlin.set(true) }
-      applyWirePlugin()
+      if (project.extensions.findByType(KotlinMultiplatformExtension::class.java) != null) {
+        // Multiplatform project with an Android target. Wire generates into commonMain and reads
+        // the wire {} extension eagerly, so the setup must wait for the build script to be
+        // evaluated. This path does not use the Android variant API, so afterEvaluate is safe.
+        project.afterEvaluate { applyWirePlugin() }
+      } else {
+        // The Android setup must run now: the variant API used in forEachWireSource requires
+        // onVariants to be registered before AGP computes its variants.
+        applyWirePlugin()
+      }
     }
     project.plugins.withId("com.android.application", androidPluginHandler)
     project.plugins.withId("com.android.library", androidPluginHandler)
