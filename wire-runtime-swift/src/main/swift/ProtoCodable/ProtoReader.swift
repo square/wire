@@ -253,6 +253,9 @@ public final class ProtoReader {
 
     /**
      Decode enums.
+
+     Under the `.returnNil` strategy, an unrecognized value returns `nil` and is added to the
+     current message's unknown fields so that it is preserved when the message is reencoded.
      */
     public func decode<T: ProtoEnum>(_ type: T.Type) throws -> T? where T: RawRepresentable<Int32> {
         // Pop the enum int value and pass in to initializer
@@ -260,6 +263,15 @@ public final class ProtoReader {
         guard let enumValue = T(rawValue: intValue) else {
             switch enumDecodingStrategy {
             case .returnNil:
+                guard let tag = currentTag else {
+                    fatalError("The current tag was unexpectedly nil.")
+                }
+
+                // We encountered an unknown enum value. Given the strategy is .returnNil, we'll add this value
+                // to the unknown fields for the current tag, matching the behavior of repeated enum fields.
+                // NB: enum fields use varint encoding.
+                try addUnknownField(tag: tag, value: intValue, encoding: .variable)
+
                 return nil
             case .throwError:
                 throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
