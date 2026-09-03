@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
@@ -36,6 +37,16 @@ kotlin {
     tvosArm64()
     tvosSimulatorArm64()
   }
+  if (System.getProperty("kwasm", "true").toBoolean()) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+      browser()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+      nodejs()
+    }
+  }
   sourceSets {
     val commonMain by getting {
       dependencies {
@@ -47,6 +58,27 @@ kotlin {
     val jvmMain by getting {
       dependencies {
         api(libs.okhttp.core)
+      }
+    }
+    val nonJvmMain by creating {
+      dependsOn(commonMain)
+    }
+    if (System.getProperty("knative", "true").toBoolean()) {
+      val nativeMain by getting {
+        dependsOn(nonJvmMain)
+      }
+    }
+    if (System.getProperty("kjs", "true").toBoolean()) {
+      val jsMain by getting {
+        dependsOn(nonJvmMain)
+      }
+    }
+    if (System.getProperty("kwasm", "true").toBoolean()) {
+      val wasmJsMain by getting {
+        dependsOn(nonJvmMain)
+      }
+      val wasmWasiMain by getting {
+        dependsOn(nonJvmMain)
       }
     }
   }
