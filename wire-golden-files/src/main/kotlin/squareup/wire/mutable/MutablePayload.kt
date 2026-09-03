@@ -79,8 +79,7 @@ public class MutablePayload(
   }
 
   override fun hashCode(): Int {
-    var result = 0
-    result = unknownFields.hashCode()
+    var result = unknownFields.hashCode()
     result = result * 37 + (preamble?.hashCode() ?: 0)
     result = result * 37 + (content?.hashCode() ?: 0)
     result = result * 37 + (type?.hashCode() ?: 0)

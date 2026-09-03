@@ -2771,6 +2771,25 @@ class KotlinGeneratorTest {
     assertContains(code, "result = result * 37 + list.hashCode()")
   }
 
+  @Test fun encodedSizeFunctionWithoutFieldsHasNoLocalVariable() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |message NoFields {
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("NoFields")
+    assertThat(code).contains(
+      """
+      |      override fun encodedSize(`value`: NoFields): Int = value.unknownFields.size
+      """.trimMargin(),
+    )
+    assertThat(code).doesNotContain("var size")
+  }
+
   @Test
   fun enumConstantConflictingDeclaration() {
     val schema = buildSchema {
@@ -2909,7 +2928,8 @@ class KotlinGeneratorTest {
     assertThat(code).contains("override var unknownFields: ByteString = ByteString.EMPTY")
     assertThat(code).contains("MutableHeader#ADAPTER") // should refer to adapters of Mutable message types.
     assertThat(code).contains("MutablePayload#ADAPTER")
-    assertThat(code).contains("var result = 0") // hashCode() is no longer calling super.hashCode().
+    // hashCode() is no longer calling super.hashCode(), and it has no redundant initializer.
+    assertThat(code).contains("var result = unknownFields.hashCode()")
     assertThat(code).contains(
       "throw UnsupportedOperationException(\"newBuilder() is unsupported for mutable message types\")",
     )

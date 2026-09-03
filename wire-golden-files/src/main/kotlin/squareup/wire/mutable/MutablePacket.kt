@@ -63,8 +63,7 @@ public class MutablePacket(
   }
 
   override fun hashCode(): Int {
-    var result = 0
-    result = unknownFields.hashCode()
+    var result = unknownFields.hashCode()
     result = result * 37 + (header_?.hashCode() ?: 0)
     result = result * 37 + payload.hashCode()
     return result
