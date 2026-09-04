@@ -20,6 +20,8 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendOptions
+import com.squareup.wire.schema.internal.appendTrailingDocumentation
+import com.squareup.wire.schema.internal.leadingDocumentation
 import com.squareup.wire.schema.internal.toEnglishLowerCase
 
 data class FieldElement(
@@ -31,10 +33,11 @@ data class FieldElement(
   val jsonName: String? = null,
   val tag: Int = 0,
   val documentation: String = "",
+  val trailingDocumentation: String = "",
   val options: List<OptionElement> = emptyList(),
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(documentation)
+    appendDocumentation(leadingDocumentation(documentation, trailingDocumentation))
 
     if (label != null) {
       append("${label.name.toEnglishLowerCase()} ")
@@ -47,7 +50,9 @@ data class FieldElement(
       appendOptions(optionsWithDefault)
     }
 
-    append(";\n")
+    append(';')
+    appendTrailingDocumentation(trailingDocumentation)
+    append('\n')
   }
 
   /**
