@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 7.0.0
+---------------------
+
+_2026-09-10_
+
+### Common
+
+* Update the bundled `google/protobuf/descriptor.proto` and `google/protobuf/struct.proto` runtime
+  protos to their latest versions (#3713)
+
 Version 7.0.0-RC01
 ---------------------
 
