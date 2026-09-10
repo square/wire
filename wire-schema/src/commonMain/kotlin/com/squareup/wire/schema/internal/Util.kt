@@ -39,9 +39,45 @@ fun StringBuilder.appendDocumentation(
     lines = lines.dropLast(1)
   }
   for (line in lines) {
-    append("// ")
-      .append(line)
-      .append('\n')
+    if (line.isEmpty()) {
+      append("//\n")
+    } else {
+      append("// ").append(line).append('\n')
+    }
+  }
+}
+
+/**
+ * Extracts the leading-only portion of a declaration's documentation, given
+ * the merged form produced by the parser (which stores leading and trailing
+ * joined by `\n`) and the trailing piece reported separately.
+ */
+// TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-34102
+fun leadingDocumentation(
+  documentation: String,
+  trailingDocumentation: String,
+): String {
+  if (trailingDocumentation.isEmpty()) return documentation
+  if (documentation == trailingDocumentation) return ""
+  return documentation.removeSuffix("\n$trailingDocumentation")
+}
+
+/**
+ * Appends a same-line trailing comment. Emits `// text` for single-line content
+ * and `/* text */` for multi-line content. The caller must ensure
+ * [trailingDocumentation] does not contain `*` followed by `/`; parser-produced
+ * values are always safe, but manually-constructed elements must not violate
+ * this precondition.
+ */
+fun StringBuilder.appendTrailingDocumentation(
+  trailingDocumentation: String,
+) {
+  if (trailingDocumentation.isEmpty()) return
+  append(' ')
+  if (trailingDocumentation.contains('\n')) {
+    append("/* ").append(trailingDocumentation).append(" */")
+  } else {
+    append("// ").append(trailingDocumentation)
   }
 }
 
