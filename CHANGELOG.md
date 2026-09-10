@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 7.0.1
+---------------------
+
+_2026-09-10_
+
+### Common
+
+* Reverted KotlinPoet 2.4.0 to 2.3.0 as it was pulling Kotlin 2.4 in `wire-schema` (#3716)
+
 Version 7.0.0
 ---------------------
 
