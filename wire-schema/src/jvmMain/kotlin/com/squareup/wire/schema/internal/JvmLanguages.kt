@@ -166,15 +166,78 @@ fun optionValueToLong(value: Any?): Long {
   }
 }
 
+/**
+ * Returns the JVM package for [protoFile], as configured by its package options.
+ *
+ * Wire emits the value of a package option into generated code as written. This function rejects a
+ * value that cannot be a package name, because such a value produces code that does not match the
+ * intent of the option.
+ */
 fun javaPackage(protoFile: ProtoFile): String {
   val wirePackage = protoFile.wirePackage()
-  if (wirePackage != null) return wirePackage
+  if (wirePackage != null) {
+    return checkPackageOptionValue(wirePackage, "wire.wire_package", protoFile)
+  }
 
   val javaPackage = protoFile.javaPackage()
-  if (javaPackage != null) return javaPackage
+  if (javaPackage != null) {
+    return checkPackageOptionValue(javaPackage, "java_package", protoFile)
+  }
 
   return protoFile.packageName ?: ""
 }
+
+/**
+ * Characters that a package option value must not carry.
+ *
+ * Each one ends, or escapes, a declaration of a generated Java file. The backslash is on the list
+ * because javac decodes Unicode escapes such as `\u003b` before it reads tokens, so a
+ * backslash reintroduces every other character on the list. Whitespace and control characters are
+ * rejected too, because they also separate declarations.
+ */
+private const val FORBIDDEN_PACKAGE_CHARACTERS = ";{}()/*\"\\"
+
+/** Returns [value], confirming first that it can be a package name in generated code. */
+private fun checkPackageOptionValue(
+  value: String,
+  optionName: String,
+  protoFile: ProtoFile,
+): String {
+  for (char in value) {
+    val forbidden = char in FORBIDDEN_PACKAGE_CHARACTERS ||
+      char.isWhitespace() ||
+      char.isISOControl()
+    require(!forbidden) {
+      "Refusing to use a package option value that cannot be a package name. Wire emits this " +
+        "value into generated code as written. The character below ends or escapes a " +
+        "declaration.\n" +
+        "  option:    $optionName\n" +
+        "  value:     ${value.displayForError()}\n" +
+        "  character: ${char.displayForError()}\n" +
+        "  file:      ${protoFile.location}"
+    }
+  }
+  return value
+}
+
+/** Returns a form of this string which stays on one line in an error message. */
+private fun String.displayForError(): String = buildString {
+  for (char in this@displayForError) {
+    when {
+      char.needsUnicodeEscape() -> append("\\u%04x".format(char.code))
+      else -> append(char)
+    }
+  }
+}
+
+/** Returns a quoted form of this character which is readable in an error message. */
+private fun Char.displayForError(): String = when {
+  needsUnicodeEscape() -> "'\\u%04x'".format(code)
+  else -> "'$this'"
+}
+
+/** True if this character does not print readably on one line of an error message. */
+private fun Char.needsUnicodeEscape(): Boolean = isISOControl() || (isWhitespace() && this != ' ')
 
 fun hasEponymousType(schema: Schema, field: Field): Boolean {
   // See if the package in which the field is defined already has a

@@ -84,14 +84,257 @@ class WireRunTest {
       targets = listOf(JavaTarget(outDirectory = "generated/java")),
     )
 
+    // A path separator cannot be part of a package name, so the option value is rejected before it
+    // reaches the path check in SchemaHandler.checkPathInOutDirectory.
     assertFailure { wireRun.execute(fs, logger) }
       .isInstanceOf<IllegalArgumentException>()
       .message()
       .isNotNull()
-      .contains("Refusing to write a generated file outside the output directory")
+      .all {
+        contains("Refusing to use a package option value that cannot be a package name")
+        contains("character: '/'")
+      }
 
     // Nothing was written outside the configured output directory.
     assertThat(fs.exists("/tmp/wire-escape/EscapeMe.java".toPath())).isFalse()
+  }
+
+  @Test
+  fun javaPackageWithSemicolonIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors;more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors;more",
+      character = "';'",
+    )
+  }
+
+  @Test
+  fun javaPackageWithOpeningBraceIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors{more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors{more",
+      character = "'{'",
+    )
+  }
+
+  @Test
+  fun javaPackageWithClosingBraceIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors}more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors}more",
+      character = "'}'",
+    )
+  }
+
+  @Test
+  fun javaPackageWithOpeningParenthesisIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors(more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors(more",
+      character = "'('",
+    )
+  }
+
+  @Test
+  fun javaPackageWithClosingParenthesisIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors)more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors)more",
+      character = "')'",
+    )
+  }
+
+  @Test
+  fun javaPackageWithSlashIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors/more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors/more",
+      character = "'/'",
+    )
+  }
+
+  @Test
+  fun javaPackageWithAsteriskIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors*more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors*more",
+      character = "'*'",
+    )
+  }
+
+  @Test
+  fun javaPackageWithQuoteIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors\"more";""",
+      optionName = "java_package",
+      value = """com.squareup.colors"more""",
+      character = "'\"'",
+    )
+  }
+
+  /** javac decodes Unicode escapes before it reads tokens, so a backslash reaches every other one. */
+  @Test
+  fun javaPackageWithBackslashIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors\\u003bmore";""",
+      optionName = "java_package",
+      value = "com.squareup.colors\\u003bmore",
+      character = "'\\'",
+    )
+  }
+
+  @Test
+  fun javaPackageWithSpaceIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors more";""",
+      optionName = "java_package",
+      value = "com.squareup.colors more",
+      character = "' '",
+    )
+  }
+
+  @Test
+  fun javaPackageWithNewlineIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors\nmore";""",
+      optionName = "java_package",
+      value = "com.squareup.colors\\u000amore",
+      character = "'\\u000a'",
+    )
+  }
+
+  /**
+   * An alert character is a control character, and it is not whitespace. The message must print it
+   * as an escape, so that the diagnostic stays readable and stays on one line.
+   */
+  @Test
+  fun javaPackageWithControlCharacterIsRejected() {
+    assertPackageOptionRejected(
+      option = """option java_package = "com.squareup.colors\amore";""",
+      optionName = "java_package",
+      value = "com.squareup.colors\\u0007more",
+      character = "'\\u0007'",
+    )
+  }
+
+  @Test
+  fun wirePackageWithSemicolonIsRejected() {
+    assertPackageOptionRejected(
+      option = """
+          |import "wire/extensions.proto";
+          |option (wire.wire_package) = "com.squareup.colors;more";
+      """.trimMargin(),
+      optionName = "wire.wire_package",
+      value = "com.squareup.colors;more",
+      character = "';'",
+    )
+  }
+
+  /** A Kotlin keyword segment is a legal Kotlin package, so Wire must keep accepting it. */
+  @Test
+  fun javaPackageWithUnusualButHarmlessSegmentsIsAccepted() {
+    fs.add(
+      "colors/src/main/proto/squareup/colors/orange.proto",
+      """
+          |syntax = "proto2";
+          |package squareup.colors;
+          |option java_package = "com.squareup.enum._private";
+          |message Orange {
+          |  optional string circle = 1;
+          |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/com/squareup/enum/_private/Orange.kt",
+    )
+    assertThat(fs.readUtf8("generated/kt/com/squareup/enum/_private/Orange.kt"))
+      .contains("class Orange")
+  }
+
+  /** Wire reads the package options of every file in the schema, so this value is checked too. */
+  @Test
+  fun javaPackageOnProtoPathFileIsRejected() {
+    writeBlueProto()
+    fs.add(
+      "polygons/src/main/proto/squareup/polygons/triangle.proto",
+      """
+          |syntax = "proto2";
+          |package squareup.polygons;
+          |option java_package = "com.squareup.polygons;more";
+          |message Triangle {
+          |  repeated double angles = 1;
+          |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(JavaTarget(outDirectory = "generated/java")),
+    )
+
+    assertFailure { wireRun.execute(fs, logger) }
+      .isInstanceOf<IllegalArgumentException>()
+      .message()
+      .isNotNull()
+      .all {
+        contains("Refusing to use a package option value that cannot be a package name")
+        contains("option:    java_package")
+        contains("character: ';'")
+      }
+
+    assertThat(fs.exists("generated/java/squareup/colors/Blue.java".toPath())).isFalse()
+  }
+
+  private fun assertPackageOptionRejected(
+    option: String,
+    optionName: String,
+    value: String,
+    character: String,
+  ) {
+    fs.add(
+      "colors/src/main/proto/squareup/colors/orange.proto",
+      """
+          |syntax = "proto2";
+          |package squareup.colors;
+          |$option
+          |/** This is a warm color. */
+          |message Orange {
+          |  optional string circle = 1;
+          |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      targets = listOf(JavaTarget(outDirectory = "generated/java")),
+    )
+
+    assertFailure { wireRun.execute(fs, logger) }
+      .isInstanceOf<IllegalArgumentException>()
+      .message()
+      .isNotNull()
+      .all {
+        contains("Refusing to use a package option value that cannot be a package name")
+        contains("option:    $optionName")
+        contains("value:     $value")
+        contains("character: $character")
+        contains("file:      colors/src/main/proto/squareup/colors/orange.proto")
+      }
   }
 
   @Test
