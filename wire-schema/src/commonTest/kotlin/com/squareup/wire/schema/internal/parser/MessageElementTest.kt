@@ -726,4 +726,48 @@ class MessageElementTest {
     )
     assertThat(oneOf.toSchema()).isEqualTo(expected)
   }
+
+  @Test
+  fun reservedWithTrailingOnlyDocumentation() {
+    val reserved = ReservedElement(
+      location = location,
+      documentation = "inline doc",
+      trailingDocumentation = "inline doc",
+      values = listOf(10),
+    )
+
+    assertThat(reserved.toSchema()).isEqualTo("reserved 10; // inline doc\n")
+  }
+
+  @Test
+  fun reservedWithLeadingAndTrailingDocumentation() {
+    val reserved = ReservedElement(
+      location = location,
+      documentation = "above\ninline",
+      trailingDocumentation = "inline",
+      values = listOf(10),
+    )
+
+    assertThat(reserved.toSchema()).isEqualTo(
+      """
+        |// above
+        |reserved 10; // inline
+        |
+      """.trimMargin(),
+    )
+  }
+
+  @Test
+  fun reservedWithMultilineTrailingUsesBlockComment() {
+    val reserved = ReservedElement(
+      location = location,
+      documentation = "line one\nline two",
+      trailingDocumentation = "line one\nline two",
+      values = listOf(10),
+    )
+
+    assertThat(reserved.toSchema()).isEqualTo(
+      "reserved 10; /* line one\nline two */\n",
+    )
+  }
 }
