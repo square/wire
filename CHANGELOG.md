@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 7.0.2
+---------------------
+
+_2026-09-16_
+
+### Common
+
+* Fix: validate the value of the `java_package` and `wire.wire_package` options before emitting it into generated code. Wire emits the value as written, so a value that cannot be a package name produced generated code that did not match the intent of the option. Wire now rejects such a value with an error naming the option, the proto file, and the character at fault. Builds that relied on a package option value carrying `;`, `{`, `}`, `(`, `)`, `/`, `*`, `"`, `\`, whitespace or a control character will now fail (#3718)
+
 Version 7.0.1
 ---------------------
 
