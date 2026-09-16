@@ -24,6 +24,18 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      # The publish plugin skips the Central Portal for a snapshot version. So a tag on a commit
+      # that still carries the snapshot version publishes nothing, and the job stays green. Fail
+      # here instead, and say what is wrong.
+      - name: Check the tag matches the project version
+        run: |
+          VERSION=$(sed -n 's/^VERSION_NAME=//p' gradle.properties)
+          if [ "$GITHUB_REF_NAME" != "$VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match VERSION_NAME $VERSION in gradle.properties." >&2
+            echo "Set the version in gradle.properties, then move the tag onto that commit." >&2
+            exit 1
+          fi
+
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Upload Artifacts
         run: |

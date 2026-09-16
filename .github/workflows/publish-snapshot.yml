@@ -32,8 +32,30 @@ jobs:
         with:
           xcode-version: '26.1.1'
 
+      # A release commit lands on master with a release version, not a snapshot version. This job
+      # must not publish that release, because the release job publishes it from the tag. Two
+      # deployments with the same coordinates make the second one fail Central Portal validation.
+      - name: Check the version is a snapshot
+        id: check_version
+        run: |
+          VERSION=$(sed -n 's/^VERSION_NAME=//p' gradle.properties)
+          if [ -z "$VERSION" ]; then
+            echo "VERSION_NAME not found in gradle.properties." >&2
+            exit 1
+          fi
+          case "$VERSION" in
+            *-SNAPSHOT)
+              echo "snapshot=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "snapshot=false" >> "$GITHUB_OUTPUT"
+              echo "Version $VERSION is not a snapshot. This job publishes nothing."
+              ;;
+          esac
+
       # We set `SDKROOT` as a workaround for https://github.com/gradle/gradle/pull/29227
       - name: Upload Artifacts
+        if: steps.check_version.outputs.snapshot == 'true'
         run: |
           SDKROOT=$(xcrun -sdk macosx --show-sdk-path) ./gradlew publish --stacktrace --warning-mode all --no-daemon
         env:
