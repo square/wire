@@ -90,14 +90,23 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
         callForCancel = call,
       )
     }
-    call.enqueue(responseChannel.readFromResponseBodyCallback(this, method.responseAdapter))
+    call.enqueue(
+      responseChannel.readFromResponseBodyCallback(
+        onResponseMetadata = { this.responseMetadata = it },
+        responseAdapter = method.responseAdapter,
+      ),
+    )
 
     return requestChannel to responseChannel
   }
 
   override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
     val call = initCall()
-    val messageSource = BlockingMessageSource(this, method.responseAdapter, call)
+    val messageSource = BlockingMessageSource(
+      onResponseMetadata = { this.responseMetadata = it },
+      responseAdapter = method.responseAdapter,
+      call = call,
+    )
     val messageSink = requestBody.messageSink(
       minMessageToCompress = grpcClient.minMessageToCompress,
       requestAdapter = method.requestAdapter,
