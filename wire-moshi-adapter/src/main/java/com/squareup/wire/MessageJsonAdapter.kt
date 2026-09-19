@@ -79,7 +79,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       if (value == null) continue
 
       val fieldBinding = messageAdapter.fieldBindingsArray[index]
-      fieldBinding.set(builder, value)
+      fieldBinding.set(builder, fieldBinding.withoutStrayNullElements(value))
     }
     input.endObject()
     return builder.build()
