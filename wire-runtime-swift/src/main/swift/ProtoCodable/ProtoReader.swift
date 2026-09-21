@@ -84,6 +84,16 @@ public final class ProtoReader {
     /** The encoding of the next value to be read. */
     private var nextFieldWireType: FieldWireType? = nil
 
+    /**
+     The number of nested groups currently being skipped.
+
+     This is a counter of its own rather than a reuse of `messageStackIndex`. That index addresses
+     the `messageStack` array of `MessageFrame`, and `addUnknownField` reads the frame it points at.
+     A skipped group has no frame, so advancing the index would address uninitialized memory.
+     The counter still spends the same `recursionLimit` budget as message nesting.
+     */
+    private var groupRecursionDepth: Int = 0
+
     /** How to interpret the next read call. */
     private var state: State
 
@@ -831,7 +841,12 @@ public final class ProtoReader {
             let (tag, wireType) = try readFieldKey()
             switch wireType {
             case .startGroup:
-                // Nested group
+                // Nested group. This recurses natively, so bound it like message nesting.
+                groupRecursionDepth += 1
+                defer { groupRecursionDepth -= 1 }
+                if recursionDepthOffset + messageStackIndex + 1 + groupRecursionDepth >= ProtoReader.recursionLimit {
+                    throw ProtoDecoder.Error.recursionLimitExceeded
+                }
                 try skipGroup(expectedEndTag: tag, unknownFieldsWriter: unknownFieldsWriter)
 
             case .endGroup:
