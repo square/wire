@@ -71,7 +71,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       // interpreted as the appropriate default value when parsed into a protocol buffer."
       if (value == null) continue
 
-      jsonField.fieldBinding.set(builder, jsonField.fieldBinding.withoutStrayNullElements(value))
+      jsonField.fieldBinding.set(builder, jsonField.fieldBinding.filterNullElements(value))
     }
     input.endObject()
     return builder.build()
