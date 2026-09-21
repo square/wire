@@ -78,7 +78,7 @@ extension VersionTwo : Proto2Codable {
             case 5: v2_f64 = try protoReader.decode(UInt64.self, encoding: .fixed)
             case 6: try protoReader.decode(into: &v2_rs)
             case 7: try protoReader.decodeMessage(into: &objProtoData)
-            case 8: en = try protoReader.decode(EnumVersionTwo.self)
+            case 8: if let value = try protoReader.decode(EnumVersionTwo.self) { en = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

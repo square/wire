@@ -55,7 +55,7 @@ extension SwiftModuleTwoMessage : Proto2Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: name = try protoReader.decode(String.self)
-            case 2: order = try protoReader.decode(module_one.SortOrder.self)
+            case 2: if let value = try protoReader.decode(module_one.SortOrder.self) { order = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

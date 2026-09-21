@@ -59,7 +59,7 @@ extension VersionOne : Proto2Codable {
             switch tag {
             case 1: i = try protoReader.decode(Int32.self, encoding: .variable)
             case 7: try protoReader.decodeMessage(into: &objProtoData)
-            case 8: en = try protoReader.decode(EnumVersionOne.self)
+            case 8: if let value = try protoReader.decode(EnumVersionOne.self) { en = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

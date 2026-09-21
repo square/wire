@@ -70,7 +70,7 @@ extension Dinosaur : Proto2Codable {
             case 2: try protoReader.decode(into: &picture_urls)
             case 3: length_meters = try protoReader.decode(Double.self)
             case 4: mass_kilograms = try protoReader.decode(Double.self)
-            case 5: period = try protoReader.decode(Period.self)
+            case 5: if let value = try protoReader.decode(Period.self) { period = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

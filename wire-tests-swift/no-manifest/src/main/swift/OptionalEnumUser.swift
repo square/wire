@@ -49,7 +49,7 @@ extension OptionalEnumUser : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: optional_enum = try protoReader.decode(OptionalEnumUser.OptionalEnum.self)
+            case 1: if let value = try protoReader.decode(OptionalEnumUser.OptionalEnum.self) { optional_enum = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

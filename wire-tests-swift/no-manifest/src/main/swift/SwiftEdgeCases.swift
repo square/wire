@@ -55,8 +55,8 @@ extension SwiftEdgeCases : Proto2Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: `return` = try protoReader.decode(String.self)
-            case 2: error = try protoReader.decode(SwiftEdgeCases.Error_.self)
-            case 3: type = try protoReader.decode(SwiftEdgeCases.Type_.self)
+            case 2: if let value = try protoReader.decode(SwiftEdgeCases.Error_.self) { error = value }
+            case 3: if let value = try protoReader.decode(SwiftEdgeCases.Type_.self) { type = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

@@ -2707,7 +2707,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 13: opt_double = try protoReader.decode(Double.self)
             case 14: opt_string = try protoReader.decode(String.self)
             case 15: opt_bytes = try protoReader.decode(Foundation.Data.self)
-            case 16: opt_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
+            case 16: if let value = try protoReader.decode(AllTypes.NestedEnum.self) { opt_nested_enum = value }
             case 17: try protoReader.decodeMessage(into: &opt_nested_messageProtoData)
             case 18: try protoReader.decodeMessage(into: &opt_field_maskProtoData)
             case 101: req_int32 = try protoReader.decode(Int32.self, encoding: .variable)
@@ -2725,7 +2725,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 113: req_double = try protoReader.decode(Double.self)
             case 114: req_string = try protoReader.decode(String.self)
             case 115: req_bytes = try protoReader.decode(Foundation.Data.self)
-            case 116: req_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
+            case 116: if let value = try protoReader.decode(AllTypes.NestedEnum.self) { req_nested_enum = value }
             case 117: try protoReader.decodeMessage(into: &req_nested_messageProtoData)
             case 201: try protoReader.decode(into: &rep_int32, encoding: .variable)
             case 202: try protoReader.decode(into: &rep_uint32, encoding: .variable)
@@ -2774,7 +2774,7 @@ extension AllTypes.Storage : Proto2Codable {
             case 413: default_double = try protoReader.decode(Double.self)
             case 414: default_string = try protoReader.decode(String.self)
             case 415: default_bytes = try protoReader.decode(Foundation.Data.self)
-            case 416: default_nested_enum = try protoReader.decode(AllTypes.NestedEnum.self)
+            case 416: if let value = try protoReader.decode(AllTypes.NestedEnum.self) { default_nested_enum = value }
             case 501: try protoReader.decode(into: &map_int32_int32, keyEncoding: .variable, valueEncoding: .variable)
             case 502: try protoReader.decode(into: &map_string_string)
             case 503: try protoReader.decode(into: &map_string_message)

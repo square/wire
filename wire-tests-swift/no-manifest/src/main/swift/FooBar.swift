@@ -294,7 +294,7 @@ extension FooBar.Nested : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: value = try protoReader.decode(FooBar.FooBarBazEnum.self)
+            case 1: if let _value = try protoReader.decode(FooBar.FooBarBazEnum.self) { value = _value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
