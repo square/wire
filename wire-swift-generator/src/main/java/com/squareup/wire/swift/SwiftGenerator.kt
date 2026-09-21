@@ -610,7 +610,7 @@ class SwiftGenerator private constructor(
 
           // ProtoReader.decode() returns nil for an unrecognized enum value after retaining it in
           // unknownFields. Bind the result so an unknown occurrence never overwrites an earlier
-          // recognized one, matching generated Kotlin's EnumConstantNotFoundException catch.
+          // recognized one.
           val enumValue = allocateLocalName("value")
 
           // Declare locals into which everything is written before promoting to members.
