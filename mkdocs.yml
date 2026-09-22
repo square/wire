@@ -86,6 +86,7 @@ nav:
     - 'wire-runtime ⏏': https://square.github.io/wire/2.x/wire-runtime/
   - 'JSON': wire_json.md
   - 'Wire vs Protoc': wire_vs_protoc.md
+  - 'Signing Keys': signing_keys.md
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md
