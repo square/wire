@@ -1446,6 +1446,55 @@ final class ProtoReaderTests: XCTestCase {
         try decodeNestedMessage(data)
     }
 
+    // MARK: - Tests - Recursion Limit - Groups
+
+    /// Groups are skipped by native recursion, so they need the same limit that message nesting has.
+    func testSkipGroupExceedsRecursionLimit() throws {
+        // The first key opens the group and each later key nests one level, so the 65th key is the
+        // one that spends the last of the budget of 65.
+        XCTAssertThrowsError(try decodeStartGroupKeys(count: 65)) { error in
+            assertRecursionLimitError(error)
+        }
+    }
+
+    func testSkipGroupAtRecursionLimit() throws {
+        // 64 start-group keys stay inside the limit. The payload carries no end-group key, so the
+        // reader reports the unterminated group instead of the recursion limit.
+        XCTAssertThrowsError(try decodeStartGroupKeys(count: 64)) { error in
+            guard case ProtoDecoder.Error.unterminatedGroup = error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+        }
+    }
+
+    /// A long run of start-group keys used to exhaust the native stack, which aborts the process on
+    /// a hardware trap that no `catch` can see. The limit turns that into an ordinary thrown error.
+    func testDeeplyNestedGroupThrowsAndIsCatchable() throws {
+        var caught: Error? = nil
+        do {
+            try decodeStartGroupKeys(count: 100_000)
+        } catch {
+            caught = error
+        }
+
+        guard let caught else {
+            XCTFail("Expected an error")
+            return
+        }
+        assertRecursionLimitError(caught)
+    }
+
+    /// The group counter spends the same budget as message nesting, so message nesting must still
+    /// stop at the same depth it stopped at before.
+    func testNestedMessageRecursionIsUnchangedByGroupLimit() throws {
+        try decodeNestedMessage(buildNestedMessage(depth: 64))
+
+        XCTAssertThrowsError(try decodeNestedMessage(buildNestedMessage(depth: 65))) { error in
+            assertRecursionLimitError(error)
+        }
+    }
+
     // MARK: - Private Methods
 
     private func test(data: Foundation.Data, enumStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError, test: (ProtoReader) throws -> Void) rethrows {
@@ -1475,6 +1524,24 @@ final class ProtoReaderTests: XCTestCase {
         guard case ProtoDecoder.Error.unexpectedEndOfData = error else {
             XCTFail("Unexpected error: \(error)")
             return
+        }
+    }
+
+    private func assertRecursionLimitError(_ error: Error) {
+        guard case ProtoDecoder.Error.recursionLimitExceeded = error else {
+            XCTFail("Unexpected error: \(error)")
+            return
+        }
+    }
+
+    /// Decode a payload of `count` start-group keys for tag 1. Byte `0x0B` is `(1 << 3) | 3`, so
+    /// each byte opens one more group. No end-group key is present.
+    private func decodeStartGroupKeys(count: Int) throws {
+        let data = Foundation.Data(repeating: 0x0B, count: count)
+        try test(data: data) { reader in
+            _ = try reader.forEachTag { tag in
+                XCTFail("Unexpected field \(tag). Groups never reach the caller.")
+            }
         }
     }
 }
