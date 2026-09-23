@@ -217,7 +217,7 @@ extension Person.PhoneNumber : Proto2Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: number = try protoReader.decode(String.self)
-            case 2: type = try protoReader.decode(Person.PhoneType.self)
+            case 2: if let value = try protoReader.decode(Person.PhoneType.self) { type = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

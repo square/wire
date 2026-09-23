@@ -23,10 +23,15 @@ message OneOfs {
     A = 1;
   }
 
+  message NestedMessage {
+    optional int32 id = 1;
+  }
+
   oneof choice {
     NestedEnum enum_option = 1;
     NestedEnum similar_enum_option = 2;
     string string_option = 3;
+    NestedMessage message_option = 5;
   }
   optional NestedEnum standalone_enum = 4;
 }

@@ -608,6 +608,11 @@ class SwiftGenerator private constructor(
             .filter { oneOf -> oneOf.fields.any { it.isMessage } }
             .associateWith { allocateLocalName("${it.name}ProtoTag") }
 
+          // ProtoReader.decode() returns nil for an unrecognized enum value after retaining it in
+          // unknownFields. Bind the result so an unknown occurrence never overwrites an earlier
+          // recognized one.
+          val enumValue = allocateLocalName("value")
+
           // Declare locals into which everything is written before promoting to members.
           type.declaredFields.forEach { field ->
             val localType = when (type.syntax) {
@@ -671,6 +676,15 @@ class SwiftGenerator private constructor(
                 decoder.add("try $reader.decode(into: &%N", field.safeName)
               } else if (field.isMessage) {
                 decoder.add("try $reader.decodeMessage(into: &%N", messageDataNames.getValue(field))
+              } else if (field.isEnum) {
+                addStatement(
+                  "case %1L: if let %2N = try $reader.decode(%3T.self) { %4N = %2N }",
+                  field.tag,
+                  enumValue,
+                  field.typeName.makeNonOptional(),
+                  field.safeName,
+                )
+                return@forEach
               } else {
                 val typeName = field.typeName.makeNonOptional()
 
@@ -696,25 +710,28 @@ class SwiftGenerator private constructor(
                     dataName,
                   )
                 }
-                // ProtoReader.decode() return optional for enums. Handle that specially.
+                // ProtoReader.decode() returns optional for enums. Only a recognized value selects
+                // this case; an unknown one is already retained in unknownFields.
                 field.isEnum -> {
                   val tagName = oneOfTagNames[oneOf]
                   if (tagName != null) {
                     addStatement(
-                      "case %1L: %5N = %1L; %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
+                      "case %1L: if let %6N = try $reader.decode(%4T.self) { %5N = %1L; %2N = .%3N(%6N) }",
                       field.tag,
                       oneOf.name,
                       field.safeName,
                       field.typeName.makeNonOptional(),
                       tagName,
+                      enumValue,
                     )
                   } else {
                     addStatement(
-                      "case %1L: %2N = (try $reader.decode(%4T.self)).flatMap { .%3N(\$0) }",
+                      "case %1L: if let %5N = try $reader.decode(%4T.self) { %2N = .%3N(%5N) }",
                       field.tag,
                       oneOf.name,
                       field.safeName,
                       field.typeName.makeNonOptional(),
+                      enumValue,
                     )
                   }
                 }

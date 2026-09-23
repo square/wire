@@ -54,8 +54,8 @@ extension MessageUsingMultipleEnums : Proto2Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: a = try protoReader.decode(MessageWithStatus.Status.self)
-            case 2: b = try protoReader.decode(OtherMessageWithStatus.Status.self)
+            case 1: if let value = try protoReader.decode(MessageWithStatus.Status.self) { a = value }
+            case 2: if let value = try protoReader.decode(OtherMessageWithStatus.Status.self) { b = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }

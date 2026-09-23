@@ -118,6 +118,91 @@ final class RoundTripTests: XCTestCase {
         XCTAssertEqual(try encoder.encode(decoded), expected)
     }
 
+    // a recognized value followed by an unknown occurrence of the same singular enum tag keeps the
+    // recognized value; the unknown occurrence is only retained in unknown fields
+    func testUnknownEnumOccurrenceDoesNotOverwriteRecognizedSingularValue() throws {
+        let data = Foundation.Data(hexEncoded: """
+            20 // (Tag 4 | Varint)
+            01 // Value 1
+            20 // (Tag 4 | Varint)
+            05 // Unknown enum value 5
+        """)!
+
+        let decoder = ProtoDecoder(enumDecodingStrategy: .returnNil)
+        let decoded = try decoder.decode(OneOfs.self, from: data)
+
+        XCTAssertEqual(decoded.standalone_enum, .A)
+        XCTAssertEqual(decoded.unknownFields, [4: Foundation.Data(hexEncoded: "20_05")!])
+
+        let encoder = ProtoEncoder()
+        XCTAssertEqual(try encoder.encode(decoded), data)
+    }
+
+    // an unknown value in a oneof enum field does not select that case, so a previously decoded
+    // sibling case survives
+    func testUnknownEnumOccurrenceDoesNotClearRecognizedOneOfCase() throws {
+        let data = Foundation.Data(hexEncoded: """
+            08 // (Tag 1 | Varint)
+            01 // Value 1
+            10 // (Tag 2 | Varint)
+            05 // Unknown enum value 5
+        """)!
+
+        let decoder = ProtoDecoder(enumDecodingStrategy: .returnNil)
+        let decoded = try decoder.decode(OneOfs.self, from: data)
+
+        XCTAssertEqual(decoded.choice, .enum_option(.A))
+        XCTAssertEqual(decoded.unknownFields, [2: Foundation.Data(hexEncoded: "10_05")!])
+
+        let encoder = ProtoEncoder()
+        XCTAssertEqual(try encoder.encode(decoded), data)
+    }
+
+    // when the oneof also has a message case, an unknown enum occurrence must not claim the oneof's
+    // tag, or the already decoded message case is dropped after the field loop
+    func testUnknownEnumOccurrenceDoesNotClearRecognizedOneOfMessageCase() throws {
+        let data = Foundation.Data(hexEncoded: """
+            2A // (Tag 5 | Length Delimited)
+            02 // Length 2
+            08 // (Tag 1 | Varint)
+            07 // Value 7
+            08 // (Tag 1 | Varint)
+            05 // Unknown enum value 5
+        """)!
+
+        let decoder = ProtoDecoder(enumDecodingStrategy: .returnNil)
+        let decoded = try decoder.decode(OneOfs.self, from: data)
+
+        XCTAssertEqual(decoded.choice, .message_option(OneOfs.NestedMessage { $0.id = 7 }))
+        XCTAssertEqual(decoded.unknownFields, [1: Foundation.Data(hexEncoded: "08_05")!])
+
+        let encoder = ProtoEncoder()
+        XCTAssertEqual(try encoder.encode(decoded), data)
+    }
+
+    // in proto3 an unknown occurrence must not reset a recognized value to the zero-value default
+    func testUnknownEnumOccurrenceDoesNotOverwriteRecognizedProto3Value() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A     // (Tag 1 | Length Delimited)
+            03     // Length 3
+            616263 // "abc"
+            10     // (Tag 2 | Varint)
+            01     // Value 1
+            10     // (Tag 2 | Varint)
+            05     // Unknown enum value 5
+        """)!
+
+        let decoder = ProtoDecoder(enumDecodingStrategy: .returnNil)
+        let decoded = try decoder.decode(Person3.PhoneNumber.self, from: data)
+
+        XCTAssertEqual(decoded.number, "abc")
+        XCTAssertEqual(decoded.type, .HOME)
+        XCTAssertEqual(decoded.unknownFields, [2: Foundation.Data(hexEncoded: "10_05")!])
+
+        let encoder = ProtoEncoder()
+        XCTAssertEqual(try encoder.encode(decoded), data)
+    }
+
     // in proto3 the field itself backfills to the zero-value default while the raw unknown
     // value is preserved in unknown fields, keeping the reencoded bytes identical
     func testUnknownEnumValueInProto3SingularFieldRoundTrip() throws {

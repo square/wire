@@ -255,6 +255,56 @@ class SwiftGeneratorTest {
     )
   }
 
+  @Test fun skipsAssignmentOfUnrecognizedEnumValues() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package squareup.protos2;
+        |
+        |enum Kind {
+        |  UNKNOWN = 0;
+        |  A = 1;
+        |}
+        |
+        |message Other {
+        |  optional string name = 1;
+        |}
+        |
+        |message Message {
+        |  optional Kind kind = 1;
+        |  optional Kind value = 2;
+        |  repeated Kind kinds = 3;
+        |  oneof choice {
+        |    Kind oneof_kind = 4;
+        |    Other oneof_other = 5;
+        |  }
+        |  oneof other_choice {
+        |    Kind other_kind = 6;
+        |    string other_name = 7;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos2.Message")
+
+    assertThat(code).contains("case 1: if let _value = try protoReader.decode(Kind.self) { kind = _value }")
+    assertThat(code).contains("case 2: if let _value = try protoReader.decode(Kind.self) { value = _value }")
+    assertThat(code).contains("case 3: try protoReader.decode(into: &kinds)")
+    assertThat(code).contains(
+      "case 4: if let _value = try protoReader.decode(Kind.self) { choiceProtoTag = 4; choice = .oneof_kind(_value) }",
+    )
+    assertThat(code).contains(
+      "case 6: if let _value = try protoReader.decode(Kind.self) { other_choice = .other_kind(_value) }",
+    )
+    assertThat(code).doesNotContain("kind = try protoReader.decode(Kind.self)")
+    assertThat(code).doesNotContain("choice = (try protoReader.decode(Kind.self))")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))
