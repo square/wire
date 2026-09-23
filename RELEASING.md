@@ -12,6 +12,10 @@ Cutting a JVM Release
 
 1. Update `CHANGELOG.md`.
 
+   If the PGP signing key changed since the last release, announce the change in this release's
+   entry. Include the new key ID and the new fingerprint. Also update `docs/signing_keys.md` to
+   list the new key.
+
 2. Set versions:
 
     ```
