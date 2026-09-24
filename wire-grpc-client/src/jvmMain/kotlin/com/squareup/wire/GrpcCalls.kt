@@ -21,7 +21,6 @@ import com.squareup.wire.internal.asGrpcClientStreamingCall
 import com.squareup.wire.internal.asGrpcServerStreamingCall
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -117,7 +116,7 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
  * Returns a new instance of [GrpcStreamingCall] that can be used for a single call to
  * [executeIn][GrpcStreamingCall.executeIn] or [executeBlocking][GrpcStreamingCall.executeBlocking].
  *
- * The returned instance launches [function] on [Dispatchers.IO]. The function must close the
+ * The returned instance launches [function] in the provided scope. The function must close the
  * [SendChannel] when it has no more messages to transmit. If [function] throws, both channels will
  * be closed using the thrown exception as a cause.
  *
@@ -189,7 +188,7 @@ fun <S : Any, R : Any> GrpcStreamingCall(
     override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> {
       check(executed.compareAndSet(false, true)) { "already executed" }
 
-      val job = scope.launch(Dispatchers.IO) {
+      val job = scope.launch {
         try {
           function(requestChannel, responseChannel)
         } catch (e: Exception) {
