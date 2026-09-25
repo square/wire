@@ -1,6 +1,20 @@
 Change Log
 ==========
 
+Version 7.0.4
+---------------------
+
+_2026-09-25_
+
+### Swift
+
+* Security: Enforce the recursion limit on nested groups in the Swift runtime, so crafted protobuf
+  payloads throw `ProtoDecoder.Error.recursionLimitExceeded` instead of overflowing the stack and
+  aborting the process (#3723, [GHSA-jmh4-c43f-w43x][GHSA-jmh4-c43f-w43x])
+* Fix: an unrecognized enum value no longer overwrites an earlier recognized value of the same
+  field, or an earlier decoded `oneof` case, in generated Swift decode. The unrecognized value is
+  still kept in unknown fields (#3725 by [Ulugbek Kahramonov][bek-kah])
+
 Version 7.0.3
 ---------------------
 
@@ -2192,6 +2206,7 @@ Initial version.
  [GHSA-7xpr-hc2w-34m9]: https://github.com/square/wire/security/advisories/GHSA-7xpr-hc2w-34m9
  [GHSA-9rm7-3qhh-h2mc]: https://github.com/square/wire/security/advisories/GHSA-9rm7-3qhh-h2mc
  [GHSA-86wm-r4c5-2rc9]: https://github.com/square/wire/security/advisories/GHSA-86wm-r4c5-2rc9
+ [GHSA-jmh4-c43f-w43x]: https://github.com/square/wire/security/advisories/GHSA-jmh4-c43f-w43x
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
  [JustinBis]: https://github.com/JustinBis
@@ -2203,6 +2218,7 @@ Initial version.
  [eyupcanakman]: https://github.com/eyupcanakman
  [aaron-edwards]: https://github.com/aaron-edwards
  [amorde]: https://github.com/amorde
+ [bek-kah]: https://github.com/bek-kah
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
  [brunofrts]: https://github.com/brunofrts
  [custom-handlers-doc]: https://square.github.io/wire/wire_compiler/#custom-handlers
@@ -2221,6 +2237,7 @@ Initial version.
  [lickel]: https://github.com/lickel
  [liutikas]: https://github.com/liutikas
  [loganblevins]: https://github.com/loganblevins
+ [manus-use]: https://github.com/manus-use
  [mpawliszyn]: https://github.com/mpawliszyn
  [mpeyper]: https://github.com/mpeyper
  [mrtryhard]: https://github.com/mrtryhard
