@@ -67,6 +67,26 @@ final class ProtoDecoderTests: XCTestCase {
         }
     }
 
+    func testDecodeRejectsKnownFieldWithMismatchedWireType() throws {
+        // Person declares field 1 `name` as a string and field 2 `id` as a varint int32.
+        let payloads = [
+            "0A0161_1500000000", // id sent as fixed32
+            "0A0161_110000000000000000", // id sent as fixed64
+            "0A0161_1200", // id sent as length delimited
+            "0801", // name sent as varint
+            "0D00000000", // name sent as fixed32
+        ]
+
+        for payload in payloads {
+            let data = Foundation.Data(hexEncoded: payload)!
+            XCTAssertThrowsError(try ProtoDecoder().decode(Person.self, from: data), payload) { error in
+                guard case ProtoDecoder.Error.invalidStructure = error else {
+                    return XCTFail("Unexpected error for \(payload): \(error)")
+                }
+            }
+        }
+    }
+
     func testDecodeEmptySizeDelimitedData() throws {
         let decoder = ProtoDecoder()
         let object = try decoder.decodeSizeDelimited(SimpleOptional2.self, from: Foundation.Data())

@@ -1202,6 +1202,91 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testReadBufferRejectsMismatchedWireType() throws {
+        let data = Foundation.Data(hexEncoded: """
+            08 // (Tag 1 | Varint)
+            01 // Value 1
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { _ in
+                    _ = try reader.readBuffer()
+                }
+            }
+        ) { error in
+            assertInvalidStructureError(error, message: "Decoding field as length delimited when key was not LENGTH_DELIMITED")
+        }
+    }
+
+    func testReadDataRejectsMismatchedWireType() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0D       // (Tag 1 | Fixed32)
+            00000000 // Value 0
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { _ in
+                    _ = try reader.readData()
+                }
+            }
+        ) { error in
+            assertInvalidStructureError(error, message: "Decoding field as length delimited when key was not LENGTH_DELIMITED")
+        }
+    }
+
+    func testReadFixed32RejectsMismatchedWireType() throws {
+        let data = Foundation.Data(hexEncoded: """
+            08 // (Tag 1 | Varint)
+            01 // Value 1
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { _ in
+                    _ = try reader.readFixed32()
+                }
+            }
+        ) { error in
+            assertInvalidStructureError(error, message: "Decoding field as fixed32 when key was not FIXED32")
+        }
+    }
+
+    func testReadFixed64RejectsMismatchedWireType() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0D       // (Tag 1 | Fixed32)
+            00000000 // Value 0
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { _ in
+                    _ = try reader.readFixed64()
+                }
+            }
+        ) { error in
+            assertInvalidStructureError(error, message: "Decoding field as fixed64 when key was not FIXED64")
+        }
+    }
+
+    func testReadVarintRejectsMismatchedWireType() throws {
+        let data = Foundation.Data(hexEncoded: """
+            0A // (Tag 1 | Length Delimited)
+            00 // Length 0
+        """)!
+
+        XCTAssertThrowsError(
+            try test(data: data) { reader in
+                _ = try reader.forEachTag { _ in
+                    _ = try reader.readVarint()
+                }
+            }
+        ) { error in
+            assertInvalidStructureError(error, message: "Decoding field as varint when key was not VARINT")
+        }
+    }
+
     func testNestedMessageRejectsOversizedLength() throws {
         let data = Foundation.Data(hexEncoded: """
             12         // (Tag 2 | Length Delimited)
@@ -1518,6 +1603,14 @@ final class ProtoReaderTests: XCTestCase {
             return
         }
         XCTAssertEqual(message, "Negative length: -128. Reader position: \(readerPosition). Last read tag: 1.")
+    }
+
+    private func assertInvalidStructureError(_ error: Error, message expectedMessage: String) {
+        guard case let ProtoDecoder.Error.invalidStructure(message) = error else {
+            XCTFail("Unexpected error: \(error)")
+            return
+        }
+        XCTAssertEqual(message, expectedMessage)
     }
 
     private func assertUnexpectedEndError(_ error: Error) {

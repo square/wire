@@ -788,7 +788,9 @@ public final class ProtoReader {
 
     func readBuffer() throws -> UnsafeRawBufferPointer {
         guard case let .lengthDelimited(length) = state else {
-            fatalError("Decoding field as length delimited when key was not LENGTH_DELIMITED")
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Decoding field as length delimited when key was not LENGTH_DELIMITED"
+            )
         }
         state = .tag
 
@@ -798,7 +800,9 @@ public final class ProtoReader {
     /** Reads a `bytes` field value from the stream. The length is read from the stream prior to the actual data. */
     func readData() throws -> Data {
         guard case let .lengthDelimited(length) = state else {
-            fatalError("Decoding field as length delimited when key was not LENGTH_DELIMITED")
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Decoding field as length delimited when key was not LENGTH_DELIMITED"
+            )
         }
         state = .tag
 
@@ -807,21 +811,33 @@ public final class ProtoReader {
 
     /** Reads a 32-bit little-endian integer from the stream.  */
     func readFixed32() throws -> UInt32 {
-        precondition(state == .fixed32 || state == .packedValue)
+        guard state == .fixed32 || state == .packedValue else {
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Decoding field as fixed32 when key was not FIXED32"
+            )
+        }
         state = .tag
         return try buffer.readFixed32()
     }
 
     /** Reads a 64-bit little-endian integer from the stream.  */
     func readFixed64() throws -> UInt64 {
-        precondition(state == .fixed64 || state == .packedValue)
+        guard state == .fixed64 || state == .packedValue else {
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Decoding field as fixed64 when key was not FIXED64"
+            )
+        }
         state = .tag
         return try buffer.readFixed64()
     }
 
     /** Reads a raw varint up to 64 bits in length from the stream.  */
     func readVarint() throws -> UInt64 {
-        precondition(state == .varint || state == .packedValue)
+        guard state == .varint || state == .packedValue else {
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Decoding field as varint when key was not VARINT"
+            )
+        }
         state = .tag
 
         return try buffer.readVarint()
