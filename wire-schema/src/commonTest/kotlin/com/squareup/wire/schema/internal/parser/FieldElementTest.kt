@@ -128,4 +128,99 @@ class FieldElementTest {
         """.trimMargin(),
       )
   }
+
+  @Test
+  fun emptyDocLineHasNoTrailingSpace() {
+    val field = FieldElement(
+      location = location,
+      label = OPTIONAL,
+      type = "string",
+      name = "name",
+      tag = 1,
+      documentation = "First paragraph.\n\nSecond paragraph.",
+    )
+
+    assertThat(field.toSchema()).isEqualTo(
+      """
+        |// First paragraph.
+        |//
+        |// Second paragraph.
+        |optional string name = 1;
+        |
+      """.trimMargin(),
+    )
+  }
+
+  @Test
+  fun fieldWithTrailingOnlyDocumentation() {
+    val field = FieldElement(
+      location = location,
+      label = OPTIONAL,
+      type = "string",
+      name = "name",
+      tag = 1,
+      documentation = "inline doc",
+      trailingDocumentation = "inline doc",
+    )
+
+    assertThat(field.toSchema()).isEqualTo("optional string name = 1; // inline doc\n")
+  }
+
+  @Test
+  fun fieldWithLeadingAndTrailingDocumentation() {
+    val field = FieldElement(
+      location = location,
+      label = OPTIONAL,
+      type = "string",
+      name = "name",
+      tag = 1,
+      documentation = "above\ninline",
+      trailingDocumentation = "inline",
+    )
+
+    assertThat(field.toSchema()).isEqualTo(
+      """
+        |// above
+        |optional string name = 1; // inline
+        |
+      """.trimMargin(),
+    )
+  }
+
+  @Test
+  fun fieldWithMultilineTrailingDocumentationUsesBlockComment() {
+    val field = FieldElement(
+      location = location,
+      label = OPTIONAL,
+      type = "string",
+      name = "name",
+      tag = 1,
+      documentation = "line one\nline two",
+      trailingDocumentation = "line one\nline two",
+    )
+
+    assertThat(field.toSchema()).isEqualTo(
+      "optional string name = 1; /* line one\nline two */\n",
+    )
+  }
+
+  @Test
+  fun fieldWithLeadingOnlyDocumentationUnchanged() {
+    val field = FieldElement(
+      location = location,
+      label = OPTIONAL,
+      type = "string",
+      name = "name",
+      tag = 1,
+      documentation = "above only",
+    )
+
+    assertThat(field.toSchema()).isEqualTo(
+      """
+        |// above only
+        |optional string name = 1;
+        |
+      """.trimMargin(),
+    )
+  }
 }
