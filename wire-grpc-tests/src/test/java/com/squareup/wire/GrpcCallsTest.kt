@@ -19,10 +19,13 @@ import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isTrue
 import java.util.Locale.US
 import java.util.concurrent.LinkedBlockingQueue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import org.junit.Assert.fail
@@ -240,6 +243,28 @@ class GrpcCallsTest {
 
     assertThat(log.take()).isEqualTo("failure: java.io.IOException: canceled")
     assertThat(log).isEmpty()
+  }
+
+  @Test
+  fun executeInRespectsScope() {
+    val dispatcher = newSingleThreadContext("grpc-test-thread")
+    val scope = CoroutineScope(dispatcher)
+    var threadName: String? = null
+
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      threadName = Thread.currentThread().name
+      requests.receive()
+      responses.close()
+    }
+
+    val (send, receive) = grpcCall.executeIn(scope)
+    runBlocking {
+      send.send("hello")
+      receive.receiveCatching()
+    }
+
+    assertThat(threadName!!.startsWith("grpc-test-thread")).isTrue()
+    dispatcher.close()
   }
 
   @Test
