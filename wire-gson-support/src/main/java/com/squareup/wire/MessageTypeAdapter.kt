@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.google.gson.JsonSyntaxException
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
@@ -71,6 +72,16 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       // interpreted as the appropriate default value when parsed into a protocol buffer."
       if (value == null) continue
 
+      // "null values are not allowed within repeated fields. google.protobuf.NullValue is a
+      // special exception to this behavior." Struct types (Value, NullValue, ListValue, Struct)
+      // use null as a valid JSON value. https://protobuf.dev/programming-guides/json/
+      if (jsonField.fieldBinding.label.isRepeated && !jsonField.fieldBinding.isStruct && value is List<*> && null in value) {
+        throw JsonSyntaxException(
+          "Repeated field $name cannot contain a null element. Null values are " +
+            "not allowed inside repeated fields in proto JSON.",
+        )
+      }
+
       jsonField.fieldBinding.set(builder, value)
     }
     input.endObject()
@@ -82,3 +93,10 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     val fieldBinding: FieldOrOneOfBinding<M, B>,
   )
 }
+
+/** True if this field's values are struct types, for which null is a valid JSON value. */
+private val FieldOrOneOfBinding<*, *>.isStruct: Boolean
+  get() = singleAdapter == ProtoAdapter.STRUCT_MAP ||
+    singleAdapter == ProtoAdapter.STRUCT_LIST ||
+    singleAdapter == ProtoAdapter.STRUCT_VALUE ||
+    singleAdapter == ProtoAdapter.STRUCT_NULL

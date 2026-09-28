@@ -16,8 +16,10 @@
 package com.squareup.wire
 
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
+import com.squareup.wire.internal.FieldOrOneOfBinding
 import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
 
@@ -79,9 +81,27 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       if (value == null) continue
 
       val fieldBinding = messageAdapter.fieldBindingsArray[index]
+
+      // "null values are not allowed within repeated fields. google.protobuf.NullValue is a
+      // special exception to this behavior." Struct types (Value, NullValue, ListValue, Struct)
+      // use null as a valid JSON value. https://protobuf.dev/programming-guides/json/
+      if (fieldBinding.label.isRepeated && !fieldBinding.isStruct && value is List<*> && null in value) {
+        throw JsonDataException(
+          "Repeated field ${jsonNames[index]} cannot contain a null element. Null values are " +
+            "not allowed inside repeated fields in proto JSON.",
+        )
+      }
+
       fieldBinding.set(builder, value)
     }
     input.endObject()
     return builder.build()
   }
 }
+
+/** True if this field's values are struct types, for which null is a valid JSON value. */
+private val FieldOrOneOfBinding<*, *>.isStruct: Boolean
+  get() = singleAdapter == ProtoAdapter.STRUCT_MAP ||
+    singleAdapter == ProtoAdapter.STRUCT_LIST ||
+    singleAdapter == ProtoAdapter.STRUCT_VALUE ||
+    singleAdapter == ProtoAdapter.STRUCT_NULL

@@ -436,6 +436,68 @@ class WireJsonTest {
     assertThat(parsed).isEqualTo(expected)
   }
 
+  /**
+   * "null values are not allowed within repeated fields. google.protobuf.NullValue is a special
+   * exception to this behavior." https://protobuf.dev/programming-guides/json/
+   * https://github.com/square/wire/issues/3353
+   */
+  @Test fun nullElementInRepeatedScalarFieldThrows() {
+    val json = """{"toppings":["pineapple",null,"onion"]}"""
+    try {
+      jsonLibrary.fromJson(json, Pizza::class.java)
+      fail()
+    } catch (expected: JsonDataException) {
+      // Moshi.
+      assertThat(expected).hasMessage(
+        "Repeated field toppings cannot contain a null element. Null values are not allowed " +
+          "inside repeated fields in proto JSON.",
+      )
+    } catch (expected: JsonSyntaxException) {
+      // Gson.
+      assertThat(expected).hasMessage(
+        "Repeated field toppings cannot contain a null element. Null values are not allowed " +
+          "inside repeated fields in proto JSON.",
+      )
+    }
+  }
+
+  @Test fun nullElementInRepeatedMessageFieldThrows() {
+    val json = """{"pizzas":[{"toppings":["pineapple"]},null]}"""
+    try {
+      jsonLibrary.fromJson(json, PizzaDelivery::class.java)
+      fail()
+    } catch (expected: JsonDataException) {
+      // Moshi.
+      assertThat(expected).hasMessage(
+        "Repeated field pizzas cannot contain a null element. Null values are not allowed " +
+          "inside repeated fields in proto JSON.",
+      )
+    } catch (expected: JsonSyntaxException) {
+      // Gson.
+      assertThat(expected).hasMessage(
+        "Repeated field pizzas cannot contain a null element. Null values are not allowed " +
+          "inside repeated fields in proto JSON.",
+      )
+    }
+  }
+
+  /** A null value for a whole repeated field means unset, same as an empty list. */
+  @Test fun nullValueForWholeRepeatedFieldIsAccepted() {
+    val parsed = jsonLibrary.fromJson("""{"toppings":null}""", Pizza::class.java)
+    assertThat(parsed).isEqualTo(Pizza.Builder().build())
+  }
+
+  /**
+   * Struct types (Value, NullValue, ListValue, Struct) use null as a valid JSON value, so null
+   * elements in repeated struct fields must keep working.
+   */
+  @Test fun nullElementsInRepeatedStructFieldsAreAccepted() {
+    val json = """{"repValueA":["a",null,3.0],"repNullValue":[null,null]}"""
+    val parsed = jsonLibrary.fromJson(json, AllStructs::class.java)
+    assertThat(parsed.rep_value_a).isEqualTo(listOf("a", null, 3.0))
+    assertThat(parsed.rep_null_value).isEqualTo(listOf(null, null))
+  }
+
   @Test fun enumCanBeDecodedFromInt() {
     val json = """{"drink":9}"""
     val value = jsonLibrary.fromJson(json, FreeDrinkPromotion::class.java)
