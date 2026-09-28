@@ -81,9 +81,14 @@ public final class com/squareup/wire/GrpcHttpUrlKt {
 
 public final class com/squareup/wire/GrpcMethod {
 	public fun <init> (Ljava/lang/String;Lcom/squareup/wire/ProtoAdapter;Lcom/squareup/wire/ProtoAdapter;)V
+	public fun <init> (Ljava/lang/String;Lcom/squareup/wire/ProtoAdapter;Lcom/squareup/wire/ProtoAdapter;Z)V
+	public fun <init> (Ljava/lang/String;Lcom/squareup/wire/ProtoAdapter;Lcom/squareup/wire/ProtoAdapter;ZZ)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/squareup/wire/ProtoAdapter;Lcom/squareup/wire/ProtoAdapter;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getPath ()Ljava/lang/String;
 	public final fun getRequestAdapter ()Lcom/squareup/wire/ProtoAdapter;
+	public final fun getRequestStreaming ()Z
 	public final fun getResponseAdapter ()Lcom/squareup/wire/ProtoAdapter;
+	public final fun getResponseStreaming ()Z
 }
 
 public abstract interface class com/squareup/wire/GrpcServerStreamingCall {
