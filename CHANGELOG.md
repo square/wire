@@ -1,6 +1,26 @@
 Change Log
 ==========
 
+Version 7.1.0
+---------------------
+
+_2026-09-28_
+
+### Common
+
+* Fix: reject `null` elements inside repeated fields when decoding JSON, as the ProtoJSON spec
+  requires. Moshi throws `JsonDataException` and Gson throws `JsonSyntaxException`, and the message
+  names the field. Before, decoding crashed with a raw `IllegalArgumentException` that did not
+  explain the rule (#3727)
+
+### Swift
+
+* Security: `ProtoReader` read primitives now throw `ProtoDecoder.Error.invalidStructure` when the
+  wire type of the current field does not match the type being read, instead of aborting the
+  process with an uncatchable assertion. A `do`/`catch` around `ProtoDecoder.decode` can now handle
+  crafted payloads that put a known field number under a different wire type (#3731,
+  [GHSA-35ch-cghp-x9g6][GHSA-35ch-cghp-x9g6])
+
 Version 7.0.4
 ---------------------
 
@@ -2206,6 +2226,7 @@ Initial version.
  [GHSA-7xpr-hc2w-34m9]: https://github.com/square/wire/security/advisories/GHSA-7xpr-hc2w-34m9
  [GHSA-9rm7-3qhh-h2mc]: https://github.com/square/wire/security/advisories/GHSA-9rm7-3qhh-h2mc
  [GHSA-86wm-r4c5-2rc9]: https://github.com/square/wire/security/advisories/GHSA-86wm-r4c5-2rc9
+ [GHSA-35ch-cghp-x9g6]: https://github.com/square/wire/security/advisories/GHSA-35ch-cghp-x9g6
  [GHSA-jmh4-c43f-w43x]: https://github.com/square/wire/security/advisories/GHSA-jmh4-c43f-w43x
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
