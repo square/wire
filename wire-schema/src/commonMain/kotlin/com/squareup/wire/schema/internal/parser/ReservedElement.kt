@@ -18,15 +18,18 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendTrailingDocumentation
+import com.squareup.wire.schema.internal.leadingDocumentation
 
 data class ReservedElement(
   val location: Location,
   val documentation: String = "",
+  val trailingDocumentation: String = "",
   /** A [String] name or [Int] or [IntRange] tag. */
   val values: List<Any>,
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(documentation)
+    appendDocumentation(leadingDocumentation(documentation, trailingDocumentation))
     append("reserved ")
 
     values.forEachIndexed { index, value ->
@@ -46,6 +49,8 @@ data class ReservedElement(
         else -> throw AssertionError()
       }
     }
-    append(";\n")
+    append(';')
+    appendTrailingDocumentation(trailingDocumentation)
+    append('\n')
   }
 }

@@ -34,6 +34,12 @@ data class Reserved(
     fun fromElements(elements: List<ReservedElement>) = elements.map { Reserved(it.location, it.documentation, it.values) }
 
     @JvmStatic
-    fun toElements(reserveds: List<Reserved>) = reserveds.map { ReservedElement(it.location, it.documentation, it.values) }
+    fun toElements(reserveds: List<Reserved>) = reserveds.map {
+      ReservedElement(
+        location = it.location,
+        documentation = it.documentation,
+        values = it.values,
+      )
+    }
   }
 }
