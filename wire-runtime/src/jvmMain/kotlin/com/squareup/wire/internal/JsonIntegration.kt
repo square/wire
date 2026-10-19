@@ -135,6 +135,7 @@ abstract class JsonIntegration<F, A> {
 
   private fun mapKeyJsonFormatter(protoAdapter: ProtoAdapter<*>): JsonFormatter<*> = when (protoAdapter) {
     ProtoAdapter.STRING -> StringJsonFormatter
+    ProtoAdapter.BOOL -> BooleanAsStringJsonFormatter
     ProtoAdapter.INT32,
     ProtoAdapter.SINT32,
     ProtoAdapter.SFIXED32,
@@ -234,6 +235,17 @@ abstract class JsonIntegration<F, A> {
   private object IntAsStringJsonFormatter : JsonFormatter<Int> {
     override fun fromString(value: String) = value.toInt()
     override fun toStringOrNumber(value: Int) = value.toString()
+  }
+
+  /** Encodes a boolean value with quotes, like `"true"`. */
+  private object BooleanAsStringJsonFormatter : JsonFormatter<Boolean> {
+    override fun fromString(value: String) = when (value) {
+      "true" -> true
+      "false" -> false
+      else -> throw IllegalArgumentException("expected true or false but was $value")
+    }
+
+    override fun toStringOrNumber(value: Boolean) = value.toString()
   }
 
   /** Encodes a byte string as base64. */
