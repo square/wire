@@ -194,6 +194,18 @@ abstract class SchemaHandler {
       }
   }
 
+  /** Keeps source paths inside a single generated line comment without changing input paths. */
+  protected fun sourcePathForComment(location: Location): String = buildString {
+    for (character in location.withPathOnly().toString()) {
+      append(
+        when (character) {
+          '\r', '\n', '\u000b', '\u000c', '\u0085', '\u2028', '\u2029' -> ' '
+          else -> character
+        },
+      )
+    }
+  }
+
   /**
    * Confirms that [filePath] resolves to a location inside [outDirectory], throwing otherwise.
    *

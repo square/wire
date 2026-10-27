@@ -197,7 +197,7 @@ class KotlinSchemaHandler(
     val modulePath = context.outDirectory
     val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
       .addFileComment(CODE_GENERATED_BY_WIRE)
-      .addFileComment("\nSource: %L in %L", source, location.withPathOnly())
+      .addFileComment("\nSource: %L in %L", source, sourcePathForComment(location))
       // DEPRECATION: Don't warn about Wire's internal use of deprecated symbols.
       // RUNTIME_ANNOTATION_NOT_SUPPORTED: Don't warn about @WireField in Kotlin/JS.
       .addAnnotation(
