@@ -1307,6 +1307,50 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testTruncatedNestedMessageDoesNotChangeReaderState() throws {
+        try test(data: Foundation.Data([0x0A, 0x05])) { reader in
+            let token = try reader.beginMessage()
+            XCTAssertEqual(try reader.nextTag(token: token), 1)
+
+            // Failed attempts must not change the state or consume the frame recursion budget.
+            for _ in 0..<70 {
+                XCTAssertThrowsError(try reader.beginMessage()) { error in
+                    assertUnexpectedEndError(error)
+                }
+            }
+        }
+    }
+
+    func testTruncatedNestedMessageCleansUpInitializedFrames() throws {
+        for depth in [1, 5, 6] {
+            // Keep unknown fields in each initialized frame when the nested length check fails.
+            var data = Foundation.Data([0x10, 0x01, 0x0A, 0x05])
+            for _ in 1..<depth {
+                var wrapper = Foundation.Data([0x10, 0x01, 0x0A])
+                wrapper.append(encodeVarint(data.count))
+                wrapper.append(data)
+                data = wrapper
+            }
+
+            XCTAssertThrowsError(
+                try test(data: data) { reader in
+                    func decodeNested() throws {
+                        _ = try reader.forEachTag { tag in
+                            if tag == 1 {
+                                try decodeNested()
+                            } else {
+                                try reader.readUnknownField(tag: tag)
+                            }
+                        }
+                    }
+                    try decodeNested()
+                }
+            ) { error in
+                assertUnexpectedEndError(error)
+            }
+        }
+    }
+
     func testPackedRepeatedRejectsOversizedLengthBeforePreallocation() throws {
         let data = Foundation.Data(hexEncoded: """
             0A         // (Tag 1 | Length Delimited)

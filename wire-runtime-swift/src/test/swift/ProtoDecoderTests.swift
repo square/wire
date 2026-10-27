@@ -87,6 +87,31 @@ final class ProtoDecoderTests: XCTestCase {
         }
     }
 
+    func testRetainedMessageSurvivesTruncatedNestedMessage() throws {
+        let encoder = ProtoEncoder()
+        let decoder = ProtoDecoder()
+        let first = Person(name: String(repeating: "A", count: 100), id: 1, data: Data(json_data: "first")) {
+            $0.aliases = Array(repeating: String(repeating: "C", count: 100), count: 3)
+        }
+        let last = Person(name: String(repeating: "B", count: 100), id: 2, data: Data(json_data: "last"))
+        let retained = try decoder.decode(Person.self, from: encoder.encode(first))
+
+        // Unknown-field padding is followed by a truncated map entry.
+        var malformed = Foundation.Data()
+        for _ in 0..<55 {
+            malformed.append(contentsOf: [0x50, 0x01])
+        }
+        malformed.append(contentsOf: [0x42, 0x05])
+        XCTAssertThrowsError(try decoder.decode(Person.self, from: malformed)) { error in
+            guard case ProtoDecoder.Error.unexpectedEndOfData = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
+
+        XCTAssertEqual(try decoder.decode(Person.self, from: encoder.encode(last)), last)
+        XCTAssertEqual(retained, first)
+    }
+
     func testDecodeEmptySizeDelimitedData() throws {
         let decoder = ProtoDecoder()
         let object = try decoder.decodeSizeDelimited(SimpleOptional2.self, from: Foundation.Data())
