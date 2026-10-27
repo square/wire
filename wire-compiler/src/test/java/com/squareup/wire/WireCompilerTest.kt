@@ -75,6 +75,72 @@ class WireCompilerTest {
   }
 
   @Test
+  fun sourcePathCommentsCannotInjectKotlin() {
+    sourcePathCommentsCannotInject("kotlin")
+  }
+
+  @Test
+  fun sourcePathCommentsCannotInjectSwift() {
+    sourcePathCommentsCannotInject("swift")
+  }
+
+  @Test
+  fun sourcePathCommentsCannotInjectJava() {
+    sourcePathCommentsCannotInject("java")
+  }
+
+  private fun sourcePathCommentsCannotInject(target: String) {
+    val paths = listOf(
+      "source\rINJECTED_MARKER.proto",
+      "source\nINJECTED_MARKER.proto",
+      "source\r\nINJECTED_MARKER.proto",
+      "source\u000bINJECTED_MARKER.proto",
+      "source\u000cINJECTED_MARKER.proto",
+      "source\u0085INJECTED_MARKER.proto",
+      "source\u2028INJECTED_MARKER.proto",
+      "source\u2029INJECTED_MARKER.proto",
+      "nested/* marker */ café %.proto",
+    )
+    for ((index, path) in paths.withIndex()) {
+      val sourceDirectory = "/source$index".toPath()
+      val sourceFile = sourceDirectory / path
+      fileSystem.createDirectories(sourceFile.parent!!)
+      fileSystem.write(sourceFile) {
+        writeUtf8(
+          """
+          |syntax = "proto2";
+          |package sample;
+          |message Msg {}
+          |enum Choice { ZERO = 0; }
+          |service Api { rpc Call (Msg) returns (Msg); }
+          """.trimMargin(),
+        )
+      }
+      val outputDirectory = "/out$index".toPath()
+      WireCompiler.forArgs(
+        fileSystem,
+        EmptyWireLogger(),
+        "--proto_path=$sourceDirectory",
+        "--${target}_out=$outputDirectory",
+      ).compile()
+
+      val generatedFiles = fileSystem.listRecursively(outputDirectory)
+        .filter { fileSystem.metadata(it).isRegularFile }
+        .toList()
+      assertThat(generatedFiles.size >= 2).isTrue()
+      val expectedPath = path.map {
+        if (it in "\r\n\u000b\u000c\u0085\u2028\u2029") ' ' else it
+      }.joinToString("")
+      for (generatedFile in generatedFiles) {
+        val generated = fileSystem.read(generatedFile) { readUtf8() }
+        val sourceComment = generated.lineSequence().elementAt(1)
+        assertThat(sourceComment.substringAfter(" in ")).isEqualTo(expectedPath)
+        assertThat(sourceComment.startsWith("// Source: sample.")).isTrue()
+      }
+    }
+  }
+
+  @Test
   fun default() {
     val wireCompiler = WireCompiler.forArgs(fileSystem, EmptyWireLogger(), "--java_out=out/")
     val wireRun = wireCompiler.createRun()

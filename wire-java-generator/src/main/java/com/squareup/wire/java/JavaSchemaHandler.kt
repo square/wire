@@ -95,7 +95,7 @@ class JavaSchemaHandler(
     val outDirectory = context.outDirectory
     val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
       .addFileComment("\$L", CODE_GENERATED_BY_WIRE)
-      .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly())
+      .addFileComment("\nSource: \$L in \$L", source, sourcePathForComment(location))
       .build()
     val filePath = outDirectory /
       javaFile.packageName().replace(".", "/") /
