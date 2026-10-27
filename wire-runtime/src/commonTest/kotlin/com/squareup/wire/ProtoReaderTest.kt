@@ -21,11 +21,17 @@ import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.squareup.wire.ReverseProtoWriterTest.Person
+import com.squareup.wire.internal.DoubleArrayList
+import com.squareup.wire.internal.FloatArrayList
+import com.squareup.wire.internal.IntArrayList
+import com.squareup.wire.internal.LongArrayList
 import kotlin.test.Test
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
 import okio.EOFException
+import okio.ForwardingSource
 import okio.IOException
+import okio.buffer
 
 class ProtoReaderTest {
   @Test fun packedExposedAsRepeated() {
@@ -104,6 +110,86 @@ class ProtoReaderTest {
     assertFailure {
       reader.readFixed32()
     }.isInstanceOf<EOFException>()
+  }
+
+  @Test fun packedAllocationHintDoesNotTrustDeclaredLength() {
+    for (length in listOf(0x0fffffff, Int.MAX_VALUE)) {
+      val source = Buffer().writeByte(0x12)
+      ProtoWriter(source).writeVarint32(length)
+      val reader = ProtoReader(source)
+      reader.beginMessage()
+      assertThat(reader.nextTag()).isEqualTo(2)
+
+      // Check the hint before allocating, so a regression cannot exhaust the test process heap.
+      val hint = reader.nextFieldMinLengthInBytes()
+      assertThat(hint).isEqualTo(0L)
+      val values = ArrayList<Int>(hint.toInt())
+      assertFailure {
+        ProtoAdapter.INT32.tryDecode(reader, values)
+      }.isInstanceOf<EOFException>()
+    }
+  }
+
+  @Test fun packedPrimitiveArrayAllocationHintDoesNotTrustDeclaredLength() {
+    val source = Buffer().write("12ffffffff07".decodeHex())
+    val reader = ProtoReader(source)
+    reader.beginMessage()
+    assertThat(reader.nextTag()).isEqualTo(2)
+    val hint = reader.nextFieldMinLengthInBytes()
+    assertThat(hint).isEqualTo(0L)
+    assertThat(IntArrayList.forDecoding(hint, 1).toArray().size).isEqualTo(0)
+    assertThat(LongArrayList.forDecoding(hint, 1).toArray().size).isEqualTo(0)
+    assertThat(FloatArrayList.forDecoding(hint, 4).toArray().size).isEqualTo(0)
+    assertThat(DoubleArrayList.forDecoding(hint, 8).toArray().size).isEqualTo(0)
+    assertFailure {
+      reader.readFixed64()
+    }.isInstanceOf<EOFException>()
+  }
+
+  @Test fun packedAllocationHintRespectsBufferedBytesAndFieldLimit() {
+    val truncated = ProtoReader(Buffer().write("12ffffffff070102".decodeHex()))
+    truncated.beginMessage()
+    assertThat(truncated.nextTag()).isEqualTo(2)
+    assertThat(truncated.nextFieldMinLengthInBytes()).isEqualTo(2L)
+
+    val complete = ProtoReader(Buffer().write("120201021807".decodeHex()))
+    val token = complete.beginMessage()
+    assertThat(complete.nextTag()).isEqualTo(2)
+    assertThat(complete.nextFieldMinLengthInBytes()).isEqualTo(2L)
+    assertThat(complete.readVarint32()).isEqualTo(1)
+    assertThat(complete.nextTag()).isEqualTo(2)
+    assertThat(complete.readVarint32()).isEqualTo(2)
+    assertThat(complete.nextTag()).isEqualTo(3)
+    assertThat(complete.readVarint32()).isEqualTo(7)
+    assertThat(complete.nextTag()).isEqualTo(-1)
+    complete.endMessageAndGetUnknownFields(token)
+  }
+
+  @Test fun packedAllocationHintDoesNotReadAhead() {
+    var reads = 0
+    val source = object : ForwardingSource(Buffer().write("1204010203041807".decodeHex())) {
+      override fun read(sink: Buffer, byteCount: Long): Long {
+        reads++
+        return super.read(sink, minOf(byteCount, 1L))
+      }
+    }.buffer()
+    val reader = ProtoReader(source)
+    val token = reader.beginMessage()
+    assertThat(reader.nextTag()).isEqualTo(2)
+    assertThat(reads).isEqualTo(2)
+    assertThat(reader.nextFieldMinLengthInBytes()).isEqualTo(0L)
+    assertThat(reads).isEqualTo(2)
+
+    // A zero hint must still allow a packed list to grow as streaming bytes arrive.
+    val values = ArrayList<Int>(0)
+    for (value in 1..4) {
+      ProtoAdapter.INT32.tryDecode(reader, values)
+      assertThat(reader.nextTag()).isEqualTo(if (value < 4) 2 else 3)
+    }
+    assertThat(values).isEqualTo(listOf(1, 2, 3, 4))
+    assertThat(reader.readVarint32()).isEqualTo(7)
+    assertThat(reader.nextTag()).isEqualTo(-1)
+    reader.endMessageAndGetUnknownFields(token)
   }
 
   // Consider pasting new tests into ProtoReader32Test.kt also.
