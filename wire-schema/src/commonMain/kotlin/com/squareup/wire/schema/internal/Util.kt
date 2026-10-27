@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal
 
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoType
@@ -26,6 +27,18 @@ import com.squareup.wire.schema.Type
 import com.squareup.wire.schema.internal.parser.OptionElement
 import okio.Path
 import okio.Path.Companion.toPath
+
+/** Keeps source paths inside a single generated line comment without changing input paths. */
+internal fun Location.sourcePathForComment(): String = buildString {
+  for (character in withPathOnly().toString()) {
+    append(
+      when (character) {
+        '\r', '\n', '\u000b', '\u000c', '\u0085', '\u2028', '\u2029' -> ' '
+        else -> character
+      },
+    )
+  }
+}
 
 // TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-34102
 fun StringBuilder.appendDocumentation(

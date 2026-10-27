@@ -42,6 +42,54 @@ class ProtoFileElementTest {
   }
 
   @Test
+  fun sourcePathStaysInComment() {
+    val paths = listOf(
+      "source\rMARKER.proto" to "source MARKER.proto",
+      "source\nMARKER.proto" to "source MARKER.proto",
+      "source\r\nMARKER.proto" to "source  MARKER.proto",
+      "source\u000bMARKER.proto" to "source MARKER.proto",
+      "source\u000cMARKER.proto" to "source MARKER.proto",
+      "source\u0085MARKER.proto" to "source MARKER.proto",
+      "source\u2028MARKER.proto" to "source MARKER.proto",
+      "source\u2029MARKER.proto" to "source MARKER.proto",
+      "nested/* marker */ café %.proto" to "nested/* marker */ café %.proto",
+    )
+    for ((path, expectedPath) in paths) {
+      val sourceLocation = Location.get("some/folder", path)
+      val file = ProtoParser.parse(
+        sourceLocation,
+        """
+        |syntax = "proto3";
+        |package sample;
+        |message Msg {}
+        """.trimMargin(),
+      )
+
+      val generated = file.toSchema()
+      assertThat(generated).isEqualTo(
+        """
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: $expectedPath
+        |
+        |syntax = "proto3";
+        |
+        |package sample;
+        |
+        |message Msg {}
+        |
+        """.trimMargin(),
+      )
+      assertThat(file.location).isEqualTo(sourceLocation)
+
+      val reparsed = ProtoParser.parse(sourceLocation, generated)
+      assertThat(reparsed.syntax).isEqualTo(PROTO_3)
+      assertThat(reparsed.packageName).isEqualTo("sample")
+      assertThat(reparsed.types.single().name).isEqualTo("Msg")
+      assertThat(reparsed.toSchema()).isEqualTo(generated)
+    }
+  }
+
+  @Test
   fun emptyWithPackageToSchema() {
     val file = ProtoFileElement(
       location = location,

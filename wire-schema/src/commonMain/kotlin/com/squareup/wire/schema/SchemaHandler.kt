@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.WireLogger
 import com.squareup.wire.internal.JvmDefaultWithCompatibility
 import com.squareup.wire.internal.Serializable
+import com.squareup.wire.schema.internal.sourcePathForComment
 import okio.FileSystem
 import okio.Path
 
@@ -195,16 +196,7 @@ abstract class SchemaHandler {
   }
 
   /** Keeps source paths inside a single generated line comment without changing input paths. */
-  protected fun sourcePathForComment(location: Location): String = buildString {
-    for (character in location.withPathOnly().toString()) {
-      append(
-        when (character) {
-          '\r', '\n', '\u000b', '\u000c', '\u0085', '\u2028', '\u2029' -> ' '
-          else -> character
-        },
-      )
-    }
-  }
+  protected fun sourcePathForComment(location: Location): String = location.sourcePathForComment()
 
   /**
    * Confirms that [filePath] resolves to a location inside [outDirectory], throwing otherwise.
