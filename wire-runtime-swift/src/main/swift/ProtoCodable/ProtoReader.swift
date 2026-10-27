@@ -147,19 +147,20 @@ public final class ProtoReader {
             throw ProtoDecoder.Error.recursionLimitExceeded
         }
 
+        // Validate the nested length before changing state or publishing a new frame.
+        let frame = MessageFrame(
+            isProto3: isProto3Message,
+            messageEnd: try buffer.endPointer(count: length)
+        )
+
         state = .tag
 
         if messageStackIndex + 1 >= messageStackCapacity {
             expandMessageStack()
         }
 
+        messageStack.advanced(by: messageStackIndex + 1).initialize(to: frame)
         messageStackIndex += 1
-
-        let frame = MessageFrame(
-            isProto3: isProto3Message,
-            messageEnd: try buffer.endPointer(count: length)
-        )
-        messageStack.advanced(by: messageStackIndex).initialize(to: frame)
 
         return messageStackIndex
     }
