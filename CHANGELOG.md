@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 7.1.2
+---------------------
+
+_2026-10-27_
+
+### Common
+
+* Security: normalize line terminators in schema paths before emitting Java, Kotlin, and Swift source comments. This prevents source injection in Kotlin and Swift output. Regenerate affected sources with the updated compiler, then rebuild and redistribute affected artifacts ([GHSA-r593-m628-69hh][GHSA-r593-m628-69hh])
+
+### Kotlin
+
+* Security: bound packed-field collection allocation hints to payload bytes already buffered. This prevents excessive allocation from truncated streamed messages. Upgrade the runtime to protect existing generated adapters; source regeneration is not required ([GHSA-568c-w3hc-p2v4][GHSA-568c-w3hc-p2v4])
+
 Version 7.1.1
 ---------------------
 
@@ -2239,6 +2252,8 @@ Initial version.
  [GHSA-7xpr-hc2w-34m9]: https://github.com/square/wire/security/advisories/GHSA-7xpr-hc2w-34m9
  [GHSA-9rm7-3qhh-h2mc]: https://github.com/square/wire/security/advisories/GHSA-9rm7-3qhh-h2mc
  [GHSA-86wm-r4c5-2rc9]: https://github.com/square/wire/security/advisories/GHSA-86wm-r4c5-2rc9
+ [GHSA-568c-w3hc-p2v4]: https://github.com/square/wire/security/advisories/GHSA-568c-w3hc-p2v4
+ [GHSA-r593-m628-69hh]: https://github.com/square/wire/security/advisories/GHSA-r593-m628-69hh
  [GHSA-35ch-cghp-x9g6]: https://github.com/square/wire/security/advisories/GHSA-35ch-cghp-x9g6
  [GHSA-f4vm-4gr7-vrcg]: https://github.com/square/wire/security/advisories/GHSA-f4vm-4gr7-vrcg
  [GHSA-jmh4-c43f-w43x]: https://github.com/square/wire/security/advisories/GHSA-jmh4-c43f-w43x
