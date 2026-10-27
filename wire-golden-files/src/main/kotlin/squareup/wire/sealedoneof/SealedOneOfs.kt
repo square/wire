@@ -184,7 +184,11 @@ public class SealedOneOfs private constructor(
       }
 
       override fun redact(`value`: SealedOneOfs): SealedOneOfs = SealedOneOfs(
-        builder = value.newBuilder(),
+        builder = value.newBuilder()
+          .value_(when (val value_ = value.value_) {
+            is Value.FirstValue -> Value.FirstValue(SealedMessage.ADAPTER.redact(value_.value))
+            else -> value_
+          }),
         unknownFields = ByteString.EMPTY,
       )
     }

@@ -2383,9 +2383,11 @@ class KotlinGenerator private constructor(
             }
 
             is OneOf -> {
-              if (fieldOrOneOf.fields.none { it.isRedacted }) continue
               val fieldName = nameAllocator[fieldOrOneOf]
-              add("\n.%1N(null)", fieldName)
+              val redactedOneOf = fieldOrOneOf.redact(fieldName, className, nameAllocator)
+              if (redactedOneOf != null) {
+                add("\n.%1N(%2L)", fieldName, redactedOneOf)
+              }
             }
 
             else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
@@ -2409,9 +2411,11 @@ class KotlinGenerator private constructor(
           }
         }
         is OneOf -> {
-          if (fieldOrOneOf.fields.none { it.isRedacted }) continue
           val fieldName = nameAllocator[fieldOrOneOf]
-          redactedFields += CodeBlock.of("%N = %L", fieldName, CodeBlock.of("null"))
+          val redactedOneOf = fieldOrOneOf.redact(fieldName, className, nameAllocator)
+          if (redactedOneOf != null) {
+            redactedFields += CodeBlock.of("%N = %L", fieldName, redactedOneOf)
+          }
         }
         else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
@@ -2451,6 +2455,42 @@ class KotlinGenerator private constructor(
     prefix = "value.copy(\n⇥",
     suffix = "\n⇤)",
   )
+
+  private fun OneOf.redact(
+    fieldName: String,
+    className: ClassName,
+    nameAllocator: NameAllocator,
+  ): CodeBlock? {
+    if (oneofMode != OneofMode.SEALED_CLASS) {
+      return if (fields.any { it.isRedacted }) CodeBlock.of("null") else null
+    }
+
+    val fieldsToRedact = fields.filter { it.isRedacted || (!it.type!!.isScalar && !it.type!!.isEnum) }
+    if (fieldsToRedact.isEmpty()) return null
+
+    val sealedClassName = className.nestedClass(nameAllocator[boxedOneOfClassName(name)])
+    val subclassNameAllocator = sealedSubclassNameAllocator(this)
+    return buildCodeBlock {
+      beginControlFlow("when (val %1N = value.%1N)", fieldName)
+      for (field in fieldsToRedact) {
+        val subclassName = sealedClassName.nestedClass(subclassNameAllocator[field])
+        if (field.isRedacted) {
+          addStatement("is %T -> null", subclassName)
+        } else {
+          addStatement(
+            "is %T -> %T(%L.redact(%N.value))",
+            subclassName,
+            subclassName,
+            field.getAdapterName(),
+            fieldName,
+          )
+        }
+      }
+      addStatement("else -> %N", fieldName)
+      unindent()
+      add("}")
+    }
+  }
 
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
