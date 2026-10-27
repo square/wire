@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 7.1.1
+---------------------
+
+_2026-10-27_
+
+### Kotlin
+
+* Fix: redact nested message values inside sealed `oneof` fields when calling `ProtoAdapter.redact()`. Regenerate Kotlin sources to apply this fix (#3734)
+
+### Swift
+
+* Security: reject truncated nested messages before changing `ProtoReader` state or advancing its frame stack. Error cleanup now visits only initialized frames, preventing crashes or corruption of retained messages ([GHSA-f4vm-4gr7-vrcg][GHSA-f4vm-4gr7-vrcg])
+
 Version 7.1.0
 ---------------------
 
@@ -2227,6 +2240,7 @@ Initial version.
  [GHSA-9rm7-3qhh-h2mc]: https://github.com/square/wire/security/advisories/GHSA-9rm7-3qhh-h2mc
  [GHSA-86wm-r4c5-2rc9]: https://github.com/square/wire/security/advisories/GHSA-86wm-r4c5-2rc9
  [GHSA-35ch-cghp-x9g6]: https://github.com/square/wire/security/advisories/GHSA-35ch-cghp-x9g6
+ [GHSA-f4vm-4gr7-vrcg]: https://github.com/square/wire/security/advisories/GHSA-f4vm-4gr7-vrcg
  [GHSA-jmh4-c43f-w43x]: https://github.com/square/wire/security/advisories/GHSA-jmh4-c43f-w43x
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
