@@ -2658,6 +2658,56 @@ class KotlinGeneratorTest {
     assertThat(code).contains(".`for`(null)")
   }
 
+  @Test fun sealedOneofRedactionEscapesKeywordNames() {
+    for (buildersOnly in listOf(false, true)) {
+      val code = KotlinWithProfilesGenerator(keywordSchema()).generateKotlin(
+        "JwtLocation",
+        oneofMode = OneofMode.SEALED_CLASS,
+        escapeKotlinKeywords = true,
+        buildersOnly = buildersOnly,
+        javaInterop = true,
+      )
+      assertThat(code).contains("when (val `for` = value.`for`)")
+      assertThat(code).contains("is For.Val -> null")
+      assertThat(code).contains("else -> `for`")
+    }
+  }
+
+  @Test fun sealedOneofRedactionUsesWellKnownAdapters() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "google/protobuf/duration.proto";
+        |import "google/protobuf/struct.proto";
+        |import "google/protobuf/wrappers.proto";
+        |message WellKnownChoice {
+        |  oneof choice {
+        |    google.protobuf.Duration duration = 1;
+        |    google.protobuf.StringValue text = 2;
+        |    google.protobuf.Struct object = 3;
+        |    google.protobuf.Value value = 4;
+        |    google.protobuf.NullValue nothing = 5;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    for (buildersOnly in listOf(false, true)) {
+      val code = KotlinWithProfilesGenerator(schema).generateKotlin(
+        "WellKnownChoice",
+        oneofMode = OneofMode.SEALED_CLASS,
+        buildersOnly = buildersOnly,
+      )
+      assertThat(code).contains("Choice.Duration(ProtoAdapter.DURATION.redact(choice.value))")
+      assertThat(code).contains("Choice.Text(ProtoAdapter.STRING_VALUE.redact(choice.value))")
+      assertThat(code).contains("Choice.Object(ProtoAdapter.STRUCT_MAP.redact(choice.value))")
+      assertThat(code).contains("Choice.Value(ProtoAdapter.STRUCT_VALUE.redact(choice.value))")
+      assertThat(code).doesNotContain("ProtoAdapter.STRUCT_NULL.redact")
+    }
+  }
+
   @Test fun sealedOneofFieldOptionsAppliedAsAnnotationsOnSubtypes() {
     val schema = buildSchema {
       add(

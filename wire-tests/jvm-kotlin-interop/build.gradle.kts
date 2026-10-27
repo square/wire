@@ -35,12 +35,26 @@ wire {
       "person_proto3.proto",
       "recursive_map.proto",
       "redacted_one_of.proto",
+      "sealed_redacted_one_of.proto",
       "repeated.proto",
       "same_name_enum.proto",
       "simple_message.proto",
       "unknown_fields.proto",
       "uses_any.proto",
     )
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.sealed_redacted.SealedRedactedOneOfBuildersOnly")
+    oneofMode = "sealed_class"
+    buildersOnly = true
+    javaInterop = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.sealed_redacted.*")
+    oneofMode = "sealed_class"
+    javaInterop = true
   }
 
   kotlin {
