@@ -505,13 +505,15 @@ open class ProtoReader(private val source: BufferedSource) {
   }
 
   /**
-   * Returns the min length of the next field in bytes. Some encodings have a fixed length, while others
-   * have a variable length. LENGTH_DELIMITED fields have a known variable length, while VARINT fields
-   * could be as small as a single byte.
+   * Returns a byte count for sizing the next field's collection before decoding it.
+   * For LENGTH_DELIMITED fields, this is at most the bytes already buffered within the field limit.
+   * The declared length alone is not safe for allocation because the payload may be truncated.
+   * This does not read ahead, and a collection must grow as more bytes arrive.
+   * Other encodings have a fixed size or, for VARINT, could be as small as a single byte.
    */
   open fun nextFieldMinLengthInBytes(): Long {
     return when (nextFieldEncoding) {
-      FieldEncoding.LENGTH_DELIMITED -> remainingInLimit()
+      FieldEncoding.LENGTH_DELIMITED -> minOf(remainingInLimit(), source.buffer.size)
       FieldEncoding.FIXED32 -> 4
       FieldEncoding.FIXED64 -> 8
       FieldEncoding.VARINT -> 1
