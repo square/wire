@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.Syntax
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.sourcePathForComment
 import kotlin.jvm.JvmStatic
 
 /** A single `.proto` file.  */
@@ -34,7 +35,7 @@ data class ProtoFileElement(
 ) {
   fun toSchema() = buildString {
     append("// Proto schema formatted by Wire, do not edit.\n")
-    append("// Source: ${location.withPathOnly()}\n")
+    append("// Source: ${location.sourcePathForComment()}\n")
 
     if (syntax != null) {
       append('\n')

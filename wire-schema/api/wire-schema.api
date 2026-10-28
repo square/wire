@@ -830,6 +830,7 @@ public abstract class com/squareup/wire/schema/SchemaHandler {
 	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
 	public abstract fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;
 	public abstract fun handle (Lcom/squareup/wire/schema/Type;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
+	protected final fun sourcePathForComment (Lcom/squareup/wire/schema/Location;)Ljava/lang/String;
 }
 
 public final class com/squareup/wire/schema/SchemaHandler$Context {
