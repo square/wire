@@ -1339,6 +1339,32 @@ public final class JavaGenerator {
 
     result.addStatement("long token = reader.beginMessage()");
     result.beginControlFlow("for (int tag; (tag = reader.nextTag()) != -1;)");
+    List<Field> singularPackableFields = new ArrayList<>();
+    for (Field field : fields) {
+      ProtoType fieldType = field.getType();
+      if (!field.isRepeated()
+          && !fieldType.equals(ProtoType.STRING)
+          && !fieldType.equals(ProtoType.BYTES)
+          && (fieldType.isScalar() || isEnum(fieldType))) {
+        singularPackableFields.add(field);
+      }
+    }
+    if (!singularPackableFields.isEmpty()) {
+      result.beginControlFlow(
+          "if (reader.peekFieldEncoding() == $T.LENGTH_DELIMITED)", FieldEncoding.class);
+      result.beginControlFlow("switch (tag)");
+      for (Field field : singularPackableFields) {
+        result.addCode("case $L:\n", field.getTag());
+      }
+      if (useBuilder) {
+        result.addStatement("reader.readUnknownField(tag)");
+      } else {
+        result.addStatement("reader.skip()");
+      }
+      result.addStatement("continue");
+      result.endControlFlow();
+      result.endControlFlow();
+    }
     result.beginControlFlow("switch (tag)");
 
     for (Field field : fields) {

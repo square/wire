@@ -25,6 +25,7 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Suppress
+import kotlin.Unit
 import kotlin.UnsupportedOperationException
 import okio.ByteString
 
@@ -92,6 +93,14 @@ public class MutableHeader(
       override fun decode(reader: ProtoReader): MutableHeader {
         var id: Long? = null
         val unknownFields = reader.forEachTag { tag ->
+          if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+            when (tag) {
+              1 -> {
+                reader.readUnknownField(tag)
+                return@forEachTag Unit
+              }
+            }
+          }
           when (tag) {
             1 -> id = ProtoAdapter.UINT64.decode(reader)
             else -> reader.readUnknownField(tag)

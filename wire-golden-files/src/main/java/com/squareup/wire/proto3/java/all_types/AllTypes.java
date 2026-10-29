@@ -2462,6 +2462,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         Builder builder = new Builder();
         long token = reader.beginMessage();
         for (int tag; (tag = reader.nextTag()) != -1;) {
+          if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+            switch (tag) {
+              case 1:
+              reader.readUnknownField(tag);
+              continue;
+            }
+          }
           switch (tag) {
             case 1: builder.a(ProtoAdapter.INT32.decode(reader)); break;
             default: {
@@ -2886,6 +2893,41 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       Builder builder = new Builder();
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
+        if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+          switch (tag) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 16:
+            case 23:
+            case 101:
+            case 102:
+            case 103:
+            case 104:
+            case 105:
+            case 106:
+            case 107:
+            case 108:
+            case 109:
+            case 110:
+            case 111:
+            case 112:
+            case 113:
+            case 602:
+            reader.readUnknownField(tag);
+            continue;
+          }
+        }
         switch (tag) {
           case 1: builder.int32(ProtoAdapter.INT32.decode(reader)); break;
           case 2: builder.uint32(ProtoAdapter.UINT32.decode(reader)); break;

@@ -3925,6 +3925,14 @@ public class AllTypes private constructor(
         var ext_pack_double: MutableList<Double>? = null
         val ext_pack_nested_enum = mutableListOf<NestedEnum>()
         val unknownFields = reader.forEachTag { tag ->
+          if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+            when (tag) {
+              1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 116, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 416, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1016 -> {
+                reader.readUnknownField(tag)
+                return@forEachTag Unit
+              }
+            }
+          }
           when (tag) {
             1 -> builder.opt_int32(ProtoAdapter.INT32.decode(reader))
             2 -> builder.opt_uint32(ProtoAdapter.UINT32.decode(reader))
@@ -4615,6 +4623,14 @@ public class AllTypes private constructor(
         override fun decode(reader: ProtoReader): NestedMessage {
           val builder = Builder()
           val unknownFields = reader.forEachTag { tag ->
+            if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+              when (tag) {
+                1 -> {
+                  reader.readUnknownField(tag)
+                  return@forEachTag Unit
+                }
+              }
+            }
             when (tag) {
               1 -> builder.a(ProtoAdapter.INT32.decode(reader))
               else -> reader.readUnknownField(tag)

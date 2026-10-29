@@ -29,5 +29,6 @@ message BoxedOneOfs {
     string return = 8;
     string result = 9;
     string public = 10;
+    int32 number = 11;
   }
 }

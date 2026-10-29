@@ -745,6 +745,17 @@ internal class MapProtoAdapter<K, V> internal constructor(
     while (true) {
       val tag = reader.nextTag()
       if (tag == -1) break
+      if (reader.peekFieldEncoding() == LENGTH_DELIMITED &&
+        (
+          tag == 1 &&
+            entryAdapter.keyAdapter.fieldEncoding != LENGTH_DELIMITED ||
+            tag == 2 &&
+            entryAdapter.valueAdapter.fieldEncoding != LENGTH_DELIMITED
+          )
+      ) {
+        reader.skip()
+        continue
+      }
       when (tag) {
         1 -> key = entryAdapter.keyAdapter.decode(reader)
         2 -> value = entryAdapter.valueAdapter.decode(reader)
@@ -766,6 +777,17 @@ internal class MapProtoAdapter<K, V> internal constructor(
     while (true) {
       val tag = reader.nextTag()
       if (tag == -1) break
+      if (reader.peekFieldEncoding() == LENGTH_DELIMITED &&
+        (
+          tag == 1 &&
+            entryAdapter.keyAdapter.fieldEncoding != LENGTH_DELIMITED ||
+            tag == 2 &&
+            entryAdapter.valueAdapter.fieldEncoding != LENGTH_DELIMITED
+          )
+      ) {
+        reader.skip()
+        continue
+      }
       when (tag) {
         1 -> key = entryAdapter.keyAdapter.decode(reader)
         2 -> value = entryAdapter.valueAdapter.decode(reader)
@@ -1186,6 +1208,10 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
     var seconds = 0L
     var nanos = 0
     reader.forEachTag { tag ->
+      if (tag in 1..2 && reader.peekFieldEncoding() == LENGTH_DELIMITED) {
+        reader.readUnknownField(tag)
+        return@forEachTag Unit
+      }
       when (tag) {
         1 -> seconds = INT64.decode(reader)
         2 -> nanos = INT32.decode(reader)
@@ -1199,6 +1225,10 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
     var seconds = 0L
     var nanos = 0
     reader.forEachTag { tag ->
+      if (tag in 1..2 && reader.peekFieldEncoding() == LENGTH_DELIMITED) {
+        reader.readUnknownField(tag)
+        return@forEachTag Unit
+      }
       when (tag) {
         1 -> seconds = INT64.decode(reader)
         2 -> nanos = INT32.decode(reader)
@@ -1285,6 +1315,10 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
     var seconds = 0L
     var nanos = 0
     reader.forEachTag { tag ->
+      if (tag in 1..2 && reader.peekFieldEncoding() == LENGTH_DELIMITED) {
+        reader.readUnknownField(tag)
+        return@forEachTag Unit
+      }
       when (tag) {
         1 -> seconds = INT64.decode(reader)
         2 -> nanos = INT32.decode(reader)
@@ -1298,6 +1332,10 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
     var seconds = 0L
     var nanos = 0
     reader.forEachTag { tag ->
+      if (tag in 1..2 && reader.peekFieldEncoding() == LENGTH_DELIMITED) {
+        reader.readUnknownField(tag)
+        return@forEachTag Unit
+      }
       when (tag) {
         1 -> seconds = INT64.decode(reader)
         2 -> nanos = INT32.decode(reader)
@@ -1644,6 +1682,10 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
   override fun decode(reader: ProtoReader): Any? {
     var result: Any? = null
     reader.forEachTag { tag ->
+      if ((tag == 1 || tag == 2 || tag == 4) && reader.peekFieldEncoding() == LENGTH_DELIMITED) {
+        reader.skip()
+        return@forEachTag Unit
+      }
       when (tag) {
         1 -> result = STRUCT_NULL.decode(reader)
         2 -> result = DOUBLE.decode(reader)
@@ -1660,6 +1702,10 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
   override fun decode(reader: ProtoReader32): Any? {
     var result: Any? = null
     reader.forEachTag { tag ->
+      if ((tag == 1 || tag == 2 || tag == 4) && reader.peekFieldEncoding() == LENGTH_DELIMITED) {
+        reader.skip()
+        return@forEachTag Unit
+      }
       when (tag) {
         1 -> result = STRUCT_NULL.decode(reader)
         2 -> result = DOUBLE.decode(reader)
@@ -1720,6 +1766,13 @@ internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String)
     override fun decode(reader: ProtoReader): T? {
       var result: T? = delegate.identity
       reader.forEachTag { tag ->
+        if (tag == 1 &&
+          delegate.fieldEncoding != LENGTH_DELIMITED &&
+          reader.peekFieldEncoding() == LENGTH_DELIMITED
+        ) {
+          reader.readUnknownField(tag)
+          return@forEachTag Unit
+        }
         when (tag) {
           1 -> result = delegate.decode(reader)
           else -> reader.readUnknownField(tag)
@@ -1731,6 +1784,13 @@ internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String)
     override fun decode(reader: ProtoReader32): T? {
       var result: T? = delegate.identity
       reader.forEachTag { tag ->
+        if (tag == 1 &&
+          delegate.fieldEncoding != LENGTH_DELIMITED &&
+          reader.peekFieldEncoding() == LENGTH_DELIMITED
+        ) {
+          reader.readUnknownField(tag)
+          return@forEachTag Unit
+        }
         when (tag) {
           1 -> result = delegate.decode(reader)
           else -> reader.readUnknownField(tag)

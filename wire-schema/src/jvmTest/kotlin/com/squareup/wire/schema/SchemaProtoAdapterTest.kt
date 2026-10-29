@@ -243,6 +243,155 @@ class SchemaProtoAdapterTest {
   }
 
   @Test
+  fun incompatibleScalarFieldEncodingsAreUnknown() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto2";
+            |message Message {
+            |  optional int32 i32 = 1;
+            |  optional int64 i64 = 2;
+            |  optional fixed32 f32 = 7;
+            |  optional bool flag = 13;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", true)
+
+    for ((hex, tag, payload) in listOf(
+      Triple("0a0107", "1", "07"),
+      Triple("0a00", "1", ""),
+      Triple("0a020102", "1", "0102"),
+      Triple("120161", "2", "61"),
+      Triple("3a0401020304", "7", "01020304"),
+      Triple("6a0101", "13", "01"),
+    )) {
+      val encoded = hex.decodeHex()
+      val expected = mapOf(tag to listOf(payload.decodeHex()))
+      assertThat(adapter.decode(encoded)).isEqualTo(expected)
+      assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(expected)
+    }
+  }
+
+  @Test
+  fun packedScalarEncodingsAreOnlyAcceptedForRepeatedFields() {
+    val cases = listOf(
+      Triple("int32", listOf("07", "08"), listOf(7, 8)),
+      Triple("uint32", listOf("07", "08"), listOf(7, 8)),
+      Triple("sint32", listOf("0e", "10"), listOf(7, 8)),
+      Triple("fixed32", listOf("07000000", "08000000"), listOf(7, 8)),
+      Triple("sfixed32", listOf("07000000", "08000000"), listOf(7, 8)),
+      Triple("int64", listOf("07", "08"), listOf(7L, 8L)),
+      Triple("uint64", listOf("07", "08"), listOf(7L, 8L)),
+      Triple("sint64", listOf("0e", "10"), listOf(7L, 8L)),
+      Triple("fixed64", listOf("0700000000000000", "0800000000000000"), listOf(7L, 8L)),
+      Triple("sfixed64", listOf("0700000000000000", "0800000000000000"), listOf(7L, 8L)),
+      Triple("bool", listOf("01", "00"), listOf(true, false)),
+      Triple("float", listOf("0000803f", "00000040"), listOf(1.0f, 2.0f)),
+      Triple("double", listOf("000000000000f03f", "0000000000000040"), listOf(1.0, 2.0)),
+      Triple("Choice", listOf("01", "02"), listOf("A", "B")),
+    )
+    for ((type, values, expectedValues) in cases) {
+      val schema = buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+              |syntax = "proto2";
+              |message Message {
+              |  enum Choice { A = 1; B = 2; }
+              |  optional $type singular = 1;
+              |  repeated $type unpacked = 2 [packed = false];
+              |  repeated $type packed = 3 [packed = true];
+              |}
+          """.trimMargin(),
+        )
+      }
+      val payload = values.joinToString("").decodeHex()
+      val singular = Buffer().writeByte(0x0a).writeByte(payload.size).write(payload).readByteString()
+      val adapter = schema.protoAdapter("Message", true)
+      val adapterWithoutUnknown = schema.protoAdapter("Message", false)
+      assertThat(adapter.decode(singular)).isEqualTo(mapOf("1" to listOf(payload)))
+      assertThat(adapter.decode(Buffer().write(singular))).isEqualTo(mapOf("1" to listOf(payload)))
+      assertThat(adapterWithoutUnknown.decode(singular)).isEqualTo(emptyMap<String, Any>())
+      assertThat(adapterWithoutUnknown.decode(Buffer().write(singular))).isEqualTo(emptyMap<String, Any>())
+
+      val fieldEncoding = when (type) {
+        "fixed32", "sfixed32", "float" -> 5
+        "fixed64", "sfixed64", "double" -> 1
+        else -> 0
+      }
+      for ((tag, name) in listOf(2 to "unpacked", 3 to "packed")) {
+        val packed = Buffer().writeByte((tag shl 3) or 2).writeByte(payload.size).write(payload).readByteString()
+        val unpacked = Buffer().apply {
+          for (value in values) {
+            writeByte((tag shl 3) or fieldEncoding)
+            write(value.decodeHex())
+          }
+        }.readByteString()
+        val expected = mapOf(name to expectedValues)
+        for (encoded in listOf(packed, unpacked)) {
+          assertThat(adapter.decode(encoded)).isEqualTo(expected)
+          assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(expected)
+        }
+      }
+    }
+  }
+
+  @Test
+  fun incompatibleNonScalarFieldEncodingsAreUnknown() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto3";
+            |message Message {
+            |  message Child {}
+            |  string text = 1;
+            |  Child child = 2;
+            |  map<int32, int32> entries = 3;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", true)
+    for ((hex, tag) in listOf("0807" to "1", "1007" to "2", "1807" to "3")) {
+      val expected = mapOf(tag to listOf(7L))
+      assertThat(adapter.decode(hex.decodeHex())).isEqualTo(expected)
+      assertThat(adapter.decode(Buffer().write(hex.decodeHex()))).isEqualTo(expected)
+    }
+  }
+
+  @Test
+  fun incompatibleScalarEncodingDoesNotOverwriteValidValue() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |message Message {
+            |  optional int32 value = 1;
+            |}
+        """.trimMargin(),
+      )
+    }
+    val adapter = schema.protoAdapter("Message", true)
+    val adapterWithoutUnknown = schema.protoAdapter("Message", false)
+    val unknown = "0102".decodeHex()
+    for (hex in listOf("08070a020102", "0a0201020807")) {
+      val expected = mapOf("value" to 7, "1" to listOf(unknown))
+      assertThat(adapter.decode(hex.decodeHex())).isEqualTo(expected)
+      assertThat(adapter.decode(Buffer().write(hex.decodeHex()))).isEqualTo(expected)
+      assertThat(adapterWithoutUnknown.decode(hex.decodeHex())).isEqualTo(mapOf("value" to 7))
+      assertThat(adapterWithoutUnknown.decode(Buffer().write(hex.decodeHex()))).isEqualTo(mapOf("value" to 7))
+    }
+    val emptyPackedThenValid = "0a000807".decodeHex()
+    val expected = mapOf("value" to 7, "1" to listOf("".decodeHex()))
+    assertThat(adapter.decode(emptyPackedThenValid)).isEqualTo(expected)
+    assertThat(adapter.decode(Buffer().write(emptyPackedThenValid))).isEqualTo(expected)
+    assertThat(adapterWithoutUnknown.decode(emptyPackedThenValid)).isEqualTo(mapOf("value" to 7))
+    assertThat(adapterWithoutUnknown.decode(Buffer().write(emptyPackedThenValid))).isEqualTo(mapOf("value" to 7))
+  }
+
+  @Test
   @Throws(IOException::class)
   fun recursiveMessage() {
     val adapter = buildSchema {
