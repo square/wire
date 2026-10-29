@@ -24,6 +24,68 @@ import okio.Buffer
 import okio.ByteString.Companion.decodeHex
 
 class ProtoAdapterTest {
+  @Test fun repeatedAdaptersSkipEmptyPackedFields() {
+    for ((adapter, packed, expected) in listOf(
+      Triple(ProtoAdapter.INT32.asPacked(), "0a020102", listOf(1, 2)),
+      Triple(ProtoAdapter.INT32.asRepeated(), "0a020102", listOf(1, 2)),
+      Triple(ProtoAdapter.BOOL.asPacked(), "0a020100", listOf(true, false)),
+      Triple(ProtoAdapter.BOOL.asRepeated(), "0a020100", listOf(true, false)),
+      Triple(ProtoAdapter.INT32_ARRAY, "0a020102", listOf(1, 2)),
+      Triple(ProtoAdapter.INT64_ARRAY, "0a020102", listOf(1L, 2L)),
+      Triple(ProtoAdapter.FLOAT_ARRAY, "0a080000803f00000040", listOf(1.0f, 2.0f)),
+      Triple(ProtoAdapter.DOUBLE_ARRAY, "0a10000000000000f03f0000000000000040", listOf(1.0, 2.0)),
+    )) {
+      assertRepeatedFields(adapter, "0a00${packed}0a001007", expected, listOf(0, 1, 1, 0))
+      assertRepeatedFields(adapter, "0a00", emptyList<Any>(), listOf(0))
+    }
+  }
+
+  @Test fun repeatedAdaptersRetainEmptyLengthDelimitedValues() {
+    assertRepeatedFields(ProtoAdapter.STRING.asRepeated(), "0a001007", listOf(""), listOf(1))
+    assertRepeatedFields(ProtoAdapter.BYTES.asRepeated(), "0a001007", listOf(ByteString.EMPTY), listOf(1))
+    assertRepeatedFields(ProtoAdapter.EMPTY.asRepeated(), "0a001007", listOf(Unit), listOf(1))
+  }
+
+  private fun assertRepeatedFields(
+    adapter: ProtoAdapter<*>,
+    hex: String,
+    expected: List<*>,
+    expectedSizes: List<Int>,
+  ) {
+    for (useReader32 in listOf(false, true)) {
+      val bytes = hex.decodeHex()
+      val reader = ProtoReader(Buffer().write(bytes))
+      val reader32 = ProtoReader32(bytes)
+      val token = if (useReader32) reader32.beginMessage().toLong() else reader.beginMessage()
+      val values = mutableListOf<Any?>()
+      val sizes = mutableListOf<Int>()
+      while (true) {
+        val tag = if (useReader32) reader32.nextTag() else reader.nextTag()
+        if (tag == -1) break
+        if (tag == 2) {
+          val value = if (useReader32) ProtoAdapter.INT32.decode(reader32) else ProtoAdapter.INT32.decode(reader)
+          assertThat(value).isEqualTo(7)
+          continue
+        }
+        assertThat(tag).isEqualTo(1)
+        val value = if (useReader32) adapter.decode(reader32) else adapter.decode(reader)
+        val items = when (value) {
+          is List<*> -> value
+          is IntArray -> value.toList()
+          is LongArray -> value.toList()
+          is FloatArray -> value.toList()
+          is DoubleArray -> value.toList()
+          else -> error("Unexpected repeated value $value")
+        }
+        sizes.add(items.size)
+        values.addAll(items)
+      }
+      if (useReader32) reader32.endMessageAndGetUnknownFields(token.toInt()) else reader.endMessageAndGetUnknownFields(token)
+      assertThat(values).isEqualTo(expected)
+      assertThat(sizes).isEqualTo(expectedSizes)
+    }
+  }
+
   @Test fun singularScalarWrappersIgnorePackedValues() {
     for ((adapter, payload, expected) in listOf<Triple<ProtoAdapter<*>, String, Any>>(
       Triple(ProtoAdapter.DOUBLE_VALUE, "000000000000f03f", 0.0),

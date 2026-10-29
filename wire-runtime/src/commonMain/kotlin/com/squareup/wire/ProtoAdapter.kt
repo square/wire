@@ -441,9 +441,15 @@ internal class PackedProtoAdapter<E>(
     }
   }
 
-  override fun decode(reader: ProtoReader): List<E> = listOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader): List<E> {
+    if (!reader.beforePossiblyPackedScalar()) return emptyList()
+    return listOf(originalAdapter.decode(reader))
+  }
 
-  override fun decode(reader: ProtoReader32): List<E> = listOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader32): List<E> {
+    if (!reader.beforePossiblyPackedScalar()) return emptyList()
+    return listOf(originalAdapter.decode(reader))
+  }
 
   override fun redact(value: List<E>): List<E> = emptyList()
 }
@@ -489,9 +495,15 @@ internal class RepeatedProtoAdapter<E>(
     }
   }
 
-  override fun decode(reader: ProtoReader): List<E> = listOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader): List<E> {
+    if (originalAdapter.fieldEncoding != LENGTH_DELIMITED && !reader.beforePossiblyPackedScalar()) return emptyList()
+    return listOf(originalAdapter.decode(reader))
+  }
 
-  override fun decode(reader: ProtoReader32): List<E> = listOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader32): List<E> {
+    if (originalAdapter.fieldEncoding != LENGTH_DELIMITED && !reader.beforePossiblyPackedScalar()) return emptyList()
+    return listOf(originalAdapter.decode(reader))
+  }
 
   override fun redact(value: List<E>): List<E> = emptyList()
 }
@@ -539,9 +551,15 @@ internal class DoubleArrayProtoAdapter(
     }
   }
 
-  override fun decode(reader: ProtoReader): DoubleArray = doubleArrayOf(Double.fromBits(reader.readFixed64()))
+  override fun decode(reader: ProtoReader): DoubleArray {
+    if (!reader.beforePossiblyPackedScalar()) return doubleArrayOf()
+    return doubleArrayOf(Double.fromBits(reader.readFixed64()))
+  }
 
-  override fun decode(reader: ProtoReader32): DoubleArray = doubleArrayOf(Double.fromBits(reader.readFixed64()))
+  override fun decode(reader: ProtoReader32): DoubleArray {
+    if (!reader.beforePossiblyPackedScalar()) return doubleArrayOf()
+    return doubleArrayOf(Double.fromBits(reader.readFixed64()))
+  }
 
   override fun redact(value: DoubleArray): DoubleArray = doubleArrayOf()
 }
@@ -589,9 +607,15 @@ internal class LongArrayProtoAdapter(
     }
   }
 
-  override fun decode(reader: ProtoReader): LongArray = longArrayOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader): LongArray {
+    if (!reader.beforePossiblyPackedScalar()) return longArrayOf()
+    return longArrayOf(originalAdapter.decode(reader))
+  }
 
-  override fun decode(reader: ProtoReader32): LongArray = longArrayOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader32): LongArray {
+    if (!reader.beforePossiblyPackedScalar()) return longArrayOf()
+    return longArrayOf(originalAdapter.decode(reader))
+  }
 
   override fun redact(value: LongArray): LongArray = longArrayOf()
 }
@@ -639,9 +663,15 @@ internal class FloatArrayProtoAdapter(
     }
   }
 
-  override fun decode(reader: ProtoReader): FloatArray = floatArrayOf(Float.fromBits(reader.readFixed32()))
+  override fun decode(reader: ProtoReader): FloatArray {
+    if (!reader.beforePossiblyPackedScalar()) return floatArrayOf()
+    return floatArrayOf(Float.fromBits(reader.readFixed32()))
+  }
 
-  override fun decode(reader: ProtoReader32): FloatArray = floatArrayOf(Float.fromBits(reader.readFixed32()))
+  override fun decode(reader: ProtoReader32): FloatArray {
+    if (!reader.beforePossiblyPackedScalar()) return floatArrayOf()
+    return floatArrayOf(Float.fromBits(reader.readFixed32()))
+  }
 
   override fun redact(value: FloatArray): FloatArray = floatArrayOf()
 }
@@ -689,9 +719,15 @@ internal class IntArrayProtoAdapter(
     }
   }
 
-  override fun decode(reader: ProtoReader): IntArray = intArrayOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader): IntArray {
+    if (!reader.beforePossiblyPackedScalar()) return intArrayOf()
+    return intArrayOf(originalAdapter.decode(reader))
+  }
 
-  override fun decode(reader: ProtoReader32): IntArray = intArrayOf(originalAdapter.decode(reader))
+  override fun decode(reader: ProtoReader32): IntArray {
+    if (!reader.beforePossiblyPackedScalar()) return intArrayOf()
+    return intArrayOf(originalAdapter.decode(reader))
+  }
 
   override fun redact(value: IntArray): IntArray = intArrayOf()
 }

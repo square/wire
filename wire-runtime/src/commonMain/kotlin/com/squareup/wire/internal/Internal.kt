@@ -358,6 +358,12 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, ex
   return adapter.decode(buffer)
 }
 
+/** Prepares generated primitive-array decoding and skips empty packed records. */
+fun beforePossiblyPackedScalar(reader: ProtoReader): Boolean = reader.beforePossiblyPackedScalar()
+
+/** Prepares generated primitive-array decoding and skips empty packed records. */
+fun beforePossiblyPackedScalar(reader: ProtoReader32): Boolean = reader.beforePossiblyPackedScalar()
+
 fun decodePrimitive_double(reader: ProtoReader32): Double = Double.fromBits(reader.readFixed64())
 fun decodePrimitive_double(reader: ProtoReader): Double = Double.fromBits(reader.readFixed64())
 fun decodePrimitive_fixed32(reader: ProtoReader32): Int = reader.readFixed32()

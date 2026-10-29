@@ -18,6 +18,7 @@ wire {
     srcDir("../fixtures/proto/kotlin")
     include(
       "all_types.proto",
+      "empty_packed.proto",
       "one_of.proto",
     )
   }

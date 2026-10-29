@@ -425,6 +425,90 @@ class SchemaProtoAdapterTest {
   }
 
   @Test
+  fun emptyPackedRepeatedFields() {
+    for (packed in listOf(false, true)) {
+      val adapter = buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+              |message Message {
+              |  repeated int32 values = 1 [packed = $packed];
+              |  optional int32 after = 2;
+              |}
+          """.trimMargin(),
+        )
+      }.protoAdapter("Message")
+      for ((hex, expected) in listOf(
+        "0a00" to emptyMap<String, Any>(),
+        "0a001007" to mapOf("after" to 7),
+        "0a000a0201020a0008030a001007" to mapOf("values" to listOf(1, 2, 3), "after" to 7),
+      )) {
+        val bytes = hex.decodeHex()
+        assertThat(adapter.decode(bytes)).isEqualTo(expected)
+        assertThat(adapter.decode(Buffer().write(bytes))).isEqualTo(expected)
+      }
+    }
+  }
+
+  @Test
+  fun emptyPackedRecordsForEveryScalarType() {
+    for (type in listOf(
+      "int32", "uint32", "sint32", "fixed32", "sfixed32",
+      "int64", "uint64", "sint64", "fixed64", "sfixed64",
+      "float", "double", "bool", "Choice",
+    )) {
+      for (packed in listOf(false, true)) {
+        val adapter = buildSchema {
+          add(
+            "message.proto".toPath(),
+            """
+                |message Message {
+                |  enum Choice { A = 1; B = 2; }
+                |  repeated $type values = 1 [packed = $packed];
+                |  optional int32 after = 2;
+                |}
+            """.trimMargin(),
+          )
+        }.protoAdapter("Message")
+        for ((hex, expected) in listOf(
+          "0a00" to emptyMap<String, Any>(),
+          "0a001007" to mapOf("after" to 7),
+          "10070a00" to mapOf("after" to 7),
+        )) {
+          val bytes = hex.decodeHex()
+          assertThat(adapter.decode(bytes)).isEqualTo(expected)
+          assertThat(adapter.decode(Buffer().write(bytes))).isEqualTo(expected)
+        }
+      }
+    }
+  }
+
+  @Test
+  fun emptyRepeatedLengthDelimitedValuesAreRetained() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |message Message {
+            |  message Child {}
+            |  repeated string strings = 1;
+            |  repeated bytes blobs = 2;
+            |  repeated Child children = 3;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message")
+    val expected = mapOf(
+      "strings" to listOf(""),
+      "blobs" to listOf("".decodeHex()),
+      "children" to listOf(emptyMap<String, Any>()),
+    )
+    val bytes = "0a0012001a00".decodeHex()
+    assertThat(adapter.decode(bytes)).isEqualTo(expected)
+    assertThat(adapter.decode(Buffer().write(bytes))).isEqualTo(expected)
+  }
+
+  @Test
   @Throws(IOException::class)
   fun recursiveMessage() {
     val adapter = buildSchema {

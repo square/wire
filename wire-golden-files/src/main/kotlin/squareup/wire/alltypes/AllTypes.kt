@@ -24,6 +24,7 @@ import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
 import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.LongArrayList
+import com.squareup.wire.`internal`.beforePossiblyPackedScalar
 import com.squareup.wire.`internal`.checkElementsNotNull
 import com.squareup.wire.`internal`.decodeMessageOrMerge
 import com.squareup.wire.`internal`.decodePrimitive_double
@@ -3976,19 +3977,19 @@ public class AllTypes private constructor(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             117 -> builder.req_nested_message(decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.req_nested_message))
-            201 -> rep_int32.add(ProtoAdapter.INT32.decode(reader))
-            202 -> rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
-            203 -> rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
-            204 -> rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
-            205 -> rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
-            206 -> rep_int64.add(ProtoAdapter.INT64.decode(reader))
-            207 -> rep_uint64.add(ProtoAdapter.UINT64.decode(reader))
-            208 -> rep_sint64.add(ProtoAdapter.SINT64.decode(reader))
-            209 -> rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
-            210 -> rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
-            211 -> rep_bool.add(ProtoAdapter.BOOL.decode(reader))
-            212 -> rep_float.add(ProtoAdapter.FLOAT.decode(reader))
-            213 -> rep_double.add(ProtoAdapter.DOUBLE.decode(reader))
+            201 -> ProtoAdapter.INT32.tryDecode(reader, rep_int32)
+            202 -> ProtoAdapter.UINT32.tryDecode(reader, rep_uint32)
+            203 -> ProtoAdapter.SINT32.tryDecode(reader, rep_sint32)
+            204 -> ProtoAdapter.FIXED32.tryDecode(reader, rep_fixed32)
+            205 -> ProtoAdapter.SFIXED32.tryDecode(reader, rep_sfixed32)
+            206 -> ProtoAdapter.INT64.tryDecode(reader, rep_int64)
+            207 -> ProtoAdapter.UINT64.tryDecode(reader, rep_uint64)
+            208 -> ProtoAdapter.SINT64.tryDecode(reader, rep_sint64)
+            209 -> ProtoAdapter.FIXED64.tryDecode(reader, rep_fixed64)
+            210 -> ProtoAdapter.SFIXED64.tryDecode(reader, rep_sfixed64)
+            211 -> ProtoAdapter.BOOL.tryDecode(reader, rep_bool)
+            212 -> ProtoAdapter.FLOAT.tryDecode(reader, rep_float)
+            213 -> ProtoAdapter.DOUBLE.tryDecode(reader, rep_double)
             214 -> rep_string.add(ProtoAdapter.STRING.decode(reader))
             215 -> rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
             216 -> try {
@@ -4157,72 +4158,108 @@ public class AllTypes private constructor(
             503 -> map_string_message.putAll(map_string_messageAdapter.decode(reader))
             504 -> map_string_enum.putAll(map_string_enumAdapter.decode(reader))
             601 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_int32 == null) {
                 array_int32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_int32.add(decodePrimitive_int32(reader))
             }
             602 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_uint32 == null) {
                 array_uint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_uint32.add(decodePrimitive_uint32(reader))
             }
             603 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_sint32 == null) {
                 array_sint32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_sint32.add(decodePrimitive_sint32(reader))
             }
             604 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_fixed32 == null) {
                 array_fixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
               array_fixed32.add(decodePrimitive_fixed32(reader))
             }
             605 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_sfixed32 == null) {
                 array_sfixed32 = IntArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
               array_sfixed32.add(decodePrimitive_sfixed32(reader))
             }
             606 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_int64 == null) {
                 array_int64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_int64.add(decodePrimitive_int64(reader))
             }
             607 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_uint64 == null) {
                 array_uint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_uint64.add(decodePrimitive_uint64(reader))
             }
             608 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_sint64 == null) {
                 array_sint64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 1)
               }
               array_sint64.add(decodePrimitive_sint64(reader))
             }
             609 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_fixed64 == null) {
                 array_fixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
               array_fixed64.add(decodePrimitive_fixed64(reader))
             }
             610 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_sfixed64 == null) {
                 array_sfixed64 = LongArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
               array_sfixed64.add(decodePrimitive_sfixed64(reader))
             }
             611 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_float == null) {
                 array_float = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
               array_float.add(decodePrimitive_float(reader))
             }
             612 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (array_double == null) {
                 array_double = DoubleArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 8)
               }
@@ -4249,19 +4286,19 @@ public class AllTypes private constructor(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             1_017 -> builder.ext_opt_nested_message(decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.ext_opt_nested_message))
-            1_101 -> ext_rep_int32.add(ProtoAdapter.INT32.decode(reader))
-            1_102 -> ext_rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
-            1_103 -> ext_rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
-            1_104 -> ext_rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
-            1_105 -> ext_rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
-            1_106 -> ext_rep_int64.add(ProtoAdapter.INT64.decode(reader))
-            1_107 -> ext_rep_uint64.add(ProtoAdapter.UINT64.decode(reader))
-            1_108 -> ext_rep_sint64.add(ProtoAdapter.SINT64.decode(reader))
-            1_109 -> ext_rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
-            1_110 -> ext_rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
-            1_111 -> ext_rep_bool.add(ProtoAdapter.BOOL.decode(reader))
-            1_112 -> ext_rep_float.add(ProtoAdapter.FLOAT.decode(reader))
-            1_113 -> ext_rep_double.add(ProtoAdapter.DOUBLE.decode(reader))
+            1_101 -> ProtoAdapter.INT32.tryDecode(reader, ext_rep_int32)
+            1_102 -> ProtoAdapter.UINT32.tryDecode(reader, ext_rep_uint32)
+            1_103 -> ProtoAdapter.SINT32.tryDecode(reader, ext_rep_sint32)
+            1_104 -> ProtoAdapter.FIXED32.tryDecode(reader, ext_rep_fixed32)
+            1_105 -> ProtoAdapter.SFIXED32.tryDecode(reader, ext_rep_sfixed32)
+            1_106 -> ProtoAdapter.INT64.tryDecode(reader, ext_rep_int64)
+            1_107 -> ProtoAdapter.UINT64.tryDecode(reader, ext_rep_uint64)
+            1_108 -> ProtoAdapter.SINT64.tryDecode(reader, ext_rep_sint64)
+            1_109 -> ProtoAdapter.FIXED64.tryDecode(reader, ext_rep_fixed64)
+            1_110 -> ProtoAdapter.SFIXED64.tryDecode(reader, ext_rep_sfixed64)
+            1_111 -> ProtoAdapter.BOOL.tryDecode(reader, ext_rep_bool)
+            1_112 -> ProtoAdapter.FLOAT.tryDecode(reader, ext_rep_float)
+            1_113 -> ProtoAdapter.DOUBLE.tryDecode(reader, ext_rep_double)
             1_114 -> ext_rep_string.add(ProtoAdapter.STRING.decode(reader))
             1_115 -> ext_rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
             1_116 -> try {

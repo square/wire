@@ -2976,24 +2976,24 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 113: builder.opt_double(ProtoAdapter.DOUBLE.decode(reader)); break;
           case 114: builder.opt_string(ProtoAdapter.STRING.decode(reader)); break;
           case 115: builder.opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
-          case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 202: builder.rep_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
-          case 203: builder.rep_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
-          case 204: builder.rep_fixed32.add(ProtoAdapter.FIXED32.decode(reader)); break;
-          case 205: builder.rep_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader)); break;
-          case 206: builder.rep_int64.add(ProtoAdapter.INT64.decode(reader)); break;
-          case 207: builder.rep_uint64.add(ProtoAdapter.UINT64.decode(reader)); break;
-          case 208: builder.rep_sint64.add(ProtoAdapter.SINT64.decode(reader)); break;
-          case 209: builder.rep_fixed64.add(ProtoAdapter.FIXED64.decode(reader)); break;
-          case 210: builder.rep_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader)); break;
-          case 211: builder.rep_bool.add(ProtoAdapter.BOOL.decode(reader)); break;
-          case 212: builder.rep_float.add(ProtoAdapter.FLOAT.decode(reader)); break;
-          case 213: builder.rep_double.add(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 201: ProtoAdapter.INT32.tryDecode(reader, builder.rep_int32); break;
+          case 202: ProtoAdapter.UINT32.tryDecode(reader, builder.rep_uint32); break;
+          case 203: ProtoAdapter.SINT32.tryDecode(reader, builder.rep_sint32); break;
+          case 204: ProtoAdapter.FIXED32.tryDecode(reader, builder.rep_fixed32); break;
+          case 205: ProtoAdapter.SFIXED32.tryDecode(reader, builder.rep_sfixed32); break;
+          case 206: ProtoAdapter.INT64.tryDecode(reader, builder.rep_int64); break;
+          case 207: ProtoAdapter.UINT64.tryDecode(reader, builder.rep_uint64); break;
+          case 208: ProtoAdapter.SINT64.tryDecode(reader, builder.rep_sint64); break;
+          case 209: ProtoAdapter.FIXED64.tryDecode(reader, builder.rep_fixed64); break;
+          case 210: ProtoAdapter.SFIXED64.tryDecode(reader, builder.rep_sfixed64); break;
+          case 211: ProtoAdapter.BOOL.tryDecode(reader, builder.rep_bool); break;
+          case 212: ProtoAdapter.FLOAT.tryDecode(reader, builder.rep_float); break;
+          case 213: ProtoAdapter.DOUBLE.tryDecode(reader, builder.rep_double); break;
           case 214: builder.rep_string.add(ProtoAdapter.STRING.decode(reader)); break;
           case 215: builder.rep_bytes.add(ProtoAdapter.BYTES.decode(reader)); break;
           case 216: {
             try {
-              builder.rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader));
+              NestedEnum.ADAPTER.tryDecode(reader, builder.rep_nested_enum);
             } catch (ProtoAdapter.EnumConstantNotFoundException e) {
               builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
             }
@@ -3005,7 +3005,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 220: builder.rep_struct.add(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
           case 221: builder.rep_list_value.add(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
           case 222: builder.rep_value.add(ProtoAdapter.STRUCT_VALUE.decode(reader)); break;
-          case 223: builder.rep_null_value.add((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
+          case 223: ProtoAdapter.STRUCT_NULL.tryDecode(reader, builder.rep_null_value); break;
           case 224: builder.rep_empty.add(ProtoAdapter.EMPTY.decode(reader)); break;
           case 225: builder.rep_timestamp.add(ProtoAdapter.INSTANT.decode(reader)); break;
           case 301: ProtoAdapter.INT32.tryDecode(reader, builder.pack_int32); break;
