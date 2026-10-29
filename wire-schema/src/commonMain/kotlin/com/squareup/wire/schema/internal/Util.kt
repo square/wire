@@ -149,7 +149,10 @@ private fun Type.asStub(): Type = when {
   )
 
   this is EnumType -> copy(
-    constants = emptyList(),
+    // Keep the zero value so proto3 defaults resolve, but drop its options and their type references.
+    constants = constants
+      .filter { it.tag == 0 }
+      .map { it.copy(options = Options(Options.ENUM_VALUE_OPTIONS, emptyList())) },
     options = Options(Options.ENUM_OPTIONS, emptyList()),
   )
 

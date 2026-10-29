@@ -19,6 +19,7 @@ import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.doesNotContain
+import assertk.assertions.isEmpty
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.squareup.wire.buildSchema
@@ -72,6 +73,55 @@ class ManifestPartitionTest {
     // C is not in feature because its only dependant is B which is from common.
     val featurePartition = partitionedSchema.partitions.getValue("feature")
     assertThat(featurePartition.types).doesNotContain(ProtoType.get("C"))
+  }
+
+  @Test fun upstreamEnumStubRetainsZeroValue() {
+    val schema = buildSchema {
+      add(
+        "example.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |import "google/protobuf/descriptor.proto";
+          |
+          |enum Status {
+          |  UNKNOWN = 0 [(label).text = "unknown"];
+          |  ACTIVE = 1;
+          |}
+          |message A {
+          |  Status status = 1;
+          |}
+          |message Label {
+          |  string text = 1;
+          |}
+          |extend google.protobuf.EnumValueOptions {
+          |  Label label = 70000;
+          |}
+          |
+        """.trimMargin(),
+      )
+    }
+
+    val modules = mapOf(
+      "common" to WireRun.Module(
+        pruningRules = PruningRules.Builder()
+          .addRoot("Status")
+          .build(),
+      ),
+      "feature" to WireRun.Module(
+        dependencies = setOf("common"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("A")
+          .build(),
+      ),
+    )
+
+    val partitionedSchema = schema.partition(modules)
+    val featurePartition = partitionedSchema.partitions.getValue("feature")
+    val status = featurePartition.schema.getType("Status") as EnumType
+
+    assertThat(status.constants.map { it.name }).containsExactly("UNKNOWN")
+    assertThat(status.constants.single().options.elements).isEmpty()
   }
 
   @Test fun upstreamPruneIsNotPrunedDownstream() {
