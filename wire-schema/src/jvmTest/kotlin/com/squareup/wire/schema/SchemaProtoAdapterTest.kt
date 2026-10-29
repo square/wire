@@ -15,9 +15,11 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.buildSchema
 import kotlin.test.Test
 import kotlin.test.fail
@@ -92,6 +94,37 @@ class SchemaProtoAdapterTest {
     val adapter = coffeeSchema.protoAdapter("CafeDrink", true)
     assertThat(adapter.decode(Buffer().write(dansCoffeeEncoded))).isEqualTo(dansCoffee)
     assertThat(adapter.decode(Buffer().write(jessesCoffeeEncoded))).isEqualTo(jessesCoffee)
+  }
+
+  @Test
+  fun messageRejectsIncompatibleFieldEncoding() {
+    for (field in listOf(
+      "optional Child child = 17;",
+      "repeated Child child = 17;",
+    )) {
+      val adapter = buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+              |syntax = "proto2";
+              |message Child {}
+              |message Message {
+              |  $field
+              |}
+          """.trimMargin(),
+        )
+      }.protoAdapter("Message")
+
+      for (hex in listOf("8d0100000000", "89010000000000000000", "880100")) {
+        val encoded = hex.decodeHex()
+        assertFailure {
+          adapter.decode(encoded)
+        }.isInstanceOf<ProtocolException>()
+        assertFailure {
+          adapter.decode(Buffer().write(encoded))
+        }.isInstanceOf<ProtocolException>()
+      }
+    }
   }
 
   @Test

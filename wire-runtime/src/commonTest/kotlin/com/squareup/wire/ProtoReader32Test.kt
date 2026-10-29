@@ -39,6 +39,24 @@ class ProtoReader32Test {
     reader.endMessageAndGetUnknownFields(token)
   }
 
+  @Test fun messageRejectsIncompatibleFieldEncoding() {
+    for ((hex, encoding) in listOf(
+      "8d0100000000" to 5,
+      "89010000000000000000" to 1,
+      "880100" to 0,
+    )) {
+      val encoded = hex.decodeHex()
+      val reader = ProtoReader32(encoded)
+      reader.beginMessage()
+      assertThat(reader.nextTag()).isEqualTo(17)
+
+      assertFailure {
+        reader.beginMessage()
+      }.isInstanceOf<IOException>()
+        .hasMessage("Expected LENGTH_DELIMITED but was $encoding. Reader position: 2. Last read tag: 17.")
+    }
+  }
+
   @Test fun lengthDelimited() {
     val encoded = (
       "02" + // varint32 length = 2
