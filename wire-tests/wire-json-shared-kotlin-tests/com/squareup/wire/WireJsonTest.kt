@@ -49,6 +49,7 @@ import squareup.proto3.CamelCase.NestedCamelCase
 import squareup.proto3.ContainsFieldMask
 import squareup.proto3.FreeDrinkPromotion
 import squareup.proto3.FreeGarlicBreadPromotion
+import squareup.proto3.MapBoolKeys
 import squareup.proto3.MapTypes
 import squareup.proto3.Pizza
 import squareup.proto3.PizzaDelivery
@@ -911,6 +912,17 @@ class WireJsonTest {
       jsonLibrary.toJson(parsed, MapTypes::class.java),
       jsonLibrary.toJson(value, MapTypes::class.java),
     )
+  }
+
+  @Test fun mapBoolKeys() {
+    val value = MapBoolKeys.Builder()
+      .map_bool_string(mapOf(true to "yes", false to "no"))
+      .build()
+    val fieldName = if (jsonLibrary.preservingProtoFieldNames) "map_bool_string" else "mapBoolString"
+    val json = """{"$fieldName":{"true":"yes","false":"no"}}"""
+
+    assertJsonEquals(json, jsonLibrary.toJson(value, MapBoolKeys::class.java))
+    assertThat(jsonLibrary.fromJson(json, MapBoolKeys::class.java)).isEqualTo(value)
   }
 
   @Test fun all32MaxValue() {
