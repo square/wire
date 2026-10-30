@@ -15,11 +15,9 @@
  */
 package com.squareup.wire.schema
 
-import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
-import assertk.assertions.isInstanceOf
 import com.squareup.wire.buildSchema
 import kotlin.test.Test
 import kotlin.test.fail
@@ -97,32 +95,41 @@ class SchemaProtoAdapterTest {
   }
 
   @Test
-  fun messageRejectsIncompatibleFieldEncoding() {
-    for (field in listOf(
-      "optional Child child = 17;",
-      "repeated Child child = 17;",
-    )) {
-      val adapter = buildSchema {
+  fun incompatibleMessageFieldEncodingsAreUnknown() {
+    for (label in listOf("optional", "repeated")) {
+      val schema = buildSchema {
         add(
           "message.proto".toPath(),
           """
               |syntax = "proto2";
               |message Child {}
               |message Message {
-              |  $field
+              |  $label Child child = 17;
               |}
           """.trimMargin(),
         )
-      }.protoAdapter("Message")
-
-      for (hex in listOf("8d0100000000", "89010000000000000000", "880100")) {
-        val encoded = hex.decodeHex()
-        assertFailure {
-          adapter.decode(encoded)
-        }.isInstanceOf<ProtocolException>()
-        assertFailure {
-          adapter.decode(Buffer().write(encoded))
-        }.isInstanceOf<ProtocolException>()
+      }
+      val child = emptyMap<String, Any>()
+      val valid = mapOf("child" to if (label == "repeated") listOf(child) else child)
+      for ((hex, value) in listOf(
+        "8d0107000000" to 7,
+        "89010800000000000000" to 8L,
+        "880109" to 9L,
+      )) {
+        for (includeUnknown in listOf(false, true)) {
+          val adapter = schema.protoAdapter("Message", includeUnknown)
+          val unknown = if (includeUnknown) mapOf("17" to listOf(value)) else emptyMap()
+          for ((encodedHex, expected) in listOf(
+            hex to unknown,
+            "8a0100" to valid,
+            hex + "8a0100" to unknown + valid,
+            "8a0100" + hex to valid + unknown,
+          )) {
+            val encoded = encodedHex.decodeHex()
+            assertThat(adapter.decode(encoded)).isEqualTo(expected)
+            assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(expected)
+          }
+        }
       }
     }
   }
