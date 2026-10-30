@@ -208,4 +208,49 @@ class EnumElementTest {
     """.trimMargin()
     assertThat(value.toSchema()).isEqualTo(expected)
   }
+
+  @Test
+  fun enumConstantWithTrailingOnlyDocumentation() {
+    val constant = EnumConstantElement(
+      location = location,
+      name = "FOO",
+      tag = 1,
+      documentation = "inline doc",
+      trailingDocumentation = "inline doc",
+    )
+
+    assertThat(constant.toSchema()).isEqualTo("FOO = 1; // inline doc\n")
+  }
+
+  @Test
+  fun enumConstantWithLeadingAndTrailingDocumentation() {
+    val constant = EnumConstantElement(
+      location = location,
+      name = "FOO",
+      tag = 1,
+      documentation = "above\ninline",
+      trailingDocumentation = "inline",
+    )
+
+    assertThat(constant.toSchema()).isEqualTo(
+      """
+        |// above
+        |FOO = 1; // inline
+        |
+      """.trimMargin(),
+    )
+  }
+
+  @Test
+  fun enumConstantWithMultilineTrailingUsesBlockComment() {
+    val constant = EnumConstantElement(
+      location = location,
+      name = "FOO",
+      tag = 1,
+      documentation = "line one\nline two",
+      trailingDocumentation = "line one\nline two",
+    )
+
+    assertThat(constant.toSchema()).isEqualTo("FOO = 1; /* line one\nline two */\n")
+  }
 }

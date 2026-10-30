@@ -18,23 +18,28 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendOptions
+import com.squareup.wire.schema.internal.appendTrailingDocumentation
+import com.squareup.wire.schema.internal.leadingDocumentation
 
 data class EnumConstantElement(
   val location: Location,
   val name: String,
   val tag: Int,
   val documentation: String = "",
+  val trailingDocumentation: String = "",
   val options: List<OptionElement> = emptyList(),
 ) {
 
   fun toSchema() = buildString {
-    appendDocumentation(documentation)
+    appendDocumentation(leadingDocumentation(documentation, trailingDocumentation))
     append("$name = $tag")
 
     if (options.isNotEmpty()) {
       append(" ")
       appendOptions(options)
     }
-    append(";\n")
+    append(';')
+    appendTrailingDocumentation(trailingDocumentation)
+    append('\n')
   }
 }
