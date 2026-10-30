@@ -2237,6 +2237,9 @@ class KotlinGenerator private constructor(
     val assignment = when {
       field.useArray -> {
         buildCodeBlock {
+          beginControlFlow("if (!%M(reader))", MemberName("com.squareup.wire.internal", "beforePossiblyPackedScalar"))
+          addStatement("return@forEachTag %T", Unit::class)
+          endControlFlow()
           beginControlFlow("if (%N == null)", fieldName)
           addStatement(
             "%N = %L.forDecoding(reader.nextFieldMinLengthInBytes(), %L)",
@@ -2264,7 +2267,10 @@ class KotlinGenerator private constructor(
         }
       }
 
-      field.isRepeated && field.type!!.isEnum -> {
+      field.isRepeated &&
+        field.type != ProtoType.STRING &&
+        field.type != ProtoType.BYTES &&
+        (field.isScalar || field.type!!.isEnum) -> {
         CodeBlock.of("%L.tryDecode(reader, %N)", adapterName, fieldName)
       }
 

@@ -15,11 +15,9 @@
  */
 package com.squareup.wire.schema
 
-import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
-import assertk.assertions.isInstanceOf
 import com.squareup.wire.buildSchema
 import kotlin.test.Test
 import kotlin.test.fail
@@ -97,32 +95,41 @@ class SchemaProtoAdapterTest {
   }
 
   @Test
-  fun messageRejectsIncompatibleFieldEncoding() {
-    for (field in listOf(
-      "optional Child child = 17;",
-      "repeated Child child = 17;",
-    )) {
-      val adapter = buildSchema {
+  fun incompatibleMessageFieldEncodingsAreUnknown() {
+    for (label in listOf("optional", "repeated")) {
+      val schema = buildSchema {
         add(
           "message.proto".toPath(),
           """
               |syntax = "proto2";
               |message Child {}
               |message Message {
-              |  $field
+              |  $label Child child = 17;
               |}
           """.trimMargin(),
         )
-      }.protoAdapter("Message")
-
-      for (hex in listOf("8d0100000000", "89010000000000000000", "880100")) {
-        val encoded = hex.decodeHex()
-        assertFailure {
-          adapter.decode(encoded)
-        }.isInstanceOf<ProtocolException>()
-        assertFailure {
-          adapter.decode(Buffer().write(encoded))
-        }.isInstanceOf<ProtocolException>()
+      }
+      val child = emptyMap<String, Any>()
+      val valid = mapOf("child" to if (label == "repeated") listOf(child) else child)
+      for ((hex, value) in listOf(
+        "8d0107000000" to 7,
+        "89010800000000000000" to 8L,
+        "880109" to 9L,
+      )) {
+        for (includeUnknown in listOf(false, true)) {
+          val adapter = schema.protoAdapter("Message", includeUnknown)
+          val unknown = if (includeUnknown) mapOf("17" to listOf(value)) else emptyMap()
+          for ((encodedHex, expected) in listOf(
+            hex to unknown,
+            "8a0100" to valid,
+            hex + "8a0100" to unknown + valid,
+            "8a0100" + hex to valid + unknown,
+          )) {
+            val encoded = encodedHex.decodeHex()
+            assertThat(adapter.decode(encoded)).isEqualTo(expected)
+            assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(expected)
+          }
+        }
       }
     }
   }
@@ -422,6 +429,90 @@ class SchemaProtoAdapterTest {
     assertThat(adapter.decode(Buffer().write(emptyPackedThenValid))).isEqualTo(expected)
     assertThat(adapterWithoutUnknown.decode(emptyPackedThenValid)).isEqualTo(mapOf("value" to 7))
     assertThat(adapterWithoutUnknown.decode(Buffer().write(emptyPackedThenValid))).isEqualTo(mapOf("value" to 7))
+  }
+
+  @Test
+  fun emptyPackedRepeatedFields() {
+    for (packed in listOf(false, true)) {
+      val adapter = buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+              |message Message {
+              |  repeated int32 values = 1 [packed = $packed];
+              |  optional int32 after = 2;
+              |}
+          """.trimMargin(),
+        )
+      }.protoAdapter("Message")
+      for ((hex, expected) in listOf(
+        "0a00" to emptyMap<String, Any>(),
+        "0a001007" to mapOf("after" to 7),
+        "0a000a0201020a0008030a001007" to mapOf("values" to listOf(1, 2, 3), "after" to 7),
+      )) {
+        val bytes = hex.decodeHex()
+        assertThat(adapter.decode(bytes)).isEqualTo(expected)
+        assertThat(adapter.decode(Buffer().write(bytes))).isEqualTo(expected)
+      }
+    }
+  }
+
+  @Test
+  fun emptyPackedRecordsForEveryScalarType() {
+    for (type in listOf(
+      "int32", "uint32", "sint32", "fixed32", "sfixed32",
+      "int64", "uint64", "sint64", "fixed64", "sfixed64",
+      "float", "double", "bool", "Choice",
+    )) {
+      for (packed in listOf(false, true)) {
+        val adapter = buildSchema {
+          add(
+            "message.proto".toPath(),
+            """
+                |message Message {
+                |  enum Choice { A = 1; B = 2; }
+                |  repeated $type values = 1 [packed = $packed];
+                |  optional int32 after = 2;
+                |}
+            """.trimMargin(),
+          )
+        }.protoAdapter("Message")
+        for ((hex, expected) in listOf(
+          "0a00" to emptyMap<String, Any>(),
+          "0a001007" to mapOf("after" to 7),
+          "10070a00" to mapOf("after" to 7),
+        )) {
+          val bytes = hex.decodeHex()
+          assertThat(adapter.decode(bytes)).isEqualTo(expected)
+          assertThat(adapter.decode(Buffer().write(bytes))).isEqualTo(expected)
+        }
+      }
+    }
+  }
+
+  @Test
+  fun emptyRepeatedLengthDelimitedValuesAreRetained() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |message Message {
+            |  message Child {}
+            |  repeated string strings = 1;
+            |  repeated bytes blobs = 2;
+            |  repeated Child children = 3;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message")
+    val expected = mapOf(
+      "strings" to listOf(""),
+      "blobs" to listOf("".decodeHex()),
+      "children" to listOf(emptyMap<String, Any>()),
+    )
+    val bytes = "0a0012001a00".decodeHex()
+    assertThat(adapter.decode(bytes)).isEqualTo(expected)
+    assertThat(adapter.decode(Buffer().write(bytes))).isEqualTo(expected)
   }
 
   @Test

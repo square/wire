@@ -19,6 +19,7 @@ wire {
     srcDir("../fixtures/proto/kotlin")
     include(
       "all_types.proto",
+      "empty_packed.proto",
       "deprecated.proto",
       "custom_options.proto",
       "easter.proto",

@@ -459,7 +459,7 @@ public final class JavaGeneratorTest {
                 + "      switch (tag) {\n"
                 + "        case 1: field = Internal.decodeMessageOrMerge(Foo.ADAPTER, reader, field); break;\n"
                 + "        case 2: bars.putAll(barsAdapter().decode(reader)); break;\n"
-                + "        case 3: numbers.add(ProtoAdapter.INT32.decode(reader)); break;\n"
+                + "        case 3: ProtoAdapter.INT32.tryDecode(reader, numbers); break;\n"
                 + "        case 4: {\n"
                 + "          try {\n"
                 + "            coin_flip = CoinFlip.ADAPTER.decode(reader);\n"

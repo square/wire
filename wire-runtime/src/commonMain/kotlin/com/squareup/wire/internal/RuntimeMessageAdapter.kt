@@ -181,6 +181,12 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
             field.value(builder, value)
           } else {
             val singleAdapter = field.singleAdapter
+            if (field.label.isRepeated &&
+              (field.label.isPacked || singleAdapter.fieldEncoding != FieldEncoding.LENGTH_DELIMITED) &&
+              !reader.beforePossiblyPackedScalar()
+            ) {
+              continue
+            }
             if ((field.isMessage || singleAdapter in MESSAGE_BACKED_BUILT_IN_ADAPTERS) &&
               !field.label.isRepeated
             ) {

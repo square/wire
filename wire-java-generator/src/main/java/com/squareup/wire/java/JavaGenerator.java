@@ -1431,7 +1431,11 @@ public final class JavaGenerator {
     String fieldName = nameAllocator.get(field);
     CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field, nameAllocator));
     CodeBlock assignment;
-    if (field.isPacked()) {
+    if (field.isPacked()
+        || (field.isRepeated()
+            && !field.getType().equals(ProtoType.STRING)
+            && !field.getType().equals(ProtoType.BYTES)
+            && (field.getType().isScalar() || isEnum(field.getType())))) {
       CodeBlock adapter = singleAdapterFor(field, nameAllocator);
       assignment =
           useBuilder

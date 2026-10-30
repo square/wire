@@ -17,6 +17,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.FloatArrayList
 import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.beforePossiblyPackedScalar
 import com.squareup.wire.`internal`.decodePrimitive_float
 import com.squareup.wire.`internal`.encodeArray_float
 import kotlin.Any
@@ -30,6 +31,7 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Suppress
+import kotlin.Unit
 import okio.ByteString
 
 public class ParameterValueWithArray(
@@ -107,6 +109,9 @@ public class ParameterValueWithArray(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> {
+              if (!beforePossiblyPackedScalar(reader)) {
+                return@forEachTag Unit
+              }
               if (data_ == null) {
                 data_ = FloatArrayList.forDecoding(reader.nextFieldMinLengthInBytes(), 4)
               }
