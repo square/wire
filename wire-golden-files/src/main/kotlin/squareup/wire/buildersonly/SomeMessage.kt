@@ -113,6 +113,14 @@ public class SomeMessage private constructor(
       override fun decode(reader: ProtoReader): SomeMessage {
         val builder = Builder()
         val unknownFields = reader.forEachTag { tag ->
+          if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+            when (tag) {
+              1 -> {
+                reader.readUnknownField(tag)
+                return@forEachTag Unit
+              }
+            }
+          }
           when (tag) {
             1 -> builder.opt_int32(ProtoAdapter.INT32.decode(reader))
             else -> reader.readUnknownField(tag)
@@ -223,6 +231,14 @@ public class SomeMessage private constructor(
         override fun decode(reader: ProtoReader): NestedMessage {
           val builder = Builder()
           val unknownFields = reader.forEachTag { tag ->
+            if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+              when (tag) {
+                1 -> {
+                  reader.readUnknownField(tag)
+                  return@forEachTag Unit
+                }
+              }
+            }
             when (tag) {
               1 -> builder.a(ProtoAdapter.INT32.decode(reader))
               else -> reader.readUnknownField(tag)

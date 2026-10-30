@@ -29,6 +29,7 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Suppress
+import kotlin.Unit
 import kotlin.UnsupportedOperationException
 import kotlin.collections.List
 import okio.ByteString
@@ -137,6 +138,14 @@ public class MutablePayload(
         var type: Type? = null
         val footers = mutableListOf<String>()
         val unknownFields = reader.forEachTag { tag ->
+          if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+            when (tag) {
+              3 -> {
+                reader.readUnknownField(tag)
+                return@forEachTag Unit
+              }
+            }
+          }
           when (tag) {
             1 -> preamble = ProtoAdapter.STRING.decode(reader)
             2 -> content = ProtoAdapter.BYTES.decode(reader)

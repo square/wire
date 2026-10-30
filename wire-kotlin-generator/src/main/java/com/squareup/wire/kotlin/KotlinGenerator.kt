@@ -2088,6 +2088,24 @@ class KotlinGenerator private constructor(
           protoReaderType.forEachTag,
           tag,
         )
+        val singularPackableFields = message.fieldsAndOneOfFields.filter { field ->
+          val fieldType = field.type!!
+          !field.isRepeated &&
+            fieldType != ProtoType.STRING &&
+            fieldType != ProtoType.BYTES &&
+            (fieldType.isScalar || fieldType.isEnum)
+        }
+        if (singularPackableFields.isNotEmpty()) {
+          beginControlFlow("⇥if (reader.peekFieldEncoding() == %T.LENGTH_DELIMITED)", FieldEncoding::class)
+          beginControlFlow("when (%N)", tag)
+          beginControlFlow("%L ->", singularPackableFields.joinToString(", ") { it.tag.toString() })
+          addStatement("reader.readUnknownField(%N)", tag)
+          addStatement("return@forEachTag %T", Unit::class)
+          endControlFlow()
+          endControlFlow()
+          endControlFlow()
+          add("⇤")
+        }
         addStatement("⇥when (%N) {⇥", tag)
 
         fields.forEach { field ->

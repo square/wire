@@ -170,6 +170,14 @@ public class SealedOneOfs private constructor(
       override fun decode(reader: ProtoReader): SealedOneOfs {
         val builder = Builder()
         val unknownFields = reader.forEachTag { tag ->
+          if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+            when (tag) {
+              3 -> {
+                reader.readUnknownField(tag)
+                return@forEachTag Unit
+              }
+            }
+          }
           when (tag) {
             1 -> builder.value_ = Value.FirstValue(SealedMessage.ADAPTER.decode(reader))
             2 -> builder.value_ = Value.SecondValue(ProtoAdapter.STRING.decode(reader))

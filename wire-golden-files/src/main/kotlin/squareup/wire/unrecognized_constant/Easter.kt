@@ -179,6 +179,14 @@ public class Easter private constructor(
         val builder = Builder()
         val easter_animals = mutableListOf<EasterAnimal>()
         val unknownFields = reader.forEachTag { tag ->
+          if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
+            when (tag) {
+              2, 3 -> {
+                reader.readUnknownField(tag)
+                return@forEachTag Unit
+              }
+            }
+          }
           when (tag) {
             2 -> try {
               builder.optional_easter_animal(EasterAnimal.ADAPTER.decode(reader))

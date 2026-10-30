@@ -42,6 +42,17 @@ class SealedOneOfRedactTest {
 
   private val redactedPayload = Payload(images = listOf(Image(caption = "caption")), label = "label")
 
+  @Test fun incompatibleEnumEncodingDoesNotClearPreviousChoice() {
+    val bytes = "1201611a0101".decodeHex()
+    val message = SealedRedactedOneOf.ADAPTER.decode(bytes)
+    assertThat(message.variant).isEqualTo(SealedRedactedOneOf.Variant.Text("a"))
+    assertThat(message.unknownFields).isEqualTo("1a0101".decodeHex())
+
+    val buildersOnly = SealedRedactedOneOfBuildersOnly.ADAPTER.decode(bytes)
+    assertThat(buildersOnly.variant).isEqualTo(SealedRedactedOneOfBuildersOnly.Variant.Text("a"))
+    assertThat(buildersOnly.unknownFields).isEqualTo("1a0101".decodeHex())
+  }
+
   @Test fun nestedMessageIsRedactedBeforeEncoding() {
     val message = SealedRedactedOneOf(
       variant = SealedRedactedOneOf.Variant.Payload(payload),

@@ -166,7 +166,14 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     while (true) {
       val tag = reader.nextTag()
       if (tag == -1) break
-      val field = fields[tag]
+      val fieldEncoding = reader.peekFieldEncoding()!!
+      val field = fields[tag]?.takeIf {
+        val expectedEncoding = if (it.isMap) FieldEncoding.LENGTH_DELIMITED else it.singleAdapter.fieldEncoding
+        // Only repeated fields accept a packed representation of a scalar value.
+        fieldEncoding == expectedEncoding ||
+          it.label.isRepeated &&
+          fieldEncoding == FieldEncoding.LENGTH_DELIMITED
+      }
       try {
         if (field != null) {
           if (field.isMap) {
@@ -187,7 +194,6 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
             }
           }
         } else {
-          val fieldEncoding = reader.peekFieldEncoding()!!
           val value = fieldEncoding.rawProtoAdapter().decode(reader)
           binding.addUnknownField(builder, tag, fieldEncoding, value)
         }
