@@ -89,7 +89,9 @@ open class ProtoReader(private val source: BufferedSource) {
    */
   @Throws(IOException::class)
   open fun beginMessage(): Long {
-    check(state == STATE_LENGTH_DELIMITED) { "Unexpected call to beginMessage()" }
+    if (state != STATE_LENGTH_DELIMITED) {
+      throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
+    }
     if (++recursionDepth > RECURSION_LIMIT) {
       throw IOException("Wire recursion limit exceeded")
     }
