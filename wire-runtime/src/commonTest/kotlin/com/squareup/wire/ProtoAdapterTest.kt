@@ -21,6 +21,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import kotlin.test.Test
 import okio.Buffer
+import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 
 class ProtoAdapterTest {
