@@ -116,8 +116,14 @@ internal expect fun <T : Any> mutableQueueOf(): MutableQueue<T>
  * Replace types in this schema which are present in [typesToStub] with empty shells that have no
  * outward references. This has to be done in this module so that we can access the internal
  * constructor to avoid re-linking.
+ *
+ * @param upstreamEnums the enums in [typesToStub] as pruned by the module that owns them. An enum
+ *     stub keeps only the zero value found here, so it never has one its owner doesn't generate.
  */
-fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
+fun Schema.withStubs(
+  typesToStub: Set<ProtoType>,
+  upstreamEnums: Map<ProtoType, EnumType>,
+): Schema {
   if (typesToStub.isEmpty()) {
     return this
   }
@@ -125,7 +131,7 @@ fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
     protoFiles.map { protoFile ->
       val result = protoFile.copy(
         types = protoFile.types.map { type ->
-          if (type.type in typesToStub) type.asStub() else type
+          if (type.type in typesToStub) type.asStub(upstreamEnums) else type
         },
         services = protoFile.services.map { service ->
           if (service.type in typesToStub) service.asStub() else service
@@ -137,24 +143,28 @@ fun Schema.withStubs(typesToStub: Set<ProtoType>): Schema {
 }
 
 /** Return a copy of this type with all possible type references removed. */
-private fun Type.asStub(): Type = when {
+private fun Type.asStub(upstreamEnums: Map<ProtoType, EnumType>): Type = when {
   // Don't stub the built-in protobuf types which model concepts like options.
   type.toString().startsWith("google.protobuf.") -> this
 
   this is MessageType -> copy(
     declaredFields = emptyList(),
     extensionFields = mutableListOf(),
-    nestedTypes = nestedTypes.map { it.asStub() },
+    nestedTypes = nestedTypes.map { it.asStub(upstreamEnums) },
     options = Options(Options.MESSAGE_OPTIONS, emptyList()),
   )
 
   this is EnumType -> copy(
-    constants = emptyList(),
+    // Keep the owner's zero value so proto3 defaults resolve, but drop its options and their type
+    // references.
+    constants = upstreamEnums[type]?.constants.orEmpty()
+      .filter { it.tag == 0 }
+      .map { it.copy(options = Options(Options.ENUM_VALUE_OPTIONS, emptyList())) },
     options = Options(Options.ENUM_OPTIONS, emptyList()),
   )
 
   this is EnclosingType -> copy(
-    nestedTypes = nestedTypes.map { it.asStub() },
+    nestedTypes = nestedTypes.map { it.asStub(upstreamEnums) },
   )
 
   else -> throw AssertionError("Unknown type $type")
