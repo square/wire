@@ -124,6 +124,90 @@ class ManifestPartitionTest {
     assertThat(status.constants.single().options.elements).isEmpty()
   }
 
+  @Test fun upstreamEnumStubOmitsZeroValuePrunedByOwner() {
+    val schema = buildSchema {
+      add(
+        "example.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |enum Status {
+          |  UNKNOWN = 0;
+          |  ACTIVE = 1;
+          |}
+          |message A {
+          |  optional Status status = 1;
+          |}
+          |
+        """.trimMargin(),
+      )
+    }
+
+    val modules = mapOf(
+      "common" to WireRun.Module(
+        pruningRules = PruningRules.Builder()
+          .addRoot("Status#ACTIVE")
+          .build(),
+      ),
+      "feature" to WireRun.Module(
+        dependencies = setOf("common"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("A")
+          .build(),
+      ),
+    )
+
+    val partitionedSchema = schema.partition(modules)
+
+    val commonStatus = partitionedSchema.partitions.getValue("common").schema.getType("Status") as EnumType
+    assertThat(commonStatus.constants.map { it.name }).containsExactly("ACTIVE")
+
+    // Swift would treat a retained zero value as a ProtoDefaultedValue conformance common lacks.
+    val featureStatus = partitionedSchema.partitions.getValue("feature").schema.getType("Status") as EnumType
+    assertThat(featureStatus.constants).isEmpty()
+  }
+
+  @Test fun upstreamEnumStubKeepsOwnersZeroValueAlias() {
+    val schema = buildSchema {
+      add(
+        "example.proto".toPath(),
+        """
+          |syntax = "proto3";
+          |
+          |enum Status {
+          |  option allow_alias = true;
+          |  UNKNOWN = 0;
+          |  UNSET = 0;
+          |  ACTIVE = 1;
+          |}
+          |message A {
+          |  Status status = 1;
+          |}
+          |
+        """.trimMargin(),
+      )
+    }
+
+    val modules = mapOf(
+      "common" to WireRun.Module(
+        pruningRules = PruningRules.Builder()
+          .addRoot("Status#UNSET")
+          .build(),
+      ),
+      "feature" to WireRun.Module(
+        dependencies = setOf("common"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("A")
+          .build(),
+      ),
+    )
+
+    val partitionedSchema = schema.partition(modules)
+    val status = partitionedSchema.partitions.getValue("feature").schema.getType("Status") as EnumType
+
+    assertThat(status.constants.map { it.name }).containsExactly("UNSET")
+  }
+
   @Test fun upstreamPruneIsNotPrunedDownstream() {
     val schema = buildSchema {
       add(
