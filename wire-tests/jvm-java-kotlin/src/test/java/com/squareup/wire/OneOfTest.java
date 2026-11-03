@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import com.squareup.wire.protos.oneof.OneOfMessage;
@@ -61,26 +62,20 @@ public class OneOfTest {
     OneOfMessage.Builder builder = new OneOfMessage.Builder();
     builder.foo = 1;
     builder.bar = "two";
-    try {
-      builder.build();
-      fail();
-    } catch (IllegalArgumentException expected) {
-      assertThat(expected)
-          .hasMessageThat()
-          .contains("at most one of foo, bar, baz may be non-null");
-    }
+    IllegalArgumentException expected =
+        assertThrows(IllegalArgumentException.class, builder::build);
+    assertThat(expected)
+        .hasMessageThat()
+        .contains("at most one of foo, bar, baz may be non-null");
   }
 
   @Test
   public void constructorFailsWhenBothFieldsAreNonNull() throws Exception {
-    try {
-      new OneOfMessage(1, "two", null);
-      fail();
-    } catch (IllegalArgumentException expected) {
-      assertThat(expected)
-          .hasMessageThat()
-          .contains("at most one of foo, bar, baz may be non-null");
-    }
+    IllegalArgumentException expected =
+        assertThrows(IllegalArgumentException.class, () -> new OneOfMessage(1, "two", null));
+    assertThat(expected)
+        .hasMessageThat()
+        .contains("at most one of foo, bar, baz may be non-null");
   }
 
   private void validate(
