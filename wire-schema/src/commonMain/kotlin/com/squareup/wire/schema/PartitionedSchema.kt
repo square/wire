@@ -82,7 +82,13 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
     // references. This ensures our types can still link. More critically, it ensures that
     // transitive types which were pruned upstream will only be generated in this module if they
     // are reachable from this module's types.
-    val stubbedSchema = withStubs(upstreamTypes.keys)
+    val upstreamEnums = buildMap {
+      for ((type, owner) in upstreamTypes) {
+        val enumType = partitions.getValue(owner).schema.getType(type) as? EnumType ?: continue
+        put(type, enumType)
+      }
+    }
+    val stubbedSchema = withStubs(upstreamTypes.keys, upstreamEnums)
 
     val prunedSchema = if (module.pruningRules != null) {
       stubbedSchema.prune(module.pruningRules)
