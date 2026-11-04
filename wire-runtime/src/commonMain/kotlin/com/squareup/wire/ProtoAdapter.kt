@@ -30,6 +30,7 @@ import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
+import okio.ByteString.Companion.toByteString
 import okio.IOException
 import okio.utf8Size
 
@@ -351,13 +352,31 @@ internal inline fun <E> ProtoAdapter<E>.commonEncodeByteString(value: E): ByteSt
 }
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteArray): E = decode(ProtoReader32(bytes))
+internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteArray): E {
+  if (this === ProtoAdapter.BYTES) {
+    @Suppress("UNCHECKED_CAST") // The identity check guarantees E is ByteString.
+    return bytes.toByteString() as E
+  }
+  return decode(ProtoReader32(bytes))
+}
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E = decode(ProtoReader32(bytes))
+internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E {
+  if (this === ProtoAdapter.BYTES) {
+    @Suppress("UNCHECKED_CAST") // The identity check guarantees E is ByteString.
+    return bytes as E
+  }
+  return decode(ProtoReader32(bytes))
+}
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E = decode(ProtoReader(source))
+internal inline fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E {
+  if (this === ProtoAdapter.BYTES) {
+    @Suppress("UNCHECKED_CAST") // The identity check guarantees E is ByteString.
+    return source.readByteString() as E
+  }
+  return decode(ProtoReader(source))
+}
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonTryDecode(
