@@ -23,8 +23,55 @@ import kotlin.test.Test
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
+import okio.ForwardingSource
+import okio.buffer
 
 class ProtoAdapterTest {
+  @Test fun bytesDecodeSource() {
+    val bytes = "00ff800108120200fe".decodeHex()
+    assertThat(ProtoAdapter.BYTES.decode(Buffer().write(bytes))).isEqualTo(bytes)
+  }
+
+  @Test fun bytesDecodeByteString() {
+    for (bytes in listOf("00ff800108120200fe".decodeHex(), ByteString.EMPTY)) {
+      assertThat(ProtoAdapter.BYTES.decode(bytes)).isEqualTo(bytes)
+    }
+  }
+
+  @Test fun bytesDecodeByteArray() {
+    for (bytes in listOf("00ff800108120200fe".decodeHex(), ByteString.EMPTY)) {
+      val byteArray = bytes.toByteArray()
+      val decoded = ProtoAdapter.BYTES.decode(byteArray)
+      byteArray.fill(0)
+      assertThat(decoded).isEqualTo(bytes)
+    }
+  }
+
+  @Test fun bytesDecodeEmptySource() {
+    assertThat(ProtoAdapter.BYTES.decode(Buffer())).isEqualTo(ByteString.EMPTY)
+  }
+
+  @Test fun bytesDecodeChunkedSource() {
+    val bytes = "00ff800108120200fe".repeat(2048).decodeHex()
+    val source = object : ForwardingSource(Buffer().write(bytes)) {
+      override fun read(sink: Buffer, byteCount: Long): Long = super.read(sink, minOf(byteCount, 3L))
+    }.buffer()
+    assertThat(ProtoAdapter.BYTES.decode(source)).isEqualTo(bytes)
+  }
+
+  @Test fun bytesDecodeReaderRespectsFieldBoundaries() {
+    val reader = ProtoReader(Buffer().write("0a0300ff8010071a00".decodeHex()))
+    val token = reader.beginMessage()
+    assertThat(reader.nextTag()).isEqualTo(1)
+    assertThat(ProtoAdapter.BYTES.decode(reader)).isEqualTo("00ff80".decodeHex())
+    assertThat(reader.nextTag()).isEqualTo(2)
+    assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(7)
+    assertThat(reader.nextTag()).isEqualTo(3)
+    assertThat(ProtoAdapter.BYTES.decode(reader)).isEqualTo(ByteString.EMPTY)
+    assertThat(reader.nextTag()).isEqualTo(-1)
+    reader.endMessageAndGetUnknownFields(token)
+  }
+
   @Test fun repeatedAdaptersSkipEmptyPackedFields() {
     for ((adapter, packed, expected) in listOf(
       Triple(ProtoAdapter.INT32.asPacked(), "0a020102", listOf(1, 2)),
