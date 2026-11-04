@@ -458,12 +458,17 @@ open class ProtoReader(private val source: BufferedSource) {
     if (state != STATE_LENGTH_DELIMITED) {
       throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
+    if (limit == Long.MAX_VALUE && pushedLimit == -1L) {
+      // A root scalar has no length prefix. Buffer the source to determine its limit.
+      source.request(Long.MAX_VALUE)
+      limit = checkedLimit(source.buffer.size)
+    }
     val byteCount = remainingInLimit()
     source.require(byteCount) // Throws EOFException if insufficient bytes are available.
     state = STATE_TAG
     // We've completed a length-delimited scalar. Pop the limit.
     pos = limit
-    limit = pushedLimit
+    if (pushedLimit != -1L) limit = pushedLimit
     pushedLimit = -1
     return byteCount
   }

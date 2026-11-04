@@ -400,7 +400,7 @@ internal class ByteArrayProtoReader32(
     val byteCount = remainingInLimit()
     state = STATE_TAG
     // We've completed a length-delimited scalar. Pop the limit.
-    limit = pushedLimit
+    if (pushedLimit != -1) limit = pushedLimit
     pushedLimit = -1
     return byteCount
   }
