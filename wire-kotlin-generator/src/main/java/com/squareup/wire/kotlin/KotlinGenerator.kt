@@ -1867,9 +1867,11 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
 
     val segments = encodeSegments(message)
+    val runsByOneOf = segments.filterIsInstance<EncodeSegment.OneOfRun>().groupBy { it.oneOf }
     for (segment in segments) {
       if (segment is EncodeSegment.OneOfRun) {
-        encodeCalls += oneOfRunEncodeCall(message, segments, segment, nameAllocator)
+        val runs = runsByOneOf.getValue(segment.oneOf)
+        encodeCalls += oneOfRunEncodeCall(message, runs, segment, nameAllocator)
         continue
       }
       val field = (segment as EncodeSegment.Single).field
@@ -1958,7 +1960,7 @@ class KotlinGenerator private constructor(
 
   private fun oneOfRunEncodeCall(
     message: MessageType,
-    segments: List<EncodeSegment>,
+    runs: List<EncodeSegment.OneOfRun>,
     run: EncodeSegment.OneOfRun,
     nameAllocator: NameAllocator,
   ): CodeBlock {
@@ -1972,7 +1974,6 @@ class KotlinGenerator private constructor(
           addStatement("value.%N.encodeWithTag(writer)", fieldName)
         } else {
           // No other field has a tag between the first and last tag of a run.
-          val runs = segments.filterIsInstance<EncodeSegment.OneOfRun>().filter { it.oneOf == oneOf }
           if (run === runs.last()) {
             // Also write a custom key that is in no run, because encodedSize counts it.
             val otherRuns = runs.dropLast(1).joinToString(" && ") {
