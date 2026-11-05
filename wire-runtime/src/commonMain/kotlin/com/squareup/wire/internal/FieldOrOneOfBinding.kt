@@ -77,7 +77,11 @@ abstract class FieldOrOneOfBinding<M, B> {
 
   abstract fun getFromBuilder(builder: B): Any?
 
-  fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
+  /**
+   * Returns true if the encoded message omits [value], in protobuf bytes and in JSON.
+   * Generated adapters omit the same values.
+   */
+  fun omitFromEncoding(syntax: Syntax, value: Any?): Boolean {
     if (value == null) return true
     return omitIdentity(syntax) && value == adapter.identity
   }
