@@ -305,6 +305,38 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("choice = (try protoReader.decode(Kind.self))")
   }
 
+  @Test fun proto3RepeatedBoolAndEnumArePackedByDefault() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package squareup.protos3;
+        |
+        |message Message {
+        |  repeated bool flags = 1;
+        |  repeated Color colors = 2;
+        |  repeated bool unpacked_flags = 3 [packed = false];
+        |  repeated Color unpacked_colors = 4 [packed = false];
+        |}
+        |
+        |enum Color {
+        |  COLOR_UNSPECIFIED = 0;
+        |  RED = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos3.Message")
+
+    assertThat(code).contains("try protoWriter.encode(tag: 1, value: self.flags, packed: true)")
+    assertThat(code).contains("try protoWriter.encode(tag: 2, value: self.colors, packed: true)")
+    assertThat(code).contains("try protoWriter.encode(tag: 3, value: self.unpacked_flags)\n")
+    assertThat(code).contains("try protoWriter.encode(tag: 4, value: self.unpacked_colors)\n")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))

@@ -941,6 +941,7 @@ public abstract interface class com/squareup/wire/schema/SyntaxRules {
 	public static final field Companion Lcom/squareup/wire/schema/SyntaxRules$Companion;
 	public abstract fun getEncodeMode (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Field$Label;ZZ)Lcom/squareup/wire/schema/Field$EncodeMode;
 	public abstract fun isPackedByDefault (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Field$Label;)Z
+	public fun isPackedByDefault (Lcom/squareup/wire/schema/ProtoType;Lcom/squareup/wire/schema/Field$Label;Z)Z
 	public abstract fun jsonName (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 	public abstract fun validateDefaultValue (ZLcom/squareup/wire/schema/ErrorCollector;)V
 	public abstract fun validateEnumConstants (Ljava/util/List;Lcom/squareup/wire/schema/ErrorCollector;)V
