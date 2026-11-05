@@ -638,19 +638,149 @@ class SchemaProtoAdapterTest {
   private fun protobufJavaEncode(
     descriptor: Descriptors.Descriptor,
     value: Map<String, Any>,
-  ): ByteString {
+  ): ByteString = protobufJavaMessage(descriptor, value).toByteArray().toByteString()
+
+  private fun protobufJavaMessage(
+    descriptor: Descriptors.Descriptor,
+    value: Map<String, Any>,
+  ): DynamicMessage {
     val builder = DynamicMessage.newBuilder(descriptor)
-    for ((name, list) in value) {
+    for ((name, fieldValue) in value) {
       val field = descriptor.findFieldByName(name)
-      for (element in list as List<*>) {
-        val javaElement = when (field.javaType) {
-          Descriptors.FieldDescriptor.JavaType.ENUM -> field.enumType.findValueByName(element as String)
-          else -> element
+      when {
+        field.isMapField -> {
+          val keyField = field.messageType.findFieldByName("key")
+          val valueField = field.messageType.findFieldByName("value")
+          for ((entryKey, entryValue) in fieldValue as Map<*, *>) {
+            val entry = DynamicMessage.newBuilder(field.messageType)
+              .setField(keyField, protobufJavaValue(keyField, entryKey!!))
+              .setField(valueField, protobufJavaValue(valueField, entryValue!!))
+              .build()
+            builder.addRepeatedField(field, entry)
+          }
         }
-        builder.addRepeatedField(field, javaElement)
+        field.isRepeated -> {
+          for (element in fieldValue as List<*>) {
+            builder.addRepeatedField(field, protobufJavaValue(field, element!!))
+          }
+        }
+        else -> builder.setField(field, protobufJavaValue(field, fieldValue))
       }
     }
-    return builder.build().toByteArray().toByteString()
+    return builder.build()
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  private fun protobufJavaValue(field: Descriptors.FieldDescriptor, value: Any): Any = when (field.javaType) {
+    Descriptors.FieldDescriptor.JavaType.ENUM -> field.enumType.findValueByName(value as String)
+    Descriptors.FieldDescriptor.JavaType.MESSAGE -> protobufJavaMessage(field.messageType, value as Map<String, Any>)
+    Descriptors.FieldDescriptor.JavaType.BYTE_STRING -> com.google.protobuf.ByteString.copyFrom((value as ByteString).toByteArray())
+    else -> value
+  }
+
+  @Test
+  fun encodeMapsLikeProtobufJava() {
+    for (syntax in listOf("proto2", "proto3")) {
+      val label = if (syntax == "proto2") "optional " else ""
+      val schema = buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+              |syntax = "$syntax";
+              |message Message {
+              |  enum Choice { A = 0; B = 1; }
+              |  message Child { ${label}int32 value = 1; }
+              |  map<string, int64> strings = 1;
+              |  map<int32, string> ints = 2;
+              |  map<bool, Choice> bools = 3;
+              |  map<sint64, Child> children = 4;
+              |  map<fixed32, bytes> blobs = 5;
+              |  map<string, double> doubles = 6;
+              |}
+          """.trimMargin(),
+        )
+      }
+      val adapter = schema.protoAdapter("Message", false)
+      val descriptor = protobufJavaDescriptor(schema, "message.proto", "Message")
+      val value = mapOf(
+        "strings" to mapOf("USD" to 44L, "EUR" to 33L),
+        "ints" to mapOf(1 to "one", -2 to "minus two"),
+        "bools" to mapOf(true to "B"),
+        "children" to mapOf(-3L to mapOf("value" to 5), 4L to mapOf("value" to 6)),
+        "blobs" to mapOf(7 to "cafe".decodeHex()),
+        "doubles" to mapOf("pi" to 3.14),
+      )
+      val expected = protobufJavaEncode(descriptor, value)
+      assertThat(adapter.encode(value).toByteString(), syntax).isEqualTo(expected)
+      val buffer = Buffer()
+      adapter.encode(ProtoWriter(buffer), value)
+      assertThat(buffer.readByteString(), syntax).isEqualTo(expected)
+      assertThat(adapter.encodedSize(value), syntax).isEqualTo(expected.size)
+      assertThat(adapter.decode(expected), syntax).isEqualTo(value)
+    }
+  }
+
+  @Test
+  fun mapEntriesWithIdentityValues() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto3";
+            |message Message {
+            |  map<string, int64> values = 1;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    val value = mapOf("values" to mapOf("" to 0L))
+    // Golden data emitted by protoc. Map entries always write the key and the value.
+    val encoded = "0a040a001000".decodeHex()
+    assertThat(adapter.encode(value).toByteString()).isEqualTo(encoded)
+    assertThat(adapter.encodedSize(value)).isEqualTo(encoded.size)
+    assertThat(adapter.decode(encoded)).isEqualTo(value)
+    // A missing key or value decodes to its identity value.
+    assertThat(adapter.decode("0a00".decodeHex())).isEqualTo(value)
+  }
+
+  @Test
+  fun mapEntriesWithoutEnumValue() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto3";
+            |enum Choice { ZERO = 0; ONE = 1; }
+            |message Message {
+            |  map<bool, Choice> choices = 1;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    // A missing enum value decodes to the zero constant.
+    assertThat(adapter.decode("0a020801".decodeHex())).isEqualTo(mapOf("choices" to mapOf(true to "ZERO")))
+  }
+
+  @Test
+  fun nullValueMapValuesKeepBuiltInAdapter() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto3";
+            |import "google/protobuf/struct.proto";
+            |message Message {
+            |  map<int32, google.protobuf.NullValue> nulls = 1;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    try {
+      adapter.decode("0a0408011001".decodeHex())
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage("expected 0 but was 1")
+    }
   }
 
   @Test

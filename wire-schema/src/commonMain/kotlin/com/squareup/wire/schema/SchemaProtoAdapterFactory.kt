@@ -133,7 +133,8 @@ internal class SchemaProtoAdapterFactory(
 
   private class EnumAdapter(
     private val enumType: EnumType,
-  ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
+    identity: Any? = null,
+  ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax, identity) {
     override fun encodedSize(value: Any): Int = when (value) {
       is String -> {
         UINT32.encodedSize(enumType.constant(value)!!.tag)
@@ -181,6 +182,8 @@ internal class SchemaProtoAdapterFactory(
     }
 
     override fun redact(value: Any): Any = throw UnsupportedOperationException()
+
+    fun withZeroIdentity() = EnumAdapter(enumType, identity = enumType.constant(0)?.name)
   }
 
   private class SchemaMessageBinding(
@@ -252,7 +255,14 @@ internal class SchemaProtoAdapterFactory(
       get() = get(this.field.type!!.keyType!!)
 
     override val singleAdapter: ProtoAdapter<*>
-      get() = get(this.field.type!!)
+      get() = mapEnumValueAdapter ?: get(this.field.type!!.valueType ?: this.field.type!!)
+
+    /** Like generated adapters, map entries without a value decode to the enum's zero constant. */
+    private val mapEnumValueAdapter: ProtoAdapter<*>? by lazy {
+      val valueType = this.field.type!!.valueType ?: return@lazy null
+      // Built-in adapters such as NullValue keep their own identity.
+      (get(valueType) as? EnumAdapter)?.withZeroIdentity()
+    }
 
     @Suppress("UNCHECKED_CAST")
     override fun value(builder: MutableMap<String, Any>, value: Any) {
