@@ -50,6 +50,27 @@ final class ExtensibleTests: XCTestCase {
         XCTAssertEqual(decodedMessage.ext_phone_type, .MOBILE)
     }
 
+    func testExtensionsEncodeInAscendingTagOrder() throws {
+        let message = Extensible {
+            $0.ext_phone_type = .MOBILE
+            $0.ext_bool = true
+            $0.ext_uint32 = 42
+        }
+        let expected = Foundation.Data(hexEncoded: """
+            D03E // (Tag 1002 | Varint)
+            2A   // Value 42
+            983F // (Tag 1011 | Varint)
+            01   // Value true
+            887D // (Tag 2001 | Varint)
+            00   // Value MOBILE
+        """)
+
+        let encoder = ProtoEncoder()
+        for _ in 0..<100 {
+            XCTAssertEqual(try encoder.encode(message), expected)
+        }
+    }
+
     func testExtensionEncodeDecodeHeapStorageMessage() {
         let message = LargeExtensible {
             $0.value1 = "value1"

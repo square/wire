@@ -875,6 +875,31 @@ final class ProtoWriterTests: XCTestCase {
         XCTAssertEqual(Foundation.Data(writer.buffer, copyBytes: true), data)
     }
 
+    func testWriteUnknownFieldsInAscendingTagOrder() throws {
+        let tags = Array(UInt32(1)...UInt32(20))
+        var expected = Foundation.Data()
+        var fields: [(UInt32, Foundation.Data)] = []
+        for tag in tags {
+            let fieldWriter = ProtoWriter()
+            try fieldWriter.encode(tag: tag, value: tag, encoding: .variable)
+            let data = Foundation.Data(fieldWriter.buffer, copyBytes: true)
+            expected.append(data)
+            fields.append((tag, data))
+        }
+
+        // Dictionaries with other capacities and insertion orders iterate in other orders.
+        for capacity in 0..<100 {
+            var unknownFields = UnknownFields(minimumCapacity: capacity)
+            for (tag, data) in fields.shuffled() {
+                unknownFields[tag] = data
+            }
+
+            let writer = ProtoWriter()
+            try writer.writeUnknownFields(unknownFields)
+            XCTAssertEqual(Foundation.Data(writer.buffer, copyBytes: true), expected)
+        }
+    }
+
     // MARK: - Tests - Writing Primitives
 
     func testWriteFixed32() {
