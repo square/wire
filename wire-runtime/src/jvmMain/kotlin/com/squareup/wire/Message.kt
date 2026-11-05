@@ -60,8 +60,18 @@ protected actual constructor(
    */
   actual abstract fun newBuilder(): B
 
-  /** Returns this message with any unknown fields removed. */
-  fun withoutUnknownFields(): M = newBuilder().clearUnknownFields().build()
+  /**
+   * Returns this message with any unknown fields removed.
+   *
+   * Implemented as an adapter round-trip of the known-field prefix rather than via [newBuilder],
+   * which throws when Kotlin generation hides builders (`javaInterop = false`).
+   */
+  fun withoutUnknownFields(): M {
+    @Suppress("UNCHECKED_CAST")
+    val message = this as M
+    val encoded = adapter.encodeByteString(message)
+    return adapter.decode(encoded.substring(0, encoded.size - unknownFields.size))
+  }
 
   @Suppress("UNCHECKED_CAST")
   override fun toString(): String = adapter.toString(this as M)
