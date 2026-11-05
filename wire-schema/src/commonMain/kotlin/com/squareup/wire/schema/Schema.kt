@@ -106,6 +106,8 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
    * [FIXED64][com.squareup.wire.FieldEncoding.FIXED64],
    * [FIXED32][com.squareup.wire.FieldEncoding.FIXED32], or
    * [LENGTH_DELIMITED][com.squareup.wire.FieldEncoding.LENGTH_DELIMITED], respectively.
+   * The adapter does not encode these values, so a decode and encode round trip drops unknown fields.
+   * The model cannot keep the original encoding because both `VARINT` and `FIXED64` values decode to [Long].
    */
   fun protoAdapter(
     typeName: String,
