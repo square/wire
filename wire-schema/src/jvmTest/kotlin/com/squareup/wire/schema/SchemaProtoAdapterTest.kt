@@ -600,6 +600,30 @@ class SchemaProtoAdapterTest {
     }
   }
 
+  @Test
+  fun encodePackedNegativeEnums() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |message Message {
+            |  enum Choice { NEGATIVE = -1; ZERO = 0; }
+            |  repeated Choice values = 1 [packed = true];
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    val value = mapOf("values" to listOf("NEGATIVE", 1))
+    // Generated Wire adapters write enum values as unsigned 32-bit varints.
+    val encoded = "0a06ffffffff0f01".decodeHex()
+    assertThat(adapter.encode(value).toByteString()).isEqualTo(encoded)
+    val buffer = Buffer()
+    adapter.encode(ProtoWriter(buffer), value)
+    assertThat(buffer.readByteString()).isEqualTo(encoded)
+    assertThat(adapter.encodedSize(value)).isEqualTo(encoded.size)
+    assertThat(adapter.decode(encoded)).isEqualTo(value)
+  }
+
   private fun protobufJavaDescriptor(
     schema: Schema,
     path: String,

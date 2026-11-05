@@ -136,10 +136,10 @@ internal class SchemaProtoAdapterFactory(
   ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
     override fun encodedSize(value: Any): Int = when (value) {
       is String -> {
-        INT32.encodedSize(enumType.constant(value)!!.tag)
+        UINT32.encodedSize(enumType.constant(value)!!.tag)
       }
       is Int -> {
-        INT32.encodedSize(value)
+        UINT32.encodedSize(value)
       }
       else -> {
         throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
