@@ -234,7 +234,8 @@ internal class SchemaProtoAdapterFactory(
         return when (this.field.encodeMode!!) {
           EncodeMode.OMIT_IDENTITY -> WireField.Label.OMIT_IDENTITY
           EncodeMode.NULL_IF_ABSENT -> WireField.Label.OPTIONAL
-          EncodeMode.MAP, EncodeMode.PACKED, EncodeMode.REPEATED -> WireField.Label.REPEATED
+          EncodeMode.MAP, EncodeMode.REPEATED -> WireField.Label.REPEATED
+          EncodeMode.PACKED -> WireField.Label.PACKED
           EncodeMode.REQUIRED -> WireField.Label.REQUIRED
         }
       }
