@@ -55,6 +55,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
     mutableTypes: Boolean = false,
     makeImmutableCopies: Boolean = true,
     escapeKotlinKeywords: Boolean = false,
+    encodeInTagOrder: Boolean = false,
   ): String {
     val kotlinGenerator = KotlinGenerator(
       schema,
@@ -67,6 +68,7 @@ internal class KotlinWithProfilesGenerator(private val schema: Schema) {
       oneofMode = oneofMode,
       mutableTypes = mutableTypes,
       makeImmutableCopies = makeImmutableCopies,
+      encodeInTagOrder = encodeInTagOrder,
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)
