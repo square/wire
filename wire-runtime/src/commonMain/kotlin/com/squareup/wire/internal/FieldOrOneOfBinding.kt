@@ -78,10 +78,20 @@ abstract class FieldOrOneOfBinding<M, B> {
   abstract fun getFromBuilder(builder: B): Any?
 
   /**
-   * Returns true if the encoded message omits [value], in protobuf bytes and in JSON.
+   * Returns true if the protobuf encoding omits [value].
    * Generated adapters omit the same values.
    */
-  fun omitFromEncoding(syntax: Syntax, value: Any?): Boolean {
+  fun omitFromProto(value: Any?): Boolean {
+    if (value == null) return true
+    return omitIdentityFromProto && value == adapter.identity
+  }
+
+  /** A present message is always written, even a wrapper that holds an identity value. */
+  private val omitIdentityFromProto: Boolean by lazy {
+    label == WireField.Label.OMIT_IDENTITY && !writeIdentityValues && !isMessage
+  }
+
+  fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
     if (value == null) return true
     return omitIdentity(syntax) && value == adapter.identity
   }
