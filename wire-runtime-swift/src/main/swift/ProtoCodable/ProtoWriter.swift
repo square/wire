@@ -550,10 +550,20 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Unknown Fields
 
-    /** Append unknown fields data to the output */
+    /**
+     Append unknown fields data to the output, in ascending tag order.
+
+     Dictionary order changes on each launch, so we sort to keep the encoded bytes stable.
+     */
     public func writeUnknownFields(_ fields: UnknownFields) throws {
-        fields.values.forEach {
-            self.buffer.append($0)
+        guard fields.count > 1 else {
+            fields.values.forEach {
+                self.buffer.append($0)
+            }
+            return
+        }
+        for (_, data) in fields.sorted(by: { $0.key < $1.key }) {
+            self.buffer.append(data)
         }
     }
 
