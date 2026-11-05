@@ -147,5 +147,39 @@ jsonParser.merge(json, parsedBuilder)
 val parsedPizza = parsedBuilder.build()
 ```
 
+Binary Field Order
+------------------
+
+Wire and Protoc can write the fields of a message in a different order.
+Wire generated code writes fields in the declaration order of the `.proto` file.
+It writes oneof members after all the other fields.
+Protoc generated code, such as protobuf-java, writes fields in ascending tag order.
+
+Both outputs are valid protobuf.
+Each library decodes the bytes of the other library to equal messages.
+
+But equal messages can have different bytes.
+Do not use serialized bytes as a key, a hash, a signature, or a partition key across libraries.
+For example, the default Kafka partitioner hashes the serialized key.
+A Wire producer and a Protoc producer can send equal keys to different partitions ([#3746][issue_3746]).
+
+Wire also does not guarantee identical bytes across its own releases.
+The [4.0.0 release notes](changelog.md#version-400) say: "Identical encoding of equal messages across Wire releases is typical but not guaranteed".
+
+If you declare the fields of a message in tag order, Wire writes the plain fields in the same order as Protoc.
+This does not help when a oneof member has a lower tag than a plain field.
+In the message below, Protoc writes the tags in the order 1, 2, 3, and Wire writes them in the order 1, 3, 2.
+
+```proto
+message Key {
+  string a = 1;
+  oneof choice {
+    string b = 2;
+  }
+  string c = 3;
+}
+```
+
  [gson]: https://github.com/google/gson/
+ [issue_3746]: https://github.com/square/wire/issues/3746
  [moshi]: https://github.com/square/moshi/
