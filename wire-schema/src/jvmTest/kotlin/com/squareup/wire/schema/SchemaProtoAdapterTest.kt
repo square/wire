@@ -744,6 +744,24 @@ class SchemaProtoAdapterTest {
   }
 
   @Test
+  fun mapEntriesWithoutEnumValue() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto3";
+            |enum Choice { ZERO = 0; ONE = 1; }
+            |message Message {
+            |  map<bool, Choice> choices = 1;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    // A missing enum value decodes to the zero constant.
+    assertThat(adapter.decode("0a020801".decodeHex())).isEqualTo(mapOf("choices" to mapOf(true to "ZERO")))
+  }
+
+  @Test
   @Throws(IOException::class)
   fun recursiveMessage() {
     val adapter = buildSchema {
