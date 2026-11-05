@@ -2901,6 +2901,34 @@ class KotlinGeneratorTest {
     assertContains(code, "values = ArrayList(initialCapacity)")
   }
 
+  @Test fun proto3RepeatedBoolAndEnumArePackedByDefault() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |message Message {
+        |  repeated bool flags = 1;
+        |  repeated Color colors = 2;
+        |  repeated bool unpacked_flags = 3 [packed = false];
+        |  repeated Color unpacked_colors = 4 [packed = false];
+        |}
+        |
+        |enum Color {
+        |  COLOR_UNSPECIFIED = 0;
+        |  RED = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
+    assertContains(code, "ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1, value.flags)")
+    assertContains(code, "Color.ADAPTER.asPacked().encodeWithTag(writer, 2, value.colors)")
+    assertContains(code, "ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 3, value.unpacked_flags)")
+    assertContains(code, "Color.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.unpacked_colors)")
+  }
+
   /**
    * We had a bug where java_package and wire_package were asymmetric. We would lose the
    * wire_package when it was used on the protoPath.

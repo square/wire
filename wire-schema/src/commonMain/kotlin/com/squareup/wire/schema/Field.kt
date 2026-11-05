@@ -131,8 +131,9 @@ data class Field(
     val linker = linker.withContext(this)
     options.link(linker, location, validate)
     deprecated = options.get(DEPRECATED)
+    val isEnum = isRepeated && !type!!.isScalar && linker.get(type!!) is EnumType
     val packed = options.get(PACKED)
-      ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
+      ?: if (syntaxRules.isPackedByDefault(type!!, label, isEnum)) PACKED_OPTION_ELEMENT.value else null
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
 

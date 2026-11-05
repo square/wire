@@ -1188,4 +1188,32 @@ public final class JavaGeneratorTest {
     String code = new JavaWithProfilesGenerator(schema).generateJava("proto_package.Person");
     assertThat(code).contains("@Deprecated\npublic final class Person");
   }
+
+  @Test
+  public void proto3RepeatedBoolAndEnumArePackedByDefault() throws IOException {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                "syntax = \"proto3\";\n"
+                    + "message Message {\n"
+                    + "  repeated bool flags = 1;\n"
+                    + "  repeated Color colors = 2;\n"
+                    + "  repeated bool unpacked_flags = 3 [packed = false];\n"
+                    + "  repeated Color unpacked_colors = 4 [packed = false];\n"
+                    + "}\n"
+                    + "enum Color {\n"
+                    + "  COLOR_UNSPECIFIED = 0;\n"
+                    + "  RED = 1;\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("Message");
+    assertThat(code)
+        .contains("ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 1, value.flags);");
+    assertThat(code).contains("Color.ADAPTER.asPacked().encodeWithTag(writer, 2, value.colors);");
+    assertThat(code)
+        .contains("ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 3, value.unpacked_flags);");
+    assertThat(code)
+        .contains("Color.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.unpacked_colors);");
+  }
 }
