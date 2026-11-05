@@ -87,7 +87,8 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
     var size = 0
     for (field in fields.values) {
-      val fieldValue = field[value] ?: continue
+      val fieldValue = field[value]
+      if (field.omitFromProto(fieldValue)) continue
       size += field.adapter.encodedSizeWithTag(field.tag, fieldValue)
     }
     size += binding.unknownFields(value).size
@@ -98,8 +99,9 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
   override fun encode(writer: ProtoWriter, value: M) {
     for (field in fields.values) {
-      val binding = field[value] ?: continue
-      field.adapter.encodeWithTag(writer, field.tag, binding)
+      val fieldValue = field[value]
+      if (field.omitFromProto(fieldValue)) continue
+      field.adapter.encodeWithTag(writer, field.tag, fieldValue)
     }
     writer.writeBytes(binding.unknownFields(value))
   }
@@ -108,8 +110,9 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     writer.writeBytes(binding.unknownFields(value))
     for (f in fieldBindingsArray.size - 1 downTo 0) {
       val field = fieldBindingsArray[f]
-      val binding = field[value] ?: continue
-      field.adapter.encodeWithTag(writer, field.tag, binding)
+      val fieldValue = field[value]
+      if (field.omitFromProto(fieldValue)) continue
+      field.adapter.encodeWithTag(writer, field.tag, fieldValue)
     }
   }
 
