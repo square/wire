@@ -252,7 +252,7 @@ internal class SchemaProtoAdapterFactory(
       get() = get(this.field.type!!.keyType!!)
 
     override val singleAdapter: ProtoAdapter<*>
-      get() = get(this.field.type!!)
+      get() = get(this.field.type!!.valueType ?: this.field.type!!)
 
     @Suppress("UNCHECKED_CAST")
     override fun value(builder: MutableMap<String, Any>, value: Any) {

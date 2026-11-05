@@ -21,7 +21,6 @@ import com.squareup.wire.FieldMask
 import com.squareup.wire.buildSchema
 import com.squareup.wire.durationOfSeconds
 import com.squareup.wire.ofEpochSecond
-import kotlin.test.Ignore
 import kotlin.test.Test
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.encodeUtf8
@@ -191,7 +190,6 @@ class DynamicSerializationTest {
       .isEqualTo(mapOf("duration_field" to durationOfSeconds(5L, 3L)))
   }
 
-  @Ignore // Not supported.
   @Test
   fun mapTest() {
     val schema = buildSchema {
