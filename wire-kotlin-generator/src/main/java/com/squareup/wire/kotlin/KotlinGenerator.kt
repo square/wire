@@ -2689,13 +2689,7 @@ class KotlinGenerator private constructor(
       .addParameter(valueName, Int::class)
     val builder: TypeSpec.Builder
 
-    val enumModeOption = when (enum.enumMode?.lowercase()) {
-      "enum_class" -> ENUM_CLASS
-      "sealed_class" -> SEALED_CLASS
-      else -> null
-    }
-
-    when (enumModeOption ?: enumMode) {
+    when (effectiveEnumMode(enum)) {
       ENUM_CLASS -> {
         builder = TypeSpec.enumBuilder(type.simpleName)
           .apply {
@@ -2836,6 +2830,12 @@ class KotlinGenerator private constructor(
       .build()
   }
 
+  private fun effectiveEnumMode(enum: EnumType): EnumMode = when (enum.enumMode?.lowercase()) {
+    "enum_class" -> ENUM_CLASS
+    "sealed_class" -> SEALED_CLASS
+    else -> enumMode
+  }
+
   private fun fieldEqualsIdentityBlock(field: Field, fieldName: String): CodeBlock {
     val format = when (field.type) {
       // Special case for doubles and floats because of negative zeros.
@@ -2907,6 +2907,21 @@ class KotlinGenerator private constructor(
         MemberName(Syntax::class.asClassName(), message.syntax.name),
         message.identity(),
       )
+      .apply {
+        // A sealed enum constant is a subclass. Touching it first runs this companion's init before
+        // the constant exists, so the constructor gets null. Read the constant lazily instead.
+        // Only proto3 gets this override because it needs a runtime where `identity` is open.
+        if (effectiveEnumMode(message) == SEALED_CLASS &&
+          message.syntax == Syntax.PROTO_3 &&
+          message.constant(0) != null
+        ) {
+          addProperty(
+            PropertySpec.builder("identity", parentClassName.copy(nullable = true), OVERRIDE)
+              .getter(FunSpec.getterBuilder().addStatement("return %L", message.identity()).build())
+              .build(),
+          )
+        }
+      }
       .addFunction(
         FunSpec.builder("fromValue")
           .addModifiers(OVERRIDE)

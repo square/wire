@@ -73,7 +73,7 @@ expect abstract class ProtoAdapter<E>(
    * | Lists (repeated types)                         | empty list: listOf()          |
    * ```
    */
-  val identity: E?
+  open val identity: E?
 
   /**
    * Path to the file containing the protobuf definition of this type.
