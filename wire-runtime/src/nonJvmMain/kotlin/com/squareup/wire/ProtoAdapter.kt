@@ -25,7 +25,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
   actual val type: KClass<*>?,
   actual val typeUrl: String?,
   actual val syntax: Syntax,
-  actual val identity: E?,
+  actual open val identity: E?,
   actual val sourceFile: String?,
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {

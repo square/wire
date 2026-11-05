@@ -233,7 +233,7 @@ public abstract class com/squareup/wire/ProtoAdapter {
 	public static final fun get (Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;
 	public static final fun get (Ljava/lang/String;)Lcom/squareup/wire/ProtoAdapter;
 	public static final fun get (Ljava/lang/String;Ljava/lang/ClassLoader;)Lcom/squareup/wire/ProtoAdapter;
-	public final fun getIdentity ()Ljava/lang/Object;
+	public fun getIdentity ()Ljava/lang/Object;
 	public final fun getSourceFile ()Ljava/lang/String;
 	public final fun getSyntax ()Lcom/squareup/wire/Syntax;
 	public final fun getType ()Lkotlin/reflect/KClass;
