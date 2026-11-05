@@ -272,6 +272,7 @@ public final class JavaGenerator {
   private final boolean emitDeclaredOptions;
   private final boolean emitAppliedOptions;
   private final boolean buildersOnly;
+  private final boolean encodeInTagOrder;
 
   private JavaGenerator(
       Schema schema,
@@ -283,7 +284,11 @@ public final class JavaGenerator {
       boolean emitCompact,
       boolean emitDeclaredOptions,
       boolean emitAppliedOptions,
-      boolean buildersOnly) {
+      boolean buildersOnly,
+      boolean encodeInTagOrder) {
+    if (emitCompact && encodeInTagOrder) {
+      throw new IllegalArgumentException("encodeInTagOrder cannot be used with compact");
+    }
     this.schema = schema;
     this.typeToJavaName = ImmutableMap.copyOf(typeToJavaName);
     this.memberToJavaName = ImmutableMap.copyOf(memberToJavaName);
@@ -294,6 +299,7 @@ public final class JavaGenerator {
     this.emitDeclaredOptions = emitDeclaredOptions;
     this.emitAppliedOptions = emitAppliedOptions;
     this.buildersOnly = buildersOnly;
+    this.encodeInTagOrder = encodeInTagOrder;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
@@ -307,7 +313,8 @@ public final class JavaGenerator {
         emitCompact,
         emitDeclaredOptions,
         emitAppliedOptions,
-        buildersOnly);
+        buildersOnly,
+        encodeInTagOrder);
   }
 
   public JavaGenerator withAndroidAnnotations(boolean emitAndroidAnnotations) {
@@ -321,7 +328,8 @@ public final class JavaGenerator {
         emitCompact,
         emitDeclaredOptions,
         emitAppliedOptions,
-        buildersOnly);
+        buildersOnly,
+        encodeInTagOrder);
   }
 
   public JavaGenerator withCompact(boolean emitCompact) {
@@ -335,7 +343,8 @@ public final class JavaGenerator {
         emitCompact,
         emitDeclaredOptions,
         emitAppliedOptions,
-        buildersOnly);
+        buildersOnly,
+        encodeInTagOrder);
   }
 
   public JavaGenerator withProfile(Profile profile) {
@@ -349,7 +358,8 @@ public final class JavaGenerator {
         emitCompact,
         emitDeclaredOptions,
         emitAppliedOptions,
-        buildersOnly);
+        buildersOnly,
+        encodeInTagOrder);
   }
 
   public JavaGenerator withOptions(boolean emitDeclaredOptions, boolean emitAppliedOptions) {
@@ -363,7 +373,8 @@ public final class JavaGenerator {
         emitCompact,
         emitDeclaredOptions,
         emitAppliedOptions,
-        buildersOnly);
+        buildersOnly,
+        encodeInTagOrder);
   }
 
   public JavaGenerator withBuildersOnly(boolean buildersOnly) {
@@ -377,7 +388,23 @@ public final class JavaGenerator {
         emitCompact,
         emitDeclaredOptions,
         emitAppliedOptions,
-        buildersOnly);
+        buildersOnly,
+        encodeInTagOrder);
+  }
+
+  public JavaGenerator withEncodeInTagOrder(boolean encodeInTagOrder) {
+    return new JavaGenerator(
+        schema,
+        typeToJavaName,
+        memberToJavaName,
+        profile,
+        emitAndroid,
+        emitAndroidAnnotations,
+        emitCompact,
+        emitDeclaredOptions,
+        emitAppliedOptions,
+        buildersOnly,
+        encodeInTagOrder);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -409,7 +436,8 @@ public final class JavaGenerator {
         false /* emitCompact */,
         false /* emitDeclaredOptions */,
         false /* emitAppliedOptions */,
-        false /* buildersOnly */);
+        false /* buildersOnly */,
+        false /* encodeInTagOrder */);
   }
 
   private static void putAllExtensions(
@@ -1277,7 +1305,11 @@ public final class JavaGenerator {
 
     List<CodeBlock> encodeCalls = new ArrayList<>();
 
-    for (Field field : type.getFieldsAndOneOfFields()) {
+    List<Field> fields =
+        encodeInTagOrder
+            ? TAG_ORDERING.sortedCopy(type.getFieldsAndOneOfFields())
+            : type.getFieldsAndOneOfFields();
+    for (Field field : fields) {
       int fieldTag = field.getTag();
       CodeBlock adapter = adapterFor(field, nameAllocator);
       String fieldName = nameAllocator.get(field);

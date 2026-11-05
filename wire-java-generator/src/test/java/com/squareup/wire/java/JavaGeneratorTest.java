@@ -894,6 +894,73 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void encodeInTagOrderSortsEncodeByTag() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "syntax = \"proto3\";\n"
+                    + "message OneofFirst {\n"
+                    + "  oneof o {\n"
+                    + "    string a = 1;\n"
+                    + "    string b = 3;\n"
+                    + "  }\n"
+                    + "  string c = 2;\n"
+                    + "}\n")
+            .build();
+    String defaultOutput = new JavaWithProfilesGenerator(schema).generateJava("OneofFirst");
+    assertThat(defaultOutput)
+        .contains(
+            ""
+                + "    public void encode(ProtoWriter writer, OneofFirst value) throws IOException {\n"
+                + "      if (!Objects.equals(value.c, \"\")) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c);\n"
+                + "      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);\n"
+                + "      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.b);\n");
+    String output =
+        new JavaWithProfilesGenerator(schema)
+            .generateJava("OneofFirst", null, false, false, false, true /* encodeInTagOrder */);
+    assertThat(output)
+        .contains(
+            ""
+                + "    public void encode(ProtoWriter writer, OneofFirst value) throws IOException {\n"
+                + "      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);\n"
+                + "      if (!Objects.equals(value.c, \"\")) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c);\n"
+                + "      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.b);\n"
+                + "      writer.writeBytes(value.unknownFields());\n");
+    assertThat(output)
+        .contains(
+            ""
+                + "    public void encode(ReverseProtoWriter writer, OneofFirst value) throws IOException {\n"
+                + "      writer.writeBytes(value.unknownFields());\n"
+                + "      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.b);\n"
+                + "      if (!Objects.equals(value.c, \"\")) ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c);\n"
+                + "      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);\n");
+  }
+
+  @Test
+  public void encodeInTagOrderFailsWithCompact() throws Exception {
+    Schema schema =
+        new SchemaBuilder().add(Path.get("message.proto"), "message Message {}\n").build();
+    try {
+      JavaGenerator.get(schema).withCompact(true).withEncodeInTagOrder(true);
+      fail();
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected)
+          .hasMessageThat()
+          .isEqualTo("encodeInTagOrder cannot be used with compact");
+    }
+    try {
+      JavaGenerator.get(schema).withEncodeInTagOrder(true).withCompact(true);
+      fail();
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected)
+          .hasMessageThat()
+          .isEqualTo("encodeInTagOrder cannot be used with compact");
+    }
+  }
+
+  @Test
   public void generateTypeUsesPackageNameOnFieldAndClassNameClashWithinPackage() throws Exception {
     Schema schema =
         new SchemaBuilder()

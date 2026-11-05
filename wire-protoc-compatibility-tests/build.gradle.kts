@@ -30,6 +30,34 @@ wire {
   }
 
   kotlin {
+    oneofMode = "sealed_class"
+    encodeInTagOrder = true
+
+    includes = listOf(
+      "squareup.encodeorder.SealedSplitOneof",
+      "squareup.encodeorder.SealedTwoOneofs",
+    )
+  }
+
+  java {
+    encodeInTagOrder = true
+
+    includes = listOf(
+      "squareup.encodeorder.JavaKeyLike",
+      "squareup.encodeorder.JavaOneofFirst",
+    )
+  }
+
+  kotlin {
+    boxOneOfsMinSize = 3
+    encodeInTagOrder = true
+
+    includes = listOf(
+      "squareup.encodeorder.*",
+    )
+  }
+
+  kotlin {
     buildersOnly = true
     boxOneOfsMinSize = 3
 

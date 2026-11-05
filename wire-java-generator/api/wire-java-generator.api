@@ -14,6 +14,7 @@ public final class com/squareup/wire/java/JavaGenerator {
 	public fun withAndroidAnnotations (Z)Lcom/squareup/wire/java/JavaGenerator;
 	public fun withBuildersOnly (Z)Lcom/squareup/wire/java/JavaGenerator;
 	public fun withCompact (Z)Lcom/squareup/wire/java/JavaGenerator;
+	public fun withEncodeInTagOrder (Z)Lcom/squareup/wire/java/JavaGenerator;
 	public fun withOptions (ZZ)Lcom/squareup/wire/java/JavaGenerator;
 	public fun withProfile (Lcom/squareup/wire/schema/Profile;)Lcom/squareup/wire/java/JavaGenerator;
 }
@@ -21,8 +22,8 @@ public final class com/squareup/wire/java/JavaGenerator {
 public final class com/squareup/wire/java/JavaSchemaHandler : com/squareup/wire/schema/SchemaHandler {
 	public static final field Companion Lcom/squareup/wire/java/JavaSchemaHandler$Companion;
 	public fun <init> ()V
-	public fun <init> (ZZZZZZ)V
-	public synthetic fun <init> (ZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ZZZZZZZ)V
+	public synthetic fun <init> (ZZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;
 	public fun handle (Lcom/squareup/wire/schema/Schema;Lcom/squareup/wire/schema/SchemaHandler$Context;)V
 	public fun handle (Lcom/squareup/wire/schema/Service;Lcom/squareup/wire/schema/SchemaHandler$Context;)Ljava/util/List;

@@ -2422,6 +2422,108 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test fun encodeInTagOrderInterleavesOneofsAndFields() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |message OneofFirst {
+        |  oneof o {
+        |    string a = 1;
+        |    string b = 3;
+        |    string d = 4;
+        |  }
+        |  string c = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val generator = KotlinWithProfilesGenerator(schema)
+
+    val defaultFlat = generator.generateKotlin("OneofFirst")
+    assertThat(defaultFlat).contains(
+      """
+      |      override fun encode(writer: ProtoWriter, `value`: OneofFirst) {
+      |        if (value.c != "") {
+      |          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
+      |        }
+      |        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
+      """.trimMargin(),
+    )
+
+    val flat = generator.generateKotlin("OneofFirst", encodeInTagOrder = true)
+    assertThat(flat).contains(
+      """
+      |      override fun encode(writer: ProtoWriter, `value`: OneofFirst) {
+      |        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
+      |        if (value.c != "") {
+      |          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
+      |        }
+      |        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.b)
+      |        ProtoAdapter.STRING.encodeWithTag(writer, 4, value.d)
+      |        writer.writeBytes(value.unknownFields)
+      |      }
+      """.trimMargin(),
+    )
+    assertThat(flat).contains(
+      """
+      |      override fun encode(writer: ReverseProtoWriter, `value`: OneofFirst) {
+      |        writer.writeBytes(value.unknownFields)
+      |        ProtoAdapter.STRING.encodeWithTag(writer, 4, value.d)
+      |        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.b)
+      |        if (value.c != "") {
+      |          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
+      |        }
+      |        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
+      |      }
+      """.trimMargin(),
+    )
+
+    val boxed = generator.generateKotlin(
+      "OneofFirst",
+      oneofMode = OneofMode.BOXED,
+      encodeInTagOrder = true,
+    )
+    assertThat(boxed).contains(
+      """
+      |      override fun encode(writer: ProtoWriter, `value`: OneofFirst) {
+      |        value.o?.takeIf { it.key.tag in 1..1 }?.encodeWithTag(writer)
+      |        if (value.c != "") {
+      |          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
+      |        }
+      |        value.o?.takeIf { it.key.tag in 3..4 }?.encodeWithTag(writer)
+      |        writer.writeBytes(value.unknownFields)
+      |      }
+      """.trimMargin(),
+    )
+
+    val sealed = generator.generateKotlin(
+      "OneofFirst",
+      oneofMode = OneofMode.SEALED_CLASS,
+      encodeInTagOrder = true,
+    )
+    assertThat(sealed).contains(
+      """
+      |      override fun encode(writer: ProtoWriter, `value`: OneofFirst) {
+      |        when (val o = value.o) {
+      |          is O.A -> ProtoAdapter.STRING.encodeWithTag(writer, 1, o.value)
+      |          else -> {}
+      |        }
+      |        if (value.c != "") {
+      |          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
+      |        }
+      |        when (val o = value.o) {
+      |          is O.B -> ProtoAdapter.STRING.encodeWithTag(writer, 3, o.value)
+      |          is O.D -> ProtoAdapter.STRING.encodeWithTag(writer, 4, o.value)
+      |          else -> {}
+      |        }
+      |        writer.writeBytes(value.unknownFields)
+      |      }
+      """.trimMargin(),
+    )
+  }
+
   @Test fun sealedOneofGeneratesNestedSealedClass() {
     val schema = buildSchema {
       add(

@@ -436,6 +436,14 @@ wire {
 
     // True to emit annotations for options applied on messages, fields, etc.
     emitAppliedOptions = true
+
+    // True for generated adapters to write fields in ascending tag order.
+    // This gives the same bytes as protoc.
+    // False to write fields in declaration order, with oneof fields last.
+    // This option applies only to the types that this target generates.
+    // A nested type that another module or jar generates keeps its own field order.
+    // You cannot use this option with `compact`.
+    encodeInTagOrder = false
   }
 }
 ```
@@ -536,6 +544,13 @@ wire {
     // Message. Only set to false when you can guarantee these fields won't be mutated after
     // construction, to avoid the copy overhead.
     makeImmutableCopies = true
+
+    // True for generated `encode` functions to write fields in ascending tag order.
+    // This gives the same bytes as protoc.
+    // False to write fields in declaration order, with boxed and sealed oneofs last.
+    // This option applies only to the types that this target generates.
+    // A nested type that another module or jar generates keeps its own field order.
+    encodeInTagOrder = false
   }
 }
 ```

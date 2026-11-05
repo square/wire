@@ -1,0 +1,112 @@
+/*
+ * Copyright (C) 2026 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package squareup.encodeorder;
+
+// In these messages, the declaration order is not the tag order.
+// Wire generates each message with `encodeInTagOrder = true`.
+// The build file sends the `Sealed` messages to a Kotlin target with sealed oneofs, and the `Java` messages to a Java target.
+// The other messages go to a Kotlin target that boxes oneofs with 3 or more members.
+
+message OutOfOrder {
+  optional string b = 2;
+  optional string a = 1;
+}
+
+message KeyLike {
+  optional int32 id = 5;
+  optional string name = 1;
+}
+
+// A flat oneof with a member on each side of a plain field.
+message OneofFirst {
+  oneof o {
+    string a = 1;
+    string b = 3;
+  }
+  optional string c = 2;
+}
+
+// A boxed oneof with a member on each side of a plain field.
+message SplitOneof {
+  oneof o {
+    string a = 1;
+    string b = 3;
+    string d = 4;
+  }
+  optional string c = 2;
+}
+
+// Two boxed oneofs with interleaved tags.
+message TwoOneofs {
+  oneof x {
+    string a = 1;
+    string c = 3;
+    string e = 5;
+  }
+  oneof y {
+    string b = 2;
+    string d = 4;
+    string f = 6;
+  }
+}
+
+message Extendable {
+  optional string a = 1;
+  optional string c = 3;
+  extensions 2, 4 to 10;
+}
+
+extend Extendable {
+  optional string ext_d = 4;
+  optional string ext_b = 2;
+}
+
+message SealedSplitOneof {
+  oneof o {
+    string a = 1;
+    string b = 3;
+    string d = 4;
+  }
+  optional string c = 2;
+}
+
+message SealedTwoOneofs {
+  oneof x {
+    string a = 1;
+    string c = 3;
+    string e = 5;
+  }
+  oneof y {
+    string b = 2;
+    string d = 4;
+    string f = 6;
+  }
+}
+
+message JavaKeyLike {
+  optional int32 id = 5;
+  optional string name = 1;
+}
+
+message JavaOneofFirst {
+  oneof o {
+    string a = 1;
+    string b = 3;
+  }
+  optional string c = 2;
+}

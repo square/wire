@@ -47,6 +47,16 @@ class JavaSchemaHandler(
 
   /** If true, the constructor of all generated types will be non-public. */
   private val buildersOnly: Boolean = false,
+
+  /**
+   * If true, the generated adapters write fields in ascending tag order.
+   * This gives the same bytes as protoc.
+   * If false, they write fields in declaration order, and write oneof fields last.
+   * This option applies only to the types that this target generates.
+   * A nested type that another module or jar generates keeps its own field order.
+   * You cannot use this option with [compact].
+   */
+  private val encodeInTagOrder: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var javaGenerator: JavaGenerator
 
@@ -60,6 +70,7 @@ class JavaSchemaHandler(
       .withCompact(compact)
       .withOptions(emitDeclaredOptions, emitAppliedOptions)
       .withBuildersOnly(buildersOnly)
+      .withEncodeInTagOrder(encodeInTagOrder)
 
     context.fileSystem.createDirectories(context.outDirectory)
 

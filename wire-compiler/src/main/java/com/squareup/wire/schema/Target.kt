@@ -54,6 +54,16 @@ data class JavaTarget(
 
   /** If true, the constructor of all generated types will be non-public. */
   val buildersOnly: Boolean = false,
+
+  /**
+   * If true, the generated adapters write fields in ascending tag order.
+   * This gives the same bytes as protoc.
+   * If false, they write fields in declaration order, and write oneof fields last.
+   * This option applies only to the types that this target generates.
+   * A nested type that another module or jar generates keeps its own field order.
+   * You cannot use this option with [compact].
+   */
+  val encodeInTagOrder: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler = JavaSchemaHandler(
     android = android,
@@ -62,6 +72,7 @@ data class JavaTarget(
     emitDeclaredOptions = emitDeclaredOptions,
     emitAppliedOptions = emitAppliedOptions,
     buildersOnly = buildersOnly,
+    encodeInTagOrder = encodeInTagOrder,
   )
 
   override fun copyTarget(
@@ -163,6 +174,15 @@ data class KotlinTarget(
    * critical usages.
    */
   private val makeImmutableCopies: Boolean = true,
+
+  /**
+   * If true, the generated `encode` functions write fields in ascending tag order.
+   * This gives the same bytes as protoc.
+   * If false, they write fields in declaration order, and write boxed and sealed oneofs last.
+   * This option applies only to the types that this target generates.
+   * A nested type that another module or jar generates keeps its own field order.
+   */
+  private val encodeInTagOrder: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler = KotlinSchemaHandler(
     outDirectory = outDirectory,
@@ -183,6 +203,7 @@ data class KotlinTarget(
     mutableTypes = mutableTypes,
     explicitStreamingCalls = explicitStreamingCalls,
     makeImmutableCopies = makeImmutableCopies,
+    encodeInTagOrder = encodeInTagOrder,
   )
 
   override fun copyTarget(

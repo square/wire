@@ -110,6 +110,15 @@ class KotlinSchemaHandler(
    * critical usages.
    */
   private val makeImmutableCopies: Boolean = true,
+
+  /**
+   * If true, the generated `encode` functions write fields in ascending tag order.
+   * This gives the same bytes as protoc.
+   * If false, they write fields in declaration order, and write boxed and sealed oneofs last.
+   * This option applies only to the types that this target generates.
+   * A nested type that another module or jar generates keeps its own field order.
+   */
+  private val encodeInTagOrder: Boolean = false,
 ) : SchemaHandler() {
   private lateinit var kotlinGenerator: KotlinGenerator
 
@@ -135,6 +144,7 @@ class KotlinSchemaHandler(
       mutableTypes = mutableTypes,
       explicitStreamingCalls = explicitStreamingCalls,
       makeImmutableCopies = makeImmutableCopies,
+      encodeInTagOrder = encodeInTagOrder,
     )
     context.fileSystem.createDirectories(context.outDirectory)
     super.handle(schema, context)

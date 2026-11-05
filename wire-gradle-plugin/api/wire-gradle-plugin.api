@@ -24,6 +24,7 @@ public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/Wire
 	public final fun getCompact ()Z
 	public final fun getEmitAppliedOptions ()Z
 	public final fun getEmitDeclaredOptions ()Z
+	public final fun getEncodeInTagOrder ()Z
 	public final fun getExcludes ()Ljava/util/List;
 	public final fun getExclusive ()Z
 	public final fun getIncludes ()Ljava/util/List;
@@ -33,6 +34,7 @@ public class com/squareup/wire/gradle/JavaOutput : com/squareup/wire/gradle/Wire
 	public final fun setCompact (Z)V
 	public final fun setEmitAppliedOptions (Z)V
 	public final fun setEmitDeclaredOptions (Z)V
+	public final fun setEncodeInTagOrder (Z)V
 	public final fun setExcludes (Ljava/util/List;)V
 	public final fun setExclusive (Z)V
 	public final fun setIncludes (Ljava/util/List;)V
@@ -48,6 +50,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun getEmitAppliedOptions ()Z
 	public final fun getEmitDeclaredOptions ()Z
 	public final fun getEmitProtoReader32 ()Z
+	public final fun getEncodeInTagOrder ()Z
 	public final fun getEnumMode ()Ljava/lang/String;
 	public final fun getEscapeKotlinKeywords ()Z
 	public final fun getExcludes ()Ljava/util/List;
@@ -69,6 +72,7 @@ public class com/squareup/wire/gradle/KotlinOutput : com/squareup/wire/gradle/Wi
 	public final fun setEmitAppliedOptions (Z)V
 	public final fun setEmitDeclaredOptions (Z)V
 	public final fun setEmitProtoReader32 (Z)V
+	public final fun setEncodeInTagOrder (Z)V
 	public final fun setEnumMode (Ljava/lang/String;)V
 	public final fun setEscapeKotlinKeywords (Z)V
 	public final fun setExcludes (Ljava/util/List;)V
