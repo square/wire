@@ -18,6 +18,7 @@ package com.squareup.wire
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import okio.Buffer
+import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
 import org.junit.Test
 import squareup.encodeorder.EncodeOrder as P
@@ -69,6 +70,17 @@ class EncodeOrderTest {
       P.SplitOneof.newBuilder().setD("D").setC("C").build(),
       SplitOneof(o = OneOf(SplitOneof.O_D, "D"), c = "C"),
     )
+  }
+
+  @Test fun boxedOneofCustomKey() {
+    // Tag 5 is in no run of the oneof. Encode writes it with the last run, and encodedSize agrees.
+    val value = SplitOneof(o = SplitOneof.O(5, ProtoAdapter.STRING, "e").create("E"), c = "C")
+    val expected = "1201432a0145".decodeHex()
+    assertThat(SplitOneof.ADAPTER.encodedSize(value)).isEqualTo(expected.size)
+    assertThat(value.encodeByteString()).isEqualTo(expected)
+    val buffer = Buffer()
+    SplitOneof.ADAPTER.encode(ProtoWriter(buffer), value)
+    assertThat(buffer.readByteString()).isEqualTo(expected)
   }
 
   @Test fun interleavedBoxedOneofs() {

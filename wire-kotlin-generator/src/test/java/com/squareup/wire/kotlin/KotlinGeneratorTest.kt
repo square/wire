@@ -2492,7 +2492,7 @@ class KotlinGeneratorTest {
       |        if (value.c != "") {
       |          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
       |        }
-      |        value.o?.takeIf { it.key.tag in 3..4 }?.encodeWithTag(writer)
+      |        value.o?.takeIf { it.key.tag !in 1..1 }?.encodeWithTag(writer)
       |        writer.writeBytes(value.unknownFields)
       |      }
       """.trimMargin(),

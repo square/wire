@@ -1866,9 +1866,10 @@ class KotlinGenerator private constructor(
     val encodeCalls = mutableListOf<CodeBlock>()
     val nameAllocator = nameAllocator(message)
 
-    for (segment in encodeSegments(message)) {
+    val segments = encodeSegments(message)
+    for (segment in segments) {
       if (segment is EncodeSegment.OneOfRun) {
-        encodeCalls += oneOfRunEncodeCall(message, segment, nameAllocator)
+        encodeCalls += oneOfRunEncodeCall(message, segments, segment, nameAllocator)
         continue
       }
       val field = (segment as EncodeSegment.Single).field
@@ -1925,7 +1926,7 @@ class KotlinGenerator private constructor(
   /** One encode statement: a single field, or consecutive fields of a boxed or sealed oneof. */
   private sealed class EncodeSegment {
     class Single(val field: Field) : EncodeSegment()
-    class OneOfRun(val oneOf: OneOf, val fields: List<Field>) : EncodeSegment()
+    class OneOfRun(val oneOf: OneOf, val fields: MutableList<Field>) : EncodeSegment()
   }
 
   /**
@@ -1939,7 +1940,7 @@ class KotlinGenerator private constructor(
       .map { EncodeSegment.Single(it) }
     val wrappedOneOfs = message.boxOneOfs() + message.sealedOneOfs()
     if (!encodeInTagOrder) {
-      return singles + wrappedOneOfs.map { EncodeSegment.OneOfRun(it, it.fields) }
+      return singles + wrappedOneOfs.map { EncodeSegment.OneOfRun(it, it.fields.toMutableList()) }
     }
     val units = singles.map { it.field to null } +
       wrappedOneOfs.flatMap { oneOf -> oneOf.fields.map { it to oneOf } }
@@ -1948,9 +1949,8 @@ class KotlinGenerator private constructor(
       val last = result.lastOrNull()
       when {
         oneOf == null -> result += EncodeSegment.Single(field)
-        last is EncodeSegment.OneOfRun && last.oneOf == oneOf ->
-          result[result.lastIndex] = EncodeSegment.OneOfRun(oneOf, last.fields + field)
-        else -> result += EncodeSegment.OneOfRun(oneOf, listOf(field))
+        last is EncodeSegment.OneOfRun && last.oneOf == oneOf -> last.fields += field
+        else -> result += EncodeSegment.OneOfRun(oneOf, mutableListOf(field))
       }
     }
     return result
@@ -1958,6 +1958,7 @@ class KotlinGenerator private constructor(
 
   private fun oneOfRunEncodeCall(
     message: MessageType,
+    segments: List<EncodeSegment>,
     run: EncodeSegment.OneOfRun,
     nameAllocator: NameAllocator,
   ): CodeBlock {
@@ -1970,13 +1971,22 @@ class KotlinGenerator private constructor(
           add("if (value.%N != %L) ", fieldName, "null")
           addStatement("value.%N.encodeWithTag(writer)", fieldName)
         } else {
-          // No other field has a tag between the first and last tag of this run.
-          addStatement(
-            "value.%N?.takeIf { it.key.tag in %L..%L }?.encodeWithTag(writer)",
-            fieldName,
-            run.fields.first().tag,
-            run.fields.last().tag,
-          )
+          // No other field has a tag between the first and last tag of a run.
+          val runs = segments.filterIsInstance<EncodeSegment.OneOfRun>().filter { it.oneOf == oneOf }
+          if (run === runs.last()) {
+            // Also write a custom key that is in no run, because encodedSize counts it.
+            val otherRuns = runs.dropLast(1).joinToString(" && ") {
+              "it.key.tag !in ${it.fields.first().tag}..${it.fields.last().tag}"
+            }
+            addStatement("value.%N?.takeIf { %L }?.encodeWithTag(writer)", fieldName, otherRuns)
+          } else {
+            addStatement(
+              "value.%N?.takeIf { it.key.tag in %L..%L }?.encodeWithTag(writer)",
+              fieldName,
+              run.fields.first().tag,
+              run.fields.last().tag,
+            )
+          }
         }
       }
     }
