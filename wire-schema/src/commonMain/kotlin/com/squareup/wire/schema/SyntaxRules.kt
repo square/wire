@@ -28,6 +28,13 @@ interface SyntaxRules {
   fun validateTypeReference(type: Type?, errors: ErrorCollector)
 
   fun isPackedByDefault(type: ProtoType, label: Field.Label?): Boolean
+
+  /**
+   * Returns true if a field of [type] is packed by default. Set [isEnum] to true when [type] is an
+   * enum, because [ProtoType] alone does not tell enums apart from messages.
+   */
+  fun isPackedByDefault(type: ProtoType, label: Field.Label?, isEnum: Boolean): Boolean = isPackedByDefault(type, label)
+
   fun getEncodeMode(
     protoType: ProtoType,
     label: Field.Label?,
@@ -117,7 +124,14 @@ interface SyntaxRules {
       override fun isPackedByDefault(
         type: ProtoType,
         label: Field.Label?,
-      ): Boolean = label == Field.Label.REPEATED && type in ProtoType.NUMERIC_SCALAR_TYPES
+      ): Boolean = label == Field.Label.REPEATED &&
+        (type in ProtoType.NUMERIC_SCALAR_TYPES || type == ProtoType.BOOL)
+
+      override fun isPackedByDefault(
+        type: ProtoType,
+        label: Field.Label?,
+        isEnum: Boolean,
+      ): Boolean = isPackedByDefault(type, label) || (label == Field.Label.REPEATED && isEnum)
 
       override fun getEncodeMode(
         protoType: ProtoType,

@@ -58,7 +58,7 @@ public class Easter private constructor(
   @field:WireField(
     tag = 4,
     adapter = "squareup.wire.unrecognized_constant.EasterAnimal#ADAPTER",
-    label = WireField.Label.REPEATED,
+    label = WireField.Label.PACKED,
     jsonName = "easterAnimals",
     schemaIndex = 2,
   )
@@ -153,7 +153,7 @@ public class Easter private constructor(
         if (value.identity_easter_animal != squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
           size += EasterAnimal.ADAPTER.encodedSizeWithTag(3, value.identity_easter_animal)
         }
-        size += EasterAnimal.ADAPTER.asRepeated().encodedSizeWithTag(4, value.easter_animals)
+        size += EasterAnimal.ADAPTER.asPacked().encodedSizeWithTag(4, value.easter_animals)
         return size
       }
 
@@ -162,13 +162,13 @@ public class Easter private constructor(
         if (value.identity_easter_animal != squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
           EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
         }
-        EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
+        EasterAnimal.ADAPTER.asPacked().encodeWithTag(writer, 4, value.easter_animals)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun encode(writer: ReverseProtoWriter, `value`: Easter) {
         writer.writeBytes(value.unknownFields)
-        EasterAnimal.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.easter_animals)
+        EasterAnimal.ADAPTER.asPacked().encodeWithTag(writer, 4, value.easter_animals)
         if (value.identity_easter_animal != squareup.wire.unrecognized_constant.EasterAnimal.EASTER_ANIMAL_DEFAULT) {
           EasterAnimal.ADAPTER.encodeWithTag(writer, 3, value.identity_easter_animal)
         }
