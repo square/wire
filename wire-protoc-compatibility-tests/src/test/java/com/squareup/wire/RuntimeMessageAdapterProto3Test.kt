@@ -18,6 +18,9 @@ package com.squareup.wire
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.SchemaLoader
+import java.nio.file.FileSystems
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -44,6 +47,12 @@ class RuntimeMessageAdapterProto3Test {
     Syntax.PROTO_3,
     AllWrappers::class.java.classLoader,
   )
+
+  private val schema = SchemaLoader(FileSystems.getDefault())
+    .apply {
+      initRoots(sourcePath = listOf(Location.get("src/main/proto")))
+    }
+    .loadSchema()
 
   @Test fun allDefaultValues() {
     val message = AllTypes.Builder().build()
@@ -119,6 +128,26 @@ class RuntimeMessageAdapterProto3Test {
 
     assertThat(AllWrappers.ADAPTER.encodeByteString(message)).isNotEqualTo(ByteString.EMPTY)
     assertEncodesLikeGenerated(AllWrappers.ADAPTER, allWrappersAdapter, message)
+  }
+
+  @Test fun schemaAdapterSkipsScalarIdentityValues() {
+    val adapter = schema.protoAdapter("squareup.proto3.java.alltypes.AllTypes", false)
+    val value = mapOf("int32" to 0, "double" to -0.0, "string" to "", "opt_int32" to 0)
+    val message = AllTypes.Builder().double_(-0.0).opt_int32(0).build()
+
+    assertThat(adapter.encodeByteString(value)).isEqualTo(AllTypes.ADAPTER.encodeByteString(message))
+    assertThat(adapter.encodedSize(value)).isEqualTo(AllTypes.ADAPTER.encodedSize(message))
+  }
+
+  @Test fun schemaAdapterWritesWrappersWithIdentityValues() {
+    val adapter = schema.protoAdapter("squareup.proto3.java.alltypes.AllWrappers", false)
+    val value = mapOf("int32_value" to 0, "bool_value" to false, "string_value" to "")
+    val message = AllWrappers.Builder().int32_value(0).bool_value(false).string_value("").build()
+
+    val expected = AllWrappers.ADAPTER.encodeByteString(message)
+    assertThat(expected).isNotEqualTo(ByteString.EMPTY)
+    assertThat(adapter.encodeByteString(value)).isEqualTo(expected)
+    assertThat(adapter.encodedSize(value)).isEqualTo(expected.size)
   }
 
   private fun <M : Any> assertEncodesLikeGenerated(
