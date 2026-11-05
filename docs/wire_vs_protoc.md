@@ -180,6 +180,9 @@ message Key {
 }
 ```
 
+To write all fields in ascending tag order, set `encodeInTagOrder = true` on a `kotlin {}` or `java {}` target.
+The [Gradle plugin documentation](wire_compiler.md) describes this option.
+
  [gson]: https://github.com/google/gson/
  [issue_3746]: https://github.com/square/wire/issues/3746
  [moshi]: https://github.com/square/moshi/
