@@ -136,10 +136,10 @@ internal class SchemaProtoAdapterFactory(
   ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
     override fun encodedSize(value: Any): Int = when (value) {
       is String -> {
-        INT32.encodedSize(enumType.constant(value)!!.tag)
+        UINT32.encodedSize(enumType.constant(value)!!.tag)
       }
       is Int -> {
-        INT32.encodedSize(value)
+        UINT32.encodedSize(value)
       }
       else -> {
         throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
@@ -234,7 +234,8 @@ internal class SchemaProtoAdapterFactory(
         return when (this.field.encodeMode!!) {
           EncodeMode.OMIT_IDENTITY -> WireField.Label.OMIT_IDENTITY
           EncodeMode.NULL_IF_ABSENT -> WireField.Label.OPTIONAL
-          EncodeMode.MAP, EncodeMode.PACKED, EncodeMode.REPEATED -> WireField.Label.REPEATED
+          EncodeMode.MAP, EncodeMode.REPEATED -> WireField.Label.REPEATED
+          EncodeMode.PACKED -> WireField.Label.PACKED
           EncodeMode.REQUIRED -> WireField.Label.REQUIRED
         }
       }
