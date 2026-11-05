@@ -762,6 +762,28 @@ class SchemaProtoAdapterTest {
   }
 
   @Test
+  fun nullValueMapValuesKeepBuiltInAdapter() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto3";
+            |import "google/protobuf/struct.proto";
+            |message Message {
+            |  map<int32, google.protobuf.NullValue> nulls = 1;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    try {
+      adapter.decode("0a0408011001".decodeHex())
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage("expected 0 but was 1")
+    }
+  }
+
+  @Test
   @Throws(IOException::class)
   fun recursiveMessage() {
     val adapter = buildSchema {

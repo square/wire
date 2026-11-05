@@ -182,6 +182,8 @@ internal class SchemaProtoAdapterFactory(
     }
 
     override fun redact(value: Any): Any = throw UnsupportedOperationException()
+
+    fun withZeroIdentity() = EnumAdapter(enumType, identity = enumType.constant(0)?.name)
   }
 
   private class SchemaMessageBinding(
@@ -257,8 +259,9 @@ internal class SchemaProtoAdapterFactory(
 
     /** Like generated adapters, map entries without a value decode to the enum's zero constant. */
     private val mapEnumValueAdapter: ProtoAdapter<*>? by lazy {
-      val enumType = this.field.type!!.valueType?.let { schema.getType(it) } as? EnumType
-      enumType?.let { EnumAdapter(it, identity = it.constant(0)?.name) }
+      val valueType = this.field.type!!.valueType ?: return@lazy null
+      // Built-in adapters such as NullValue keep their own identity.
+      (get(valueType) as? EnumAdapter)?.withZeroIdentity()
     }
 
     @Suppress("UNCHECKED_CAST")
