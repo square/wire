@@ -132,11 +132,15 @@ class RuntimeMessageAdapterProto3Test {
 
   @Test fun schemaAdapterSkipsScalarIdentityValues() {
     val adapter = schema.protoAdapter("squareup.proto3.java.alltypes.AllTypes", false)
-    val value = mapOf("int32" to 0, "double" to -0.0, "string" to "", "opt_int32" to 0)
     val message = AllTypes.Builder().double_(-0.0).opt_int32(0).build()
+    val expected = AllTypes.ADAPTER.encodeByteString(message)
 
-    assertThat(adapter.encodeByteString(value)).isEqualTo(AllTypes.ADAPTER.encodeByteString(message))
-    assertThat(adapter.encodedSize(value)).isEqualTo(AllTypes.ADAPTER.encodedSize(message))
+    // The schema adapter takes enum values as constant names or as tags.
+    for (zeroEnum in listOf("UNKNOWN", 0)) {
+      val value = mapOf("int32" to 0, "double" to -0.0, "string" to "", "nested_enum" to zeroEnum, "opt_int32" to 0)
+      assertThat(adapter.encodeByteString(value)).isEqualTo(expected)
+      assertThat(adapter.encodedSize(value)).isEqualTo(expected.size)
+    }
   }
 
   @Test fun schemaAdapterWritesWrappersWithIdentityValues() {

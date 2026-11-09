@@ -83,8 +83,11 @@ abstract class FieldOrOneOfBinding<M, B> {
    */
   fun omitFromProto(value: Any?): Boolean {
     if (value == null) return true
-    return omitIdentityFromProto && value == adapter.identity
+    return omitIdentityFromProto && isIdentity(value)
   }
+
+  /** Returns true if [value] is the identity value of this field's adapter. */
+  protected open fun isIdentity(value: Any): Boolean = value == adapter.identity
 
   /** A present message is always written, even a wrapper that holds an identity value. */
   private val omitIdentityFromProto: Boolean by lazy {

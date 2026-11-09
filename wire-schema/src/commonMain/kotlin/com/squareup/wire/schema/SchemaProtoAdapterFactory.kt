@@ -131,9 +131,10 @@ internal class SchemaProtoAdapterFactory(
     override fun redact(value: T): T = delegate.redact(value)
   }
 
+  /** Like generated enum adapters, the identity is the constant with tag 0, if there is one. */
   private class EnumAdapter(
     private val enumType: EnumType,
-  ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
+  ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax, enumType.constant(0)?.name) {
     override fun encodedSize(value: Any): Int = when (value) {
       is String -> {
         INT32.encodedSize(enumType.constant(value)!!.tag)
@@ -246,6 +247,9 @@ internal class SchemaProtoAdapterFactory(
     override val declaredName: String = field.name
     override val wireFieldJsonName: String = field.jsonName!!
     override val writeIdentityValues: Boolean = false
+
+    // Enum values can be constant names or tags, so tag 0 is also an identity value.
+    override fun isIdentity(value: Any): Boolean = super.isIdentity(value) || (value == 0 && adapter is EnumAdapter && adapter.identity != null)
 
     override val keyAdapter: ProtoAdapter<*>
       get() = get(this.field.type!!.keyType!!)
