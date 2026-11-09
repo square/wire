@@ -2852,10 +2852,11 @@ class KotlinGenerator private constructor(
     val companionObjectBuilder = TypeSpec.companionObjectBuilder()
     val parentClassName = typeToKotlinName.getValue(message.type)
     val valueName = "value"
+    val mode = effectiveEnumMode(message)
     val fromValue = FunSpec.builder("fromValue")
       .addAnnotation(ClassName(jvmAnnotationPackage, "JvmStatic"))
       .addParameter(valueName, Int::class)
-      .returns(parentClassName.copy(nullable = enumMode == ENUM_CLASS))
+      .returns(parentClassName.copy(nullable = mode == ENUM_CLASS))
       .apply {
         addCode("return when (%N) {\n⇥", valueName)
         message.constants.forEach { constant ->
@@ -2863,7 +2864,7 @@ class KotlinGenerator private constructor(
           if (constant.isDeprecated) addCode("@Suppress(\"DEPRECATION\") ")
           addCode("%N\n", nameAllocator[constant])
         }
-        when (enumMode) {
+        when (mode) {
           ENUM_CLASS -> {
             addCode("else -> null")
           }
