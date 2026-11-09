@@ -19,6 +19,7 @@ import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
 import java.io.Closeable
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -35,6 +36,7 @@ import okio.BufferedSink
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 import okio.IOException
+import okio.Timeout
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
 
@@ -238,4 +240,13 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
   }
 
   return null // Success.
+}
+
+/**
+ * Copies the timeout and the deadline of this onto [target].
+ * A value that is not set on this does not change [target].
+ */
+internal fun Timeout.copyTo(target: Timeout) {
+  if (timeoutNanos() != 0L) target.timeout(timeoutNanos(), TimeUnit.NANOSECONDS)
+  if (hasDeadline()) target.deadlineNanoTime(deadlineNanoTime())
 }

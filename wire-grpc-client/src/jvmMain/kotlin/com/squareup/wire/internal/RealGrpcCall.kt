@@ -18,7 +18,6 @@ package com.squareup.wire.internal
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.WireGrpcClient
-import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -124,11 +123,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
   override fun clone(): GrpcCall<S, R> {
     val result = RealGrpcCall(grpcClient, method)
-    val oldTimeout = this.timeout
-    result.timeout.also { newTimeout ->
-      newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
-      if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
-    }
+    timeout.copyTo(result.timeout)
     result.requestMetadata += this.requestMetadata
     return result
   }
@@ -147,14 +142,8 @@ internal class RealGrpcCall<S : Any, R : Any>(
     // Copy the user-set timeout and deadline onto the OkHttp timeout, which enforces them by
     // canceling the call. The grpc-timeout header alone is not enforced if the server or a proxy
     // ignores it.
-    val okHttpTimeout = result.timeout()
-    if (timeout.timeoutNanos() != 0L) {
-      okHttpTimeout.timeout(timeout.timeoutNanos(), TimeUnit.NANOSECONDS)
-    }
-    if (timeout.hasDeadline()) {
-      okHttpTimeout.deadlineNanoTime(timeout.deadlineNanoTime())
-    }
-    (timeout as ForwardingTimeout).setDelegate(okHttpTimeout)
+    timeout.copyTo(result.timeout())
+    (timeout as ForwardingTimeout).setDelegate(result.timeout())
     return result
   }
 }
