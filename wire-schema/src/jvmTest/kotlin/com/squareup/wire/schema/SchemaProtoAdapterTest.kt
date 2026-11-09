@@ -815,7 +815,7 @@ class SchemaProtoAdapterTest {
   }
 
   @Test
-  fun nullValueMapValuesKeepBuiltInAdapter() {
+  fun nullValueMapValues() {
     val adapter = buildSchema {
       add(
         "message.proto".toPath(),
@@ -828,6 +828,13 @@ class SchemaProtoAdapterTest {
         """.trimMargin(),
       )
     }.protoAdapter("Message", false)
+    // NullValue decodes to null, which is a valid map value.
+    val value = mapOf("nulls" to mapOf(1 to null))
+    assertThat(adapter.decode("0a0408011000".decodeHex())).isEqualTo(value)
+    assertThat(adapter.decode("0a020801".decodeHex())).isEqualTo(value)
+    assertThat(adapter.encodeByteString(value)).isEqualTo("0a0408011000".decodeHex())
+
+    // Built-in adapters such as NullValue keep their own checks.
     try {
       adapter.decode("0a0408011001".decodeHex())
       fail()

@@ -744,6 +744,9 @@ internal class MapProtoAdapter<K, V> internal constructor(
 ) {
   private val entryAdapter = MapEntryProtoAdapter(keyAdapter, valueAdapter)
 
+  /** `google.protobuf.NullValue` is the only value type that decodes to null. */
+  private val acceptsNullValues = valueAdapter === STRUCT_NULL
+
   override fun encodedSize(value: Map<K, V>): Int = throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
 
   override fun encodedSizeWithTag(tag: Int, value: Map<K, V>?): Int {
@@ -801,8 +804,9 @@ internal class MapProtoAdapter<K, V> internal constructor(
     reader.endMessageAndGetUnknownFields(token)
 
     check(key != null) { "Map entry with null key" }
-    check(value != null) { "Map entry with null value" }
-    return mapOf(key to value)
+    check(value != null || acceptsNullValues) { "Map entry with null value" }
+    @Suppress("UNCHECKED_CAST")
+    return mapOf(key to value as V)
   }
 
   override fun decode(reader: ProtoReader32): Map<K, V> {
@@ -833,8 +837,9 @@ internal class MapProtoAdapter<K, V> internal constructor(
     reader.endMessageAndGetUnknownFields(token)
 
     check(key != null) { "Map entry with null key" }
-    check(value != null) { "Map entry with null value" }
-    return mapOf(key to value)
+    check(value != null || acceptsNullValues) { "Map entry with null value" }
+    @Suppress("UNCHECKED_CAST")
+    return mapOf(key to value as V)
   }
 
   override fun redact(value: Map<K, V>): Map<K, V> = emptyMap()
