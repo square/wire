@@ -18,10 +18,12 @@ package com.squareup.wire
 import assertk.Assert
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.hasSize
 import assertk.assertions.isBetween
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import assertk.assertions.matches
 import assertk.assertions.prop
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
@@ -157,6 +159,29 @@ class GrpcClientTimeoutTest {
   }
 
   @Test
+  fun deadlineIsSentAsRemainingTimeInHeader() {
+    respond = { grpcResponse(Feature.ADAPTER.encode(Feature(name = "tree"))) }
+    val grpcCall = routeGuideService.GetFeature()
+    grpcCall.timeout.deadline(2, TimeUnit.SECONDS)
+
+    grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(mockWebServer.takeRequest().grpcTimeoutMicros()).isBetween(1_000_000L, 2_000_000L)
+  }
+
+  @Test
+  fun earlierOfTimeoutAndDeadlineIsSentInOneHeader() {
+    respond = { grpcResponse(Feature.ADAPTER.encode(Feature(name = "tree"))) }
+    val grpcCall = routeGuideService.GetFeature()
+    grpcCall.timeout.timeout(10, TimeUnit.SECONDS)
+    grpcCall.timeout.deadline(2, TimeUnit.SECONDS)
+
+    grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(mockWebServer.takeRequest().grpcTimeoutMicros()).isBetween(1_000_000L, 2_000_000L)
+  }
+
+  @Test
   fun streamingCallTimeoutIsEnforcedOnClient() {
     val grpcCall = routeGuideService.RouteChat()
     grpcCall.timeout.timeout(500, TimeUnit.MILLISECONDS)
@@ -242,6 +267,14 @@ class GrpcClientTimeoutTest {
     isInstanceOf<GrpcException>()
       .prop(GrpcException::grpcStatus)
       .isEqualTo(GrpcStatus.DEADLINE_EXCEEDED)
+  }
+
+  /** Returns the only `grpc-timeout` header of this request in microseconds. */
+  private fun RecordedRequest.grpcTimeoutMicros(): Long {
+    val values = headers.values("grpc-timeout")
+    assertThat(values).hasSize(1)
+    assertThat(values.single()).matches(Regex("[0-9]+u"))
+    return values.single().removeSuffix("u").toLong()
   }
 
   /** Returns a successful gRPC response with [messages] as its body. */
