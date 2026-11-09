@@ -118,19 +118,25 @@ open class JavaOutput @Inject constructor() : WireOutput() {
    */
   var encodeInTagOrder: Boolean = false
 
-  override fun toTarget(outputDirectory: String): JavaTarget = JavaTarget(
-    includes = includes ?: listOf("*"),
-    excludes = excludes ?: listOf(),
-    exclusive = exclusive,
-    outDirectory = outputDirectory,
-    android = android,
-    androidAnnotations = androidAnnotations,
-    compact = compact,
-    emitDeclaredOptions = emitDeclaredOptions,
-    emitAppliedOptions = emitAppliedOptions,
-    buildersOnly = buildersOnly,
-    encodeInTagOrder = encodeInTagOrder,
-  )
+  override fun toTarget(outputDirectory: String): JavaTarget {
+    if (compact && encodeInTagOrder) {
+      throw IllegalArgumentException("encodeInTagOrder cannot be used with compact")
+    }
+
+    return JavaTarget(
+      includes = includes ?: listOf("*"),
+      excludes = excludes ?: listOf(),
+      exclusive = exclusive,
+      outDirectory = outputDirectory,
+      android = android,
+      androidAnnotations = androidAnnotations,
+      compact = compact,
+      emitDeclaredOptions = emitDeclaredOptions,
+      emitAppliedOptions = emitAppliedOptions,
+      buildersOnly = buildersOnly,
+      encodeInTagOrder = encodeInTagOrder,
+    )
+  }
 }
 
 open class KotlinOutput @Inject constructor() : WireOutput() {
