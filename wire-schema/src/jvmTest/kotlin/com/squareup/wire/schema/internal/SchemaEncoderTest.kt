@@ -31,6 +31,7 @@ import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto
 import com.google.protobuf.UnknownFieldSet
 import com.squareup.wire.buildSchema
 import kotlin.test.Test
+import okio.ByteString.Companion.toByteString
 import okio.Path.Companion.toPath
 
 class SchemaEncoderTest {
@@ -177,6 +178,35 @@ class SchemaEncoderTest {
         )
         .build(),
     )
+  }
+
+  @Test fun `encode packed option`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MessageOptions {
+        |  repeated int32 sizes = 22003 [packed = true];
+        |}
+        |
+        |message TestMessage {
+        |  option (sizes) = [1, 2, 300];
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    // protoc writes one length-delimited record: tag 22003, length 4, then 1, 2, and 300.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    val options = fileDescriptorProto.getMessageType(0).options.toByteString()
+    assertThat(options.toByteArray().toByteString().hex()).isEqualTo("9adf0a040102ac02")
   }
 
   @Test fun `encode extension range`() {
