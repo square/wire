@@ -27,12 +27,17 @@ interface SyntaxRules {
   fun validateEnumConstants(constants: List<EnumConstant>, errors: ErrorCollector)
   fun validateTypeReference(type: Type?, errors: ErrorCollector)
 
+  @Deprecated(
+    message = "This cannot tell enums apart from messages, so it returns false for proto3 enums.",
+    replaceWith = ReplaceWith("isPackedByDefault(type, label, isEnum = false)"),
+  )
   fun isPackedByDefault(type: ProtoType, label: Field.Label?): Boolean
 
   /**
    * Returns true if a field of [type] is packed by default. Set [isEnum] to true when [type] is an
    * enum, because [ProtoType] alone does not tell enums apart from messages.
    */
+  @Suppress("DEPRECATION")
   fun isPackedByDefault(type: ProtoType, label: Field.Label?, isEnum: Boolean): Boolean = isPackedByDefault(type, label)
 
   fun getEncodeMode(
@@ -67,9 +72,19 @@ interface SyntaxRules {
 
       override fun validateTypeReference(type: Type?, errors: ErrorCollector) = Unit
 
+      @Deprecated(
+        message = "This cannot tell enums apart from messages, so it returns false for proto3 enums.",
+        replaceWith = ReplaceWith("isPackedByDefault(type, label, isEnum = false)"),
+      )
       override fun isPackedByDefault(
         type: ProtoType,
         label: Field.Label?,
+      ): Boolean = false
+
+      override fun isPackedByDefault(
+        type: ProtoType,
+        label: Field.Label?,
+        isEnum: Boolean,
       ): Boolean = false
 
       override fun getEncodeMode(
@@ -121,17 +136,21 @@ interface SyntaxRules {
         errors += "Proto2 enums cannot be referenced in a proto3 message"
       }
 
+      @Deprecated(
+        message = "This cannot tell enums apart from messages, so it returns false for proto3 enums.",
+        replaceWith = ReplaceWith("isPackedByDefault(type, label, isEnum = false)"),
+      )
       override fun isPackedByDefault(
         type: ProtoType,
         label: Field.Label?,
-      ): Boolean = label == Field.Label.REPEATED &&
-        (type in ProtoType.NUMERIC_SCALAR_TYPES || type == ProtoType.BOOL)
+      ): Boolean = isPackedByDefault(type, label, isEnum = false)
 
       override fun isPackedByDefault(
         type: ProtoType,
         label: Field.Label?,
         isEnum: Boolean,
-      ): Boolean = isPackedByDefault(type, label) || (label == Field.Label.REPEATED && isEnum)
+      ): Boolean = label == Field.Label.REPEATED &&
+        (type in ProtoType.NUMERIC_SCALAR_TYPES || type == ProtoType.BOOL || isEnum)
 
       override fun getEncodeMode(
         protoType: ProtoType,
