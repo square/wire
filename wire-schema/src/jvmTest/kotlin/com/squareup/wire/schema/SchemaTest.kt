@@ -345,6 +345,38 @@ class SchemaTest {
   }
 
   @Test
+  fun useArrayIsNotPermittedOnBool() {
+    try {
+      buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+          |syntax = "proto3";
+          |import "wire/extensions.proto";
+          |
+          |message Message {
+          |  repeated bool a = 1 [wire.use_array=true];
+          |  repeated bool b = 2 [packed=true, wire.use_array=true];
+          |}
+          """.trimMargin(),
+        )
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage(
+        """
+        |wire.use_array=true not permitted on bool fields
+        |  for field a (/sourcePath/message.proto:5:3)
+        |  in message Message (/sourcePath/message.proto:4:1)
+        |wire.use_array=true not permitted on bool fields
+        |  for field b (/sourcePath/message.proto:6:3)
+        |  in message Message (/sourcePath/message.proto:4:1)
+        """.trimMargin(),
+      )
+    }
+  }
+
+  @Test
   fun fieldIsDeprecated() {
     val schema = buildSchema {
       add(
