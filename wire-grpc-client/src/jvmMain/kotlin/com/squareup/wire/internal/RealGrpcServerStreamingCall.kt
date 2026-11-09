@@ -197,6 +197,9 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
 ) : GrpcStreamingCall<S, R> {
   private var executed = false
 
+  /** Fails the pending response stream. Null until this call executes. */
+  @Volatile private var failResponses: (() -> Unit)? = null
+
   override val method: GrpcMethod<S, R>
     get() = callDelegate.method
 
@@ -214,6 +217,8 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
 
   override fun cancel() {
     callDelegate.cancel()
+    // The HTTP call does not exist before the request arrives.
+    failResponses?.invoke()
   }
 
   override fun isCanceled() = callDelegate.isCanceled()
@@ -243,6 +248,8 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
       // The scope can be canceled before the coroutine starts.
       if (cause != null) responseChannel.close(cause)
     }
+
+    onExecuted { responseChannel.close(CancellationException("canceled")) }
 
     return requestChannel to responseChannel
   }
@@ -286,6 +293,8 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
         check(!closed) { "closed" }
         if (request != null) throw ProtocolException("expected 1 message but got multiple")
         request = message
+        // Start now: callers can read responses before they close this sink.
+        responses.start { callDelegate.executeBlocking(message) }
       }
 
       override fun cancel() {
@@ -296,14 +305,13 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
       override fun close() {
         if (closed) return
         closed = true
-        val request = request
         if (request == null) {
           responses.fail(ProtocolException("expected 1 message but got none"))
-        } else {
-          responses.start { callDelegate.executeBlocking(request) }
         }
       }
     }
+
+    onExecuted { responses.fail(IOException("canceled")) }
 
     return requests to responses
   }
@@ -316,12 +324,18 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
     check(!executed) { "already executed" }
     executed = true
   }
+
+  /** Registers [failResponses] for [cancel], and runs it now if the call is already canceled. */
+  private fun onExecuted(failResponses: () -> Unit) {
+    this.failResponses = failResponses
+    if (callDelegate.isCanceled()) failResponses()
+  }
 }
 
 internal fun <S : Any, R : Any> RealGrpcServerStreamingCall<S, R>.asGrpcStreamingCall() = GrpcServerStreamingCallStreamingAdapter(this)
 
 /**
- * A [MessageSource] for a call that starts after the request sink closes.
+ * A [MessageSource] for a call that starts when the caller writes the request.
  * [read] waits until the call starts or fails.
  */
 private class DeferredMessageSource<R : Any>(

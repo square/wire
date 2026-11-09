@@ -52,10 +52,12 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeout
 import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Interceptor
@@ -488,6 +490,61 @@ class GrpcClientTest {
       mockService.awaitSuccess()
       assertThat(callReference.get()!!.isCanceled()).isTrue()
     }
+  }
+
+  @Test
+  fun legacyServerStreamingReadBeforeRequestClosesBlocking() {
+    enqueueListFeatures()
+
+    val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+    requests.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    assertThat(responses.read()).isEqualTo(Feature(name = "tree"))
+    assertThat(responses.read()).isEqualTo(Feature(name = "house"))
+    assertThat(responses.read()).isNull()
+    requests.close()
+
+    mockService.awaitSuccessBlocking()
+  }
+
+  @Test
+  fun legacyServerStreamingCancelBeforeRequestBlocking() {
+    val grpcCall = newLegacyListFeaturesCall()
+    val (_, responses) = grpcCall.executeBlocking()
+    grpcCall.cancel()
+    assertFailure { responses.read() }.isInstanceOf<IOException>()
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(callReference.get()).isNull()
+  }
+
+  @Test
+  fun legacyServerStreamingCancelBeforeRequestSuspend() {
+    val grpcCall = newLegacyListFeaturesCall()
+    runBlocking {
+      withTimeout(5_000) {
+        coroutineScope {
+          val (_, responses) = grpcCall.executeIn(this)
+          grpcCall.cancel()
+          assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull()
+        }
+      }
+    }
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(callReference.get()).isNull()
+  }
+
+  @Test
+  fun legacyServerStreamingCanceledBeforeExecute() {
+    val grpcCall = newLegacyListFeaturesCall()
+    grpcCall.cancel()
+    runBlocking {
+      withTimeout(5_000) {
+        coroutineScope {
+          val (_, responses) = grpcCall.executeIn(this)
+          assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull()
+        }
+      }
+    }
+    assertThat(callReference.get()).isNull()
   }
 
   @Test
