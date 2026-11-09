@@ -37,6 +37,31 @@ import java.util.Locale
  * one language and other parts in another language.
  */
 
+/** The package of Wire's runtime classes for the types of `google/rpc/error_details.proto`. */
+const val GOOGLE_RPC_ERROR_DETAILS_PACKAGE = "com.squareup.wire.rpc"
+
+/**
+ * The types of `google/rpc/error_details.proto`, mapped to their simple names in [GOOGLE_RPC_ERROR_DETAILS_PACKAGE].
+ * Generated code uses these runtime classes and never generates its own copy.
+ */
+@JvmField
+val GOOGLE_RPC_ERROR_DETAILS_TYPES: Map<ProtoType, List<String>> = listOf(
+  "BadRequest",
+  "BadRequest.FieldViolation",
+  "DebugInfo",
+  "ErrorInfo",
+  "Help",
+  "Help.Link",
+  "LocalizedMessage",
+  "PreconditionFailure",
+  "PreconditionFailure.Violation",
+  "QuotaFailure",
+  "QuotaFailure.Violation",
+  "RequestInfo",
+  "ResourceInfo",
+  "RetryInfo",
+).associate { ProtoType.get("google.rpc.$it") to it.split('.') }
+
 @JvmOverloads
 fun builtInAdapterString(type: ProtoType, useArray: Boolean = false): String? {
   if (type.isScalar) {
