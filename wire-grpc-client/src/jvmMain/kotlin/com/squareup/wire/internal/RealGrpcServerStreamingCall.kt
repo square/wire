@@ -249,7 +249,7 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
       if (cause != null) responseChannel.close(cause)
     }
 
-    onExecuted { responseChannel.close(CancellationException("canceled")) }
+    onExecuted { responseChannel.close(IOException("canceled")) }
 
     return requestChannel to responseChannel
   }
