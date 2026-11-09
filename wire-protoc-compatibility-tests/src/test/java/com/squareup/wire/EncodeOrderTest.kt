@@ -23,6 +23,7 @@ import okio.ByteString.Companion.toByteString
 import org.junit.Test
 import squareup.encodeorder.EncodeOrder as P
 import squareup.encodeorder.Extendable
+import squareup.encodeorder.JavaExtendable
 import squareup.encodeorder.JavaKeyLike
 import squareup.encodeorder.JavaOneofFirst
 import squareup.encodeorder.KeyLike
@@ -133,6 +134,15 @@ class EncodeOrderTest {
     assertSameBytes(
       P.JavaOneofFirst.newBuilder().setB("B").setC("C").build(),
       JavaOneofFirst.Builder().b("B").c("C").build(),
+    )
+    assertSameBytes(
+      P.JavaExtendable.newBuilder()
+        .setA("A")
+        .setC("C")
+        .setExtension(P.javaExtB, "B")
+        .setExtension(P.javaExtD, "D")
+        .build(),
+      JavaExtendable.Builder().a("A").c("C").java_ext_b("B").java_ext_d("D").build(),
     )
   }
 

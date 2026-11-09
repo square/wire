@@ -43,6 +43,7 @@ wire {
     encodeInTagOrder = true
 
     includes = listOf(
+      "squareup.encodeorder.JavaExtendable",
       "squareup.encodeorder.JavaKeyLike",
       "squareup.encodeorder.JavaOneofFirst",
     )

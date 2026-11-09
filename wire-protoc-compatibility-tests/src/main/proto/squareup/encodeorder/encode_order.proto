@@ -110,3 +110,14 @@ message JavaOneofFirst {
   }
   optional string c = 2;
 }
+
+message JavaExtendable {
+  optional string a = 1;
+  optional string c = 3;
+  extensions 2, 4 to 10;
+}
+
+extend JavaExtendable {
+  optional string java_ext_d = 4;
+  optional string java_ext_b = 2;
+}
