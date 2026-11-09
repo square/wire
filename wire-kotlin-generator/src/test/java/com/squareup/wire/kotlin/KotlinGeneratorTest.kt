@@ -1541,6 +1541,30 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test fun usesRpcStatus() {
+    val schema = buildSchema {
+      add(
+        "a.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |package common.proto;
+        |import "google/rpc/status.proto";
+        |message Message {
+        |  google.rpc.Status status = 1;
+        |  repeated google.rpc.Status statuses = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
+    assertThat(code).contains("import com.squareup.wire.RpcStatus")
+    assertThat(code).doesNotContain("com.google.rpc")
+    assertThat(code).contains("public val status: RpcStatus? = null")
+    assertThat(code).contains("public val statuses: List<RpcStatus> = immutableCopyOf(\"statuses\", statuses)")
+    assertThat(code).contains("adapter = \"com.squareup.wire.RpcStatus#ADAPTER\"")
+    assertThat(code).contains("RpcStatus.ADAPTER.asRepeated()")
+  }
+
   @Test fun flatOneOfDecodingIsConstantSizePerField() {
     val schema = buildSchema {
       add(

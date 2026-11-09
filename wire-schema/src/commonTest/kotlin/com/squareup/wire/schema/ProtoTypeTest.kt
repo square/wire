@@ -124,6 +124,12 @@ class ProtoTypeTest {
   }
 
   @Test
+  fun rpcStatus() {
+    assertThat(ProtoType.RPC_STATUS).isEqualTo(ProtoType.get("google.rpc.Status"))
+    assertThat(ProtoType.RPC_STATUS.typeUrl).isEqualTo("type.googleapis.com/google.rpc.Status")
+  }
+
+  @Test
   fun enclosingTypeOrPackage() {
     assertThat(ProtoType.STRING.enclosingTypeOrPackage).isNull()
 

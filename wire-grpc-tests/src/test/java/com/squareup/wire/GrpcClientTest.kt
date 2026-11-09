@@ -43,6 +43,7 @@ import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import io.grpc.Metadata
 import io.grpc.Status
 import io.grpc.StatusException
+import io.grpc.protobuf.StatusProto
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -1730,6 +1731,38 @@ class GrpcClientTest {
           mockService.url + "routeguide.RouteGuide/GetFeature",
       )
       assertThat(RouteNote.ADAPTER.decode(expected.grpcStatusDetails!!).message).isEqualTo("marco")
+    }
+  }
+
+  @Test
+  fun requestFailureWithGoogleRpcStatus() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    val errorInfo = com.google.rpc.ErrorInfo.newBuilder()
+      .setReason("NO_TREES")
+      .setDomain("routeguide")
+      .build()
+    val status = com.google.rpc.Status.newBuilder()
+      .setCode(Status.Code.FAILED_PRECONDITION.value())
+      .setMessage("boom")
+      .addDetails(com.google.protobuf.Any.pack(errorInfo))
+      .build()
+    mockService.enqueueSendError(StatusProto.toStatusRuntimeException(status))
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: GrpcException) {
+      assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.FAILED_PRECONDITION)
+      val rpcStatus = expected.rpcStatus!!
+      assertThat(rpcStatus.code).isEqualTo(GrpcStatus.FAILED_PRECONDITION.code)
+      assertThat(rpcStatus.message).isEqualTo("boom")
+      val detail = rpcStatus.details.single()
+      assertThat(detail.typeUrl).isEqualTo("type.googleapis.com/google.rpc.ErrorInfo")
+      assertThat(com.google.rpc.ErrorInfo.parseFrom(detail.value.toByteArray())).isEqualTo(errorInfo)
     }
   }
 
