@@ -528,7 +528,7 @@ class GrpcClientTest {
         coroutineScope {
           val (_, responses) = grpcCall.executeIn(this)
           grpcCall.cancel()
-          assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull()
+          assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull().isInstanceOf<IOException>()
         }
       }
     }
@@ -544,7 +544,7 @@ class GrpcClientTest {
       withTimeout(5_000) {
         coroutineScope {
           val (_, responses) = grpcCall.executeIn(this)
-          assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull()
+          assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull().isInstanceOf<IOException>()
         }
       }
     }
