@@ -16,6 +16,8 @@
 package com.squareup.wire.java;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.squareup.wire.schema.internal.JvmLanguages.GOOGLE_RPC_ERROR_DETAILS_PACKAGE;
+import static com.squareup.wire.schema.internal.JvmLanguages.GOOGLE_RPC_ERROR_DETAILS_TYPES;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationName;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
 import static com.squareup.wire.schema.internal.JvmLanguages.builtInAdapterString;
@@ -179,7 +181,22 @@ public final class JavaGenerator {
           .put(ProtoType.BOOL_VALUE, TypeName.BOOLEAN)
           .put(ProtoType.STRING_VALUE, ClassName.get(String.class))
           .put(ProtoType.BYTES_VALUE, ClassName.get(ByteString.class))
+          .putAll(googleRpcErrorDetailsTypes())
           .build();
+
+  private static Map<ProtoType, TypeName> googleRpcErrorDetailsTypes() {
+    ImmutableMap.Builder<ProtoType, TypeName> result = ImmutableMap.builder();
+    for (Map.Entry<ProtoType, List<String>> entry : GOOGLE_RPC_ERROR_DETAILS_TYPES.entrySet()) {
+      List<String> simpleNames = entry.getValue();
+      result.put(
+          entry.getKey(),
+          ClassName.get(
+              GOOGLE_RPC_ERROR_DETAILS_PACKAGE,
+              simpleNames.get(0),
+              simpleNames.subList(1, simpleNames.size()).toArray(new String[0])));
+    }
+    return result.build();
+  }
 
   private static final Map<ProtoType, CodeBlock> PROTOTYPE_TO_IDENTITY_VALUES =
       ImmutableMap.<ProtoType, CodeBlock>builder()
