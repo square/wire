@@ -32,6 +32,7 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.Response
+import okio.AsyncTimeout
 import okio.BufferedSink
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
@@ -89,7 +90,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
   return object : Callback {
     override fun onFailure(call: Call, e: IOException) {
       // Something broke. Kill the response channel.
-      close(e)
+      close(grpcCall.callTimeout.exit(e))
     }
 
     override fun onResponse(call: Call, response: Response) {
@@ -100,7 +101,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
             response.messageSource(responseAdapter)
           } catch (exception: IOException) {
             try {
-              close(exception)
+              close(grpcCall.callTimeout.exit(exception))
             } catch (e: CancellationException) {
               // If it's already canceled, there's nothing more to do.
             }
@@ -120,6 +121,11 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
             } catch (e: Exception) {
               exception = e
             } finally {
+              if (exception is IOException) {
+                exception = grpcCall.callTimeout.exit(exception)
+              } else {
+                grpcCall.callTimeout.exit()
+              }
               try {
                 close(exception)
               } catch (e: CancellationException) {
@@ -249,4 +255,33 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
 internal fun Timeout.copyTo(target: Timeout) {
   if (timeoutNanos() != 0L) target.timeout(timeoutNanos(), TimeUnit.NANOSECONDS)
   if (hasDeadline()) target.deadlineNanoTime(deadlineNanoTime())
+}
+
+/**
+ * Enforces the timeout and the deadline of a gRPC call on the client.
+ * It cancels [call] when the first of them expires.
+ *
+ * OkHttp's call timeout cannot do this for streaming calls.
+ * It stops when a duplex call receives its response headers.
+ */
+internal class GrpcCallTimeout(private val call: Call) : AsyncTimeout() {
+  override fun timedOut() {
+    call.cancel()
+  }
+
+  /**
+   * Stops the timer.
+   * Returns [cause] as a [GrpcStatus.DEADLINE_EXCEEDED] exception if the timer canceled the call.
+   * Returns [cause] unchanged if the timer did not fire, or if the server sent a gRPC status.
+   */
+  fun exit(cause: IOException): IOException {
+    if (!exit() || cause is GrpcException) return cause
+    return newTimeoutException(cause)
+  }
+
+  override fun newTimeoutException(cause: IOException?): IOException = GrpcException(
+    grpcStatus = GrpcStatus.DEADLINE_EXCEEDED,
+    grpcMessage = "client timeout or deadline expired",
+    url = call.request().url.toString(),
+  ).apply { if (cause != null) initCause(cause) }
 }

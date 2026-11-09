@@ -61,7 +61,7 @@ internal class BlockingMessageSource<R : Any>(
   /** Read messages from the response body and write them to the deque. */
   fun readFromResponseBodyCallback(): Callback = object : Callback {
     override fun onFailure(call: Call, e: IOException) {
-      queue.put(Failure(e))
+      queue.put(Failure(grpcCall.callTimeout.exit(e)))
     }
 
     override fun onResponse(call: Call, response: Response) {
@@ -78,10 +78,11 @@ internal class BlockingMessageSource<R : Any>(
             if (exception != null) throw exception
           }
         }
+        grpcCall.callTimeout.exit()
         queue.put(Complete)
       } catch (e: IOException) {
         call.cancel() // Break the request stream if the response stream breaks.
-        queue.put(Failure(e))
+        queue.put(Failure(grpcCall.callTimeout.exit(e)))
       }
     }
   }
