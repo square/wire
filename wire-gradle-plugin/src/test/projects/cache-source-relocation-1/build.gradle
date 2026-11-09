@@ -34,7 +34,7 @@ repositories {
 wire {
   sourcePath {
     srcJar("com.google.api.grpc:proto-google-common-protos:2.57.0")
-    include("google/rpc/status.proto")
+    include("google/rpc/code.proto")
   }
   kotlin {
   }
