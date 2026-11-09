@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import assertk.assertions.startsWith
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.google.protobuf.Descriptors
 import com.google.protobuf.DynamicMessage
@@ -745,7 +746,7 @@ class SchemaProtoAdapterTest {
 
   @Test
   fun mapEntriesWithoutEnumValue() {
-    val adapter = buildSchema {
+    val schema = buildSchema {
       add(
         "message.proto".toPath(),
         """
@@ -756,9 +757,61 @@ class SchemaProtoAdapterTest {
             |}
         """.trimMargin(),
       )
-    }.protoAdapter("Message", false)
+    }
+    val adapter = schema.protoAdapter("Message", false)
     // A missing enum value decodes to the zero constant.
     assertThat(adapter.decode("0a020801".decodeHex())).isEqualTo(mapOf("choices" to mapOf(true to "ZERO")))
+
+    // Map entries always write the value, even the zero constant.
+    val value = mapOf("choices" to mapOf(true to "ZERO"))
+    val expected = "0a0408011000".decodeHex()
+    assertThat(adapter.encodeByteString(value)).isEqualTo(expected)
+    assertThat(protobufJavaEncode(protobufJavaDescriptor(schema, "message.proto", "Message"), value)).isEqualTo(expected)
+  }
+
+  @Test
+  fun enumWithoutZeroConstant() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto2";
+            |enum Choice { ONE = 1; TWO = 2; }
+            |message Message {
+            |  optional Choice choice = 1;
+            |  repeated Choice choices = 2;
+            |}
+        """.trimMargin(),
+      )
+    }
+    val adapter = schema.protoAdapter("Message", false)
+    val value = mapOf("choice" to "ONE", "choices" to listOf("TWO", "ONE"))
+    val expected = "080110021001".decodeHex()
+    assertThat(adapter.encodeByteString(value)).isEqualTo(expected)
+    assertThat(protobufJavaEncode(protobufJavaDescriptor(schema, "message.proto", "Message"), value)).isEqualTo(expected)
+    assertThat(adapter.decode(expected)).isEqualTo(value)
+  }
+
+  @Test
+  fun enumMapValuesNeedZeroConstant() {
+    // So the schema adapter always has a zero constant to decode a missing map value to.
+    try {
+      buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+              |syntax = "proto2";
+              |enum Choice { ONE = 1; TWO = 2; }
+              |message Message {
+              |  map<bool, Choice> choices = 1;
+              |}
+          """.trimMargin(),
+        )
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected.message!!).startsWith("enum value in map must define 0 as the first value")
+    }
   }
 
   @Test
