@@ -294,6 +294,20 @@ internal class GrpcCallTimeout(private val call: Call) : AsyncTimeout() {
     return newTimeoutException(cause)
   }
 
+  /**
+   * Runs [block], then stops the timer, also when [block] throws.
+   * An [IOException] from [block] is mapped like [exit] does.
+   */
+  inline fun <T> exitAfter(block: () -> T): T {
+    try {
+      return block()
+    } catch (e: IOException) {
+      throw exit(e)
+    } finally {
+      exit()
+    }
+  }
+
   override fun newTimeoutException(cause: IOException?): IOException = GrpcException(
     grpcStatus = GrpcStatus.DEADLINE_EXCEEDED,
     grpcMessage = "client timeout or deadline expired",
