@@ -32,6 +32,7 @@ import assertk.assertions.isNotZero
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.messageContains
+import assertk.assertions.prop
 import assertk.assertions.startsWith
 import com.google.common.util.concurrent.SettableFuture
 import com.squareup.wire.MockRouteGuideService.Action.Delay
@@ -43,6 +44,7 @@ import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import io.grpc.Metadata
 import io.grpc.Status
 import io.grpc.StatusException
+import java.net.ProtocolException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -441,6 +443,173 @@ class GrpcClientTest {
     responseChannel.close()
     mockService.awaitSuccessBlocking()
     assertThat(callReference.get()!!.isCanceled()).isTrue()
+  }
+
+  @Test
+  fun legacyServerStreamingBlocking() {
+    enqueueListFeatures()
+
+    val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+    requests.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requests.close()
+    assertThat(responses.read()).isEqualTo(Feature(name = "tree"))
+    assertThat(responses.read()).isEqualTo(Feature(name = "house"))
+    assertThat(responses.read()).isNull()
+
+    mockService.awaitSuccessBlocking()
+  }
+
+  @Test
+  fun legacyServerStreamingCancelRequestBlocking() {
+    enqueueListFeatures(delayBeforeLastFeature = true)
+
+    val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+    requests.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requests.close()
+    assertThat(responses.read()).isEqualTo(Feature(name = "tree"))
+    requests.cancel()
+    assertFailure { responses.read() }.isInstanceOf<IOException>()
+
+    mockService.awaitSuccessBlocking()
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
+  }
+
+  @Test
+  fun legacyServerStreamingCancelRequestSuspend() {
+    enqueueListFeatures(delayBeforeLastFeature = true)
+
+    runBlocking {
+      val (requests, responses) = newLegacyListFeaturesCall().executeIn(this)
+      requests.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+      assertThat(responses.receive()).isEqualTo(Feature(name = "tree"))
+      requests.close(CancellationException("canceled by caller"))
+      assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull()
+
+      mockService.awaitSuccess()
+      assertThat(callReference.get()!!.isCanceled()).isTrue()
+    }
+  }
+
+  @Test
+  fun legacyServerStreamingEmptyRequestBlocking() {
+    val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+    requests.close()
+    assertFailure { responses.read() }.all {
+      isInstanceOf<ProtocolException>()
+      hasMessage("expected 1 message but got none")
+    }
+    assertThat(callReference.get()).isNull()
+  }
+
+  @Test
+  fun legacyServerStreamingEmptyRequestSuspend() {
+    runBlocking {
+      val (requests, responses) = newLegacyListFeaturesCall().executeIn(this)
+      requests.close()
+      assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull().all {
+        isInstanceOf<ProtocolException>()
+        hasMessage("expected 1 message but got none")
+      }
+    }
+    assertThat(callReference.get()).isNull()
+  }
+
+  @Test
+  fun legacyServerStreamingErrorBlocking() {
+    enqueueListFeaturesError()
+
+    val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+    requests.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requests.close()
+    assertThat(responses.read()).isEqualTo(Feature(name = "tree"))
+    assertFailure { responses.read() }.isInstanceOf<GrpcException>().all {
+      prop(GrpcException::grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
+      prop(GrpcException::grpcMessage).isEqualTo("boom")
+    }
+  }
+
+  @Test
+  fun legacyServerStreamingErrorSuspend() {
+    enqueueListFeaturesError()
+
+    runBlocking {
+      val (requests, responses) = newLegacyListFeaturesCall().executeIn(this)
+      requests.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+      requests.close()
+      assertThat(responses.receive()).isEqualTo(Feature(name = "tree"))
+      assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull()
+        .isInstanceOf<GrpcException>().all {
+          prop(GrpcException::grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
+          prop(GrpcException::grpcMessage).isEqualTo("boom")
+        }
+    }
+  }
+
+  @Test
+  fun legacyServerStreamingClone() {
+    mockService.enqueue(
+      ReceiveCall(
+        path = "/routeguide.RouteGuide/ListFeatures",
+        requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
+      ),
+    )
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(
+      SendMessage(
+        message = RouteGuideProto.Feature.newBuilder()
+          .setName("forest")
+          .build(),
+        responseHeaders = mapOf("response-lucky-animal" to "emu"),
+      ),
+    )
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = newLegacyListFeaturesCall()
+    grpcCall.requestMetadata = mapOf("request-lucky-number" to "twenty-two")
+    grpcCall.timeout.timeout(5, TimeUnit.SECONDS)
+
+    val clonedCall = grpcCall.clone()
+    assertThat(clonedCall.isExecuted()).isFalse()
+    assertThat(clonedCall.timeout.timeoutNanos()).isEqualTo(TimeUnit.SECONDS.toNanos(5))
+
+    val (requests, responses) = clonedCall.executeBlocking()
+    requests.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requests.close()
+    assertThat(responses.read()).isEqualTo(Feature(name = "forest"))
+    assertThat(responses.read()).isNull()
+    assertThat(clonedCall.isExecuted()).isTrue()
+    assertThat(clonedCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("emu")
+    assertThat(grpcCall.isExecuted()).isFalse()
+
+    mockService.awaitSuccessBlocking()
+  }
+
+  private fun newLegacyListFeaturesCall() = grpcClient.newStreamingCall(
+    GrpcMethod(
+      path = "/routeguide.RouteGuide/ListFeatures",
+      requestAdapter = Rectangle.ADAPTER,
+      responseAdapter = Feature.ADAPTER,
+      responseStreaming = true,
+    ),
+  )
+
+  private fun enqueueListFeatures(delayBeforeLastFeature: Boolean = false) {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree")
+    if (delayBeforeLastFeature) mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueueSendFeature(name = "house")
+    mockService.enqueue(SendCompleted)
+  }
+
+  private fun enqueueListFeaturesError() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree")
+    mockService.enqueueSendError(Status.INTERNAL.withDescription("boom").asRuntimeException())
   }
 
   @Test

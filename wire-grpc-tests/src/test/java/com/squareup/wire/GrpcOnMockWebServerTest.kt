@@ -25,13 +25,16 @@ import com.squareup.wire.mockwebserver.GrpcDispatcher
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import okhttp3.Call
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.Interceptor
@@ -97,14 +100,117 @@ class GrpcOnMockWebServerTest {
   fun serverStreamingDoesNotNeedDispatchersIoToSendRequest() {
     enqueueListFeaturesResponse()
 
-    val ioParallelism = System.getProperty("kotlinx.coroutines.io.parallelism")?.toInt()
-      ?: maxOf(64, Runtime.getRuntime().availableProcessors())
-    val started = CountDownLatch(ioParallelism)
+    val received = runWhileDispatcherIsBusy(Dispatchers.IO, ioParallelism()) {
+      runBlocking {
+        val responses = routeGuideService.ListFeatures().executeIn(this, rectangle)
+        val result = responses.receive()
+        responses.cancel()
+        result
+      }
+    }
+    assertThat(received).isEqualTo(Feature(name = "peak"))
+  }
+
+  @Test
+  fun legacyServerStreamingDoesNotNeedDispatchersIoToSendRequest() {
+    enqueueListFeaturesResponse()
+
+    val received = runWhileDispatcherIsBusy(Dispatchers.IO, ioParallelism()) {
+      runBlocking {
+        val (requests, responses) = newLegacyListFeaturesCall().executeIn(this)
+        requests.send(rectangle)
+        requests.close()
+        val result = responses.receive()
+        responses.cancel()
+        result
+      }
+    }
+    assertThat(received).isEqualTo(Feature(name = "peak"))
+  }
+
+  @Test
+  fun legacyServerStreamingBlockingDoesNotNeedCoroutineDispatchers() {
+    enqueueListFeaturesResponse()
+
+    val received = runWhileDispatcherIsBusy(Dispatchers.Default, defaultParallelism()) {
+      val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+      requests.write(rectangle)
+      requests.close()
+      val result = responses.read()
+      responses.close()
+      result
+    }
+    assertThat(received).isEqualTo(Feature(name = "peak"))
+  }
+
+  @Test
+  fun legacyServerStreamingListFeatures() {
+    enqueueListFeaturesResponse()
+
+    val listFeatures = newLegacyListFeaturesCall()
+
+    runBlocking {
+      val (requests, responses) = listFeatures.executeIn(this)
+      requests.send(rectangle)
+      requests.close()
+      assertThat(responses.receive()).isEqualTo(Feature(name = "peak"))
+      assertThat(responses.receive()).isEqualTo(Feature(name = "valley"))
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+      assertThat(listFeatures.isCanceled()).isFalse()
+    }
+  }
+
+  /** The caller's scope only sends the request. It must not wait for unread responses. */
+  @Test
+  fun legacyServerStreamingDoesNotKeepCallerScopeBusy() {
+    enqueueListFeaturesResponse(List(4) { Feature(name = "feature $it") })
+
+    runBlocking {
+      val responses = withTimeout(5_000) {
+        coroutineScope {
+          val (requests, responses) = newLegacyListFeaturesCall().executeIn(this)
+          requests.send(rectangle)
+          requests.close()
+          assertThat(responses.receive()).isEqualTo(Feature(name = "feature 0"))
+          responses
+        }
+      }
+      responses.cancel()
+    }
+  }
+
+  private val rectangle = Rectangle(lo = Point(latitude = 1, longitude = 2), hi = Point(latitude = 3, longitude = 4))
+
+  private fun newLegacyListFeaturesCall() = grpcClient.newStreamingCall(
+    GrpcMethod(
+      path = "/routeguide.RouteGuide/ListFeatures",
+      requestAdapter = Rectangle.ADAPTER,
+      responseAdapter = Feature.ADAPTER,
+      responseStreaming = true,
+    ),
+  )
+
+  private fun ioParallelism() = System.getProperty("kotlinx.coroutines.io.parallelism")?.toInt()
+    ?: maxOf(64, Runtime.getRuntime().availableProcessors())
+
+  private fun defaultParallelism() = System.getProperty("kotlinx.coroutines.scheduler.core.pool.size")?.toInt()
+    ?: maxOf(2, Runtime.getRuntime().availableProcessors())
+
+  /**
+   * Keeps all [parallelism] threads of [dispatcher] busy, then runs [block] on a new thread.
+   * Returns the result of [block], or the exception it throws.
+   */
+  private fun runWhileDispatcherIsBusy(
+    dispatcher: CoroutineDispatcher,
+    parallelism: Int,
+    block: () -> Any?,
+  ): Any? {
+    val started = CountDownLatch(parallelism)
     val release = CountDownLatch(1)
 
     @Suppress("OPT_IN_USAGE")
-    val blockers = List(ioParallelism) {
-      GlobalScope.launch(Dispatchers.IO) {
+    val blockers = List(parallelism) {
+      GlobalScope.launch(dispatcher) {
         started.countDown()
         release.await()
       }
@@ -114,21 +220,13 @@ class GrpcOnMockWebServerTest {
     try {
       assertThat(started.await(10, TimeUnit.SECONDS)).isTrue()
 
-      val received = AtomicReference<Any?>()
+      val result = AtomicReference<Any?>()
       val done = CountDownLatch(1)
       callThread = Thread {
         try {
-          runBlocking {
-            val listFeatures = routeGuideService.ListFeatures()
-            val responses = listFeatures.executeIn(
-              this,
-              Rectangle(lo = Point(latitude = 1, longitude = 2), hi = Point(latitude = 3, longitude = 4)),
-            )
-            received.set(responses.receive())
-            responses.cancel()
-          }
+          result.set(block())
         } catch (e: Throwable) {
-          received.set(e)
+          result.set(e)
         } finally {
           done.countDown()
         }
@@ -136,7 +234,7 @@ class GrpcOnMockWebServerTest {
       callThread.start()
 
       assertThat(done.await(1, TimeUnit.SECONDS)).isTrue()
-      assertThat(received.get()).isEqualTo(Feature(name = "peak"))
+      return result.get()
     } finally {
       release.countDown()
       callThread?.join(10_000)
@@ -146,33 +244,11 @@ class GrpcOnMockWebServerTest {
     }
   }
 
-  @Test
-  fun legacyServerStreamingListFeatures() {
-    enqueueListFeaturesResponse()
-
-    val listFeatures = grpcClient.newStreamingCall(
-      GrpcMethod(
-        path = "/routeguide.RouteGuide/ListFeatures",
-        requestAdapter = Rectangle.ADAPTER,
-        responseAdapter = Feature.ADAPTER,
-        responseStreaming = true,
-      ),
-    )
-
-    runBlocking {
-      val (requests, responses) = listFeatures.executeIn(this)
-      requests.send(Rectangle(lo = Point(latitude = 1, longitude = 2), hi = Point(latitude = 3, longitude = 4)))
-      requests.close()
-      assertThat(responses.receive()).isEqualTo(Feature(name = "peak"))
-      assertThat(responses.receive()).isEqualTo(Feature(name = "valley"))
-      assertThat(responses.receiveCatching().getOrNull()).isNull()
-      assertThat(listFeatures.isCanceled()).isFalse()
-    }
-  }
-
-  private fun enqueueListFeaturesResponse() {
+  private fun enqueueListFeaturesResponse(
+    features: List<Feature> = listOf(Feature(name = "peak"), Feature(name = "valley")),
+  ) {
     val responseBody = Buffer()
-    for (feature in listOf(Feature(name = "peak"), Feature(name = "valley"))) {
+    for (feature in features) {
       val encoded = Feature.ADAPTER.encodeByteString(feature)
       responseBody.writeByte(0) // not compressed
       responseBody.writeInt(encoded.size)

@@ -21,14 +21,15 @@ import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
 import com.squareup.wire.WireGrpcClient
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import okio.ForwardingTimeout
 import okio.IOException
 import okio.Timeout
@@ -68,7 +69,7 @@ internal class RealGrpcServerStreamingCall<S : Any, R : Any>(
 
   override fun isExecuted(): Boolean = call?.isExecuted() ?: false
 
-  override fun clone(): GrpcServerStreamingCall<S, R> {
+  override fun clone(): RealGrpcServerStreamingCall<S, R> {
     val result = RealGrpcServerStreamingCall(grpcClient, method)
     val oldTimeout = this.timeout
     result.timeout.also { newTimeout ->
@@ -85,22 +86,27 @@ internal class RealGrpcServerStreamingCall<S : Any, R : Any>(
 
   override suspend fun executeIn(scope: CoroutineScope, request: S): ReceiveChannel<R> {
     val responseChannel = Channel<R>(1)
-    val call = initCall(request)
 
     responseChannel.invokeOnClose { cause ->
       if (cause != null) {
-        call.cancel()
+        cancel()
       }
     }
 
+    enqueue(request, responseChannel)
+
+    return responseChannel
+  }
+
+  /** Starts the call and sends the response messages to [responseChannel] from OkHttp's thread. */
+  internal fun enqueue(request: S, responseChannel: SendChannel<R>) {
+    val call = initCall(request)
     call.enqueue(
       responseChannel.readFromResponseBodyCallback(
         onResponseMetadata = { this.responseMetadata = it },
         responseAdapter = method.responseAdapter,
       ),
     )
-
-    return responseChannel
   }
 
   override fun executeBlocking(request: S): MessageSource<R> {
@@ -180,14 +186,19 @@ internal class GrpcStreamingCallServerStreamingAdapter<S : Any, R : Any>(
 internal fun <S : Any, R : Any> GrpcStreamingCall<S, R>.asGrpcServerStreamingCall() = GrpcStreamingCallServerStreamingAdapter(this, method)
 
 /**
- * Wraps a [GrpcServerStreamingCall] as the legacy [GrpcStreamingCall] API. This is used by
- * generated clients when explicit streaming call types are disabled.
+ * Exposes a [RealGrpcServerStreamingCall] through the legacy [GrpcStreamingCall] API.
+ * Generated clients use it for server streaming methods when explicit streaming call types are disabled.
+ *
+ * The call starts when the request is available.
+ * OkHttp's thread sends the response messages, so the caller's scope only reads the request.
  */
 internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
-  private val callDelegate: GrpcServerStreamingCall<S, R>,
-  override val method: GrpcMethod<S, R>,
+  private val callDelegate: RealGrpcServerStreamingCall<S, R>,
 ) : GrpcStreamingCall<S, R> {
   private var executed = false
+
+  override val method: GrpcMethod<S, R>
+    get() = callDelegate.method
 
   override val timeout: Timeout
     get() = callDelegate.timeout
@@ -210,92 +221,154 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
   @Suppress("OPT_IN_USAGE", "OVERRIDE_DEPRECATION")
   override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope)
 
-  override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> = executeWithChannels(scope)
-
-  @Suppress("OPT_IN_USAGE")
-  override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
-    val (requestChannel, responseChannel) = executeWithChannels(GlobalScope)
-    return requestChannel.toMessageSink() to responseChannel.toMessageSource()
-  }
-
-  override fun isExecuted() = executed || callDelegate.isExecuted()
-
-  override fun clone() = GrpcServerStreamingCallStreamingAdapter(callDelegate.clone(), method)
-
-  private fun executeWithChannels(scope: CoroutineScope): Pair<Channel<S>, Channel<R>> {
-    check(!executed) { "already executed" }
-    executed = true
+  override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> {
+    markExecuted()
 
     val requestChannel = Channel<S>(1)
     val responseChannel = Channel<R>(1)
-    var delegateResponseChannel: ReceiveChannel<R>? = null
 
     responseChannel.invokeOnClose { cause ->
-      if (cause != null) {
-        requestChannel.cancel()
-        delegateResponseChannel?.cancel()
-        callDelegate.cancel()
-      }
+      if (cause != null) callDelegate.cancel()
+      // The request is not necessary after the response ends.
+      requestChannel.cancel()
     }
 
     scope.launch {
       try {
-        val requestResult = requestChannel.receiveCatching()
-        requestResult.exceptionOrNull()?.let { throw it }
-        val request = requestResult.getOrNull()
-          ?: throw ProtocolException("expected 1 message but got none")
-        requestChannel.close()
-        val responses = callDelegate.executeIn(scope, request)
-        delegateResponseChannel = responses
-        for (response in responses) {
-          responseChannel.send(response)
-        }
-        responseChannel.close()
+        sendRequest(requestChannel, responseChannel)
       } catch (e: Throwable) {
         responseChannel.close(e)
       }
+    }.invokeOnCompletion { cause ->
+      // The scope can be canceled before the coroutine starts.
+      if (cause != null) responseChannel.close(cause)
     }
 
     return requestChannel to responseChannel
   }
-}
 
-internal fun <S : Any, R : Any> GrpcServerStreamingCall<S, R>.asGrpcStreamingCall() = GrpcServerStreamingCallStreamingAdapter(this, method)
+  private suspend fun sendRequest(requestChannel: ReceiveChannel<S>, responseChannel: SendChannel<R>) {
+    val first = requestChannel.receiveCatching()
+    val request = first.getOrNull()
+    if (request == null) {
+      val cause = first.exceptionOrNull()
+      responseChannel.close(
+        if (cause != null) {
+          CancellationException("request canceled", cause)
+        } else {
+          ProtocolException("expected 1 message but got none")
+        },
+      )
+      return
+    }
 
-private fun <E : Any> Channel<E>.toMessageSource() = object : MessageSource<E> {
-  override fun read(): E? = runBlocking {
-    try {
-      val result = receiveCatching()
-      result.exceptionOrNull()?.let { throw it }
-      result.getOrNull()
-    } catch (e: Throwable) {
-      throw e.toIOException()
+    callDelegate.enqueue(request, responseChannel)
+
+    // Continue to read the request channel.
+    // If the caller closes it with a cause, cancel the call.
+    val next = requestChannel.receiveCatching()
+    val cause = next.exceptionOrNull()
+    when {
+      next.isSuccess -> responseChannel.close(ProtocolException("expected 1 message but got multiple"))
+      cause != null -> responseChannel.close(CancellationException("request canceled", cause))
     }
   }
 
-  override fun close() {
-    cancel()
+  override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
+    markExecuted()
+
+    val responses = DeferredMessageSource<R>(cancelCall = callDelegate::cancel)
+    val requests = object : MessageSink<S> {
+      private var request: S? = null
+      private var closed = false
+
+      override fun write(message: S) {
+        check(!closed) { "closed" }
+        if (request != null) throw ProtocolException("expected 1 message but got multiple")
+        request = message
+      }
+
+      override fun cancel() {
+        callDelegate.cancel()
+        responses.fail(IOException("canceled"))
+      }
+
+      override fun close() {
+        if (closed) return
+        closed = true
+        val request = request
+        if (request == null) {
+          responses.fail(ProtocolException("expected 1 message but got none"))
+        } else {
+          responses.start { callDelegate.executeBlocking(request) }
+        }
+      }
+    }
+
+    return requests to responses
+  }
+
+  override fun isExecuted() = executed || callDelegate.isExecuted()
+
+  override fun clone() = GrpcServerStreamingCallStreamingAdapter(callDelegate.clone())
+
+  private fun markExecuted() {
+    check(!executed) { "already executed" }
+    executed = true
   }
 }
 
-private fun <E : Any> Channel<E>.toMessageSink() = object : MessageSink<E> {
-  override fun write(message: E) {
-    runBlocking {
+internal fun <S : Any, R : Any> RealGrpcServerStreamingCall<S, R>.asGrpcStreamingCall() = GrpcServerStreamingCallStreamingAdapter(this)
+
+/**
+ * A [MessageSource] for a call that starts after the request sink closes.
+ * [read] waits until the call starts or fails.
+ */
+private class DeferredMessageSource<R : Any>(
+  private val cancelCall: () -> Unit,
+) : MessageSource<R> {
+  private val settled = CountDownLatch(1)
+
+  /** Guarded by this. */
+  private var delegate: MessageSource<R>? = null
+
+  /** Guarded by this. */
+  private var failure: IOException? = null
+
+  fun start(openSource: () -> MessageSource<R>) {
+    synchronized(this) {
+      if (settled.count == 0L) return
       try {
-        send(message)
+        delegate = openSource()
       } catch (e: Throwable) {
-        throw e.toIOException()
+        failure = e as? IOException ?: IOException(e)
+        throw e
+      } finally {
+        settled.countDown()
       }
     }
   }
 
-  override fun cancel() {
-    this@toMessageSink.cancel()
+  fun fail(e: IOException) {
+    synchronized(this) {
+      if (settled.count == 0L) return
+      failure = e
+      settled.countDown()
+    }
+  }
+
+  override fun read(): R? {
+    settled.await()
+    val delegate = synchronized(this) {
+      failure?.let { throw it }
+      delegate!!
+    }
+    return delegate.read()
   }
 
   override fun close() {
-    this@toMessageSink.close()
+    fail(IOException("closed"))
+    val delegate = synchronized(this) { delegate }
+    if (delegate != null) delegate.close() else cancelCall()
   }
 }
-
-private fun Throwable.toIOException() = this as? IOException ?: IOException(this)
