@@ -184,7 +184,12 @@ fun <S : Any, R : Any> GrpcStreamingCall(
 
     @Deprecated(
       "Provide a scope, preferably not GlobalScope",
-      replaceWith = ReplaceWith("executeIn(GlobalScope)", "kotlinx.coroutines.GlobalScope"),
+      replaceWith = ReplaceWith(
+        "executeIn(GlobalScope + Dispatchers.IO)",
+        "kotlinx.coroutines.Dispatchers",
+        "kotlinx.coroutines.GlobalScope",
+        "kotlinx.coroutines.plus",
+      ),
       level = DeprecationLevel.WARNING,
     )
     @Suppress("OPT_IN_USAGE")

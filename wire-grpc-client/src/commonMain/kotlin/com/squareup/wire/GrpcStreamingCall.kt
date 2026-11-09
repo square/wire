@@ -100,8 +100,8 @@ interface GrpcStreamingCall<S : Any, R : Any> {
     level = DeprecationLevel.WARNING,
     message = "Provide a scope, preferably not GlobalScope",
     replaceWith = ReplaceWith(
-      expression = "executeIn(GlobalScope)",
-      imports = ["kotlinx.coroutines.GlobalScope"],
+      expression = "executeIn(GlobalScope + Dispatchers.IO)",
+      imports = ["kotlinx.coroutines.Dispatchers", "kotlinx.coroutines.GlobalScope", "kotlinx.coroutines.plus"],
     ),
   )
   fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>>
