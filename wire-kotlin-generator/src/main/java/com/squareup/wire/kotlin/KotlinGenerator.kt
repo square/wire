@@ -2909,9 +2909,13 @@ class KotlinGenerator private constructor(
         message.identity(),
       )
       .apply {
-        // A sealed enum constant is a subclass. Touching it first runs this companion's init before
-        // the constant exists, so the constructor gets null. Read the constant lazily instead.
-        // Only proto3 gets this override because it needs a runtime where `identity` is open.
+        // A sealed enum constant is a subclass object.
+        // Touching it first runs this companion's init while the constant is still null.
+        // This getter reads the constant lazily, so the identity is correct in any init order.
+        // Proto2 sealed enums have the same bug, but this fix is only for proto3.
+        // The override needs a runtime where `identity` is open.
+        // We limit that new runtime requirement to proto3 generated classes.
+        // Proto2 sealed enums keep the old init-order behavior.
         if (effectiveEnumMode(message) == SEALED_CLASS &&
           message.syntax == Syntax.PROTO_3 &&
           message.constant(0) != null
