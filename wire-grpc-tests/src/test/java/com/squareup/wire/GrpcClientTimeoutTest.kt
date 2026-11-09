@@ -15,14 +15,19 @@
  */
 package com.squareup.wire
 
+import assertk.Assert
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.isBetween
+import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isLessThan
 import assertk.assertions.isTrue
+import assertk.assertions.prop
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.runBlocking
+import okhttp3.Headers.Companion.headersOf
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.mockwebserver.Dispatcher
@@ -30,20 +35,23 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.mockwebserver.SocketPolicy
+import okio.Buffer
 import okio.IOException
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
+import routeguide.Feature
 import routeguide.Point
 import routeguide.RouteGuideClient
+import routeguide.RouteNote
 
 /**
  * Proves that a timeout or a deadline set on a call's [GrpcCall.timeout] is enforced on the
- * client. The server in these tests receives each request and never responds. It ignores the
- * `grpc-timeout` request header, like any server or proxy that does not implement gRPC deadlines.
- * Only client-side enforcement can bound these calls.
+ * client. By default, the server in these tests receives each request and never responds. It
+ * ignores the `grpc-timeout` request header, like any server or proxy that does not implement gRPC
+ * deadlines. Only client-side enforcement can bound these calls.
  *
  * The OkHttpClient has no call timeout, and its read and write timeouts are far above the bounds
  * that these tests assert. When a call fails fast, the per-call timeout did it.
@@ -60,13 +68,16 @@ class GrpcClientTimeoutTest {
   /** Held until the test ends. The dispatcher blocks on it, so responses never go out. */
   private val dispatcherRelease = CountDownLatch(1)
 
+  /** Returns the response for each request. Tests replace it to send a response. */
+  private var respond: (RecordedRequest) -> MockResponse = {
+    dispatcherRelease.await(1, TimeUnit.MINUTES)
+    MockResponse().apply { socketPolicy = SocketPolicy.NO_RESPONSE }
+  }
+
   @Before
   fun setUp() {
     mockWebServer.dispatcher = object : Dispatcher() {
-      override fun dispatch(request: RecordedRequest): MockResponse {
-        dispatcherRelease.await(1, TimeUnit.MINUTES)
-        return MockResponse().apply { socketPolicy = SocketPolicy.NO_RESPONSE }
-      }
+      override fun dispatch(request: RecordedRequest): MockResponse = respond(request)
     }
     mockWebServer.protocols = listOf(Protocol.H2_PRIOR_KNOWLEDGE)
 
@@ -95,11 +106,11 @@ class GrpcClientTimeoutTest {
     val elapsedMillis = elapsedMillis {
       assertFailure {
         grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
-      }.isInstanceOf<IOException>()
+      }.isDeadlineExceeded()
     }
 
     assertThat(grpcCall.isCanceled()).isTrue()
-    assertThat(elapsedMillis).isLessThan(5_000L)
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
   }
 
   @Test
@@ -110,11 +121,39 @@ class GrpcClientTimeoutTest {
     val elapsedMillis = elapsedMillis {
       assertFailure {
         grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
-      }.isInstanceOf<IOException>()
+      }.isDeadlineExceeded()
     }
 
     assertThat(grpcCall.isCanceled()).isTrue()
-    assertThat(elapsedMillis).isLessThan(5_000L)
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+  }
+
+  @Test
+  fun unaryCallTimeoutIsEnforcedOnClientWhenSuspending() {
+    val grpcCall = routeGuideService.GetFeature()
+    grpcCall.timeout.timeout(500, TimeUnit.MILLISECONDS)
+
+    val elapsedMillis = elapsedMillis {
+      assertFailure {
+        runBlocking {
+          grpcCall.execute(Point(latitude = 5, longitude = 6))
+        }
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+  }
+
+  @Test
+  fun unaryCallWithDeadlineSucceedsWhenServerRespondsInTime() {
+    respond = { grpcResponse(Feature.ADAPTER.encode(Feature(name = "tree"))) }
+    val grpcCall = routeGuideService.GetFeature()
+    grpcCall.timeout.deadline(5, TimeUnit.SECONDS)
+
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree"))
   }
 
   @Test
@@ -126,17 +165,13 @@ class GrpcClientTimeoutTest {
     val elapsedMillis = elapsedMillis {
       assertFailure {
         responseSource.read()
-      }.isInstanceOf<IOException>()
+      }.isDeadlineExceeded()
     }
 
     assertThat(grpcCall.isCanceled()).isTrue()
-    assertThat(elapsedMillis).isLessThan(5_000L)
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
 
-    try {
-      requestSink.close()
-    } catch (_: IOException) {
-      // Closing the request stream of a canceled call may fail. That is fine here.
-    }
+    requestSink.closeQuietly()
   }
 
   @Test
@@ -148,14 +183,88 @@ class GrpcClientTimeoutTest {
     val elapsedMillis = elapsedMillis {
       assertFailure {
         responseSource.read()
-      }.isInstanceOf<IOException>()
+      }.isDeadlineExceeded()
     }
 
     assertThat(grpcCall.isCanceled()).isTrue()
-    assertThat(elapsedMillis).isLessThan(5_000L)
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
 
-    try {
+    requestSink.closeQuietly()
+  }
+
+  @Test
+  fun streamingCallTimeoutIsEnforcedOnClientWhenSuspending() {
+    val grpcCall = routeGuideService.RouteChat()
+    grpcCall.timeout.timeout(500, TimeUnit.MILLISECONDS)
+
+    val elapsedMillis = elapsedMillis {
+      runBlocking {
+        val (requestChannel, responseChannel) = grpcCall.executeIn(this)
+        assertFailure {
+          responseChannel.receive()
+        }.isDeadlineExceeded()
+        requestChannel.close()
+      }
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+  }
+
+  @Test
+  fun streamingCallTimeoutIsEnforcedWhenServerStallsMidStream() {
+    // The server sends the headers and one message, then stalls for 4 seconds.
+    val firstNote = grpcFrame(RouteNote.ADAPTER.encode(RouteNote(message = "first")))
+    val secondNote = grpcFrame(RouteNote.ADAPTER.encode(RouteNote(message = "second")))
+    respond = {
+      grpcResponse()
+        .setBody(Buffer().write(firstNote).write(secondNote))
+        .throttleBody(firstNote.size.toLong(), 4, TimeUnit.SECONDS)
+    }
+    val grpcCall = routeGuideService.RouteChat()
+    grpcCall.timeout.timeout(500, TimeUnit.MILLISECONDS)
+
+    val elapsedMillis = elapsedMillis {
+      val (requestSink, responseSource) = grpcCall.executeBlocking()
+      // MockWebServer reads the whole request before it responds.
       requestSink.close()
+      assertThat(responseSource.read()).isEqualTo(RouteNote(message = "first"))
+      assertFailure {
+        responseSource.read()
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 3_000L)
+  }
+
+  private fun Assert<Throwable>.isDeadlineExceeded() {
+    isInstanceOf<GrpcException>()
+      .prop(GrpcException::grpcStatus)
+      .isEqualTo(GrpcStatus.DEADLINE_EXCEEDED)
+  }
+
+  /** Returns a successful gRPC response with [messages] as its body. */
+  private fun grpcResponse(vararg messages: ByteArray): MockResponse {
+    val body = Buffer()
+    for (message in messages) body.write(grpcFrame(message))
+    return MockResponse()
+      .setHeader("Content-Type", "application/grpc")
+      .setHeader("grpc-encoding", "identity")
+      .setTrailers(headersOf("grpc-status", "0"))
+      .setBody(body)
+  }
+
+  /** Returns [message] in an uncompressed gRPC length-prefixed frame. */
+  private fun grpcFrame(message: ByteArray): ByteArray = Buffer()
+    .writeByte(0)
+    .writeInt(message.size)
+    .write(message)
+    .readByteArray()
+
+  private fun MessageSink<*>.closeQuietly() {
+    try {
+      close()
     } catch (_: IOException) {
       // Closing the request stream of a canceled call may fail. That is fine here.
     }

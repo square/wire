@@ -54,6 +54,7 @@ interface GrpcStreamingCall<S : Any, R : Any> {
    * Configures how long the call can take to complete before it is automatically canceled. The
    * timeout applies to the full set of messages transmitted. For long-running streams you must
    * configure a sufficiently long timeout.
+   * An expired call fails with a [GrpcException] that has [GrpcStatus.DEADLINE_EXCEEDED].
    */
   val timeout: Timeout
 

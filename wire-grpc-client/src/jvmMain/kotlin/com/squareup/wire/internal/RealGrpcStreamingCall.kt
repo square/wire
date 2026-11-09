@@ -41,6 +41,9 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private var call: okhttp3.Call? = null
   private var canceled = false
 
+  /** Initialized once this is executed. */
+  internal lateinit var callTimeout: GrpcCallTimeout
+
   override val timeout: Timeout = ForwardingTimeout(Timeout())
 
   init {
@@ -122,11 +125,16 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
-    // Copy the user-set timeout and deadline onto the OkHttp timeout, which enforces them by
-    // canceling the call. The grpc-timeout header alone is not enforced if the server or a proxy
-    // ignores it.
-    timeout.copyTo(result.timeout())
-    (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    // Enforce the user-set timeout and deadline on the client, for the full lifetime of the call.
+    // The grpc-timeout header alone does nothing if the server or a proxy ignores it.
+    callTimeout = GrpcCallTimeout(result).also {
+      timeout.copyTo(it)
+      it.enter()
+    }
+    // Keep the user-set values readable. Without them, show the OkHttp call timeout.
+    if (!timeout.hasDeadline() && (timeout.timeoutNanos() == 0L)) {
+      (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    }
     return result
   }
 }
