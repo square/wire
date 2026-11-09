@@ -1565,6 +1565,32 @@ class KotlinGeneratorTest {
     assertThat(code).contains("RpcStatus.ADAPTER.asRepeated()")
   }
 
+  @Test fun usesGoogleRpcErrorDetails() {
+    val schema = buildSchema {
+      add(
+        "a.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |package common.proto;
+        |import "google/rpc/error_details.proto";
+        |message Message {
+        |  google.rpc.ErrorInfo error_info = 1;
+        |  repeated google.rpc.BadRequest.FieldViolation field_violations = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
+    assertThat(code).contains("import com.squareup.wire.rpc.ErrorInfo")
+    assertThat(code).contains("import com.squareup.wire.rpc.BadRequest")
+    assertThat(code).doesNotContain("com.google.rpc")
+    assertThat(code).contains("public val error_info: ErrorInfo? = null")
+    assertThat(code).contains("public val field_violations: List<BadRequest.FieldViolation>")
+    assertThat(code).contains("adapter = \"com.squareup.wire.rpc.ErrorInfo#ADAPTER\"")
+    // Kotlin escapes the `$` of nested class names in string templates.
+    assertThat(code).contains("adapter = \"com.squareup.wire.rpc.BadRequest\${'\$'}FieldViolation#ADAPTER\"")
+  }
+
   @Test fun flatOneOfDecodingIsConstantSizePerField() {
     val schema = buildSchema {
       add(

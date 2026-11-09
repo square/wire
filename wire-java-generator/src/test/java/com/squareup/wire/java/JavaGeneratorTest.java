@@ -979,6 +979,32 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void usesGoogleRpcErrorDetails() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("a.proto"),
+                ""
+                    + "syntax = \"proto3\";\n"
+                    + "package common.proto;\n"
+                    + "import \"google/rpc/error_details.proto\";\n"
+                    + "message Message {\n"
+                    + "  google.rpc.ErrorInfo error_info = 1;\n"
+                    + "  repeated google.rpc.BadRequest.FieldViolation field_violations = 2;\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("common.proto.Message");
+    assertThat(code).contains("import com.squareup.wire.rpc.ErrorInfo;");
+    assertThat(code).contains("import com.squareup.wire.rpc.BadRequest;");
+    assertThat(code).doesNotContain("com.google.rpc");
+    assertThat(code).contains("public final ErrorInfo error_info;");
+    assertThat(code).contains("public final List<BadRequest.FieldViolation> field_violations;");
+    assertThat(code).contains("adapter = \"com.squareup.wire.rpc.ErrorInfo#ADAPTER\"");
+    assertThat(code)
+        .contains("adapter = \"com.squareup.wire.rpc.BadRequest$FieldViolation#ADAPTER\"");
+  }
+
+  @Test
   public void fieldHasScalarName() throws Exception {
     Schema schema =
         new SchemaBuilder()

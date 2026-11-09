@@ -40,6 +40,9 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import com.squareup.wire.MockRouteGuideService.Action.SendMessage
+import com.squareup.wire.rpc.BadRequest
+import com.squareup.wire.rpc.ErrorInfo
+import com.squareup.wire.rpc.RetryInfo
 import io.grpc.Metadata
 import io.grpc.Status
 import io.grpc.StatusException
@@ -1763,6 +1766,66 @@ class GrpcClientTest {
       val detail = rpcStatus.details.single()
       assertThat(detail.typeUrl).isEqualTo("type.googleapis.com/google.rpc.ErrorInfo")
       assertThat(com.google.rpc.ErrorInfo.parseFrom(detail.value.toByteArray())).isEqualTo(errorInfo)
+    }
+  }
+
+  @Test
+  fun requestFailureWithGoogleRpcErrorDetails() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    val status = com.google.rpc.Status.newBuilder()
+      .setCode(Status.Code.INVALID_ARGUMENT.value())
+      .setMessage("bad point")
+      .addDetails(
+        com.google.protobuf.Any.pack(
+          com.google.rpc.ErrorInfo.newBuilder()
+            .setReason("OUT_OF_RANGE")
+            .setDomain("routeguide")
+            .putMetadata("latitude", "5")
+            .build(),
+        ),
+      )
+      .addDetails(
+        com.google.protobuf.Any.pack(
+          com.google.rpc.BadRequest.newBuilder()
+            .addFieldViolations(
+              com.google.rpc.BadRequest.FieldViolation.newBuilder()
+                .setField("latitude")
+                .setDescription("too far north"),
+            )
+            .build(),
+        ),
+      )
+      .addDetails(
+        com.google.protobuf.Any.pack(
+          com.google.rpc.RetryInfo.newBuilder()
+            .setRetryDelay(com.google.protobuf.Duration.newBuilder().setSeconds(3))
+            .build(),
+        ),
+      )
+      .build()
+    mockService.enqueueSendError(StatusProto.toStatusRuntimeException(status))
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: GrpcException) {
+      val details = expected.rpcStatus!!.details
+      assertThat(details.firstNotNullOf { it.unpackOrNull(ErrorInfo.ADAPTER) }).isEqualTo(
+        ErrorInfo(reason = "OUT_OF_RANGE", domain = "routeguide", metadata = mapOf("latitude" to "5")),
+      )
+      assertThat(details.firstNotNullOf { it.unpackOrNull(BadRequest.ADAPTER) }).isEqualTo(
+        BadRequest(
+          field_violations = listOf(
+            BadRequest.FieldViolation(field_ = "latitude", description = "too far north"),
+          ),
+        ),
+      )
+      assertThat(details.firstNotNullOf { it.unpackOrNull(RetryInfo.ADAPTER) }.retry_delay)
+        .isEqualTo(java.time.Duration.ofSeconds(3))
     }
   }
 

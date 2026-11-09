@@ -477,3 +477,290 @@ public abstract interface annotation class com/squareup/wire/WireSealedOneof : j
 	public abstract fun schemaIndex ()I
 }
 
+public final class com/squareup/wire/rpc/BadRequest : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/BadRequest$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/util/List;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/util/List;Lokio/ByteString;)Lcom/squareup/wire/rpc/BadRequest;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/BadRequest;Ljava/util/List;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/BadRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getField_violations ()Ljava/util/List;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/BadRequest$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/BadRequest$FieldViolation : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/BadRequest$FieldViolation$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/squareup/wire/rpc/LocalizedMessage;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/squareup/wire/rpc/LocalizedMessage;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/squareup/wire/rpc/LocalizedMessage;Lokio/ByteString;)Lcom/squareup/wire/rpc/BadRequest$FieldViolation;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/BadRequest$FieldViolation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/squareup/wire/rpc/LocalizedMessage;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/BadRequest$FieldViolation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getField_ ()Ljava/lang/String;
+	public final fun getLocalized_message ()Lcom/squareup/wire/rpc/LocalizedMessage;
+	public final fun getReason ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/BadRequest$FieldViolation$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/DebugInfo : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/DebugInfo$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Ljava/lang/String;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/util/List;Ljava/lang/String;Lokio/ByteString;)Lcom/squareup/wire/rpc/DebugInfo;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/DebugInfo;Ljava/util/List;Ljava/lang/String;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/DebugInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDetail ()Ljava/lang/String;
+	public final fun getStack_entries ()Ljava/util/List;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/DebugInfo$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/ErrorInfo : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/ErrorInfo$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lokio/ByteString;)Lcom/squareup/wire/rpc/ErrorInfo;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/ErrorInfo;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/ErrorInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDomain ()Ljava/lang/String;
+	public final fun getMetadata ()Ljava/util/Map;
+	public final fun getReason ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/ErrorInfo$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/Help : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/Help$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/util/List;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/util/List;Lokio/ByteString;)Lcom/squareup/wire/rpc/Help;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/Help;Ljava/util/List;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/Help;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLinks ()Ljava/util/List;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/Help$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/Help$Link : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/Help$Link$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)Lcom/squareup/wire/rpc/Help$Link;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/Help$Link;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/Help$Link;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/Help$Link$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/LocalizedMessage : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/LocalizedMessage$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)Lcom/squareup/wire/rpc/LocalizedMessage;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/LocalizedMessage;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/LocalizedMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLocale ()Ljava/lang/String;
+	public final fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/LocalizedMessage$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/PreconditionFailure : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/PreconditionFailure$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/util/List;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/util/List;Lokio/ByteString;)Lcom/squareup/wire/rpc/PreconditionFailure;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/PreconditionFailure;Ljava/util/List;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/PreconditionFailure;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getViolations ()Ljava/util/List;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/PreconditionFailure$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/PreconditionFailure$Violation : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/PreconditionFailure$Violation$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)Lcom/squareup/wire/rpc/PreconditionFailure$Violation;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/PreconditionFailure$Violation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/PreconditionFailure$Violation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getSubject ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/PreconditionFailure$Violation$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/QuotaFailure : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/QuotaFailure$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/util/List;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/util/List;Lokio/ByteString;)Lcom/squareup/wire/rpc/QuotaFailure;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/QuotaFailure;Ljava/util/List;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/QuotaFailure;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getViolations ()Ljava/util/List;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/QuotaFailure$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/QuotaFailure$Violation : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/QuotaFailure$Violation$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;JLjava/lang/Long;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;JLjava/lang/Long;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;JLjava/lang/Long;Lokio/ByteString;)Lcom/squareup/wire/rpc/QuotaFailure$Violation;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/QuotaFailure$Violation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;JLjava/lang/Long;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/QuotaFailure$Violation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getApi_service ()Ljava/lang/String;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getFuture_quota_value ()Ljava/lang/Long;
+	public final fun getQuota_dimensions ()Ljava/util/Map;
+	public final fun getQuota_id ()Ljava/lang/String;
+	public final fun getQuota_metric ()Ljava/lang/String;
+	public final fun getQuota_value ()J
+	public final fun getSubject ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/QuotaFailure$Violation$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/RequestInfo : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/RequestInfo$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)Lcom/squareup/wire/rpc/RequestInfo;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/RequestInfo;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/RequestInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRequest_id ()Ljava/lang/String;
+	public final fun getServing_data ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/RequestInfo$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/ResourceInfo : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/ResourceInfo$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;)Lcom/squareup/wire/rpc/ResourceInfo;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/ResourceInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/ResourceInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getOwner ()Ljava/lang/String;
+	public final fun getResource_name ()Ljava/lang/String;
+	public final fun getResource_type ()Ljava/lang/String;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/ResourceInfo$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+
+public final class com/squareup/wire/rpc/RetryInfo : com/squareup/wire/Message {
+	public static final field Companion Lcom/squareup/wire/rpc/RetryInfo$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/time/Duration;Lokio/ByteString;)V
+	public synthetic fun <init> (Ljava/time/Duration;Lokio/ByteString;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Ljava/time/Duration;Lokio/ByteString;)Lcom/squareup/wire/rpc/RetryInfo;
+	public static synthetic fun copy$default (Lcom/squareup/wire/rpc/RetryInfo;Ljava/time/Duration;Lokio/ByteString;ILjava/lang/Object;)Lcom/squareup/wire/rpc/RetryInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRetry_delay ()Ljava/time/Duration;
+	public fun hashCode ()I
+	public synthetic fun newBuilder ()Lcom/squareup/wire/Message$Builder;
+	public synthetic fun newBuilder ()Ljava/lang/Void;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/squareup/wire/rpc/RetryInfo$Companion {
+	public final fun getADAPTER ()Lcom/squareup/wire/ProtoAdapter;
+}
+

@@ -595,6 +595,91 @@ class WireRunTest {
   }
 
   @Test
+  fun googleRpcErrorDetailsAreNeverGenerated() {
+    fs.add(
+      "googleapis/src/main/proto/google/rpc/error_details.proto",
+      """
+        |syntax = "proto3";
+        |package google.rpc;
+        |option java_package = "com.google.rpc";
+        |message ErrorInfo {
+        |  string reason = 1;
+        |  string domain = 2;
+        |  map<string, string> metadata = 3;
+        |}
+        |message BadRequest {
+        |  message FieldViolation {
+        |    string field = 1;
+        |    string description = 2;
+        |  }
+        |  repeated FieldViolation field_violations = 1;
+        |}
+      """.trimMargin(),
+    )
+    fs.add(
+      "errors/src/main/proto/squareup/errors/failure.proto",
+      """
+        |syntax = "proto3";
+        |package squareup.errors;
+        |import "google/rpc/error_details.proto";
+        |message Failure {
+        |  google.rpc.ErrorInfo error_info = 1;
+        |  google.rpc.BadRequest.FieldViolation field_violation = 2;
+        |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(
+        Location.get("errors/src/main/proto"),
+        Location.get("googleapis/src/main/proto"),
+      ),
+      targets = listOf(
+        KotlinTarget(outDirectory = "generated/kt", exclusive = false),
+        JavaTarget(outDirectory = "generated/java"),
+      ),
+    )
+    wireRun.execute(fs, logger)
+
+    // Wire maps the google.rpc error details to com.squareup.wire.rpc, so it never emits its own copies.
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/java/squareup/errors/Failure.java",
+      "generated/kt/squareup/errors/Failure.kt",
+    )
+    assertThat(fs.readUtf8("generated/kt/squareup/errors/Failure.kt"))
+      .contains("import com.squareup.wire.rpc.ErrorInfo")
+    assertThat(fs.readUtf8("generated/java/squareup/errors/Failure.java"))
+      .contains("import com.squareup.wire.rpc.ErrorInfo;")
+  }
+
+  @Test
+  fun googleRpcErrorDetailsResolveWithoutGoogleapis() {
+    fs.add(
+      "errors/src/main/proto/squareup/errors/failure.proto",
+      """
+        |syntax = "proto3";
+        |package squareup.errors;
+        |import "google/rpc/error_details.proto";
+        |message Failure {
+        |  google.rpc.RetryInfo retry_info = 1;
+        |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("errors/src/main/proto")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/squareup/errors/Failure.kt",
+    )
+    assertThat(fs.readUtf8("generated/kt/squareup/errors/Failure.kt"))
+      .contains("public val retry_info: RetryInfo? = null")
+  }
+
+  @Test
   fun ktThenJava() {
     writeBlueProto()
     writeRedProto()

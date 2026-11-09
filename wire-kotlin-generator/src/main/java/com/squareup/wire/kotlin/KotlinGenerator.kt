@@ -110,6 +110,8 @@ import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
+import com.squareup.wire.schema.internal.GOOGLE_RPC_ERROR_DETAILS_PACKAGE
+import com.squareup.wire.schema.internal.GOOGLE_RPC_ERROR_DETAILS_TYPES
 import com.squareup.wire.schema.internal.NameFactory
 import com.squareup.wire.schema.internal.annotationName
 import com.squareup.wire.schema.internal.builtInAdapterString
@@ -3589,7 +3591,9 @@ class KotlinGenerator private constructor(
       ProtoType.BOOL_VALUE to BOOLEAN.copy(nullable = true),
       ProtoType.STRING_VALUE to String::class.asClassName().copy(nullable = true),
       ProtoType.BYTES_VALUE to ByteString::class.asClassName().copy(nullable = true),
-    )
+    ) + GOOGLE_RPC_ERROR_DETAILS_TYPES.mapValues { (_, simpleNames) ->
+      ClassName(GOOGLE_RPC_ERROR_DETAILS_PACKAGE, simpleNames)
+    }
     private val PROTOTYPE_TO_IDENTITY_VALUES = mapOf(
       ProtoType.BOOL to CodeBlock.of("false"),
       ProtoType.STRING to CodeBlock.of("\"\""),
