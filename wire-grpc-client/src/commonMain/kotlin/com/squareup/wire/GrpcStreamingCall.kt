@@ -84,7 +84,8 @@ interface GrpcStreamingCall<S : Any, R : Any> {
 
   /**
    * Enqueues this call for execution and returns channels to send and receive the call's messages.
-   * This uses the [Dispatchers.IO] to transmit outbound messages.
+   * The OkHttp implementation uses [Dispatchers.IO] to transmit outbound messages.
+   * The `GrpcStreamingCall { ... }` helper runs its function on the dispatcher of [scope] instead.
    */
   fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>>
 

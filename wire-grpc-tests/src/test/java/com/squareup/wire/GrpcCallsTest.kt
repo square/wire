@@ -21,7 +21,9 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import java.util.Locale.US
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit.SECONDS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -29,6 +31,7 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import org.junit.Assert.fail
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -265,6 +268,29 @@ class GrpcCallsTest {
 
     assertThat(threadName!!.startsWith("grpc-test-thread")).isTrue()
     dispatcher.close()
+  }
+
+  @Test
+  fun executeBlockingRunsThreadBlockingFunctionsOnIoDispatcher() {
+    // Dispatchers.Default has about one thread per core, and Dispatchers.IO has at least 64.
+    // Start more blocking functions than Default has threads. Each one waits for all to start.
+    val callCount = Runtime.getRuntime().availableProcessors().coerceAtLeast(2) + 1
+    assumeTrue(callCount <= 64)
+    val started = CountDownLatch(callCount)
+
+    val sources = List(callCount) {
+      val grpcCall = GrpcStreamingCall<String, String> { _, responses ->
+        started.countDown()
+        val allStarted = started.await(5, SECONDS)
+        responses.send(if (allStarted) "all started" else "starved")
+        responses.close()
+      }
+      grpcCall.executeBlocking().second
+    }
+
+    for (source in sources) {
+      assertThat(source.read()).isEqualTo("all started")
+    }
   }
 
   @Test

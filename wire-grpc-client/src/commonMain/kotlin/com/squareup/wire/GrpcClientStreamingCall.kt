@@ -73,7 +73,8 @@ interface GrpcClientStreamingCall<S : Any, R : Any> {
   /**
    * Enqueues this call for execution and returns a channel to send the call's messages and a deferred
    * response that will ensure the sender is closed and return the single response.
-   * This uses the [Dispatchers.IO] to transmit outbound messages.
+   * The OkHttp implementation uses [Dispatchers.IO] to transmit outbound messages.
+   * The `GrpcClientStreamingCall { ... }` helper runs its function on the dispatcher of [scope] instead.
    */
   fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, Deferred<R>>
 
