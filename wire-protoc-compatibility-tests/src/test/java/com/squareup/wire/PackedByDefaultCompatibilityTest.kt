@@ -74,6 +74,28 @@ class PackedByDefaultCompatibilityTest {
     assertThat(PackedByDefaultJ.ADAPTER.decode(protocMessage.toByteArray())).isEqualTo(javaMessage)
   }
 
+  @Test fun unknownEnumValueInPackedField() {
+    // ╰─ 2: [RED, 99, GREEN] (packed)
+    val bytes = "1203016302"
+
+    val protocDecoded = PackedByDefaultP.parseFrom(bytes.decodeHex().toByteArray())
+    assertThat(protocDecoded.repEnumValueList).isEqualTo(listOf(1, 99, 2))
+    assertThat(protocDecoded.toByteArray().toByteString()).isEqualTo(bytes.decodeHex())
+
+    // Kotlin keeps the unknown value in the list, so it encodes the same bytes as protoc.
+    val kotlinDecoded = PackedByDefaultK.ADAPTER.decode(bytes.decodeHex())
+    assertThat(kotlinDecoded.rep_enum).isEqualTo(listOf(ColorK.RED, ColorK.Unrecognized(99), ColorK.GREEN))
+    assertThat(kotlinDecoded.encodeByteString()).isEqualTo(bytes.decodeHex())
+
+    // Java keeps the unknown value in the unknown fields.
+    // ┌─ 2: [RED, GREEN] (packed)
+    // ╰─ 2: 99
+    val javaDecoded = PackedByDefaultJ.ADAPTER.decode(bytes.decodeHex())
+    assertThat(javaDecoded.rep_enum).isEqualTo(listOf(ColorJ.RED, ColorJ.GREEN))
+    assertThat(javaDecoded.unknownFields).isEqualTo("1063".decodeHex())
+    assertThat(javaDecoded.encodeByteString()).isEqualTo("120201021063".decodeHex())
+  }
+
   @Test fun decodeUnpackedFormOfPackedFields() {
     // ┌─ 1: true
     // ├─ 1: false
