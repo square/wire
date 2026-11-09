@@ -21,6 +21,7 @@ import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isBetween
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.matches
@@ -76,6 +77,9 @@ class GrpcClientTimeoutTest {
     MockResponse().apply { socketPolicy = SocketPolicy.NO_RESPONSE }
   }
 
+  /** Thrown by an OkHttp interceptor when non-null. */
+  private var interceptorFailure: RuntimeException? = null
+
   @Before
   fun setUp() {
     mockWebServer.dispatcher = object : Dispatcher() {
@@ -84,6 +88,10 @@ class GrpcClientTimeoutTest {
     mockWebServer.protocols = listOf(Protocol.H2_PRIOR_KNOWLEDGE)
 
     val okhttpClient = OkHttpClient.Builder()
+      .addInterceptor { chain ->
+        interceptorFailure?.let { throw it }
+        chain.proceed(chain.request())
+      }
       .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
       .readTimeout(Duration.ofSeconds(10))
       .writeTimeout(Duration.ofSeconds(10))
@@ -156,6 +164,21 @@ class GrpcClientTimeoutTest {
     val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
 
     assertThat(feature).isEqualTo(Feature(name = "tree"))
+  }
+
+  @Test
+  fun timerStopsWhenCallFailsWithUncheckedException() {
+    interceptorFailure = IllegalStateException("boom")
+    val grpcCall = routeGuideService.GetFeature()
+    grpcCall.timeout.timeout(200, TimeUnit.MILLISECONDS)
+
+    assertFailure {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+    }.isInstanceOf<IllegalStateException>()
+
+    // A timer that is still running cancels the finished call when it fires.
+    Thread.sleep(600)
+    assertThat(grpcCall.isCanceled()).isFalse()
   }
 
   @Test

@@ -66,23 +66,24 @@ internal class BlockingMessageSource<R : Any>(
 
     override fun onResponse(call: Call, response: Response) {
       try {
-        grpcCall.responseMetadata = response.headers.toMap()
-        response.use {
-          response.messageSource(responseAdapter).use { reader ->
-            while (true) {
-              val message = reader.read() ?: break
-              queue.put(message)
-            }
+        grpcCall.callTimeout.exitAfter {
+          grpcCall.responseMetadata = response.headers.toMap()
+          response.use {
+            response.messageSource(responseAdapter).use { reader ->
+              while (true) {
+                val message = reader.read() ?: break
+                queue.put(message)
+              }
 
-            val exception = response.grpcResponseToException()
-            if (exception != null) throw exception
+              val exception = response.grpcResponseToException()
+              if (exception != null) throw exception
+            }
           }
         }
-        grpcCall.callTimeout.exit()
         queue.put(Complete)
       } catch (e: IOException) {
         call.cancel() // Break the request stream if the response stream breaks.
-        queue.put(Failure(grpcCall.callTimeout.exit(e)))
+        queue.put(Failure(e))
       }
     }
   }

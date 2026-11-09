@@ -65,12 +65,13 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
         override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
           try {
-            responseMetadata = response.headers.toMap()
-            val message = response.readExactlyOneAndClose()
-            callTimeout.exit()
+            val message = callTimeout.exitAfter {
+              responseMetadata = response.headers.toMap()
+              response.readExactlyOneAndClose()
+            }
             continuation.resume(message)
           } catch (e: IOException) {
-            continuation.resumeWithException(callTimeout.exit(e))
+            continuation.resumeWithException(e)
           }
         }
       })
@@ -79,14 +80,10 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
   override fun executeBlocking(request: S): R {
     val call = initCall(request)
-    try {
+    return callTimeout.exitAfter {
       val response = call.execute()
       responseMetadata = response.headers.toMap()
-      val message = response.readExactlyOneAndClose()
-      callTimeout.exit()
-      return message
-    } catch (e: IOException) {
-      throw callTimeout.exit(e)
+      response.readExactlyOneAndClose()
     }
   }
 
@@ -99,12 +96,13 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
       override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
         try {
-          responseMetadata = response.headers.toMap()
-          val message = response.readExactlyOneAndClose()
-          callTimeout.exit()
+          val message = callTimeout.exitAfter {
+            responseMetadata = response.headers.toMap()
+            response.readExactlyOneAndClose()
+          }
           callback.onSuccess(this@RealGrpcCall, message)
         } catch (e: IOException) {
-          callback.onFailure(this@RealGrpcCall, callTimeout.exit(e))
+          callback.onFailure(this@RealGrpcCall, e)
         }
       }
     })
