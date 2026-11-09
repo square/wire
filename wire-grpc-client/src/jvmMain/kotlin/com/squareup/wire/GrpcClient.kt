@@ -19,6 +19,7 @@ import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
 import com.squareup.wire.internal.asGrpcClientStreamingCall
 import com.squareup.wire.internal.asGrpcServerStreamingCall
+import com.squareup.wire.internal.remainingNanos
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import okhttp3.Call
@@ -91,11 +92,9 @@ actual abstract class GrpcClient actual constructor() {
             addHeader(key, value)
           }
 
-          if (timeout.hasDeadline()) {
-            addHeader("grpc-timeout", serializeTimeout(timeout.deadlineNanoTime()))
-          }
-          if (timeout.timeoutNanos() > 0) {
-            addHeader("grpc-timeout", serializeTimeout(timeout.timeoutNanos()))
+          // Send the time left until the first of the timeout and the deadline expires.
+          timeout.remainingNanos()?.let { remainingNanos ->
+            addHeader("grpc-timeout", serializeTimeout(remainingNanos.coerceAtLeast(1L)))
           }
         }
         .tag(GrpcMethod::class.java, method)

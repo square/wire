@@ -258,6 +258,21 @@ internal fun Timeout.copyTo(target: Timeout) {
 }
 
 /**
+ * Returns the nanoseconds until the first of the timeout and the deadline of this expires.
+ * Returns null if neither is set.
+ * The result is negative if the deadline is in the past.
+ */
+internal fun Timeout.remainingNanos(): Long? {
+  var result: Long? = null
+  if (timeoutNanos() != 0L) result = timeoutNanos()
+  if (hasDeadline()) {
+    val untilDeadline = deadlineNanoTime() - System.nanoTime()
+    if (result == null || untilDeadline < result) result = untilDeadline
+  }
+  return result
+}
+
+/**
  * Enforces the timeout and the deadline of a gRPC call on the client.
  * It cancels [call] when the first of them expires.
  *
