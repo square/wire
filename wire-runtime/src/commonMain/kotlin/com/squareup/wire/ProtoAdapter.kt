@@ -744,8 +744,8 @@ internal class MapProtoAdapter<K, V> internal constructor(
 ) {
   private val entryAdapter = MapEntryProtoAdapter(keyAdapter, valueAdapter)
 
-  /** `google.protobuf.NullValue` is the only value type that decodes to null. */
-  private val acceptsNullValues = valueAdapter === STRUCT_NULL
+  /** `google.protobuf.NullValue` and `google.protobuf.Value` are the only value types that decode to null. */
+  private val acceptsNullValues = valueAdapter === STRUCT_NULL || valueAdapter === STRUCT_VALUE
 
   override fun encodedSize(value: Map<K, V>): Int = throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
 
