@@ -1921,6 +1921,13 @@ public final class JavaGenerator {
     return result.build();
   }
 
+  /** Null is a valid element of a repeated or map field whose values are `Value` or `NullValue`. */
+  private boolean allowsNullElements(Field field) {
+    ProtoType elementType =
+        field.getType().isMap() ? field.getType().getValueType() : field.getType();
+    return elementType.equals(ProtoType.STRUCT_VALUE) || elementType.equals(ProtoType.STRUCT_NULL);
+  }
+
   private boolean isStruct(ProtoType protoType) {
     return protoType.equals(ProtoType.STRUCT_MAP)
         || protoType.equals(ProtoType.STRUCT_LIST)
@@ -2241,7 +2248,7 @@ public final class JavaGenerator {
       result.addAnnotation(Deprecated.class);
     }
 
-    if (field.isRepeated() || field.getType().isMap()) {
+    if ((field.isRepeated() || field.getType().isMap()) && !allowsNullElements(field)) {
       result.addStatement("$T.checkElementsNotNull($L)", Internal.class, fieldName);
     }
     result.addStatement("this.$L = $L", fieldName, fieldName);
