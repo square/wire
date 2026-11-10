@@ -2757,13 +2757,7 @@ class KotlinGenerator private constructor(
       .addParameter(valueName, Int::class)
     val builder: TypeSpec.Builder
 
-    val enumModeOption = when (enum.enumMode?.lowercase()) {
-      "enum_class" -> ENUM_CLASS
-      "sealed_class" -> SEALED_CLASS
-      else -> null
-    }
-
-    when (enumModeOption ?: enumMode) {
+    when (effectiveEnumMode(enum)) {
       ENUM_CLASS -> {
         builder = TypeSpec.enumBuilder(type.simpleName)
           .apply {
@@ -2904,6 +2898,12 @@ class KotlinGenerator private constructor(
       .build()
   }
 
+  private fun effectiveEnumMode(enum: EnumType): EnumMode = when (enum.enumMode?.lowercase()) {
+    "enum_class" -> ENUM_CLASS
+    "sealed_class" -> SEALED_CLASS
+    else -> enumMode
+  }
+
   private fun fieldEqualsIdentityBlock(field: Field, fieldName: String): CodeBlock {
     val format = when (field.type) {
       // Special case for doubles and floats because of negative zeros.
@@ -2920,10 +2920,11 @@ class KotlinGenerator private constructor(
     val companionObjectBuilder = TypeSpec.companionObjectBuilder()
     val parentClassName = typeToKotlinName.getValue(message.type)
     val valueName = "value"
+    val mode = effectiveEnumMode(message)
     val fromValue = FunSpec.builder("fromValue")
       .addAnnotation(ClassName(jvmAnnotationPackage, "JvmStatic"))
       .addParameter(valueName, Int::class)
-      .returns(parentClassName.copy(nullable = enumMode == ENUM_CLASS))
+      .returns(parentClassName.copy(nullable = mode == ENUM_CLASS))
       .apply {
         addCode("return when (%N) {\n⇥", valueName)
         message.constants.forEach { constant ->
@@ -2931,7 +2932,7 @@ class KotlinGenerator private constructor(
           if (constant.isDeprecated) addCode("@Suppress(\"DEPRECATION\") ")
           addCode("%N\n", nameAllocator[constant])
         }
-        when (enumMode) {
+        when (mode) {
           ENUM_CLASS -> {
             addCode("else -> null")
           }
@@ -2975,6 +2976,25 @@ class KotlinGenerator private constructor(
         MemberName(Syntax::class.asClassName(), message.syntax.name),
         message.identity(),
       )
+      .apply {
+        // A sealed enum constant is a subclass object.
+        // Touching it first runs this companion's init while the constant is still null.
+        // This getter reads the constant lazily, so the identity is correct in any init order.
+        // Proto2 sealed enums have the same bug, but this fix is only for proto3.
+        // The override needs a runtime where `identity` is open.
+        // We limit that new runtime requirement to proto3 generated classes.
+        // Proto2 sealed enums keep the old init-order behavior.
+        if (effectiveEnumMode(message) == SEALED_CLASS &&
+          message.syntax == Syntax.PROTO_3 &&
+          message.constant(0) != null
+        ) {
+          addProperty(
+            PropertySpec.builder("identity", parentClassName.copy(nullable = true), OVERRIDE)
+              .getter(FunSpec.getterBuilder().addStatement("return %L", message.identity()).build())
+              .build(),
+          )
+        }
+      }
       .addFunction(
         FunSpec.builder("fromValue")
           .addModifiers(OVERRIDE)

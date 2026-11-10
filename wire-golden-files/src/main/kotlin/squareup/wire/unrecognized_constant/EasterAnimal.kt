@@ -45,6 +45,9 @@ public sealed class EasterAnimal(
       PROTO_3,
       EasterAnimal.EASTER_ANIMAL_DEFAULT
     ) {
+      override val identity: EasterAnimal?
+        get() = EasterAnimal.EASTER_ANIMAL_DEFAULT
+
       override fun fromValue(`value`: Int): EasterAnimal? = EasterAnimal.fromValue(`value`)
     }
 

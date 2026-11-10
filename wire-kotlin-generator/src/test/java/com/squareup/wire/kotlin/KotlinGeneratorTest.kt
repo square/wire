@@ -216,6 +216,116 @@ class KotlinGeneratorTest {
     assertThat(code).contains("data class Unrecognized internal constructor(")
   }
 
+  @Test fun sealedClassEnumAdapterReadsIdentityLazily() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |enum PhoneType {
+        |	HOME = 0;
+        |	WORK = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PhoneType", enumMode = EnumMode.SEALED_CLASS)
+    assertThat(code).contains(
+      """
+      |    ) {
+      |      override val identity: PhoneType?
+      |        get() = PhoneType.HOME
+      |
+      """.trimMargin(),
+    )
+  }
+
+  @Test fun sealedClassEnumAdapterForProto2HasNoIdentityOverride() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |enum PhoneType {
+        |	HOME = 0;
+        |	WORK = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PhoneType", enumMode = EnumMode.SEALED_CLASS)
+    assertThat(code).doesNotContain("override val identity")
+  }
+
+  @Test fun sealedClassEnumOptionOverridesGlobalEnumClassMode() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |import "wire/extensions.proto";
+        |
+        |enum PhoneType {
+        |  option (wire.enum_mode) = "sealed_class";
+        |	HOME = 0;
+        |	WORK = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PhoneType", enumMode = EnumMode.ENUM_CLASS)
+    assertThat(code).contains("public sealed class PhoneType(")
+    assertThat(code).contains("public fun fromValue(`value`: Int): PhoneType = when (`value`) {")
+    assertThat(code).contains("else -> Unrecognized(`value`)")
+    assertThat(code).contains("override val identity: PhoneType?")
+  }
+
+  @Test fun enumClassEnumOptionOverridesGlobalSealedClassMode() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |import "wire/extensions.proto";
+        |
+        |enum PhoneType {
+        |  option (wire.enum_mode) = "enum_class";
+        |	HOME = 0;
+        |	WORK = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PhoneType", enumMode = EnumMode.SEALED_CLASS)
+    assertThat(code).contains("public enum class PhoneType(")
+    assertThat(code).contains("public fun fromValue(`value`: Int): PhoneType? = when (`value`) {")
+    assertThat(code).contains("else -> null")
+    assertThat(code).doesNotContain("Unrecognized")
+    assertThat(code).doesNotContain("override val identity")
+  }
+
+  @Test fun enumClassAdapterHasNoIdentityOverride() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |enum PhoneType {
+        |	HOME = 0;
+        |	WORK = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PhoneType", enumMode = EnumMode.ENUM_CLASS)
+    assertThat(code).doesNotContain("override val identity")
+  }
+
   @Test fun generatedAdaptersDoNotHaveTrailingSpaces() {
     val schema = buildSchema {
       add(
