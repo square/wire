@@ -23,6 +23,10 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import com.google.protobuf.ListValue
 import com.google.protobuf.NullValue
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.SchemaLoader
+import java.nio.file.FileSystems
+import okio.Buffer
 import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto3.java.alltypes.AllStructs as AllStructsJ
@@ -30,6 +34,12 @@ import squareup.proto3.kotlin.alltypes.AllStructs as AllStructsK
 import squareup.proto3.kotlin.alltypes.AllStructsOuterClass
 
 class StructTest {
+  private val schema = SchemaLoader(FileSystems.getDefault())
+    .apply {
+      initRoots(sourcePath = listOf(Location.get("src/main/proto")))
+    }
+    .loadSchema()
+
   @Test fun nullValue() {
     val googleMessage = null.toValue()
 
@@ -308,6 +318,52 @@ class StructTest {
     assertThat(AllStructsJ.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructJava)
     assertThat(AllStructsK.ADAPTER.encode(wireAllStructKotlin)).isEqualTo(protocAllStructBytes)
     assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructKotlin)
+  }
+
+  @Test fun mapOfNullValues() {
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .putMapInt32NullValue(1, NullValue.NULL_VALUE)
+      .build()
+    // The Java builder setter rejects null map values, so this sets the field directly.
+    val wireAllStructJava = AllStructsJ.Builder()
+      .apply { map_int32_null_value = mapOf(1 to null) }
+      .build()
+    val wireAllStructKotlin = AllStructsK(map_int32_null_value = mapOf(1 to null))
+    val schemaAdapter = schema.protoAdapter("squareup.proto3.kotlin.alltypes.AllStructs", false)
+    val schemaValue = mapOf("map_int32_null_value" to mapOf(1 to null))
+
+    val protocAllStructBytes = protocAllStruct.toByteArray()
+    assertThat(AllStructsJ.ADAPTER.encode(wireAllStructJava)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructsJ.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructJava)
+    assertThat(AllStructsK.ADAPTER.encode(wireAllStructKotlin)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructKotlin)
+    assertThat(schemaAdapter.encode(schemaValue)).isEqualTo(protocAllStructBytes)
+    assertThat(schemaAdapter.decode(protocAllStructBytes)).isEqualTo(schemaValue)
+    // A BufferedSource decodes with ProtoReader, and bytes decode with ProtoReader32.
+    assertThat(AllStructsK.ADAPTER.decode(Buffer().write(protocAllStructBytes))).isEqualTo(wireAllStructKotlin)
+  }
+
+  @Test fun mapOfNullStructValues() {
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .putMapInt32ValueA(1, null.toValue())
+      .build()
+    // The Java builder setter rejects null map values, so this sets the field directly.
+    val wireAllStructJava = AllStructsJ.Builder()
+      .apply { map_int32_value_a = mapOf(1 to null) }
+      .build()
+    val wireAllStructKotlin = AllStructsK(map_int32_value_a = mapOf(1 to null))
+    val schemaAdapter = schema.protoAdapter("squareup.proto3.kotlin.alltypes.AllStructs", false)
+    val schemaValue = mapOf("map_int32_value_a" to mapOf(1 to null))
+
+    val protocAllStructBytes = protocAllStruct.toByteArray()
+    assertThat(AllStructsJ.ADAPTER.encode(wireAllStructJava)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructsJ.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructJava)
+    assertThat(AllStructsK.ADAPTER.encode(wireAllStructKotlin)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructKotlin)
+    assertThat(schemaAdapter.encode(schemaValue)).isEqualTo(protocAllStructBytes)
+    assertThat(schemaAdapter.decode(protocAllStructBytes)).isEqualTo(schemaValue)
+    // A BufferedSource decodes with ProtoReader, and bytes decode with ProtoReader32.
+    assertThat(AllStructsK.ADAPTER.decode(Buffer().write(protocAllStructBytes))).isEqualTo(wireAllStructKotlin)
   }
 
   // Note: We are not testing nulls because while protoc emits `NULL_VALUE`s, Wire doesn't.
