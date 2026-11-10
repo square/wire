@@ -180,6 +180,13 @@ message Key {
 }
 ```
 
+To write all fields in ascending tag order, set `encodeInTagOrder = true` on a `kotlin {}` or `java {}` target.
+The [Gradle plugin documentation](wire_compiler.md) describes this option.
+
+Wire writes map entries in the iteration order of the map, as protobuf-java does by default.
+protobuf-java can sort map entries with `useDeterministicSerialization()`, but Wire has no such option.
+To get the same bytes for two equal maps, insert their entries in the same order, for example in sorted key order.
+
  [gson]: https://github.com/google/gson/
  [issue_3746]: https://github.com/square/wire/issues/3746
  [moshi]: https://github.com/square/moshi/

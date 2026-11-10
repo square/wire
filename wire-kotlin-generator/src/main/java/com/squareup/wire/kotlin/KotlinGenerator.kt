@@ -146,6 +146,7 @@ class KotlinGenerator private constructor(
   private val mutableTypes: Boolean,
   private val explicitStreamingCalls: Boolean,
   private val makeImmutableCopies: Boolean,
+  private val encodeInTagOrder: Boolean,
 ) {
   @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before oneofMode was added.")
   private constructor(
@@ -189,6 +190,7 @@ class KotlinGenerator private constructor(
     mutableTypes = mutableTypes,
     explicitStreamingCalls = explicitStreamingCalls,
     makeImmutableCopies = makeImmutableCopies,
+    encodeInTagOrder = false,
   )
 
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
@@ -1864,7 +1866,15 @@ class KotlinGenerator private constructor(
     val encodeCalls = mutableListOf<CodeBlock>()
     val nameAllocator = nameAllocator(message)
 
-    for (field in message.fields + message.flatOneOfs().flatMap { it.fields }) {
+    val segments = encodeSegments(message)
+    val runsByOneOf = segments.filterIsInstance<EncodeSegment.OneOfRun>().groupBy { it.oneOf }
+    for (segment in segments) {
+      if (segment is EncodeSegment.OneOfRun) {
+        val runs = runsByOneOf.getValue(segment.oneOf)
+        encodeCalls += oneOfRunEncodeCall(message, runs, segment, nameAllocator)
+        continue
+      }
+      val field = (segment as EncodeSegment.Single).field
       val fieldName = nameAllocator[field]
       val enumType = schema.getType(field.type!!) as? EnumType?
       encodeCalls += buildCodeBlock {
@@ -1895,34 +1905,6 @@ class KotlinGenerator private constructor(
         }
       }
     }
-    for (boxOneOf in message.boxOneOfs()) {
-      val fieldName = nameAllocator[boxOneOf]
-      encodeCalls += buildCodeBlock {
-        add("if (value.%N != %L) ", fieldName, "null")
-        addStatement("value.%N.encodeWithTag(writer)", fieldName)
-      }
-    }
-    for (sealedOneOf in message.sealedOneOfs()) {
-      val fieldName = nameAllocator[sealedOneOf]
-      val sealedClassName = (message.typeName as ClassName)
-        .nestedClass(nameAllocator[boxedOneOfClassName(sealedOneOf.name)])
-      val subclassNameAllocator = sealedSubclassNameAllocator(sealedOneOf)
-      encodeCalls += buildCodeBlock {
-        beginControlFlow("when (val %N = value.%N)", fieldName, fieldName)
-        for (field in sealedOneOf.fields) {
-          val subclassType = sealedClassName.nestedClass(subclassNameAllocator[field])
-          addStatement(
-            "is %T -> %L.encodeWithTag(writer, %L, %N.value)",
-            subclassType,
-            adapterFor(field),
-            field.tag,
-            fieldName,
-          )
-        }
-        addStatement("null -> {}")
-        endControlFlow()
-      }
-    }
     encodeCalls += buildCodeBlock {
       addStatement("writer.writeBytes(value.unknownFields)")
     }
@@ -1941,6 +1923,92 @@ class KotlinGenerator private constructor(
       .addCode(body)
       .addModifiers(OVERRIDE)
       .build()
+  }
+
+  /** One encode statement: a single field, or consecutive fields of a boxed or sealed oneof. */
+  private sealed class EncodeSegment {
+    class Single(val field: Field) : EncodeSegment()
+    class OneOfRun(val oneOf: OneOf, val fields: MutableList<Field>) : EncodeSegment()
+  }
+
+  /**
+   * Returns the order in which `encode` writes fields. By default, it writes plain and flat oneof
+   * fields in declaration order, then boxed and sealed oneofs. With [encodeInTagOrder], it writes
+   * all fields in ascending tag order, like protoc. A boxed or sealed oneof then becomes one segment
+   * per run of its fields that no other field interrupts.
+   */
+  private fun encodeSegments(message: MessageType): List<EncodeSegment> {
+    val singles = (message.fields + message.flatOneOfs().flatMap { it.fields })
+      .map { EncodeSegment.Single(it) }
+    val wrappedOneOfs = message.boxOneOfs() + message.sealedOneOfs()
+    if (!encodeInTagOrder) {
+      return singles + wrappedOneOfs.map { EncodeSegment.OneOfRun(it, it.fields.toMutableList()) }
+    }
+    val units = singles.map { it.field to null } +
+      wrappedOneOfs.flatMap { oneOf -> oneOf.fields.map { it to oneOf } }
+    val result = mutableListOf<EncodeSegment>()
+    for ((field, oneOf) in units.sortedBy { it.first.tag }) {
+      val last = result.lastOrNull()
+      when {
+        oneOf == null -> result += EncodeSegment.Single(field)
+        last is EncodeSegment.OneOfRun && last.oneOf == oneOf -> last.fields += field
+        else -> result += EncodeSegment.OneOfRun(oneOf, mutableListOf(field))
+      }
+    }
+    return result
+  }
+
+  private fun oneOfRunEncodeCall(
+    message: MessageType,
+    runs: List<EncodeSegment.OneOfRun>,
+    run: EncodeSegment.OneOfRun,
+    nameAllocator: NameAllocator,
+  ): CodeBlock {
+    val oneOf = run.oneOf
+    val fieldName = nameAllocator[oneOf]
+    val isWholeOneOf = run.fields.size == oneOf.fields.size
+    if (oneOf in message.boxOneOfs()) {
+      return buildCodeBlock {
+        if (isWholeOneOf) {
+          add("if (value.%N != %L) ", fieldName, "null")
+          addStatement("value.%N.encodeWithTag(writer)", fieldName)
+        } else {
+          // No other field has a tag between the first and last tag of a run.
+          if (run === runs.last()) {
+            // Also write a custom key that is in no run, because encodedSize counts it.
+            val otherRuns = runs.dropLast(1).joinToString(" && ") {
+              "it.key.tag !in ${it.fields.first().tag}..${it.fields.last().tag}"
+            }
+            addStatement("value.%N?.takeIf { %L }?.encodeWithTag(writer)", fieldName, otherRuns)
+          } else {
+            addStatement(
+              "value.%N?.takeIf { it.key.tag in %L..%L }?.encodeWithTag(writer)",
+              fieldName,
+              run.fields.first().tag,
+              run.fields.last().tag,
+            )
+          }
+        }
+      }
+    }
+    val sealedClassName = (message.typeName as ClassName)
+      .nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
+    val subclassNameAllocator = sealedSubclassNameAllocator(oneOf)
+    return buildCodeBlock {
+      beginControlFlow("when (val %N = value.%N)", fieldName, fieldName)
+      for (field in run.fields) {
+        val subclassType = sealedClassName.nestedClass(subclassNameAllocator[field])
+        addStatement(
+          "is %T -> %L.encodeWithTag(writer, %L, %N.value)",
+          subclassType,
+          adapterFor(field),
+          field.tag,
+          fieldName,
+        )
+      }
+      addStatement(if (isWholeOneOf) "null -> {}" else "else -> {}")
+      endControlFlow()
+    }
   }
 
   private fun decodeFun(protoReaderType: ClassName, message: MessageType): FunSpec {
@@ -3634,6 +3702,7 @@ class KotlinGenerator private constructor(
       mutableTypes: Boolean = false,
       explicitStreamingCalls: Boolean = false,
       makeImmutableCopies: Boolean = true,
+      encodeInTagOrder: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -3713,8 +3782,53 @@ class KotlinGenerator private constructor(
         mutableTypes = mutableTypes,
         explicitStreamingCalls = explicitStreamingCalls,
         makeImmutableCopies = makeImmutableCopies,
+        encodeInTagOrder = encodeInTagOrder,
       )
     }
+
+    @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+    @JvmStatic
+    @JvmName("get")
+    operator fun invoke(
+      schema: Schema,
+      profile: Profile = Profile(),
+      emitAndroid: Boolean = false,
+      javaInterop: Boolean = false,
+      emitDeclaredOptions: Boolean = true,
+      emitAppliedOptions: Boolean = true,
+      rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
+      rpcRole: RpcRole = RpcRole.CLIENT,
+      boxOneOfsMinSize: Int = 5_000,
+      nameSuffix: String? = null,
+      buildersOnly: Boolean = false,
+      escapeKotlinKeywords: Boolean = false,
+      enumMode: EnumMode = ENUM_CLASS,
+      oneofMode: OneofMode = OneofMode.FLAT,
+      emitProtoReader32: Boolean = false,
+      mutableTypes: Boolean = false,
+      explicitStreamingCalls: Boolean = false,
+      makeImmutableCopies: Boolean = true,
+    ): KotlinGenerator = invoke(
+      schema = schema,
+      profile = profile,
+      emitAndroid = emitAndroid,
+      javaInterop = javaInterop,
+      emitDeclaredOptions = emitDeclaredOptions,
+      emitAppliedOptions = emitAppliedOptions,
+      rpcCallStyle = rpcCallStyle,
+      rpcRole = rpcRole,
+      boxOneOfsMinSize = boxOneOfsMinSize,
+      nameSuffix = nameSuffix,
+      buildersOnly = buildersOnly,
+      escapeKotlinKeywords = escapeKotlinKeywords,
+      enumMode = enumMode,
+      oneofMode = oneofMode,
+      emitProtoReader32 = emitProtoReader32,
+      mutableTypes = mutableTypes,
+      explicitStreamingCalls = explicitStreamingCalls,
+      makeImmutableCopies = makeImmutableCopies,
+      encodeInTagOrder = false,
+    )
 
     private fun putAllExtensions(
       schema: Schema,

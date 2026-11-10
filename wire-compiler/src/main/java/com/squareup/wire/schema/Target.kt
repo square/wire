@@ -54,6 +54,16 @@ data class JavaTarget(
 
   /** If true, the constructor of all generated types will be non-public. */
   val buildersOnly: Boolean = false,
+
+  /**
+   * If true, the generated adapters write fields in ascending tag order.
+   * This gives the same bytes as protoc.
+   * If false, they write fields in declaration order, and write oneof fields last.
+   * This option applies only to the types that this target generates.
+   * A nested type that another module or jar generates keeps its own field order.
+   * You cannot use this option with [compact].
+   */
+  val encodeInTagOrder: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler = JavaSchemaHandler(
     android = android,
@@ -62,6 +72,59 @@ data class JavaTarget(
     emitDeclaredOptions = emitDeclaredOptions,
     emitAppliedOptions = emitAppliedOptions,
     buildersOnly = buildersOnly,
+    encodeInTagOrder = encodeInTagOrder,
+  )
+
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+  constructor(
+    includes: List<String> = listOf("*"),
+    excludes: List<String> = listOf(),
+    exclusive: Boolean = true,
+    outDirectory: String,
+    android: Boolean = false,
+    androidAnnotations: Boolean = false,
+    compact: Boolean = false,
+    emitDeclaredOptions: Boolean = true,
+    emitAppliedOptions: Boolean = true,
+    buildersOnly: Boolean = false,
+  ) : this(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+    android = android,
+    androidAnnotations = androidAnnotations,
+    compact = compact,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    buildersOnly = buildersOnly,
+    encodeInTagOrder = false,
+  )
+
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+  fun copy(
+    includes: List<String> = this.includes,
+    excludes: List<String> = this.excludes,
+    exclusive: Boolean = this.exclusive,
+    outDirectory: String = this.outDirectory,
+    android: Boolean = this.android,
+    androidAnnotations: Boolean = this.androidAnnotations,
+    compact: Boolean = this.compact,
+    emitDeclaredOptions: Boolean = this.emitDeclaredOptions,
+    emitAppliedOptions: Boolean = this.emitAppliedOptions,
+    buildersOnly: Boolean = this.buildersOnly,
+  ): JavaTarget = copy(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+    android = android,
+    androidAnnotations = androidAnnotations,
+    compact = compact,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    buildersOnly = buildersOnly,
+    encodeInTagOrder = encodeInTagOrder,
   )
 
   override fun copyTarget(
@@ -163,6 +226,15 @@ data class KotlinTarget(
    * critical usages.
    */
   private val makeImmutableCopies: Boolean = true,
+
+  /**
+   * If true, the generated `encode` functions write fields in ascending tag order.
+   * This gives the same bytes as protoc.
+   * If false, they write fields in declaration order, and write boxed and sealed oneofs last.
+   * This option applies only to the types that this target generates.
+   * A nested type that another module or jar generates keeps its own field order.
+   */
+  private val encodeInTagOrder: Boolean = false,
 ) : Target() {
   override fun newHandler(): SchemaHandler = KotlinSchemaHandler(
     outDirectory = outDirectory,
@@ -183,6 +255,103 @@ data class KotlinTarget(
     mutableTypes = mutableTypes,
     explicitStreamingCalls = explicitStreamingCalls,
     makeImmutableCopies = makeImmutableCopies,
+    encodeInTagOrder = encodeInTagOrder,
+  )
+
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+  constructor(
+    includes: List<String> = listOf("*"),
+    excludes: List<String> = listOf(),
+    exclusive: Boolean = true,
+    outDirectory: String,
+    android: Boolean = false,
+    javaInterop: Boolean = false,
+    emitDeclaredOptions: Boolean = true,
+    emitAppliedOptions: Boolean = true,
+    rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
+    rpcRole: RpcRole = RpcRole.CLIENT,
+    singleMethodServices: Boolean = false,
+    boxOneOfsMinSize: Int = 5_000,
+    nameSuffix: String? = null,
+    buildersOnly: Boolean = false,
+    escapeKotlinKeywords: Boolean = false,
+    enumMode: EnumMode = EnumMode.ENUM_CLASS,
+    oneofMode: OneofMode = OneofMode.FLAT,
+    emitProtoReader32: Boolean = false,
+    mutableTypes: Boolean = false,
+    explicitStreamingCalls: Boolean = false,
+    makeImmutableCopies: Boolean = true,
+  ) : this(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+    android = android,
+    javaInterop = javaInterop,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    rpcCallStyle = rpcCallStyle,
+    rpcRole = rpcRole,
+    singleMethodServices = singleMethodServices,
+    boxOneOfsMinSize = boxOneOfsMinSize,
+    nameSuffix = nameSuffix,
+    buildersOnly = buildersOnly,
+    escapeKotlinKeywords = escapeKotlinKeywords,
+    enumMode = enumMode,
+    oneofMode = oneofMode,
+    emitProtoReader32 = emitProtoReader32,
+    mutableTypes = mutableTypes,
+    explicitStreamingCalls = explicitStreamingCalls,
+    makeImmutableCopies = makeImmutableCopies,
+    encodeInTagOrder = false,
+  )
+
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+  fun copy(
+    includes: List<String> = this.includes,
+    excludes: List<String> = this.excludes,
+    exclusive: Boolean = this.exclusive,
+    outDirectory: String = this.outDirectory,
+    android: Boolean = this.android,
+    javaInterop: Boolean = this.javaInterop,
+    emitDeclaredOptions: Boolean = this.emitDeclaredOptions,
+    emitAppliedOptions: Boolean = this.emitAppliedOptions,
+    rpcCallStyle: RpcCallStyle = this.rpcCallStyle,
+    rpcRole: RpcRole = this.rpcRole,
+    singleMethodServices: Boolean = this.singleMethodServices,
+    boxOneOfsMinSize: Int = this.boxOneOfsMinSize,
+    nameSuffix: String? = this.nameSuffix,
+    buildersOnly: Boolean = this.buildersOnly,
+    escapeKotlinKeywords: Boolean = this.escapeKotlinKeywords,
+    enumMode: EnumMode = this.enumMode,
+    oneofMode: OneofMode = this.oneofMode,
+    emitProtoReader32: Boolean = this.emitProtoReader32,
+    mutableTypes: Boolean = this.mutableTypes,
+    explicitStreamingCalls: Boolean = this.explicitStreamingCalls,
+    makeImmutableCopies: Boolean = this.makeImmutableCopies,
+  ): KotlinTarget = copy(
+    includes = includes,
+    excludes = excludes,
+    exclusive = exclusive,
+    outDirectory = outDirectory,
+    android = android,
+    javaInterop = javaInterop,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    rpcCallStyle = rpcCallStyle,
+    rpcRole = rpcRole,
+    singleMethodServices = singleMethodServices,
+    boxOneOfsMinSize = boxOneOfsMinSize,
+    nameSuffix = nameSuffix,
+    buildersOnly = buildersOnly,
+    escapeKotlinKeywords = escapeKotlinKeywords,
+    enumMode = enumMode,
+    oneofMode = oneofMode,
+    emitProtoReader32 = emitProtoReader32,
+    mutableTypes = mutableTypes,
+    explicitStreamingCalls = explicitStreamingCalls,
+    makeImmutableCopies = makeImmutableCopies,
+    encodeInTagOrder = encodeInTagOrder,
   )
 
   override fun copyTarget(
