@@ -305,6 +305,72 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("choice = (try protoReader.decode(Kind.self))")
   }
 
+  @Test fun proto3RepeatedBoolAndEnumArePackedByDefault() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package squareup.protos3;
+        |
+        |message Message {
+        |  repeated bool flags = 1;
+        |  repeated Color colors = 2;
+        |  repeated bool unpacked_flags = 3 [packed = false];
+        |  repeated Color unpacked_colors = 4 [packed = false];
+        |  repeated string names = 5;
+        |}
+        |
+        |enum Color {
+        |  COLOR_UNSPECIFIED = 0;
+        |  RED = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos3.Message")
+
+    assertThat(code).contains("try protoWriter.encode(tag: 1, value: self.flags, packed: true)")
+    assertThat(code).contains("try protoWriter.encode(tag: 2, value: self.colors, packed: true)")
+    // The Swift runtime packs proto3 repeated fields by default, so explicitly unpacked fields say so.
+    assertThat(code).contains("try protoWriter.encode(tag: 3, value: self.unpacked_flags, packed: false)")
+    assertThat(code).contains("try protoWriter.encode(tag: 4, value: self.unpacked_colors, packed: false)")
+    // Strings cannot be packed, and their encode function has no packed parameter.
+    assertThat(code).contains("try protoWriter.encode(tag: 5, value: self.names)\n")
+  }
+
+  @Test fun proto2RepeatedBoolAndEnumAreNotPackedByDefault() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package squareup.protos2;
+        |
+        |message Message {
+        |  repeated bool flags = 1;
+        |  repeated Color colors = 2;
+        |  repeated string names = 3;
+        |}
+        |
+        |enum Color {
+        |  COLOR_UNSPECIFIED = 0;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("squareup.protos2.Message")
+
+    // The Swift runtime does not pack proto2 repeated fields by default.
+    assertThat(code).contains("try protoWriter.encode(tag: 1, value: self.flags)\n")
+    assertThat(code).contains("try protoWriter.encode(tag: 2, value: self.colors)\n")
+    assertThat(code).contains("try protoWriter.encode(tag: 3, value: self.names)\n")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))

@@ -142,6 +142,8 @@ class SwiftGenerator private constructor(
     get() = type!!.isMessage
   internal val Field.isEnum
     get() = type!!.isEnum
+  private val Field.isPackable: Boolean
+    get() = isEnum || (type!!.isScalar && type != ProtoType.STRING && type != ProtoType.BYTES)
   internal val Field.isOptional: Boolean
     get() = typeName.optional
   internal val Field.isMap: Boolean
@@ -854,6 +856,9 @@ class SwiftGenerator private constructor(
               }
               if (field.isPacked) {
                 addCode(", packed: true")
+              } else if (field.isRepeated && field.isPackable && type.syntax == PROTO_3) {
+                // The Swift runtime packs proto3 repeated fields unless told otherwise.
+                addCode(", packed: false")
               }
               addCode(")\n")
             }
