@@ -1,6 +1,42 @@
 Change Log
 ==========
 
+Version 7.2.0
+---------------------
+
+_2026-11-10_
+
+### Common
+
+* New: `encodeInTagOrder` option on the `kotlin {}` and `java {}` targets. When it is true, the generated `encode` functions write fields in ascending tag order, so the bytes are the same as protoc. This includes oneof and extension fields. It is false by default, and generated code does not change when it is false. The Gradle plugin rejects `compact` and `encodeInTagOrder` together on a `java {}` target, because compact code encodes by reflection (#3751)
+* New: `ProtoAdapter.BYTES` and `ProtoAdapter.STRING` decode a top-level payload that has no length prefix. A gRPC call can use `ProtoAdapter.BYTES` as its response adapter to receive the raw message bytes without decoding them (#3745)
+* New: `Schema.protoAdapter` supports map fields. Before, it threw `UnsupportedOperationException` for any message with a map field (#3756)
+* Fix: `Schema.protoAdapter` writes `[packed = true]` proto2 fields and proto3 repeated scalars packed, as protoc does. Before, it wrote them unpacked. The descriptor bytes that `SchemaEncoder` and the `wire-reflector` gRPC reflection service return also change when a custom option has a packed field (#3749)
+* Fix: the schema enum adapter computes the size of a negative enum value as the 5-byte varint that it writes, as generated enum adapters do. Before, it computed 10 bytes, so a packed field with a negative enum value got a wrong length prefix (#3749)
+* Change: the `identity` of a schema enum adapter is now the name of its constant with tag 0, or null if there is none. A map entry without an enum value now decodes to this constant (#3756)
+* Fix: generated code and `Schema.protoAdapter` decode `map<K, google.protobuf.NullValue>` entries, and `map<K, google.protobuf.Value>` entries that hold `null_value`. Before, decoding failed with "Map entry with null value" (#3756)
+* Fix: decoding ignores a length-delimited payload for a singular numeric, boolean or enum field, as protoc does. Regenerate Java and Kotlin sources to apply this fix to generated adapters (#3740)
+* Fix: decoding an empty packed record for a repeated scalar field adds no values. Before, it threw `EOFException`. Regenerate Java and Kotlin sources to apply this fix to generated adapters (#3741)
+* Fix: decoding a message field that has the `VARINT`, `FIXED32` or `FIXED64` wire type throws `ProtocolException` instead of `IllegalStateException` (#3739)
+* Fix: normalize line terminators in schema paths before Wire writes them into the `// Source:` comment of the `.proto` files it emits (#3735)
+* Update the bundled `google/protobuf` well-known type protos to their latest versions (#3747)
+
+### Java
+
+* Fix: generated builder setters accept null elements in repeated and map fields of type `google.protobuf.Value` and `google.protobuf.NullValue`. Before, they threw `NullPointerException`. `build()` still rejects null map keys (#3760)
+
+### Kotlin
+
+* Fix: Kotlin proto3 enums generated with `enumMode = sealed_class` now have a correct `ADAPTER.identity` in any class initialization order. Before, `ADAPTER.identity` could be null when code touched an enum constant before `ADAPTER`. `ProtoAdapter.identity` is now `open` so that the generated adapter can override it (#3755)
+* ⚠ Breaking: proto3 sealed enums generated with this version require the matching `wire-runtime` version. With an older runtime, the JVM throws `IncompatibleClassChangeError` when it loads the enum adapter. Proto2 sealed enums and enum class mode do not have this requirement (#3755)
+* ⚠ Breaking: Kotlin code generated with this version for fields with `[(wire.use_array) = true]` requires the matching `wire-runtime` version. It calls `com.squareup.wire.internal.beforePossiblyPackedScalar`, which older runtimes do not have, so decoding throws `NoSuchMethodError` (#3741)
+* Fix: the generated `fromValue` function follows the per-enum `wire.enum_mode` option. Before, it used the global `enumMode` (#3755)
+
+### Swift
+
+* Fix: `ProtoWriter` writes unknown fields and extensions in ascending tag order. Before, it used dictionary order, so a message with two or more unknown tags encoded to different bytes on each launch (#3750)
+* Fix: Swift generation with a module manifest no longer fails with "Missing a zero value" when a proto3 message uses an enum from another module (#3736 by [Matt Van Horn][mvanhorn])
+
 Version 7.1.2
 ---------------------
 
@@ -2289,6 +2325,7 @@ Initial version.
  [loganblevins]: https://github.com/loganblevins
  [manus-use]: https://github.com/manus-use
  [mpawliszyn]: https://github.com/mpawliszyn
+ [mvanhorn]: https://github.com/mvanhorn
  [mpeyper]: https://github.com/mpeyper
  [mrtryhard]: https://github.com/mrtryhard
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
