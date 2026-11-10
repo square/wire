@@ -22,6 +22,8 @@ public final class com/squareup/wire/java/JavaGenerator {
 public final class com/squareup/wire/java/JavaSchemaHandler : com/squareup/wire/schema/SchemaHandler {
 	public static final field Companion Lcom/squareup/wire/java/JavaSchemaHandler$Companion;
 	public fun <init> ()V
+	public synthetic fun <init> (ZZZZZZ)V
+	public synthetic fun <init> (ZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (ZZZZZZZ)V
 	public synthetic fun <init> (ZZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun handle (Lcom/squareup/wire/schema/Extend;Lcom/squareup/wire/schema/Field;Lcom/squareup/wire/schema/SchemaHandler$Context;)Lokio/Path;

@@ -120,6 +120,48 @@ class KotlinSchemaHandler(
    */
   private val encodeInTagOrder: Boolean = false,
 ) : SchemaHandler() {
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+  constructor(
+    outDirectory: String,
+    android: Boolean = false,
+    javaInterop: Boolean = false,
+    emitDeclaredOptions: Boolean = true,
+    emitAppliedOptions: Boolean = true,
+    rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
+    rpcRole: RpcRole = RpcRole.CLIENT,
+    singleMethodServices: Boolean = false,
+    boxOneOfsMinSize: Int = 5_000,
+    nameSuffix: String? = null,
+    buildersOnly: Boolean = false,
+    escapeKotlinKeywords: Boolean = false,
+    enumMode: EnumMode = EnumMode.ENUM_CLASS,
+    oneofMode: OneofMode = OneofMode.FLAT,
+    emitProtoReader32: Boolean = false,
+    mutableTypes: Boolean = false,
+    explicitStreamingCalls: Boolean = false,
+    makeImmutableCopies: Boolean = true,
+  ) : this(
+    outDirectory = outDirectory,
+    android = android,
+    javaInterop = javaInterop,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    rpcCallStyle = rpcCallStyle,
+    rpcRole = rpcRole,
+    singleMethodServices = singleMethodServices,
+    boxOneOfsMinSize = boxOneOfsMinSize,
+    nameSuffix = nameSuffix,
+    buildersOnly = buildersOnly,
+    escapeKotlinKeywords = escapeKotlinKeywords,
+    enumMode = enumMode,
+    oneofMode = oneofMode,
+    emitProtoReader32 = emitProtoReader32,
+    mutableTypes = mutableTypes,
+    explicitStreamingCalls = explicitStreamingCalls,
+    makeImmutableCopies = makeImmutableCopies,
+    encodeInTagOrder = false,
+  )
+
   private lateinit var kotlinGenerator: KotlinGenerator
 
   override fun handle(schema: Schema, context: Context) {

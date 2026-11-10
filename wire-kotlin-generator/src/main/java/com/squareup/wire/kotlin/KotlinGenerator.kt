@@ -3786,6 +3786,50 @@ class KotlinGenerator private constructor(
       )
     }
 
+    @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+    @JvmStatic
+    @JvmName("get")
+    operator fun invoke(
+      schema: Schema,
+      profile: Profile = Profile(),
+      emitAndroid: Boolean = false,
+      javaInterop: Boolean = false,
+      emitDeclaredOptions: Boolean = true,
+      emitAppliedOptions: Boolean = true,
+      rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
+      rpcRole: RpcRole = RpcRole.CLIENT,
+      boxOneOfsMinSize: Int = 5_000,
+      nameSuffix: String? = null,
+      buildersOnly: Boolean = false,
+      escapeKotlinKeywords: Boolean = false,
+      enumMode: EnumMode = ENUM_CLASS,
+      oneofMode: OneofMode = OneofMode.FLAT,
+      emitProtoReader32: Boolean = false,
+      mutableTypes: Boolean = false,
+      explicitStreamingCalls: Boolean = false,
+      makeImmutableCopies: Boolean = true,
+    ): KotlinGenerator = invoke(
+      schema = schema,
+      profile = profile,
+      emitAndroid = emitAndroid,
+      javaInterop = javaInterop,
+      emitDeclaredOptions = emitDeclaredOptions,
+      emitAppliedOptions = emitAppliedOptions,
+      rpcCallStyle = rpcCallStyle,
+      rpcRole = rpcRole,
+      boxOneOfsMinSize = boxOneOfsMinSize,
+      nameSuffix = nameSuffix,
+      buildersOnly = buildersOnly,
+      escapeKotlinKeywords = escapeKotlinKeywords,
+      enumMode = enumMode,
+      oneofMode = oneofMode,
+      emitProtoReader32 = emitProtoReader32,
+      mutableTypes = mutableTypes,
+      explicitStreamingCalls = explicitStreamingCalls,
+      makeImmutableCopies = makeImmutableCopies,
+      encodeInTagOrder = false,
+    )
+
     private fun putAllExtensions(
       schema: Schema,
       protoFile: ProtoFile,

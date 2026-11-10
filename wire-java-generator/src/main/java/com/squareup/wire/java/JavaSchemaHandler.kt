@@ -58,6 +58,24 @@ class JavaSchemaHandler(
    */
   private val encodeInTagOrder: Boolean = false,
 ) : SchemaHandler() {
+  @Deprecated(level = DeprecationLevel.HIDDEN, message = "Obsolete, for compiled code before encodeInTagOrder was added.")
+  constructor(
+    android: Boolean = false,
+    androidAnnotations: Boolean = false,
+    compact: Boolean = false,
+    emitDeclaredOptions: Boolean = true,
+    emitAppliedOptions: Boolean = true,
+    buildersOnly: Boolean = false,
+  ) : this(
+    android = android,
+    androidAnnotations = androidAnnotations,
+    compact = compact,
+    emitDeclaredOptions = emitDeclaredOptions,
+    emitAppliedOptions = emitAppliedOptions,
+    buildersOnly = buildersOnly,
+    encodeInTagOrder = false,
+  )
+
   private lateinit var javaGenerator: JavaGenerator
 
   override fun handle(schema: Schema, context: Context) {
