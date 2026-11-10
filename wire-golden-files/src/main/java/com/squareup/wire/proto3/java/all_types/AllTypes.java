@@ -2003,13 +2003,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     public Builder rep_value(List<Object> rep_value) {
-      Internal.checkElementsNotNull(rep_value);
       this.rep_value = rep_value;
       return this;
     }
 
     public Builder rep_null_value(List<Void> rep_null_value) {
-      Internal.checkElementsNotNull(rep_null_value);
       this.rep_null_value = rep_null_value;
       return this;
     }
@@ -2111,7 +2109,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     public Builder pack_null_value(List<Void> pack_null_value) {
-      Internal.checkElementsNotNull(pack_null_value);
       this.pack_null_value = pack_null_value;
       return this;
     }
@@ -2165,13 +2162,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     }
 
     public Builder map_int32_value(Map<Integer, Object> map_int32_value) {
-      Internal.checkElementsNotNull(map_int32_value);
       this.map_int32_value = map_int32_value;
       return this;
     }
 
     public Builder map_int32_null_value(Map<Integer, Void> map_int32_null_value) {
-      Internal.checkElementsNotNull(map_int32_null_value);
       this.map_int32_null_value = map_int32_null_value;
       return this;
     }

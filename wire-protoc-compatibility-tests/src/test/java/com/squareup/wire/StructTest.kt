@@ -551,4 +551,37 @@ class StructTest {
       return true
     }
   }
+
+  @Test fun javaBuilderAcceptsNullStructValues() {
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .addRepValueA(null.toValue())
+      .putMapInt32ValueA(1, null.toValue())
+      .putMapInt32NullValue(1, NullValue.NULL_VALUE)
+      .build()
+    val wireAllStructJava = AllStructsJ.Builder()
+      .rep_value_a(listOf(null))
+      .map_int32_value_a(mapOf(1 to null))
+      .map_int32_null_value(mapOf(1 to null))
+      .build()
+
+    assertThat(AllStructsJ.ADAPTER.encode(wireAllStructJava)).isEqualTo(protocAllStruct.toByteArray())
+    // Null map values only decode with the map adapter fix of #3756, so this decodes the list only.
+    val wireListOnly = AllStructsJ.Builder().rep_value_a(listOf(null)).build()
+    val protocListOnly = AllStructsOuterClass.AllStructs.newBuilder().addRepValueA(null.toValue()).build()
+    assertThat(AllStructsJ.ADAPTER.decode(protocListOnly.toByteArray())).isEqualTo(wireListOnly)
+  }
+
+  @Test fun javaBuilderAcceptsNullValueListElements() {
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .addRepNullValue(NullValue.NULL_VALUE)
+      .build()
+    val wireAllStructJava = AllStructsJ.Builder()
+      .rep_null_value(listOf(null))
+      .build()
+
+    // protoc packs this repeated enum and Wire does not, so this compares messages and not bytes.
+    assertThat(AllStructsJ.ADAPTER.decode(protocAllStruct.toByteArray())).isEqualTo(wireAllStructJava)
+    val wireBytes = AllStructsJ.ADAPTER.encode(wireAllStructJava)
+    assertThat(AllStructsOuterClass.AllStructs.parseFrom(wireBytes)).isEqualTo(protocAllStruct)
+  }
 }
