@@ -61,6 +61,30 @@ internal fun <S : Any> newRequestBody(
 }
 
 /**
+ * Returns a new duplex request body that writes [onlyMessage] and then closes the request stream.
+ *
+ * OkHttp calls [RequestBody.writeTo] before it reads the response, so the server gets the complete request and the half-close first.
+ * The body is duplex so that OkHttp stops the call timeout after the response headers, like it does for streaming calls.
+ */
+internal fun <S : Any> newSingleMessageDuplexRequestBody(
+  minMessageToCompress: Long,
+  requestAdapter: ProtoAdapter<S>,
+  onlyMessage: S,
+): RequestBody {
+  val delegate = newRequestBody(minMessageToCompress, requestAdapter, onlyMessage)
+  return object : RequestBody() {
+    override fun contentType() = delegate.contentType()
+
+    override fun isDuplex() = true
+
+    override fun writeTo(sink: BufferedSink) {
+      // This closes the sink, which sends END_STREAM.
+      delegate.writeTo(sink)
+    }
+  }
+}
+
+/**
  * Returns a new duplex request body that allows us to write request messages even after the
  * response status, headers, and body have been received.
  */

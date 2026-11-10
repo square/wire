@@ -35,10 +35,11 @@ import okio.IOException
 import okio.Timeout
 
 /**
- * A [GrpcServerStreamingCall] that sends a single non-duplex request and reads a streaming
- * response. Using a non-duplex request body ensures the complete request (including END_STREAM) is
- * sent to the server before responses are read, avoiding delays on servers that wait for the
- * client's half-close before starting to stream responses.
+ * A [GrpcServerStreamingCall] that sends a single request and reads a streaming response.
+ *
+ * The request body writes the complete request and END_STREAM before OkHttp reads the response.
+ * This prevents delays on servers that wait for the client's half-close before they stream responses.
+ * The body is duplex, so OkHttp's call timeout stops after the response headers.
  */
 internal class RealGrpcServerStreamingCall<S : Any, R : Any>(
   private val grpcClient: WireGrpcClient,
@@ -122,7 +123,7 @@ internal class RealGrpcServerStreamingCall<S : Any, R : Any>(
 
   private fun initCall(request: S): okhttp3.Call {
     check(this.call == null) { "already executed" }
-    val requestBody = newRequestBody(
+    val requestBody = newSingleMessageDuplexRequestBody(
       minMessageToCompress = grpcClient.minMessageToCompress,
       requestAdapter = method.requestAdapter,
       onlyMessage = request,

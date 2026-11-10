@@ -447,6 +447,37 @@ class GrpcClientTest {
     assertThat(callReference.get()!!.isCanceled()).isTrue()
   }
 
+  /** OkHttp's call timeout must stop after the response headers, like it does for streaming calls. */
+  @Test
+  fun serverStreamingOutlivesCallTimeoutAfterHeaders() {
+    enqueueListFeatures(delayBeforeLastFeature = true)
+
+    val routeGuideService = newRouteGuideClient(callTimeoutMillis = 200)
+    val responses = routeGuideService.ListFeatures().executeBlocking(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    assertThat(responses.read()).isEqualTo(Feature(name = "tree"))
+    assertThat(responses.read()).isEqualTo(Feature(name = "house"))
+    assertThat(responses.read()).isNull()
+
+    mockService.awaitSuccessBlocking()
+  }
+
+  @Test
+  fun legacyServerStreamingOutlivesCallTimeoutAfterHeaders() {
+    enqueueListFeatures(delayBeforeLastFeature = true)
+
+    val grpcCall = newLegacyListFeaturesCall(newGrpcClient(callTimeoutMillis = 200))
+    runBlocking {
+      val (requests, responses) = grpcCall.executeIn(this)
+      requests.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+      requests.close()
+      assertThat(responses.receive()).isEqualTo(Feature(name = "tree"))
+      assertThat(responses.receive()).isEqualTo(Feature(name = "house"))
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
+    }
+
+    mockService.awaitSuccessBlocking()
+  }
+
   @Test
   fun legacyServerStreamingBlocking() {
     enqueueListFeatures()
@@ -642,7 +673,14 @@ class GrpcClientTest {
     mockService.awaitSuccessBlocking()
   }
 
-  private fun newLegacyListFeaturesCall() = grpcClient.newStreamingCall(
+  private fun newGrpcClient(callTimeoutMillis: Long) = GrpcClient.Builder()
+    .client(okhttpClient.newBuilder().callTimeout(callTimeoutMillis, TimeUnit.MILLISECONDS).build())
+    .baseUrl(mockService.url)
+    .build()
+
+  private fun newRouteGuideClient(callTimeoutMillis: Long) = newGrpcClient(callTimeoutMillis).create(RouteGuideClient::class)
+
+  private fun newLegacyListFeaturesCall(grpcClient: GrpcClient = this.grpcClient) = grpcClient.newStreamingCall(
     GrpcMethod(
       path = "/routeguide.RouteGuide/ListFeatures",
       requestAdapter = Rectangle.ADAPTER,
