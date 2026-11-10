@@ -18,10 +18,16 @@ package com.squareup.wire.schema
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import com.google.protobuf.DescriptorProtos.FileDescriptorProto
+import com.google.protobuf.Descriptors
+import com.google.protobuf.DynamicMessage
+import com.squareup.wire.ProtoWriter
 import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.internal.SchemaEncoder
 import kotlin.test.Test
 import kotlin.test.fail
 import okio.Buffer
+import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.toByteString
 import okio.EOFException
@@ -513,6 +519,138 @@ class SchemaProtoAdapterTest {
     val bytes = "0a0012001a00".decodeHex()
     assertThat(adapter.decode(bytes)).isEqualTo(expected)
     assertThat(adapter.decode(Buffer().write(bytes))).isEqualTo(expected)
+  }
+
+  @Test
+  fun encodeProto3RepeatedScalarPacked() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |syntax = "proto3";
+            |message Message {
+            |  repeated int32 values = 1;
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    val value = mapOf("values" to listOf(1, 2, 3))
+    // Golden data emitted by protoc.
+    val encoded = "0a03010203".decodeHex()
+    assertThat(adapter.encode(value).toByteString()).isEqualTo(encoded)
+    assertThat(adapter.encodedSize(value)).isEqualTo(encoded.size)
+    assertThat(adapter.decode(encoded)).isEqualTo(value)
+  }
+
+  @Test
+  fun encodePackedAndUnpackedLikeProtobufJava() {
+    val types = mapOf(
+      "int32" to listOf(0, 1, -2),
+      "uint32" to listOf(0, 1, -2),
+      "sint32" to listOf(0, 1, -2),
+      "fixed32" to listOf(0, 1, -2),
+      "sfixed32" to listOf(0, 1, -2),
+      "int64" to listOf(0L, 1L, -2L),
+      "uint64" to listOf(0L, 1L, -2L),
+      "sint64" to listOf(0L, 1L, -2L),
+      "fixed64" to listOf(0L, 1L, -2L),
+      "sfixed64" to listOf(0L, 1L, -2L),
+      "float" to listOf(0f, 1.5f, -2f),
+      "double" to listOf(0.0, 1.5, -2.0),
+      "bool" to listOf(true, false, true),
+      "Choice" to listOf("A", "B", "A"),
+    )
+    for (syntax in listOf("proto2", "proto3")) {
+      for (packedOption in listOf("", " [packed = false]", " [packed = true]")) {
+        for ((type, values) in types) {
+          // Protobuf packs these by default in proto3. Wire does not, in generated code either.
+          if (syntax == "proto3" && packedOption == "" && type in listOf("bool", "Choice")) continue
+          val schema = buildSchema {
+            add(
+              "message.proto".toPath(),
+              """
+                  |syntax = "$syntax";
+                  |message Message {
+                  |  enum Choice { A = 0; B = 1; }
+                  |  repeated $type values = 1$packedOption;
+                  |  repeated int32 after = 2;
+                  |}
+              """.trimMargin(),
+            )
+          }
+          val adapter = schema.protoAdapter("Message", false)
+          val descriptor = protobufJavaDescriptor(schema, "message.proto", "Message")
+          for (value in listOf(
+            mapOf("values" to values, "after" to listOf(7)),
+            mapOf("values" to values.take(1)),
+            mapOf("values" to emptyList<Any>(), "after" to listOf(7)),
+          )) {
+            val expected = protobufJavaEncode(descriptor, value)
+            val context = "$syntax repeated $type$packedOption $value"
+            assertThat(adapter.encode(value).toByteString(), context).isEqualTo(expected)
+            val buffer = Buffer()
+            adapter.encode(ProtoWriter(buffer), value)
+            assertThat(buffer.readByteString(), context).isEqualTo(expected)
+            assertThat(adapter.encodedSize(value), context).isEqualTo(expected.size)
+            val decodedValue = value.filterValues { it != emptyList<Any>() }
+            assertThat(adapter.decode(expected), context).isEqualTo(decodedValue)
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  fun encodePackedNegativeEnums() {
+    val adapter = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+            |message Message {
+            |  enum Choice { NEGATIVE = -1; ZERO = 0; }
+            |  repeated Choice values = 1 [packed = true];
+            |}
+        """.trimMargin(),
+      )
+    }.protoAdapter("Message", false)
+    val value = mapOf("values" to listOf("NEGATIVE", 1))
+    // Generated Wire adapters write enum values as unsigned 32-bit varints.
+    val encoded = "0a06ffffffff0f01".decodeHex()
+    assertThat(adapter.encode(value).toByteString()).isEqualTo(encoded)
+    val buffer = Buffer()
+    adapter.encode(ProtoWriter(buffer), value)
+    assertThat(buffer.readByteString()).isEqualTo(encoded)
+    assertThat(adapter.encodedSize(value)).isEqualTo(encoded.size)
+    assertThat(adapter.decode(encoded)).isEqualTo(value)
+  }
+
+  private fun protobufJavaDescriptor(
+    schema: Schema,
+    path: String,
+    messageName: String,
+  ): Descriptors.Descriptor {
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile(path)!!)
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    val fileDescriptor = Descriptors.FileDescriptor.buildFrom(fileDescriptorProto, arrayOf())
+    return fileDescriptor.findMessageTypeByName(messageName)
+  }
+
+  private fun protobufJavaEncode(
+    descriptor: Descriptors.Descriptor,
+    value: Map<String, Any>,
+  ): ByteString {
+    val builder = DynamicMessage.newBuilder(descriptor)
+    for ((name, list) in value) {
+      val field = descriptor.findFieldByName(name)
+      for (element in list as List<*>) {
+        val javaElement = when (field.javaType) {
+          Descriptors.FieldDescriptor.JavaType.ENUM -> field.enumType.findValueByName(element as String)
+          else -> element
+        }
+        builder.addRepeatedField(field, javaElement)
+      }
+    }
+    return builder.build().toByteArray().toByteString()
   }
 
   @Test
