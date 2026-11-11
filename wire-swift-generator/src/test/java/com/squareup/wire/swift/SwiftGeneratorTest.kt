@@ -305,6 +305,32 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("choice = (try protoReader.decode(Kind.self))")
   }
 
+  @Test fun oneOfNamesDoNotCollideWithNestedTypes() {
+    for (nestedType in listOf("message Selection {}", "enum Selection { UNKNOWN = 0; }")) {
+      val schema = buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+          |syntax = "proto3";
+          |
+          |message Message {
+          |  $nestedType
+          |  oneof selection {
+          |    string text = 1;
+          |    int32 number = 2;
+          |  }
+          |}
+          """.trimMargin(),
+        )
+      }
+
+      val code = schema.generateSwift("Message")
+
+      assertThat(code).contains("public enum Selection_OneOf {")
+      assertThat(code).contains("public var selection: Message.Selection_OneOf?")
+    }
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))
