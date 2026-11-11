@@ -1797,12 +1797,16 @@ class SwiftGenerator private constructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
   ): DeclaredTypeName {
+    val oneOfTypeName = oneOfEnumNames.getValue(oneOf)
+    if (type.nestedTypes.any { it.typeName.simpleName == oneOfTypeName.simpleName }) {
+      return oneOfTypeName.peerType("${oneOfTypeName.simpleName}_OneOf")
+    }
+
     var currentType: ProtoType? = type.type
 
     while (currentType != null) {
       val simpleName = currentType.simpleName
       if (oneOf.name.equals(simpleName, ignoreCase = true)) {
-        val oneOfTypeName = oneOfEnumNames.getValue(oneOf)
         return oneOfTypeName.peerType("${oneOfTypeName.simpleName}_OneOf")
       }
 
@@ -1810,7 +1814,7 @@ class SwiftGenerator private constructor(
       currentType = schema.getType(enclosingName)?.type
     }
 
-    return oneOfEnumNames.getValue(oneOf)
+    return oneOfTypeName
   }
 
   private val ProtoType.encoding: String?
