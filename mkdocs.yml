@@ -87,6 +87,7 @@ nav:
   - 'JSON': wire_json.md
   - 'Wire vs Protoc': wire_vs_protoc.md
   - 'Signing Keys': signing_keys.md
+  - 'Trying a Release Candidate': upgrading.md
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md

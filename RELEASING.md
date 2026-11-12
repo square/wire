@@ -7,6 +7,21 @@ Create an account on the [Sonatype issues site][sonatype_issues]. Ask an existin
 an issue requesting publishing permissions for `com.squareup` projects.
 
 
+Release Candidates
+------------------
+
+Cut a release candidate first when the change log has an entry marked `⚠ Breaking` or `Behavior change`, or when Kotlin or KotlinPoet changed.
+Use the version format `X.Y.Z-RCnn`, starting at `RC01`, and follow the steps below.
+
+After the release candidate is published:
+
+1. Write the GitHub release notes for it.
+   List each breaking change and behavior change in plain words, and link to [Trying a Release Candidate][upgrading].
+2. Tell the main consumers that the release candidate is available.
+3. Wait at least three business days for reports.
+4. Fix the reported problems and cut `RCnn+1`, or cut the final release if there are no problems.
+
+
 Cutting a JVM Release
 ---------------------
 
@@ -56,3 +71,4 @@ Cutting a JVM Release
  [sonatype_issues]: https://issues.sonatype.org/
  [sonatype_nexus]: https://s01.oss.sonatype.org/
  [github_actions]: https://github.com/square/wire/actions
+ [upgrading]: https://square.github.io/wire/upgrading/
