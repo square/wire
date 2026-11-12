@@ -44,6 +44,12 @@ jobs:
         run: |
           ./gradlew -Dkjs=false -Dknative=false -Dkwasm=false -Pswift=false build --stacktrace --warning-mode all -x samples:native:build -x samples:multi-target:build
 
+      # The build regenerates the Java and Kotlin golden files with the Wire Gradle plugin. Fail if
+      # they differ from what is checked in, so generator changes show up in review.
+      - name: Check golden files
+        run: |
+          if [ ! -z "$(git status --porcelain -- wire-golden-files)" ]; then git diff -- wire-golden-files; echo -e "\nGolden files changed. Run ./gradlew :wire-golden-files:build and commit the result."; exit 1; fi
+
   multiplatform:
     runs-on: macos-latest
 
