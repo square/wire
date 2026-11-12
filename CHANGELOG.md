@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 7.2.1
+---------------------
+
+_2026-11-12_
+
+### Swift
+
+* Fix: Swift generation adds the `_OneOf` suffix to a oneof enum whose name matches a nested message or enum of the same message. Before, the generated code declared two types with the same name and did not compile (#3761 by [Max Meyers][maxmeyers])
+
 Version 7.2.0
 ---------------------
 
@@ -58,6 +67,7 @@ _2026-10-27_
 ### Kotlin
 
 * Fix: redact nested message values inside sealed `oneof` fields when calling `ProtoAdapter.redact()`. Regenerate Kotlin sources to apply this fix (#3734)
+* Change: in a sealed `oneof` that has a redacted option, `ProtoAdapter.redact()` now clears only the redacted options. Before, it cleared the whole `oneof`. It redacts a message option field by field and keeps a scalar or enum option as it is. Mark an option `redacted` if its value must not appear in redacted messages (#3734)
 
 ### Swift
 
@@ -2324,10 +2334,11 @@ Initial version.
  [liutikas]: https://github.com/liutikas
  [loganblevins]: https://github.com/loganblevins
  [manus-use]: https://github.com/manus-use
+ [maxmeyers]: https://github.com/maxmeyers
  [mpawliszyn]: https://github.com/mpawliszyn
- [mvanhorn]: https://github.com/mvanhorn
  [mpeyper]: https://github.com/mpeyper
  [mrtryhard]: https://github.com/mrtryhard
+ [mvanhorn]: https://github.com/mvanhorn
  [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
