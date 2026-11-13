@@ -959,7 +959,8 @@ class KotlinGeneratorTest {
           |  override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RecordRoute",
           |      requestAdapter = Point.ADAPTER,
-          |      responseAdapter = RouteSummary.ADAPTER
+          |      responseAdapter = RouteSummary.ADAPTER,
+          |      requestStreaming = true
           |  ))
           |}
           |
@@ -1026,7 +1027,8 @@ class KotlinGeneratorTest {
           |  override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/ListFeatures",
           |      requestAdapter = Rectangle.ADAPTER,
-          |      responseAdapter = Feature.ADAPTER
+          |      responseAdapter = Feature.ADAPTER,
+          |      responseStreaming = true
           |  ))
           |}
           |
@@ -1096,7 +1098,9 @@ class KotlinGeneratorTest {
           override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
               path = "/routeguide.RouteGuide/RouteChat",
               requestAdapter = RouteNote.ADAPTER,
-              responseAdapter = RouteNote.ADAPTER
+              responseAdapter = RouteNote.ADAPTER,
+              requestStreaming = true,
+              responseStreaming = true
           ))
         }
 
@@ -1165,7 +1169,9 @@ class KotlinGeneratorTest {
            override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
                path = "/routeguide.RouteGuide/RouteChat",
                requestAdapter = RouteNote.ADAPTER,
-               responseAdapter = RouteNote.ADAPTER
+               responseAdapter = RouteNote.ADAPTER,
+               requestStreaming = true,
+               responseStreaming = true
            ))
          }
 
@@ -1300,7 +1306,9 @@ class KotlinGeneratorTest {
           |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RouteChat",
           |      requestAdapter = RouteNote.ADAPTER,
-          |      responseAdapter = RouteNote.ADAPTER
+          |      responseAdapter = RouteNote.ADAPTER,
+          |      requestStreaming = true,
+          |      responseStreaming = true
           |  ))
           |}
           |
@@ -1413,7 +1421,9 @@ class KotlinGeneratorTest {
           |  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/RouteChat",
           |      requestAdapter = RouteNote.ADAPTER,
-          |      responseAdapter = RouteNote.ADAPTER
+          |      responseAdapter = RouteNote.ADAPTER,
+          |      requestStreaming = true,
+          |      responseStreaming = true
           |  ))
           |}
           |
