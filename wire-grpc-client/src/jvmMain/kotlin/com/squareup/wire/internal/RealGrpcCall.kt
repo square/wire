@@ -18,7 +18,6 @@ package com.squareup.wire.internal
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.WireGrpcClient
-import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -33,6 +32,9 @@ internal class RealGrpcCall<S : Any, R : Any>(
   /** Non-null once this is executed. */
   private var call: okhttp3.Call? = null
   private var canceled = false
+
+  /** Initialized once this is executed. */
+  private lateinit var callTimeout: GrpcCallTimeout
 
   override val timeout: Timeout = ForwardingTimeout(Timeout())
 
@@ -58,13 +60,15 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
       call.enqueue(object : okhttp3.Callback {
         override fun onFailure(call: okhttp3.Call, e: IOException) {
-          continuation.resumeWithException(e)
+          continuation.resumeWithException(callTimeout.exit(e))
         }
 
         override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
           try {
-            responseMetadata = response.headers.toMap()
-            val message = response.readExactlyOneAndClose()
+            val message = callTimeout.exitAfter {
+              responseMetadata = response.headers.toMap()
+              response.readExactlyOneAndClose()
+            }
             continuation.resume(message)
           } catch (e: IOException) {
             continuation.resumeWithException(e)
@@ -76,22 +80,26 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
   override fun executeBlocking(request: S): R {
     val call = initCall(request)
-    val response = call.execute()
-    responseMetadata = response.headers.toMap()
-    return response.readExactlyOneAndClose()
+    return callTimeout.exitAfter {
+      val response = call.execute()
+      responseMetadata = response.headers.toMap()
+      response.readExactlyOneAndClose()
+    }
   }
 
   override fun enqueue(request: S, callback: GrpcCall.Callback<S, R>) {
     val call = initCall(request)
     call.enqueue(object : okhttp3.Callback {
       override fun onFailure(call: okhttp3.Call, e: IOException) {
-        callback.onFailure(this@RealGrpcCall, e)
+        callback.onFailure(this@RealGrpcCall, callTimeout.exit(e))
       }
 
       override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
         try {
-          responseMetadata = response.headers.toMap()
-          val message = response.readExactlyOneAndClose()
+          val message = callTimeout.exitAfter {
+            responseMetadata = response.headers.toMap()
+            response.readExactlyOneAndClose()
+          }
           callback.onSuccess(this@RealGrpcCall, message)
         } catch (e: IOException) {
           callback.onFailure(this@RealGrpcCall, e)
@@ -124,11 +132,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
   override fun clone(): GrpcCall<S, R> {
     val result = RealGrpcCall(grpcClient, method)
-    val oldTimeout = this.timeout
-    result.timeout.also { newTimeout ->
-      newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
-      if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
-    }
+    timeout.copyTo(result.timeout)
     result.requestMetadata += this.requestMetadata
     return result
   }
@@ -144,6 +148,12 @@ internal class RealGrpcCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
+    // Enforce the user-set timeout and deadline on the client.
+    // The grpc-timeout header alone does nothing if the server or a proxy ignores it.
+    callTimeout = GrpcCallTimeout(result).also {
+      timeout.copyTo(it)
+      it.enter()
+    }
     // If the timeout doesn't have a deadline or timeout, then the user
     // didn't set the timeout on this Call manually.
     if (!timeout.hasDeadline() && (timeout.timeoutNanos() == 0L)) {

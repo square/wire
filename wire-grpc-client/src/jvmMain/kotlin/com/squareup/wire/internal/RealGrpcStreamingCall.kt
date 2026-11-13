@@ -20,7 +20,6 @@ import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
 import com.squareup.wire.WireGrpcClient
-import java.util.concurrent.TimeUnit
 import kotlin.DeprecationLevel.WARNING
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +40,9 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   /** Non-null once this is executed. */
   private var call: okhttp3.Call? = null
   private var canceled = false
+
+  /** Initialized once this is executed. */
+  internal lateinit var callTimeout: GrpcCallTimeout
 
   override val timeout: Timeout = ForwardingTimeout(Timeout())
 
@@ -112,15 +114,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
 
   override fun clone(): GrpcStreamingCall<S, R> {
     val result = RealGrpcStreamingCall(grpcClient, method)
-    val oldTimeout = this.timeout
-    result.timeout.also { newTimeout ->
-      newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
-      if (oldTimeout.hasDeadline()) {
-        newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
-      } else {
-        newTimeout.clearDeadline()
-      }
-    }
+    timeout.copyTo(result.timeout)
     result.requestMetadata += this.requestMetadata
     return result
   }
@@ -131,7 +125,16 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
-    (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    // Enforce the user-set timeout and deadline on the client, for the full lifetime of the call.
+    // The grpc-timeout header alone does nothing if the server or a proxy ignores it.
+    callTimeout = GrpcCallTimeout(result).also {
+      timeout.copyTo(it)
+      it.enter()
+    }
+    // Keep the user-set values readable. Without them, show the OkHttp call timeout.
+    if (!timeout.hasDeadline() && (timeout.timeoutNanos() == 0L)) {
+      (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    }
     return result
   }
 }
