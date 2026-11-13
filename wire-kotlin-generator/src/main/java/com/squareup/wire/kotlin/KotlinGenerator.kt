@@ -3661,6 +3661,7 @@ class KotlinGenerator private constructor(
       ProtoType.TIMESTAMP to ClassName("com.squareup.wire", "Instant"),
       ProtoType.EMPTY to ClassName("kotlin", "Unit"),
       ProtoType.FIELD_MASK to ClassName("com.squareup.wire", "FieldMask"),
+      ProtoType.RPC_STATUS to ClassName("com.squareup.wire", "RpcStatus"),
       ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
         .parameterizedBy(ClassName("kotlin", "String"), STAR).copy(nullable = true),
       ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any").copy(nullable = true),

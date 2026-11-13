@@ -1022,6 +1022,30 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void usesRpcStatus() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("a.proto"),
+                ""
+                    + "syntax = \"proto3\";\n"
+                    + "package common.proto;\n"
+                    + "import \"google/rpc/status.proto\";\n"
+                    + "message Message {\n"
+                    + "  google.rpc.Status status = 1;\n"
+                    + "  repeated google.rpc.Status statuses = 2;\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("common.proto.Message");
+    assertThat(code).contains("import com.squareup.wire.RpcStatus;");
+    assertThat(code).doesNotContain("com.google.rpc");
+    assertThat(code).contains("public final RpcStatus status;");
+    assertThat(code).contains("public final List<RpcStatus> statuses;");
+    assertThat(code).contains("adapter = \"com.squareup.wire.RpcStatus#ADAPTER\"");
+    assertThat(code).contains("RpcStatus.ADAPTER.asRepeated()");
+  }
+
+  @Test
   public void fieldHasScalarName() throws Exception {
     Schema schema =
         new SchemaBuilder()

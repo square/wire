@@ -69,9 +69,12 @@ public final class com/squareup/wire/GrpcException : java/io/IOException {
 	public synthetic fun <init> (Lcom/squareup/wire/GrpcStatus;Ljava/lang/String;[BILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcom/squareup/wire/GrpcStatus;Ljava/lang/String;[BLjava/lang/String;)V
 	public synthetic fun <init> (Lcom/squareup/wire/GrpcStatus;Ljava/lang/String;[BLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcom/squareup/wire/RpcStatus;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/squareup/wire/RpcStatus;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getGrpcMessage ()Ljava/lang/String;
 	public final fun getGrpcStatus ()Lcom/squareup/wire/GrpcStatus;
 	public final fun getGrpcStatusDetails ()[B
+	public final fun getRpcStatus ()Lcom/squareup/wire/RpcStatus;
 	public final fun getUrl ()Ljava/lang/String;
 }
 

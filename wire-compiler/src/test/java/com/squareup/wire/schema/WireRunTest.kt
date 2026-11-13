@@ -517,6 +517,84 @@ class WireRunTest {
   }
 
   @Test
+  fun rpcStatusIsNeverGenerated() {
+    fs.add(
+      "googleapis/src/main/proto/google/rpc/status.proto",
+      """
+        |syntax = "proto3";
+        |package google.rpc;
+        |import "google/protobuf/any.proto";
+        |option java_package = "com.google.rpc";
+        |message Status {
+        |  int32 code = 1;
+        |  string message = 2;
+        |  repeated google.protobuf.Any details = 3;
+        |}
+      """.trimMargin(),
+    )
+    fs.add(
+      "errors/src/main/proto/squareup/errors/failure.proto",
+      """
+        |syntax = "proto3";
+        |package squareup.errors;
+        |import "google/rpc/status.proto";
+        |message Failure {
+        |  google.rpc.Status status = 1;
+        |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(
+        Location.get("errors/src/main/proto"),
+        Location.get("googleapis/src/main/proto"),
+      ),
+      targets = listOf(
+        KotlinTarget(outDirectory = "generated/kt", exclusive = false),
+        JavaTarget(outDirectory = "generated/java"),
+      ),
+    )
+    wireRun.execute(fs, logger)
+
+    // Wire maps google.rpc.Status to com.squareup.wire.RpcStatus, so it never emits its own copy.
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/java/squareup/errors/Failure.java",
+      "generated/kt/squareup/errors/Failure.kt",
+    )
+    assertThat(fs.readUtf8("generated/kt/squareup/errors/Failure.kt"))
+      .contains("public val status: RpcStatus? = null")
+    assertThat(fs.readUtf8("generated/java/squareup/errors/Failure.java"))
+      .contains("public final RpcStatus status;")
+  }
+
+  @Test
+  fun rpcStatusResolvesWithoutGoogleapis() {
+    fs.add(
+      "errors/src/main/proto/squareup/errors/failure.proto",
+      """
+        |syntax = "proto3";
+        |package squareup.errors;
+        |import "google/rpc/status.proto";
+        |message Failure {
+        |  google.rpc.Status status = 1;
+        |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("errors/src/main/proto")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/squareup/errors/Failure.kt",
+    )
+    assertThat(fs.readUtf8("generated/kt/squareup/errors/Failure.kt"))
+      .contains("public val status: RpcStatus? = null")
+  }
+
+  @Test
   fun ktThenJava() {
     writeBlueProto()
     writeRedProto()

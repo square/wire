@@ -657,6 +657,7 @@ public final class com/squareup/wire/schema/ProtoType {
 	public static final field INT32_VALUE Lcom/squareup/wire/schema/ProtoType;
 	public static final field INT64 Lcom/squareup/wire/schema/ProtoType;
 	public static final field INT64_VALUE Lcom/squareup/wire/schema/ProtoType;
+	public static final field RPC_STATUS Lcom/squareup/wire/schema/ProtoType;
 	public static final field SFIXED32 Lcom/squareup/wire/schema/ProtoType;
 	public static final field SFIXED64 Lcom/squareup/wire/schema/ProtoType;
 	public static final field SINT32 Lcom/squareup/wire/schema/ProtoType;

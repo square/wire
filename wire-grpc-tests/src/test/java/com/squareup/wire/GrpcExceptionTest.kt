@@ -15,6 +15,9 @@
  */
 package com.squareup.wire
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import java.io.ByteArrayOutputStream
 import java.io.ObjectOutputStream
 import org.junit.Test
@@ -30,5 +33,31 @@ class GrpcExceptionTest {
         grpcStatusDetails = byteArrayOf(1, 2, 3),
       )
     ObjectOutputStream(ByteArrayOutputStream()).use { os -> os.writeObject(grpcException) }
+  }
+
+  @Test
+  fun createFromRpcStatus() {
+    val rpcStatus = RpcStatus(
+      code = GrpcStatus.FAILED_PRECONDITION.code,
+      message = "message",
+      details = listOf(AnyMessage("type.googleapis.com/x.Y")),
+    )
+    val grpcException = GrpcException(rpcStatus)
+    assertThat(grpcException.grpcStatus).isEqualTo(GrpcStatus.FAILED_PRECONDITION)
+    assertThat(grpcException.grpcMessage).isEqualTo("message")
+    assertThat(grpcException.rpcStatus).isEqualTo(rpcStatus)
+  }
+
+  @Test
+  fun rpcStatusIsNullWithoutDetails() {
+    val grpcException = GrpcException(GrpcStatus.INTERNAL, "message")
+    assertThat(grpcException.rpcStatus).isNull()
+  }
+
+  @Test
+  fun rpcStatusIsNullForInvalidDetails() {
+    // A length-delimited field 1 whose length runs past the end of the bytes.
+    val grpcException = GrpcException(GrpcStatus.INTERNAL, "message", byteArrayOf(0x0a, 0x7f))
+    assertThat(grpcException.rpcStatus).isNull()
   }
 }

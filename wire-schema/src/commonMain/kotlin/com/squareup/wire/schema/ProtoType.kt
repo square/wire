@@ -140,6 +140,9 @@ class ProtoType {
 
     @JvmField val FIELD_MASK = ProtoType(false, "google.protobuf.FieldMask")
 
+    /** The gRPC error model. It lives in googleapis, not in the protobuf well-known types. */
+    @JvmField val RPC_STATUS = ProtoType(false, "google.rpc.Status")
+
     @JvmField val STRUCT_MAP = ProtoType(false, "google.protobuf.Struct")
 
     @JvmField val STRUCT_VALUE = ProtoType(false, "google.protobuf.Value")

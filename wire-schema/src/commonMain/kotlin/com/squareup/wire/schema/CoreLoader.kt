@@ -37,6 +37,7 @@ fun isWireRuntimeProto(path: String): Boolean = path == ANY_PROTO ||
   path == STRUCT_PROTO ||
   path == TIMESTAMP_PROTO ||
   path == WRAPPERS_PROTO ||
+  path == RPC_STATUS_PROTO ||
   path == WIRE_EXTENSIONS_PROTO
 
 internal const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
@@ -49,6 +50,7 @@ private const val FIELD_MASK_PROTO = "google/protobuf/field_mask.proto"
 private const val STRUCT_PROTO = "google/protobuf/struct.proto"
 private const val TIMESTAMP_PROTO = "google/protobuf/timestamp.proto"
 private const val WRAPPERS_PROTO = "google/protobuf/wrappers.proto"
+private const val RPC_STATUS_PROTO = "google/rpc/status.proto"
 
 /** A special base directory used for Wire's built-in .proto files. */
 const val WIRE_RUNTIME_JAR = "wire-runtime.jar"

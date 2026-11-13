@@ -29,6 +29,34 @@ class GrpcException(
     if (url != null) append(" url=$url")
   },
 ) {
+  /**
+   * Creates an exception from a `google.rpc.Status`.
+   * Its code and message become the `grpc-status` and `grpc-message`, and its encoded form becomes the `grpc-status-details-bin`.
+   */
+  constructor(
+    rpcStatus: RpcStatus,
+    url: String? = null,
+  ) : this(
+    grpcStatus = GrpcStatus.get(rpcStatus.code),
+    grpcMessage = rpcStatus.message.ifEmpty { null },
+    grpcStatusDetails = rpcStatus.encode(),
+    url = url,
+  )
+
+  /**
+   * The `grpc-status-details-bin` trailer decoded as a `google.rpc.Status`.
+   * This is null if the server didn't send that trailer, or if its bytes aren't a valid `google.rpc.Status`.
+   */
+  val rpcStatus: RpcStatus?
+    get() {
+      val bytes = grpcStatusDetails ?: return null
+      return try {
+        RpcStatus.ADAPTER.decode(bytes)
+      } catch (e: IOException) {
+        null
+      }
+    }
+
   @Deprecated(
     message = "added url parameter",
     level = DeprecationLevel.HIDDEN,

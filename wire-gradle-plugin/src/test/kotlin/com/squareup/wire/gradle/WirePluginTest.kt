@@ -1373,7 +1373,8 @@ class WirePluginTest {
     }
     assertThat(buildCacheDir.exists()).isFalse()
 
-    val generatedStatus = "build/generated/source/wire/com/google/rpc/Status.kt"
+    // Not google/rpc/status.proto: Wire maps google.rpc.Status to RpcStatus and never generates it.
+    val generatedCode = "build/generated/source/wire/com/google/rpc/Code.kt"
 
     val fixtureRoot = File("src/test/projects/cache-source-relocation-1")
     val result = fixtureGradleRunner(fixtureRoot)
@@ -1390,7 +1391,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNotNull()
     assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
     assertThat(result.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
-    assertThat(File(fixtureRoot, generatedStatus)).exists()
+    assertThat(File(fixtureRoot, generatedCode)).exists()
 
     // After the first project, the build cache should exist. It will get used for the second
     // project.
@@ -1411,7 +1412,7 @@ class WirePluginTest {
     assertThat(relocatedResult.task(":generateProtos")).isNotNull()
     assertThat(relocatedResult.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
     assertThat(relocatedResult.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
-    assertThat(File(relocatedRoot, generatedStatus)).exists()
+    assertThat(File(relocatedRoot, generatedCode)).exists()
 
     // Clean up on success; leave the dir on failure for easier debugging.
     buildCacheDir.deleteRecursively()
