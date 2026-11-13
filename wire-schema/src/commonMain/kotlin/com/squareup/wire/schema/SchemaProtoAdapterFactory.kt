@@ -249,6 +249,9 @@ internal class SchemaProtoAdapterFactory(
     override val wireFieldJsonName: String = field.jsonName!!
     override val writeIdentityValues: Boolean = false
 
+    // Enum values can be constant names or tags, so tag 0 is also an identity value.
+    override fun isIdentity(value: Any): Boolean = super.isIdentity(value) || (value == 0 && adapter is EnumAdapter && adapter.identity != null)
+
     override val keyAdapter: ProtoAdapter<*>
       get() = get(this.field.type!!.keyType!!)
 

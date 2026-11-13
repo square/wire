@@ -77,6 +77,23 @@ abstract class FieldOrOneOfBinding<M, B> {
 
   abstract fun getFromBuilder(builder: B): Any?
 
+  /**
+   * Returns true if the protobuf encoding omits [value].
+   * Generated adapters omit the same values.
+   */
+  fun omitFromProto(value: Any?): Boolean {
+    if (value == null) return true
+    return omitIdentityFromProto && isIdentity(value)
+  }
+
+  /** Returns true if [value] is the identity value of this field's adapter. */
+  protected open fun isIdentity(value: Any): Boolean = value == adapter.identity
+
+  /** A present message is always written, even a wrapper that holds an identity value. */
+  private val omitIdentityFromProto: Boolean by lazy {
+    label == WireField.Label.OMIT_IDENTITY && !writeIdentityValues && !isMessage
+  }
+
   fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
     if (value == null) return true
     return omitIdentity(syntax) && value == adapter.identity
