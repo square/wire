@@ -86,11 +86,11 @@ final class WriteBuffer {
     }
 
     func append(_ value: UnsafeRawBufferPointer) {
-        guard value.count > 0 else { return }
-        
+        guard value.count > 0, let baseAddress = value.baseAddress else { return }
+
         expandIfNeeded(adding: value.count)
 
-        memcpy(storage.advanced(by: count), value.baseAddress, value.count)
+        memcpy(storage.advanced(by: count), baseAddress, value.count)
         count += value.count
     }
 
