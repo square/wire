@@ -1351,6 +1351,48 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testNestedMessageEndMismatchCleansUpUnknownFields() throws {
+        // The nested message keeps a large unknown field, then a varint crosses its end.
+        let unknownFieldSize = 1 << 20
+        var nested = Foundation.Data([0x12])
+        nested.append(encodeVarint(unknownFieldSize))
+        nested.append(Foundation.Data(repeating: 0x41, count: unknownFieldSize))
+        nested.append(contentsOf: [0x18, 0x80])
+        var data = Foundation.Data([0x0A])
+        data.append(encodeVarint(nested.count))
+        data.append(nested)
+        data.append(0x01)
+
+        func decodeMalformed() {
+            XCTAssertThrowsError(
+                try test(data: data) { reader in
+                    _ = try reader.forEachTag { tag in
+                        XCTAssertEqual(tag, 1)
+                        _ = try reader.forEachTag { tag in
+                            try reader.readUnknownField(tag: tag)
+                        }
+                    }
+                }
+            ) { error in
+                guard case ProtoDecoder.Error.invalidStructure = error else {
+                    return XCTFail("Unexpected error: \(error)")
+                }
+            }
+        }
+
+        #if canImport(Darwin)
+        decodeMalformed()
+        let before = mallocBytesInUse()
+        for _ in 0..<20 {
+            decodeMalformed()
+        }
+        // Each leaked frame would retain at least one copy of the unknown field.
+        XCTAssertLessThan(mallocBytesInUse() - before, 5 * unknownFieldSize)
+        #else
+        decodeMalformed()
+        #endif
+    }
+
     func testPackedRepeatedRejectsOversizedLengthBeforePreallocation() throws {
         let data = Foundation.Data(hexEncoded: """
             0A         // (Tag 1 | Length Delimited)
@@ -1663,6 +1705,14 @@ final class ProtoReaderTests: XCTestCase {
             return
         }
     }
+
+    #if canImport(Darwin)
+    private func mallocBytesInUse() -> Int {
+        var statistics = malloc_statistics_t()
+        malloc_zone_statistics(nil, &statistics)
+        return Int(statistics.size_in_use)
+    }
+    #endif
 
     private func assertRecursionLimitError(_ error: Error) {
         guard case ProtoDecoder.Error.recursionLimitExceeded = error else {

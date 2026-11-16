@@ -242,19 +242,20 @@ public final class ProtoReader {
 
         let frame = messageStack[token]
 
+        // Clear out unknownFields to avoid memory leaks caused by
+        // UnsafeMutablePointer's inability to deallocate non-trivial types.
+        // This is caused by unknownFields type, WriteBuffer, being a class/reference type.
+        // Register the cleanup before validation: `deinit` skips this frame once it is popped.
+        defer {
+            messageStack[token].unknownFields.removeAll()
+        }
+
         messageStackIndex -= 1
 
         if buffer.pointer != frame.messageEnd {
             throw ProtoDecoder.Error.invalidStructure(
                 message: "Expected to end message at at \(frame.messageEnd - buffer.start), but was at \(buffer.position)"
             )
-        }
-
-        //clear out unknownFields to avoid memory leaks caused by
-        //UnsafeMutablePointer's inability to deallocate non-trivial types.
-        //This is caused by unknownFields type, WriteBuffer, being a class/reference type.
-        defer {
-            messageStack[token].unknownFields.removeAll()
         }
 
         return frame.unknownFields.mapValues { Data($0, copyBytes: false) }
