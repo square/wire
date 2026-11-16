@@ -287,8 +287,11 @@ public final class com/squareup/wire/ProtoAdapter$EnumConstantNotFoundException 
 
 public class com/squareup/wire/ProtoReader {
 	public static final field Companion Lcom/squareup/wire/ProtoReader$Companion;
+	public static final field DEFAULT_RECURSION_LIMIT I
 	public final fun -forEachTag (Lkotlin/jvm/functions/Function1;)Lokio/ByteString;
 	public fun <init> (Lokio/BufferedSource;)V
+	public fun <init> (Lokio/BufferedSource;I)V
+	public synthetic fun <init> (Lokio/BufferedSource;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun addUnknownField (ILcom/squareup/wire/FieldEncoding;Ljava/lang/Object;)V
 	public fun beginMessage ()J
 	public final fun endMessage (J)V
@@ -333,8 +336,12 @@ public abstract interface class com/squareup/wire/ProtoReader32 {
 public final class com/squareup/wire/ProtoReader32Kt {
 	public static final fun -forEachTag (Lcom/squareup/wire/ProtoReader32;Lkotlin/jvm/functions/Function1;)Lokio/ByteString;
 	public static final fun ProtoReader32 (Lokio/ByteString;II)Lcom/squareup/wire/ProtoReader32;
+	public static final fun ProtoReader32 (Lokio/ByteString;III)Lcom/squareup/wire/ProtoReader32;
 	public static final fun ProtoReader32 ([BII)Lcom/squareup/wire/ProtoReader32;
+	public static final fun ProtoReader32 ([BIII)Lcom/squareup/wire/ProtoReader32;
+	public static synthetic fun ProtoReader32$default (Lokio/ByteString;IIIILjava/lang/Object;)Lcom/squareup/wire/ProtoReader32;
 	public static synthetic fun ProtoReader32$default (Lokio/ByteString;IIILjava/lang/Object;)Lcom/squareup/wire/ProtoReader32;
+	public static synthetic fun ProtoReader32$default ([BIIIILjava/lang/Object;)Lcom/squareup/wire/ProtoReader32;
 	public static synthetic fun ProtoReader32$default ([BIIILjava/lang/Object;)Lcom/squareup/wire/ProtoReader32;
 }
 

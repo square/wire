@@ -183,3 +183,39 @@ fun ProtoReader32(
   pos = pos,
   limit = limit,
 )
+
+/**
+ * Returns a [ProtoReader32] that reads [source] from [pos] to [limit].
+ *
+ * @param recursionLimit the maximum number of levels of message and group nesting to allow. A
+ *     message nested deeper than this limit fails with an [IOException].
+ */
+fun ProtoReader32(
+  source: ByteString,
+  pos: Int = 0,
+  limit: Int = source.size,
+  recursionLimit: Int,
+): ProtoReader32 = ByteArrayProtoReader32(
+  source = source.toByteArray(),
+  pos = pos,
+  limit = limit,
+  recursionLimit = recursionLimit,
+)
+
+/**
+ * Returns a [ProtoReader32] that reads [source] from [pos] to [limit].
+ *
+ * @param recursionLimit the maximum number of levels of message and group nesting to allow. A
+ *     message nested deeper than this limit fails with an [IOException].
+ */
+fun ProtoReader32(
+  source: ByteArray,
+  pos: Int = 0,
+  limit: Int = source.size,
+  recursionLimit: Int,
+): ProtoReader32 = ByteArrayProtoReader32(
+  source = source,
+  pos = pos,
+  limit = limit,
+  recursionLimit = recursionLimit,
+)
