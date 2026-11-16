@@ -18,6 +18,7 @@ package com.squareup.wire.internal
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.WireGrpcClient
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -37,6 +38,11 @@ internal class RealGrpcCall<S : Any, R : Any>(
   private lateinit var callTimeout: GrpcCallTimeout
 
   override val timeout: Timeout = ForwardingTimeout(Timeout())
+
+  init {
+    // Start with the default timeout of the client. The user can change it before the call executes.
+    timeout.timeout(grpcClient.callTimeoutNanos, TimeUnit.NANOSECONDS)
+  }
 
   override var requestMetadata: Map<String, String> = mapOf()
 

@@ -250,11 +250,11 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
 
 /**
  * Copies the timeout and the deadline of this onto [target].
- * A value that is not set on this does not change [target].
+ * A value that is not set on this is cleared on [target].
  */
 internal fun Timeout.copyTo(target: Timeout) {
-  if (timeoutNanos() != 0L) target.timeout(timeoutNanos(), TimeUnit.NANOSECONDS)
-  if (hasDeadline()) target.deadlineNanoTime(deadlineNanoTime())
+  target.timeout(timeoutNanos(), TimeUnit.NANOSECONDS)
+  if (hasDeadline()) target.deadlineNanoTime(deadlineNanoTime()) else target.clearDeadline()
 }
 
 /**

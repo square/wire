@@ -18,6 +18,7 @@ package com.squareup.wire
 import assertk.Assert
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.hasMessage
 import assertk.assertions.hasSize
 import assertk.assertions.isBetween
 import assertk.assertions.isEqualTo
@@ -66,6 +67,7 @@ class GrpcClientTimeoutTest {
   @JvmField @Rule
   val testTimeout = Timeout(30, TimeUnit.SECONDS)
 
+  private lateinit var grpcClient: GrpcClient
   private lateinit var routeGuideService: RouteGuideClient
 
   /** Held until the test ends. The dispatcher blocks on it, so responses never go out. */
@@ -96,7 +98,7 @@ class GrpcClientTimeoutTest {
       .readTimeout(Duration.ofSeconds(10))
       .writeTimeout(Duration.ofSeconds(10))
       .build()
-    val grpcClient = GrpcClient.Builder()
+    grpcClient = GrpcClient.Builder()
       .client(okhttpClient)
       .baseUrl(mockWebServer.url("/"))
       .build()
@@ -284,6 +286,121 @@ class GrpcClientTimeoutTest {
 
     assertThat(grpcCall.isCanceled()).isTrue()
     assertThat(elapsedMillis).isBetween(400L, 3_000L)
+  }
+
+  @Test
+  fun unaryCallUsesClientDefaultTimeout() {
+    val service = grpcClient.newBuilder()
+      .callTimeout(500, TimeUnit.MILLISECONDS)
+      .build()
+      .create(RouteGuideClient::class)
+    val grpcCall = service.GetFeature()
+
+    val elapsedMillis = elapsedMillis {
+      assertFailure {
+        grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+  }
+
+  @Test
+  fun streamingCallUsesClientDefaultTimeout() {
+    val service = grpcClient.newBuilder()
+      .callTimeout(500, TimeUnit.MILLISECONDS)
+      .build()
+      .create(RouteGuideClient::class)
+    val grpcCall = service.RouteChat()
+
+    val (requestSink, responseSource) = grpcCall.executeBlocking()
+    val elapsedMillis = elapsedMillis {
+      assertFailure {
+        responseSource.read()
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+
+    requestSink.closeQuietly()
+  }
+
+  @Test
+  fun clientDefaultTimeoutIsSentInHeader() {
+    respond = { grpcResponse(Feature.ADAPTER.encode(Feature(name = "tree"))) }
+    val service = grpcClient.newBuilder()
+      .callTimeout(2, TimeUnit.SECONDS)
+      .build()
+      // The default timeout stays when the client is built again.
+      .newBuilder()
+      .build()
+      .create(RouteGuideClient::class)
+
+    service.GetFeature().executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(mockWebServer.takeRequest().grpcTimeoutMicros()).isBetween(1_000_000L, 2_000_000L)
+  }
+
+  @Test
+  fun callTimeoutOverridesClientDefaultTimeout() {
+    respond = {
+      Thread.sleep(600)
+      grpcResponse(Feature.ADAPTER.encode(Feature(name = "tree")))
+    }
+    val service = grpcClient.newBuilder()
+      .callTimeout(200, TimeUnit.MILLISECONDS)
+      .build()
+      .create(RouteGuideClient::class)
+    val grpcCall = service.GetFeature()
+    grpcCall.timeout.timeout(10, TimeUnit.SECONDS)
+
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree"))
+  }
+
+  @Test
+  fun callCanClearClientDefaultTimeout() {
+    respond = {
+      Thread.sleep(600)
+      grpcResponse(Feature.ADAPTER.encode(Feature(name = "tree")))
+    }
+    val service = grpcClient.newBuilder()
+      .callTimeout(200, TimeUnit.MILLISECONDS)
+      .build()
+      .create(RouteGuideClient::class)
+    val grpcCall = service.GetFeature()
+    grpcCall.timeout.clearTimeout()
+
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree"))
+    assertThat(mockWebServer.takeRequest().headers.values("grpc-timeout")).hasSize(0)
+  }
+
+  @Test
+  fun cloneKeepsClearedClientDefaultTimeout() {
+    val service = grpcClient.newBuilder()
+      .callTimeout(200, TimeUnit.MILLISECONDS)
+      .build()
+      .create(RouteGuideClient::class)
+    val unaryCall = service.GetFeature()
+    unaryCall.timeout.clearTimeout()
+    val streamingCall = service.RouteChat()
+    streamingCall.timeout.clearTimeout()
+
+    assertThat(unaryCall.clone().timeout.timeoutNanos()).isEqualTo(0L)
+    assertThat(streamingCall.clone().timeout.timeoutNanos()).isEqualTo(0L)
+  }
+
+  @Test
+  fun negativeClientDefaultTimeoutIsRejected() {
+    assertFailure {
+      GrpcClient.Builder().callTimeout(-1, TimeUnit.SECONDS)
+    }.isInstanceOf<IllegalArgumentException>()
+      .hasMessage("callTimeout must not be negative: -1")
   }
 
   private fun Assert<Throwable>.isDeadlineExceeded() {
