@@ -46,8 +46,24 @@ import okio.IOException
 
 /**
  * Reads and decodes protocol message fields.
+ *
+ * @param recursionLimit the maximum number of levels of message and group nesting to allow. A
+ *     message nested deeper than this limit fails with an [IOException]. The limit protects the
+ *     reader from stack overflows on malicious input. The constructor without this parameter uses
+ *     [DEFAULT_RECURSION_LIMIT].
  */
-open class ProtoReader(private val source: BufferedSource) {
+open class ProtoReader(
+  private val source: BufferedSource,
+  private val recursionLimit: Int,
+) {
+  // An explicit overload, not a default value, keeps the existing constructor signature in JVM
+  // bytecode and in Kotlin/JS and Kotlin/Native klibs.
+  constructor(source: BufferedSource) : this(source, DEFAULT_RECURSION_LIMIT)
+
+  init {
+    require(recursionLimit >= 0) { "recursionLimit=$recursionLimit must not be negative" }
+  }
+
   /*
    * Introducing new methods here?
    *
@@ -92,7 +108,7 @@ open class ProtoReader(private val source: BufferedSource) {
     if (state != STATE_LENGTH_DELIMITED) {
       throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
-    if (++recursionDepth > RECURSION_LIMIT) {
+    if (++recursionDepth > recursionLimit) {
       throw IOException("Wire recursion limit exceeded")
     }
     // Allocate a buffer to store unknown fields encountered at this recursion level.
@@ -254,7 +270,7 @@ open class ProtoReader(private val source: BufferedSource) {
         STATE_START_GROUP -> {
           recursionDepth++
           try {
-            if (recursionDepth > RECURSION_LIMIT) {
+            if (recursionDepth > recursionLimit) {
               throw IOException("Wire recursion limit exceeded")
             }
             // Nested group.
@@ -558,8 +574,11 @@ open class ProtoReader(private val source: BufferedSource) {
   }
 
   companion object {
-    /** The standard number of levels of message nesting to allow. */
-    internal const val RECURSION_LIMIT = 100
+    /**
+     * The default number of levels of message nesting to allow. This matches the default of
+     * Google's protobuf runtimes.
+     */
+    const val DEFAULT_RECURSION_LIMIT = 100
 
     internal const val FIELD_ENCODING_MASK = 0x7
     internal const val TAG_FIELD_ENCODING_BITS = 3

@@ -34,7 +34,7 @@
 package com.squareup.wire
 
 import com.squareup.wire.ProtoReader.Companion.FIELD_ENCODING_MASK
-import com.squareup.wire.ProtoReader.Companion.RECURSION_LIMIT
+import com.squareup.wire.ProtoReader.Companion.DEFAULT_RECURSION_LIMIT
 import com.squareup.wire.ProtoReader.Companion.STATE_END_GROUP
 import com.squareup.wire.ProtoReader.Companion.STATE_FIXED32
 import com.squareup.wire.ProtoReader.Companion.STATE_FIXED64
@@ -61,6 +61,9 @@ internal class ByteArrayProtoReader32(
 
   /** The absolute position of the end of the current message. */
   private var limit: Int = source.size,
+
+  /** The maximum number of levels of message and group nesting to allow. */
+  private val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
 ) : ProtoReader32 {
   init {
     require(pos in 0..source.size) {
@@ -69,6 +72,7 @@ internal class ByteArrayProtoReader32(
     require(limit in pos..source.size) {
       "limit=$limit must be between pos=$pos and source size ${source.size}"
     }
+    require(recursionLimit >= 0) { "recursionLimit=$recursionLimit must not be negative" }
   }
 
   /** The current number of levels of message nesting. */
@@ -101,7 +105,7 @@ internal class ByteArrayProtoReader32(
     if (state != STATE_LENGTH_DELIMITED) {
       throw ProtocolException("Expected LENGTH_DELIMITED but was $state. Reader position: $pos. Last read tag: $tag.")
     }
-    if (++recursionDepth > RECURSION_LIMIT) {
+    if (++recursionDepth > recursionLimit) {
       throw IOException("Wire recursion limit exceeded")
     }
     // Allocate a buffer to store unknown fields encountered at this recursion level.
@@ -224,7 +228,7 @@ internal class ByteArrayProtoReader32(
         STATE_START_GROUP -> {
           recursionDepth++
           try {
-            if (recursionDepth > RECURSION_LIMIT) {
+            if (recursionDepth > recursionLimit) {
               throw IOException("Wire recursion limit exceeded")
             }
             // Nested group.

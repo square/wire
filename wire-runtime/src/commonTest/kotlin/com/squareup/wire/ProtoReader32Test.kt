@@ -23,6 +23,7 @@ import assertk.assertions.isInstanceOf
 import com.squareup.wire.ReverseProtoWriterTest.Person
 import kotlin.test.Test
 import okio.ByteString.Companion.decodeHex
+import okio.ByteString.Companion.toByteString
 import okio.EOFException
 import okio.IOException
 
@@ -97,6 +98,53 @@ class ProtoReader32Test {
     }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
   }
 
+  @Test fun defaultRecursionLimit() {
+    assertThat(ProtoReader32(nestedMessages(100)).readNestingDepth()).isEqualTo(100)
+
+    assertFailure {
+      ProtoReader32(nestedMessages(101)).readNestingDepth()
+    }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
+  }
+
+  @Test fun customRecursionLimit() {
+    assertThat(ProtoReader32(nestedMessages(150), recursionLimit = 150).readNestingDepth())
+      .isEqualTo(150)
+    assertThat(ProtoReader32(nestedMessages(150).toByteString(), recursionLimit = 150).readNestingDepth())
+      .isEqualTo(150)
+
+    assertFailure {
+      ProtoReader32(nestedMessages(151), recursionLimit = 150).readNestingDepth()
+    }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
+
+    assertFailure {
+      ProtoReader32(nestedMessages(11), recursionLimit = 10).readNestingDepth()
+    }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
+  }
+
+  @Test fun customRecursionLimitAppliesToGroups() {
+    // A message with a group (field 20) nested 10 times. The outermost group doesn't count.
+    val data = "a301".repeat(10).decodeHex().toByteArray() + "a401".repeat(10).decodeHex().toByteArray()
+
+    assertThat(ProtoReader32(data, recursionLimit = 10).readNestingDepth()).isEqualTo(1)
+
+    assertFailure {
+      ProtoReader32(data, recursionLimit = 9).readNestingDepth()
+    }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
+  }
+
+  @Test fun negativeRecursionLimitIsRejected() {
+    assertFailure {
+      ProtoReader32(ByteArray(0), recursionLimit = -1)
+    }.isInstanceOf<IllegalArgumentException>()
+      .hasMessage("recursionLimit=-1 must not be negative")
+  }
+
+  @Test fun asProtoReaderKeepsRecursionLimit() {
+    assertFailure {
+      ProtoReader32(nestedMessages(11), recursionLimit = 10).asProtoReader().readNestingDepth()
+    }.isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
+  }
+
   /** We had a bug where negative lengths in skipped groups crashed with runtime exceptions. */
   @Test fun testSkipGroupRejectsNegativeLength() {
     val data = "9b060a80ffffff0f9c06".decodeHex()
@@ -143,4 +191,21 @@ class ProtoReader32Test {
   }
 
   // Consider pasting new tests into ProtoReaderTest.kt also.
+}
+
+/** Reads a message created by [nestedMessages] and returns its depth. */
+private fun ProtoReader32.readNestingDepth(): Int {
+  var childDepth = 0
+  forEachTag { tag ->
+    if (tag == 1) childDepth = readNestingDepth() else skip()
+  }
+  return childDepth + 1
+}
+
+private fun ProtoReader.readNestingDepth(): Int {
+  var childDepth = 0
+  forEachTag { tag ->
+    if (tag == 1) childDepth = readNestingDepth() else skip()
+  }
+  return childDepth + 1
 }
