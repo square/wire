@@ -1,0 +1,494 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <com.squareup.wire:wire-runtime>
+open annotation class com.squareup.wire/WireEnclosingType : kotlin/Annotation { // com.squareup.wire/WireEnclosingType|null[0]
+    constructor <init>() // com.squareup.wire/WireEnclosingType.<init>|<init>(){}[0]
+}
+
+open annotation class com.squareup.wire/WireEnumConstant : kotlin/Annotation { // com.squareup.wire/WireEnumConstant|null[0]
+    constructor <init>(kotlin/String = ...) // com.squareup.wire/WireEnumConstant.<init>|<init>(kotlin.String){}[0]
+
+    final val declaredName // com.squareup.wire/WireEnumConstant.declaredName|{}declaredName[0]
+        final fun <get-declaredName>(): kotlin/String // com.squareup.wire/WireEnumConstant.declaredName.<get-declaredName>|<get-declaredName>(){}[0]
+}
+
+open annotation class com.squareup.wire/WireField : kotlin/Annotation { // com.squareup.wire/WireField|null[0]
+    constructor <init>(kotlin/Int, kotlin/String = ..., kotlin/String, com.squareup.wire/WireField.Label = ..., kotlin/Boolean = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/Int = ...) // com.squareup.wire/WireField.<init>|<init>(kotlin.Int;kotlin.String;kotlin.String;com.squareup.wire.WireField.Label;kotlin.Boolean;kotlin.String;kotlin.String;kotlin.String;kotlin.Int){}[0]
+
+    final val adapter // com.squareup.wire/WireField.adapter|{}adapter[0]
+        final fun <get-adapter>(): kotlin/String // com.squareup.wire/WireField.adapter.<get-adapter>|<get-adapter>(){}[0]
+    final val declaredName // com.squareup.wire/WireField.declaredName|{}declaredName[0]
+        final fun <get-declaredName>(): kotlin/String // com.squareup.wire/WireField.declaredName.<get-declaredName>|<get-declaredName>(){}[0]
+    final val jsonName // com.squareup.wire/WireField.jsonName|{}jsonName[0]
+        final fun <get-jsonName>(): kotlin/String // com.squareup.wire/WireField.jsonName.<get-jsonName>|<get-jsonName>(){}[0]
+    final val keyAdapter // com.squareup.wire/WireField.keyAdapter|{}keyAdapter[0]
+        final fun <get-keyAdapter>(): kotlin/String // com.squareup.wire/WireField.keyAdapter.<get-keyAdapter>|<get-keyAdapter>(){}[0]
+    final val label // com.squareup.wire/WireField.label|{}label[0]
+        final fun <get-label>(): com.squareup.wire/WireField.Label // com.squareup.wire/WireField.label.<get-label>|<get-label>(){}[0]
+    final val oneofName // com.squareup.wire/WireField.oneofName|{}oneofName[0]
+        final fun <get-oneofName>(): kotlin/String // com.squareup.wire/WireField.oneofName.<get-oneofName>|<get-oneofName>(){}[0]
+    final val redacted // com.squareup.wire/WireField.redacted|{}redacted[0]
+        final fun <get-redacted>(): kotlin/Boolean // com.squareup.wire/WireField.redacted.<get-redacted>|<get-redacted>(){}[0]
+    final val schemaIndex // com.squareup.wire/WireField.schemaIndex|{}schemaIndex[0]
+        final fun <get-schemaIndex>(): kotlin/Int // com.squareup.wire/WireField.schemaIndex.<get-schemaIndex>|<get-schemaIndex>(){}[0]
+    final val tag // com.squareup.wire/WireField.tag|{}tag[0]
+        final fun <get-tag>(): kotlin/Int // com.squareup.wire/WireField.tag.<get-tag>|<get-tag>(){}[0]
+
+    final enum class Label : kotlin/Enum<com.squareup.wire/WireField.Label> { // com.squareup.wire/WireField.Label|null[0]
+        enum entry OMIT_IDENTITY // com.squareup.wire/WireField.Label.OMIT_IDENTITY|null[0]
+        enum entry ONE_OF // com.squareup.wire/WireField.Label.ONE_OF|null[0]
+        enum entry OPTIONAL // com.squareup.wire/WireField.Label.OPTIONAL|null[0]
+        enum entry PACKED // com.squareup.wire/WireField.Label.PACKED|null[0]
+        enum entry REPEATED // com.squareup.wire/WireField.Label.REPEATED|null[0]
+        enum entry REQUIRED // com.squareup.wire/WireField.Label.REQUIRED|null[0]
+
+        final val entries // com.squareup.wire/WireField.Label.entries|#static{}entries[0]
+            final fun <get-entries>(): kotlin.enums/EnumEntries<com.squareup.wire/WireField.Label> // com.squareup.wire/WireField.Label.entries.<get-entries>|<get-entries>#static(){}[0]
+        final val isOneOf // com.squareup.wire/WireField.Label.isOneOf|{}isOneOf[0]
+            final fun <get-isOneOf>(): kotlin/Boolean // com.squareup.wire/WireField.Label.isOneOf.<get-isOneOf>|<get-isOneOf>(){}[0]
+        final val isPacked // com.squareup.wire/WireField.Label.isPacked|{}isPacked[0]
+            final fun <get-isPacked>(): kotlin/Boolean // com.squareup.wire/WireField.Label.isPacked.<get-isPacked>|<get-isPacked>(){}[0]
+        final val isRepeated // com.squareup.wire/WireField.Label.isRepeated|{}isRepeated[0]
+            final fun <get-isRepeated>(): kotlin/Boolean // com.squareup.wire/WireField.Label.isRepeated.<get-isRepeated>|<get-isRepeated>(){}[0]
+
+        final fun valueOf(kotlin/String): com.squareup.wire/WireField.Label // com.squareup.wire/WireField.Label.valueOf|valueOf#static(kotlin.String){}[0]
+        final fun values(): kotlin/Array<com.squareup.wire/WireField.Label> // com.squareup.wire/WireField.Label.values|values#static(){}[0]
+    }
+}
+
+open annotation class com.squareup.wire/WireOneofField : kotlin/Annotation { // com.squareup.wire/WireOneofField|null[0]
+    constructor <init>(kotlin/Int, kotlin/String, kotlin/String = ..., kotlin/Boolean = ..., kotlin/String = ...) // com.squareup.wire/WireOneofField.<init>|<init>(kotlin.Int;kotlin.String;kotlin.String;kotlin.Boolean;kotlin.String){}[0]
+
+    final val adapter // com.squareup.wire/WireOneofField.adapter|{}adapter[0]
+        final fun <get-adapter>(): kotlin/String // com.squareup.wire/WireOneofField.adapter.<get-adapter>|<get-adapter>(){}[0]
+    final val declaredName // com.squareup.wire/WireOneofField.declaredName|{}declaredName[0]
+        final fun <get-declaredName>(): kotlin/String // com.squareup.wire/WireOneofField.declaredName.<get-declaredName>|<get-declaredName>(){}[0]
+    final val jsonName // com.squareup.wire/WireOneofField.jsonName|{}jsonName[0]
+        final fun <get-jsonName>(): kotlin/String // com.squareup.wire/WireOneofField.jsonName.<get-jsonName>|<get-jsonName>(){}[0]
+    final val redacted // com.squareup.wire/WireOneofField.redacted|{}redacted[0]
+        final fun <get-redacted>(): kotlin/Boolean // com.squareup.wire/WireOneofField.redacted.<get-redacted>|<get-redacted>(){}[0]
+    final val tag // com.squareup.wire/WireOneofField.tag|{}tag[0]
+        final fun <get-tag>(): kotlin/Int // com.squareup.wire/WireOneofField.tag.<get-tag>|<get-tag>(){}[0]
+}
+
+open annotation class com.squareup.wire/WireRpc : kotlin/Annotation { // com.squareup.wire/WireRpc|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String = ...) // com.squareup.wire/WireRpc.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String){}[0]
+
+    final val path // com.squareup.wire/WireRpc.path|{}path[0]
+        final fun <get-path>(): kotlin/String // com.squareup.wire/WireRpc.path.<get-path>|<get-path>(){}[0]
+    final val requestAdapter // com.squareup.wire/WireRpc.requestAdapter|{}requestAdapter[0]
+        final fun <get-requestAdapter>(): kotlin/String // com.squareup.wire/WireRpc.requestAdapter.<get-requestAdapter>|<get-requestAdapter>(){}[0]
+    final val responseAdapter // com.squareup.wire/WireRpc.responseAdapter|{}responseAdapter[0]
+        final fun <get-responseAdapter>(): kotlin/String // com.squareup.wire/WireRpc.responseAdapter.<get-responseAdapter>|<get-responseAdapter>(){}[0]
+    final val sourceFile // com.squareup.wire/WireRpc.sourceFile|{}sourceFile[0]
+        final fun <get-sourceFile>(): kotlin/String // com.squareup.wire/WireRpc.sourceFile.<get-sourceFile>|<get-sourceFile>(){}[0]
+}
+
+open annotation class com.squareup.wire/WireSealedOneof : kotlin/Annotation { // com.squareup.wire/WireSealedOneof|null[0]
+    constructor <init>(kotlin/Int) // com.squareup.wire/WireSealedOneof.<init>|<init>(kotlin.Int){}[0]
+
+    final val schemaIndex // com.squareup.wire/WireSealedOneof.schemaIndex|{}schemaIndex[0]
+        final fun <get-schemaIndex>(): kotlin/Int // com.squareup.wire/WireSealedOneof.schemaIndex.<get-schemaIndex>|<get-schemaIndex>(){}[0]
+}
+
+final enum class com.squareup.wire/FieldEncoding : kotlin/Enum<com.squareup.wire/FieldEncoding> { // com.squareup.wire/FieldEncoding|null[0]
+    enum entry FIXED32 // com.squareup.wire/FieldEncoding.FIXED32|null[0]
+    enum entry FIXED64 // com.squareup.wire/FieldEncoding.FIXED64|null[0]
+    enum entry LENGTH_DELIMITED // com.squareup.wire/FieldEncoding.LENGTH_DELIMITED|null[0]
+    enum entry VARINT // com.squareup.wire/FieldEncoding.VARINT|null[0]
+
+    final val entries // com.squareup.wire/FieldEncoding.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.squareup.wire/FieldEncoding> // com.squareup.wire/FieldEncoding.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun rawProtoAdapter(): com.squareup.wire/ProtoAdapter<*> // com.squareup.wire/FieldEncoding.rawProtoAdapter|rawProtoAdapter(){}[0]
+    final fun valueOf(kotlin/String): com.squareup.wire/FieldEncoding // com.squareup.wire/FieldEncoding.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.squareup.wire/FieldEncoding> // com.squareup.wire/FieldEncoding.values|values#static(){}[0]
+
+    final object Companion // com.squareup.wire/FieldEncoding.Companion|null[0]
+}
+
+final enum class com.squareup.wire/Syntax : kotlin/Enum<com.squareup.wire/Syntax> { // com.squareup.wire/Syntax|null[0]
+    enum entry PROTO_2 // com.squareup.wire/Syntax.PROTO_2|null[0]
+    enum entry PROTO_3 // com.squareup.wire/Syntax.PROTO_3|null[0]
+
+    final val entries // com.squareup.wire/Syntax.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.squareup.wire/Syntax> // com.squareup.wire/Syntax.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun toString(): kotlin/String // com.squareup.wire/Syntax.toString|toString(){}[0]
+    final fun valueOf(kotlin/String): com.squareup.wire/Syntax // com.squareup.wire/Syntax.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.squareup.wire/Syntax> // com.squareup.wire/Syntax.values|values#static(){}[0]
+
+    final object Companion { // com.squareup.wire/Syntax.Companion|null[0]
+        final fun get(kotlin/String): com.squareup.wire/Syntax // com.squareup.wire/Syntax.Companion.get|get(kotlin.String){}[0]
+    }
+}
+
+abstract interface <#A: in kotlin/Any> com.squareup.wire/MessageSink : okio/Closeable { // com.squareup.wire/MessageSink|null[0]
+    abstract fun cancel() // com.squareup.wire/MessageSink.cancel|cancel(){}[0]
+    abstract fun write(#A) // com.squareup.wire/MessageSink.write|write(1:0){}[0]
+}
+
+abstract interface <#A: out kotlin/Any> com.squareup.wire/MessageSource : okio/Closeable { // com.squareup.wire/MessageSource|null[0]
+    abstract fun read(): #A? // com.squareup.wire/MessageSource.read|read(){}[0]
+}
+
+abstract interface com.squareup.wire/ProtoReader32 { // com.squareup.wire/ProtoReader32|null[0]
+    abstract fun addUnknownField(kotlin/Int, com.squareup.wire/FieldEncoding, kotlin/Any?) // com.squareup.wire/ProtoReader32.addUnknownField|addUnknownField(kotlin.Int;com.squareup.wire.FieldEncoding;kotlin.Any?){}[0]
+    abstract fun asProtoReader(): com.squareup.wire/ProtoReader // com.squareup.wire/ProtoReader32.asProtoReader|asProtoReader(){}[0]
+    abstract fun beforePossiblyPackedScalar(): kotlin/Boolean // com.squareup.wire/ProtoReader32.beforePossiblyPackedScalar|beforePossiblyPackedScalar(){}[0]
+    abstract fun beginMessage(): kotlin/Int // com.squareup.wire/ProtoReader32.beginMessage|beginMessage(){}[0]
+    abstract fun endMessageAndGetUnknownFields(kotlin/Int): okio/ByteString // com.squareup.wire/ProtoReader32.endMessageAndGetUnknownFields|endMessageAndGetUnknownFields(kotlin.Int){}[0]
+    abstract fun nextFieldMinLengthInBytes(): kotlin/Int // com.squareup.wire/ProtoReader32.nextFieldMinLengthInBytes|nextFieldMinLengthInBytes(){}[0]
+    abstract fun nextLengthDelimited(): kotlin/Int // com.squareup.wire/ProtoReader32.nextLengthDelimited|nextLengthDelimited(){}[0]
+    abstract fun nextTag(): kotlin/Int // com.squareup.wire/ProtoReader32.nextTag|nextTag(){}[0]
+    abstract fun peekFieldEncoding(): com.squareup.wire/FieldEncoding? // com.squareup.wire/ProtoReader32.peekFieldEncoding|peekFieldEncoding(){}[0]
+    abstract fun readBytes(): okio/ByteString // com.squareup.wire/ProtoReader32.readBytes|readBytes(){}[0]
+    abstract fun readFixed32(): kotlin/Int // com.squareup.wire/ProtoReader32.readFixed32|readFixed32(){}[0]
+    abstract fun readFixed64(): kotlin/Long // com.squareup.wire/ProtoReader32.readFixed64|readFixed64(){}[0]
+    abstract fun readString(): kotlin/String // com.squareup.wire/ProtoReader32.readString|readString(){}[0]
+    abstract fun readUnknownField(kotlin/Int) // com.squareup.wire/ProtoReader32.readUnknownField|readUnknownField(kotlin.Int){}[0]
+    abstract fun readVarint32(): kotlin/Int // com.squareup.wire/ProtoReader32.readVarint32|readVarint32(){}[0]
+    abstract fun readVarint64(): kotlin/Long // com.squareup.wire/ProtoReader32.readVarint64|readVarint64(){}[0]
+    abstract fun skip() // com.squareup.wire/ProtoReader32.skip|skip(){}[0]
+}
+
+abstract interface com.squareup.wire/Service // com.squareup.wire/Service|null[0]
+
+abstract interface com.squareup.wire/WireEnum { // com.squareup.wire/WireEnum|null[0]
+    abstract val value // com.squareup.wire/WireEnum.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Int // com.squareup.wire/WireEnum.value.<get-value>|<get-value>(){}[0]
+}
+
+abstract class <#A: com.squareup.wire/Message<#A, #B>, #B: com.squareup.wire/Message.Builder<#A, #B>> com.squareup.wire/Message { // com.squareup.wire/Message|null[0]
+    constructor <init>(com.squareup.wire/ProtoAdapter<#A>, okio/ByteString) // com.squareup.wire/Message.<init>|<init>(com.squareup.wire.ProtoAdapter<1:0>;okio.ByteString){}[0]
+
+    final val adapter // com.squareup.wire/Message.adapter|{}adapter[0]
+        final fun <get-adapter>(): com.squareup.wire/ProtoAdapter<#A> // com.squareup.wire/Message.adapter.<get-adapter>|<get-adapter>(){}[0]
+    open val unknownFields // com.squareup.wire/Message.unknownFields|{}unknownFields[0]
+        open fun <get-unknownFields>(): okio/ByteString // com.squareup.wire/Message.unknownFields.<get-unknownFields>|<get-unknownFields>(){}[0]
+
+    final var hashCode // com.squareup.wire/Message.hashCode|{}hashCode[0]
+        final fun <get-hashCode>(): kotlin/Int // com.squareup.wire/Message.hashCode.<get-hashCode>|<get-hashCode>(){}[0]
+        final fun <set-hashCode>(kotlin/Int) // com.squareup.wire/Message.hashCode.<set-hashCode>|<set-hashCode>(kotlin.Int){}[0]
+
+    abstract fun newBuilder(): #B // com.squareup.wire/Message.newBuilder|newBuilder(){}[0]
+    final fun encode(): kotlin/ByteArray // com.squareup.wire/Message.encode|encode(){}[0]
+    final fun encode(okio/BufferedSink) // com.squareup.wire/Message.encode|encode(okio.BufferedSink){}[0]
+    final fun encodeByteString(): okio/ByteString // com.squareup.wire/Message.encodeByteString|encodeByteString(){}[0]
+
+    abstract class <#A1: com.squareup.wire/Message<#A1, #B1>, #B1: com.squareup.wire/Message.Builder<#A1, #B1>> Builder { // com.squareup.wire/Message.Builder|null[0]
+        constructor <init>() // com.squareup.wire/Message.Builder.<init>|<init>(){}[0]
+
+        abstract fun build(): #A1 // com.squareup.wire/Message.Builder.build|build(){}[0]
+        final fun addUnknownField(kotlin/Int, com.squareup.wire/FieldEncoding, kotlin/Any?): com.squareup.wire/Message.Builder<#A1, #B1> // com.squareup.wire/Message.Builder.addUnknownField|addUnknownField(kotlin.Int;com.squareup.wire.FieldEncoding;kotlin.Any?){}[0]
+        final fun addUnknownFields(okio/ByteString): com.squareup.wire/Message.Builder<#A1, #B1> // com.squareup.wire/Message.Builder.addUnknownFields|addUnknownFields(okio.ByteString){}[0]
+        final fun buildUnknownFields(): okio/ByteString // com.squareup.wire/Message.Builder.buildUnknownFields|buildUnknownFields(){}[0]
+        final fun clearUnknownFields(): com.squareup.wire/Message.Builder<#A1, #B1> // com.squareup.wire/Message.Builder.clearUnknownFields|clearUnknownFields(){}[0]
+    }
+}
+
+abstract class <#A: com.squareup.wire/WireEnum> com.squareup.wire/EnumAdapter : com.squareup.wire/ProtoAdapter<#A> { // com.squareup.wire/EnumAdapter|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, com.squareup.wire/Syntax, #A?) // com.squareup.wire/EnumAdapter.<init>|<init>(kotlin.reflect.KClass<1:0>;com.squareup.wire.Syntax;1:0?){}[0]
+
+    abstract fun fromValue(kotlin/Int): #A? // com.squareup.wire/EnumAdapter.fromValue|fromValue(kotlin.Int){}[0]
+    open fun decode(com.squareup.wire/ProtoReader): #A // com.squareup.wire/EnumAdapter.decode|decode(com.squareup.wire.ProtoReader){}[0]
+    open fun decode(com.squareup.wire/ProtoReader32): #A // com.squareup.wire/EnumAdapter.decode|decode(com.squareup.wire.ProtoReader32){}[0]
+    open fun encode(com.squareup.wire/ProtoWriter, #A) // com.squareup.wire/EnumAdapter.encode|encode(com.squareup.wire.ProtoWriter;1:0){}[0]
+    open fun encode(com.squareup.wire/ReverseProtoWriter, #A) // com.squareup.wire/EnumAdapter.encode|encode(com.squareup.wire.ReverseProtoWriter;1:0){}[0]
+    open fun encodedSize(#A): kotlin/Int // com.squareup.wire/EnumAdapter.encodedSize|encodedSize(1:0){}[0]
+    open fun redact(#A): #A // com.squareup.wire/EnumAdapter.redact|redact(1:0){}[0]
+}
+
+abstract class <#A: kotlin/Any?> com.squareup.wire/ProtoAdapter { // com.squareup.wire/ProtoAdapter|null[0]
+    constructor <init>(com.squareup.wire/FieldEncoding, kotlin.reflect/KClass<*>?, kotlin/String?, com.squareup.wire/Syntax, #A? = ..., kotlin/String? = ...) // com.squareup.wire/ProtoAdapter.<init>|<init>(com.squareup.wire.FieldEncoding;kotlin.reflect.KClass<*>?;kotlin.String?;com.squareup.wire.Syntax;1:0?;kotlin.String?){}[0]
+
+    final val sourceFile // com.squareup.wire/ProtoAdapter.sourceFile|{}sourceFile[0]
+        final fun <get-sourceFile>(): kotlin/String? // com.squareup.wire/ProtoAdapter.sourceFile.<get-sourceFile>|<get-sourceFile>(){}[0]
+    final val syntax // com.squareup.wire/ProtoAdapter.syntax|{}syntax[0]
+        final fun <get-syntax>(): com.squareup.wire/Syntax // com.squareup.wire/ProtoAdapter.syntax.<get-syntax>|<get-syntax>(){}[0]
+    final val type // com.squareup.wire/ProtoAdapter.type|{}type[0]
+        final fun <get-type>(): kotlin.reflect/KClass<*>? // com.squareup.wire/ProtoAdapter.type.<get-type>|<get-type>(){}[0]
+    final val typeUrl // com.squareup.wire/ProtoAdapter.typeUrl|{}typeUrl[0]
+        final fun <get-typeUrl>(): kotlin/String? // com.squareup.wire/ProtoAdapter.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
+    open val identity // com.squareup.wire/ProtoAdapter.identity|{}identity[0]
+        open fun <get-identity>(): #A? // com.squareup.wire/ProtoAdapter.identity.<get-identity>|<get-identity>(){}[0]
+
+    abstract fun decode(com.squareup.wire/ProtoReader): #A // com.squareup.wire/ProtoAdapter.decode|decode(com.squareup.wire.ProtoReader){}[0]
+    abstract fun encode(com.squareup.wire/ProtoWriter, #A) // com.squareup.wire/ProtoAdapter.encode|encode(com.squareup.wire.ProtoWriter;1:0){}[0]
+    abstract fun encodedSize(#A): kotlin/Int // com.squareup.wire/ProtoAdapter.encodedSize|encodedSize(1:0){}[0]
+    abstract fun redact(#A): #A // com.squareup.wire/ProtoAdapter.redact|redact(1:0){}[0]
+    final fun asPacked(): com.squareup.wire/ProtoAdapter<kotlin.collections/List<#A>> // com.squareup.wire/ProtoAdapter.asPacked|asPacked(){}[0]
+    final fun asRepeated(): com.squareup.wire/ProtoAdapter<kotlin.collections/List<#A>> // com.squareup.wire/ProtoAdapter.asRepeated|asRepeated(){}[0]
+    final fun decode(kotlin/ByteArray): #A // com.squareup.wire/ProtoAdapter.decode|decode(kotlin.ByteArray){}[0]
+    final fun decode(okio/BufferedSource): #A // com.squareup.wire/ProtoAdapter.decode|decode(okio.BufferedSource){}[0]
+    final fun decode(okio/ByteString): #A // com.squareup.wire/ProtoAdapter.decode|decode(okio.ByteString){}[0]
+    final fun encode(#A): kotlin/ByteArray // com.squareup.wire/ProtoAdapter.encode|encode(1:0){}[0]
+    final fun encode(okio/BufferedSink, #A) // com.squareup.wire/ProtoAdapter.encode|encode(okio.BufferedSink;1:0){}[0]
+    final fun encodeByteString(#A): okio/ByteString // com.squareup.wire/ProtoAdapter.encodeByteString|encodeByteString(1:0){}[0]
+    final fun tryDecode(com.squareup.wire/ProtoReader, kotlin.collections/MutableList<#A>) // com.squareup.wire/ProtoAdapter.tryDecode|tryDecode(com.squareup.wire.ProtoReader;kotlin.collections.MutableList<1:0>){}[0]
+    final fun tryDecode(com.squareup.wire/ProtoReader32, kotlin.collections/MutableList<#A>) // com.squareup.wire/ProtoAdapter.tryDecode|tryDecode(com.squareup.wire.ProtoReader32;kotlin.collections.MutableList<1:0>){}[0]
+    open fun decode(com.squareup.wire/ProtoReader32): #A // com.squareup.wire/ProtoAdapter.decode|decode(com.squareup.wire.ProtoReader32){}[0]
+    open fun encode(com.squareup.wire/ReverseProtoWriter, #A) // com.squareup.wire/ProtoAdapter.encode|encode(com.squareup.wire.ReverseProtoWriter;1:0){}[0]
+    open fun encodeWithTag(com.squareup.wire/ProtoWriter, kotlin/Int, #A?) // com.squareup.wire/ProtoAdapter.encodeWithTag|encodeWithTag(com.squareup.wire.ProtoWriter;kotlin.Int;1:0?){}[0]
+    open fun encodeWithTag(com.squareup.wire/ReverseProtoWriter, kotlin/Int, #A?) // com.squareup.wire/ProtoAdapter.encodeWithTag|encodeWithTag(com.squareup.wire.ReverseProtoWriter;kotlin.Int;1:0?){}[0]
+    open fun encodedSizeWithTag(kotlin/Int, #A?): kotlin/Int // com.squareup.wire/ProtoAdapter.encodedSizeWithTag|encodedSizeWithTag(kotlin.Int;1:0?){}[0]
+    open fun toString(#A): kotlin/String // com.squareup.wire/ProtoAdapter.toString|toString(1:0){}[0]
+
+    final class EnumConstantNotFoundException : kotlin/IllegalArgumentException { // com.squareup.wire/ProtoAdapter.EnumConstantNotFoundException|null[0]
+        constructor <init>(kotlin/Int, kotlin.reflect/KClass<*>?) // com.squareup.wire/ProtoAdapter.EnumConstantNotFoundException.<init>|<init>(kotlin.Int;kotlin.reflect.KClass<*>?){}[0]
+
+        final val value // com.squareup.wire/ProtoAdapter.EnumConstantNotFoundException.value|{}value[0]
+            final fun <get-value>(): kotlin/Int // com.squareup.wire/ProtoAdapter.EnumConstantNotFoundException.value.<get-value>|<get-value>(){}[0]
+    }
+
+    final object Companion { // com.squareup.wire/ProtoAdapter.Companion|null[0]
+        final val BOOL // com.squareup.wire/ProtoAdapter.Companion.BOOL|{}BOOL[0]
+            final fun <get-BOOL>(): com.squareup.wire/ProtoAdapter<kotlin/Boolean> // com.squareup.wire/ProtoAdapter.Companion.BOOL.<get-BOOL>|<get-BOOL>(){}[0]
+        final val BOOL_VALUE // com.squareup.wire/ProtoAdapter.Companion.BOOL_VALUE|{}BOOL_VALUE[0]
+            final fun <get-BOOL_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Boolean?> // com.squareup.wire/ProtoAdapter.Companion.BOOL_VALUE.<get-BOOL_VALUE>|<get-BOOL_VALUE>(){}[0]
+        final val BYTES // com.squareup.wire/ProtoAdapter.Companion.BYTES|{}BYTES[0]
+            final fun <get-BYTES>(): com.squareup.wire/ProtoAdapter<okio/ByteString> // com.squareup.wire/ProtoAdapter.Companion.BYTES.<get-BYTES>|<get-BYTES>(){}[0]
+        final val BYTES_VALUE // com.squareup.wire/ProtoAdapter.Companion.BYTES_VALUE|{}BYTES_VALUE[0]
+            final fun <get-BYTES_VALUE>(): com.squareup.wire/ProtoAdapter<okio/ByteString?> // com.squareup.wire/ProtoAdapter.Companion.BYTES_VALUE.<get-BYTES_VALUE>|<get-BYTES_VALUE>(){}[0]
+        final val DOUBLE // com.squareup.wire/ProtoAdapter.Companion.DOUBLE|{}DOUBLE[0]
+            final fun <get-DOUBLE>(): com.squareup.wire/ProtoAdapter<kotlin/Double> // com.squareup.wire/ProtoAdapter.Companion.DOUBLE.<get-DOUBLE>|<get-DOUBLE>(){}[0]
+        final val DOUBLE_ARRAY // com.squareup.wire/ProtoAdapter.Companion.DOUBLE_ARRAY|{}DOUBLE_ARRAY[0]
+            final fun <get-DOUBLE_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/DoubleArray> // com.squareup.wire/ProtoAdapter.Companion.DOUBLE_ARRAY.<get-DOUBLE_ARRAY>|<get-DOUBLE_ARRAY>(){}[0]
+        final val DOUBLE_VALUE // com.squareup.wire/ProtoAdapter.Companion.DOUBLE_VALUE|{}DOUBLE_VALUE[0]
+            final fun <get-DOUBLE_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Double?> // com.squareup.wire/ProtoAdapter.Companion.DOUBLE_VALUE.<get-DOUBLE_VALUE>|<get-DOUBLE_VALUE>(){}[0]
+        final val DURATION // com.squareup.wire/ProtoAdapter.Companion.DURATION|{}DURATION[0]
+            final fun <get-DURATION>(): com.squareup.wire/ProtoAdapter<com.squareup.wire/Duration> // com.squareup.wire/ProtoAdapter.Companion.DURATION.<get-DURATION>|<get-DURATION>(){}[0]
+        final val EMPTY // com.squareup.wire/ProtoAdapter.Companion.EMPTY|{}EMPTY[0]
+            final fun <get-EMPTY>(): com.squareup.wire/ProtoAdapter<kotlin/Unit> // com.squareup.wire/ProtoAdapter.Companion.EMPTY.<get-EMPTY>|<get-EMPTY>(){}[0]
+        final val FIELD_MASK // com.squareup.wire/ProtoAdapter.Companion.FIELD_MASK|{}FIELD_MASK[0]
+            final fun <get-FIELD_MASK>(): com.squareup.wire/ProtoAdapter<com.squareup.wire/FieldMask> // com.squareup.wire/ProtoAdapter.Companion.FIELD_MASK.<get-FIELD_MASK>|<get-FIELD_MASK>(){}[0]
+        final val FIXED32 // com.squareup.wire/ProtoAdapter.Companion.FIXED32|{}FIXED32[0]
+            final fun <get-FIXED32>(): com.squareup.wire/ProtoAdapter<kotlin/Int> // com.squareup.wire/ProtoAdapter.Companion.FIXED32.<get-FIXED32>|<get-FIXED32>(){}[0]
+        final val FIXED32_ARRAY // com.squareup.wire/ProtoAdapter.Companion.FIXED32_ARRAY|{}FIXED32_ARRAY[0]
+            final fun <get-FIXED32_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/IntArray> // com.squareup.wire/ProtoAdapter.Companion.FIXED32_ARRAY.<get-FIXED32_ARRAY>|<get-FIXED32_ARRAY>(){}[0]
+        final val FIXED64 // com.squareup.wire/ProtoAdapter.Companion.FIXED64|{}FIXED64[0]
+            final fun <get-FIXED64>(): com.squareup.wire/ProtoAdapter<kotlin/Long> // com.squareup.wire/ProtoAdapter.Companion.FIXED64.<get-FIXED64>|<get-FIXED64>(){}[0]
+        final val FIXED64_ARRAY // com.squareup.wire/ProtoAdapter.Companion.FIXED64_ARRAY|{}FIXED64_ARRAY[0]
+            final fun <get-FIXED64_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/LongArray> // com.squareup.wire/ProtoAdapter.Companion.FIXED64_ARRAY.<get-FIXED64_ARRAY>|<get-FIXED64_ARRAY>(){}[0]
+        final val FLOAT // com.squareup.wire/ProtoAdapter.Companion.FLOAT|{}FLOAT[0]
+            final fun <get-FLOAT>(): com.squareup.wire/ProtoAdapter<kotlin/Float> // com.squareup.wire/ProtoAdapter.Companion.FLOAT.<get-FLOAT>|<get-FLOAT>(){}[0]
+        final val FLOAT_ARRAY // com.squareup.wire/ProtoAdapter.Companion.FLOAT_ARRAY|{}FLOAT_ARRAY[0]
+            final fun <get-FLOAT_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/FloatArray> // com.squareup.wire/ProtoAdapter.Companion.FLOAT_ARRAY.<get-FLOAT_ARRAY>|<get-FLOAT_ARRAY>(){}[0]
+        final val FLOAT_VALUE // com.squareup.wire/ProtoAdapter.Companion.FLOAT_VALUE|{}FLOAT_VALUE[0]
+            final fun <get-FLOAT_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Float?> // com.squareup.wire/ProtoAdapter.Companion.FLOAT_VALUE.<get-FLOAT_VALUE>|<get-FLOAT_VALUE>(){}[0]
+        final val INSTANT // com.squareup.wire/ProtoAdapter.Companion.INSTANT|{}INSTANT[0]
+            final fun <get-INSTANT>(): com.squareup.wire/ProtoAdapter<com.squareup.wire/Instant> // com.squareup.wire/ProtoAdapter.Companion.INSTANT.<get-INSTANT>|<get-INSTANT>(){}[0]
+        final val INT32 // com.squareup.wire/ProtoAdapter.Companion.INT32|{}INT32[0]
+            final fun <get-INT32>(): com.squareup.wire/ProtoAdapter<kotlin/Int> // com.squareup.wire/ProtoAdapter.Companion.INT32.<get-INT32>|<get-INT32>(){}[0]
+        final val INT32_ARRAY // com.squareup.wire/ProtoAdapter.Companion.INT32_ARRAY|{}INT32_ARRAY[0]
+            final fun <get-INT32_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/IntArray> // com.squareup.wire/ProtoAdapter.Companion.INT32_ARRAY.<get-INT32_ARRAY>|<get-INT32_ARRAY>(){}[0]
+        final val INT32_VALUE // com.squareup.wire/ProtoAdapter.Companion.INT32_VALUE|{}INT32_VALUE[0]
+            final fun <get-INT32_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Int?> // com.squareup.wire/ProtoAdapter.Companion.INT32_VALUE.<get-INT32_VALUE>|<get-INT32_VALUE>(){}[0]
+        final val INT64 // com.squareup.wire/ProtoAdapter.Companion.INT64|{}INT64[0]
+            final fun <get-INT64>(): com.squareup.wire/ProtoAdapter<kotlin/Long> // com.squareup.wire/ProtoAdapter.Companion.INT64.<get-INT64>|<get-INT64>(){}[0]
+        final val INT64_ARRAY // com.squareup.wire/ProtoAdapter.Companion.INT64_ARRAY|{}INT64_ARRAY[0]
+            final fun <get-INT64_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/LongArray> // com.squareup.wire/ProtoAdapter.Companion.INT64_ARRAY.<get-INT64_ARRAY>|<get-INT64_ARRAY>(){}[0]
+        final val INT64_VALUE // com.squareup.wire/ProtoAdapter.Companion.INT64_VALUE|{}INT64_VALUE[0]
+            final fun <get-INT64_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Long?> // com.squareup.wire/ProtoAdapter.Companion.INT64_VALUE.<get-INT64_VALUE>|<get-INT64_VALUE>(){}[0]
+        final val SFIXED32 // com.squareup.wire/ProtoAdapter.Companion.SFIXED32|{}SFIXED32[0]
+            final fun <get-SFIXED32>(): com.squareup.wire/ProtoAdapter<kotlin/Int> // com.squareup.wire/ProtoAdapter.Companion.SFIXED32.<get-SFIXED32>|<get-SFIXED32>(){}[0]
+        final val SFIXED32_ARRAY // com.squareup.wire/ProtoAdapter.Companion.SFIXED32_ARRAY|{}SFIXED32_ARRAY[0]
+            final fun <get-SFIXED32_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/IntArray> // com.squareup.wire/ProtoAdapter.Companion.SFIXED32_ARRAY.<get-SFIXED32_ARRAY>|<get-SFIXED32_ARRAY>(){}[0]
+        final val SFIXED64 // com.squareup.wire/ProtoAdapter.Companion.SFIXED64|{}SFIXED64[0]
+            final fun <get-SFIXED64>(): com.squareup.wire/ProtoAdapter<kotlin/Long> // com.squareup.wire/ProtoAdapter.Companion.SFIXED64.<get-SFIXED64>|<get-SFIXED64>(){}[0]
+        final val SFIXED64_ARRAY // com.squareup.wire/ProtoAdapter.Companion.SFIXED64_ARRAY|{}SFIXED64_ARRAY[0]
+            final fun <get-SFIXED64_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/LongArray> // com.squareup.wire/ProtoAdapter.Companion.SFIXED64_ARRAY.<get-SFIXED64_ARRAY>|<get-SFIXED64_ARRAY>(){}[0]
+        final val SINT32 // com.squareup.wire/ProtoAdapter.Companion.SINT32|{}SINT32[0]
+            final fun <get-SINT32>(): com.squareup.wire/ProtoAdapter<kotlin/Int> // com.squareup.wire/ProtoAdapter.Companion.SINT32.<get-SINT32>|<get-SINT32>(){}[0]
+        final val SINT32_ARRAY // com.squareup.wire/ProtoAdapter.Companion.SINT32_ARRAY|{}SINT32_ARRAY[0]
+            final fun <get-SINT32_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/IntArray> // com.squareup.wire/ProtoAdapter.Companion.SINT32_ARRAY.<get-SINT32_ARRAY>|<get-SINT32_ARRAY>(){}[0]
+        final val SINT64 // com.squareup.wire/ProtoAdapter.Companion.SINT64|{}SINT64[0]
+            final fun <get-SINT64>(): com.squareup.wire/ProtoAdapter<kotlin/Long> // com.squareup.wire/ProtoAdapter.Companion.SINT64.<get-SINT64>|<get-SINT64>(){}[0]
+        final val SINT64_ARRAY // com.squareup.wire/ProtoAdapter.Companion.SINT64_ARRAY|{}SINT64_ARRAY[0]
+            final fun <get-SINT64_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/LongArray> // com.squareup.wire/ProtoAdapter.Companion.SINT64_ARRAY.<get-SINT64_ARRAY>|<get-SINT64_ARRAY>(){}[0]
+        final val STRING // com.squareup.wire/ProtoAdapter.Companion.STRING|{}STRING[0]
+            final fun <get-STRING>(): com.squareup.wire/ProtoAdapter<kotlin/String> // com.squareup.wire/ProtoAdapter.Companion.STRING.<get-STRING>|<get-STRING>(){}[0]
+        final val STRING_VALUE // com.squareup.wire/ProtoAdapter.Companion.STRING_VALUE|{}STRING_VALUE[0]
+            final fun <get-STRING_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/String?> // com.squareup.wire/ProtoAdapter.Companion.STRING_VALUE.<get-STRING_VALUE>|<get-STRING_VALUE>(){}[0]
+        final val STRUCT_LIST // com.squareup.wire/ProtoAdapter.Companion.STRUCT_LIST|{}STRUCT_LIST[0]
+            final fun <get-STRUCT_LIST>(): com.squareup.wire/ProtoAdapter<kotlin.collections/List<*>?> // com.squareup.wire/ProtoAdapter.Companion.STRUCT_LIST.<get-STRUCT_LIST>|<get-STRUCT_LIST>(){}[0]
+        final val STRUCT_MAP // com.squareup.wire/ProtoAdapter.Companion.STRUCT_MAP|{}STRUCT_MAP[0]
+            final fun <get-STRUCT_MAP>(): com.squareup.wire/ProtoAdapter<kotlin.collections/Map<kotlin/String, *>?> // com.squareup.wire/ProtoAdapter.Companion.STRUCT_MAP.<get-STRUCT_MAP>|<get-STRUCT_MAP>(){}[0]
+        final val STRUCT_NULL // com.squareup.wire/ProtoAdapter.Companion.STRUCT_NULL|{}STRUCT_NULL[0]
+            final fun <get-STRUCT_NULL>(): com.squareup.wire/ProtoAdapter<kotlin/Nothing?> // com.squareup.wire/ProtoAdapter.Companion.STRUCT_NULL.<get-STRUCT_NULL>|<get-STRUCT_NULL>(){}[0]
+        final val STRUCT_VALUE // com.squareup.wire/ProtoAdapter.Companion.STRUCT_VALUE|{}STRUCT_VALUE[0]
+            final fun <get-STRUCT_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Any?> // com.squareup.wire/ProtoAdapter.Companion.STRUCT_VALUE.<get-STRUCT_VALUE>|<get-STRUCT_VALUE>(){}[0]
+        final val UINT32 // com.squareup.wire/ProtoAdapter.Companion.UINT32|{}UINT32[0]
+            final fun <get-UINT32>(): com.squareup.wire/ProtoAdapter<kotlin/Int> // com.squareup.wire/ProtoAdapter.Companion.UINT32.<get-UINT32>|<get-UINT32>(){}[0]
+        final val UINT32_ARRAY // com.squareup.wire/ProtoAdapter.Companion.UINT32_ARRAY|{}UINT32_ARRAY[0]
+            final fun <get-UINT32_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/IntArray> // com.squareup.wire/ProtoAdapter.Companion.UINT32_ARRAY.<get-UINT32_ARRAY>|<get-UINT32_ARRAY>(){}[0]
+        final val UINT32_VALUE // com.squareup.wire/ProtoAdapter.Companion.UINT32_VALUE|{}UINT32_VALUE[0]
+            final fun <get-UINT32_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Int?> // com.squareup.wire/ProtoAdapter.Companion.UINT32_VALUE.<get-UINT32_VALUE>|<get-UINT32_VALUE>(){}[0]
+        final val UINT64 // com.squareup.wire/ProtoAdapter.Companion.UINT64|{}UINT64[0]
+            final fun <get-UINT64>(): com.squareup.wire/ProtoAdapter<kotlin/Long> // com.squareup.wire/ProtoAdapter.Companion.UINT64.<get-UINT64>|<get-UINT64>(){}[0]
+        final val UINT64_ARRAY // com.squareup.wire/ProtoAdapter.Companion.UINT64_ARRAY|{}UINT64_ARRAY[0]
+            final fun <get-UINT64_ARRAY>(): com.squareup.wire/ProtoAdapter<kotlin/LongArray> // com.squareup.wire/ProtoAdapter.Companion.UINT64_ARRAY.<get-UINT64_ARRAY>|<get-UINT64_ARRAY>(){}[0]
+        final val UINT64_VALUE // com.squareup.wire/ProtoAdapter.Companion.UINT64_VALUE|{}UINT64_VALUE[0]
+            final fun <get-UINT64_VALUE>(): com.squareup.wire/ProtoAdapter<kotlin/Long?> // com.squareup.wire/ProtoAdapter.Companion.UINT64_VALUE.<get-UINT64_VALUE>|<get-UINT64_VALUE>(){}[0]
+
+        final fun <#A2: kotlin/Any?, #B2: kotlin/Any?> newMapAdapter(com.squareup.wire/ProtoAdapter<#A2>, com.squareup.wire/ProtoAdapter<#B2>): com.squareup.wire/ProtoAdapter<kotlin.collections/Map<#A2, #B2>> // com.squareup.wire/ProtoAdapter.Companion.newMapAdapter|newMapAdapter(com.squareup.wire.ProtoAdapter<0:0>;com.squareup.wire.ProtoAdapter<0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+    }
+}
+
+final class <#A: out com.squareup.wire/OneOf.Key<#B>, #B: kotlin/Any?> com.squareup.wire/OneOf { // com.squareup.wire/OneOf|null[0]
+    constructor <init>(#A, #B) // com.squareup.wire/OneOf.<init>|<init>(1:0;1:1){}[0]
+
+    final val key // com.squareup.wire/OneOf.key|{}key[0]
+        final fun <get-key>(): #A // com.squareup.wire/OneOf.key.<get-key>|<get-key>(){}[0]
+    final val value // com.squareup.wire/OneOf.value|{}value[0]
+        final fun <get-value>(): #B // com.squareup.wire/OneOf.value.<get-value>|<get-value>(){}[0]
+
+    final fun <#A1: kotlin/Any?> getOrNull(com.squareup.wire/OneOf.Key<#A1>): #A1? // com.squareup.wire/OneOf.getOrNull|getOrNull(com.squareup.wire.OneOf.Key<0:0>){0§<kotlin.Any?>}[0]
+    final fun component1(): #A // com.squareup.wire/OneOf.component1|component1(){}[0]
+    final fun component2(): #B // com.squareup.wire/OneOf.component2|component2(){}[0]
+    final fun copy(#A = ..., #B = ...): com.squareup.wire/OneOf<#A, #B> // com.squareup.wire/OneOf.copy|copy(1:0;1:1){}[0]
+    final fun encodeWithTag(com.squareup.wire/ProtoWriter) // com.squareup.wire/OneOf.encodeWithTag|encodeWithTag(com.squareup.wire.ProtoWriter){}[0]
+    final fun encodeWithTag(com.squareup.wire/ReverseProtoWriter) // com.squareup.wire/OneOf.encodeWithTag|encodeWithTag(com.squareup.wire.ReverseProtoWriter){}[0]
+    final fun encodedSizeWithTag(): kotlin/Int // com.squareup.wire/OneOf.encodedSizeWithTag|encodedSizeWithTag(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/OneOf.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.squareup.wire/OneOf.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.squareup.wire/OneOf.toString|toString(){}[0]
+
+    abstract class <#A1: kotlin/Any?> Key { // com.squareup.wire/OneOf.Key|null[0]
+        constructor <init>(kotlin/Int, com.squareup.wire/ProtoAdapter<#A1>, kotlin/String, kotlin/Boolean = ..., kotlin/String = ...) // com.squareup.wire/OneOf.Key.<init>|<init>(kotlin.Int;com.squareup.wire.ProtoAdapter<1:0>;kotlin.String;kotlin.Boolean;kotlin.String){}[0]
+
+        final val adapter // com.squareup.wire/OneOf.Key.adapter|{}adapter[0]
+            final fun <get-adapter>(): com.squareup.wire/ProtoAdapter<#A1> // com.squareup.wire/OneOf.Key.adapter.<get-adapter>|<get-adapter>(){}[0]
+        final val declaredName // com.squareup.wire/OneOf.Key.declaredName|{}declaredName[0]
+            final fun <get-declaredName>(): kotlin/String // com.squareup.wire/OneOf.Key.declaredName.<get-declaredName>|<get-declaredName>(){}[0]
+        final val jsonName // com.squareup.wire/OneOf.Key.jsonName|{}jsonName[0]
+            final fun <get-jsonName>(): kotlin/String // com.squareup.wire/OneOf.Key.jsonName.<get-jsonName>|<get-jsonName>(){}[0]
+        final val redacted // com.squareup.wire/OneOf.Key.redacted|{}redacted[0]
+            final fun <get-redacted>(): kotlin/Boolean // com.squareup.wire/OneOf.Key.redacted.<get-redacted>|<get-redacted>(){}[0]
+        final val tag // com.squareup.wire/OneOf.Key.tag|{}tag[0]
+            final fun <get-tag>(): kotlin/Int // com.squareup.wire/OneOf.Key.tag.<get-tag>|<get-tag>(){}[0]
+    }
+}
+
+final class com.squareup.wire/AnyMessage : com.squareup.wire/Message<com.squareup.wire/AnyMessage, kotlin/Nothing> { // com.squareup.wire/AnyMessage|null[0]
+    constructor <init>(kotlin/String, okio/ByteString = ...) // com.squareup.wire/AnyMessage.<init>|<init>(kotlin.String;okio.ByteString){}[0]
+
+    final val typeUrl // com.squareup.wire/AnyMessage.typeUrl|{}typeUrl[0]
+        final fun <get-typeUrl>(): kotlin/String // com.squareup.wire/AnyMessage.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
+    final val value // com.squareup.wire/AnyMessage.value|{}value[0]
+        final fun <get-value>(): okio/ByteString // com.squareup.wire/AnyMessage.value.<get-value>|<get-value>(){}[0]
+
+    final fun <#A1: kotlin/Any?> unpack(com.squareup.wire/ProtoAdapter<#A1>): #A1 // com.squareup.wire/AnyMessage.unpack|unpack(com.squareup.wire.ProtoAdapter<0:0>){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> unpackOrNull(com.squareup.wire/ProtoAdapter<#A1>): #A1? // com.squareup.wire/AnyMessage.unpackOrNull|unpackOrNull(com.squareup.wire.ProtoAdapter<0:0>){0§<kotlin.Any?>}[0]
+    final fun copy(kotlin/String = ..., okio/ByteString = ...): com.squareup.wire/AnyMessage // com.squareup.wire/AnyMessage.copy|copy(kotlin.String;okio.ByteString){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/AnyMessage.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.squareup.wire/AnyMessage.hashCode|hashCode(){}[0]
+    final fun newBuilder(): kotlin/Nothing // com.squareup.wire/AnyMessage.newBuilder|newBuilder(){}[0]
+    final fun toString(): kotlin/String // com.squareup.wire/AnyMessage.toString|toString(){}[0]
+
+    final object Companion { // com.squareup.wire/AnyMessage.Companion|null[0]
+        final val ADAPTER // com.squareup.wire/AnyMessage.Companion.ADAPTER|{}ADAPTER[0]
+            final fun <get-ADAPTER>(): com.squareup.wire/ProtoAdapter<com.squareup.wire/AnyMessage> // com.squareup.wire/AnyMessage.Companion.ADAPTER.<get-ADAPTER>|<get-ADAPTER>(){}[0]
+
+        final fun <#A2: kotlin/Any?> pack(com.squareup.wire/ProtoAdapter<#A2>, #A2): com.squareup.wire/AnyMessage // com.squareup.wire/AnyMessage.Companion.pack|pack(com.squareup.wire.ProtoAdapter<0:0>;0:0){0§<kotlin.Any?>}[0]
+        final fun pack(com.squareup.wire/Message<*, *>): com.squareup.wire/AnyMessage // com.squareup.wire/AnyMessage.Companion.pack|pack(com.squareup.wire.Message<*,*>){}[0]
+    }
+}
+
+final class com.squareup.wire/Duration { // com.squareup.wire/Duration|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/Duration.equals|equals(kotlin.Any?){}[0]
+    final fun getNano(): kotlin/Int // com.squareup.wire/Duration.getNano|getNano(){}[0]
+    final fun getSeconds(): kotlin/Long // com.squareup.wire/Duration.getSeconds|getSeconds(){}[0]
+    final fun hashCode(): kotlin/Int // com.squareup.wire/Duration.hashCode|hashCode(){}[0]
+}
+
+final class com.squareup.wire/FieldMask { // com.squareup.wire/FieldMask|null[0]
+    constructor <init>() // com.squareup.wire/FieldMask.<init>|<init>(){}[0]
+    constructor <init>(kotlin.collections/List<kotlin/String> = ...) // com.squareup.wire/FieldMask.<init>|<init>(kotlin.collections.List<kotlin.String>){}[0]
+
+    final val paths // com.squareup.wire/FieldMask.paths|{}paths[0]
+        final fun <get-paths>(): kotlin.collections/List<kotlin/String> // com.squareup.wire/FieldMask.paths.<get-paths>|<get-paths>(){}[0]
+
+    final fun copy(kotlin.collections/List<kotlin/String> = ...): com.squareup.wire/FieldMask // com.squareup.wire/FieldMask.copy|copy(kotlin.collections.List<kotlin.String>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/FieldMask.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.squareup.wire/FieldMask.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.squareup.wire/FieldMask.toString|toString(){}[0]
+}
+
+final class com.squareup.wire/Instant { // com.squareup.wire/Instant|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire/Instant.equals|equals(kotlin.Any?){}[0]
+    final fun getEpochSecond(): kotlin/Long // com.squareup.wire/Instant.getEpochSecond|getEpochSecond(){}[0]
+    final fun getNano(): kotlin/Int // com.squareup.wire/Instant.getNano|getNano(){}[0]
+    final fun hashCode(): kotlin/Int // com.squareup.wire/Instant.hashCode|hashCode(){}[0]
+}
+
+final class com.squareup.wire/ProtoWriter { // com.squareup.wire/ProtoWriter|null[0]
+    constructor <init>(okio/BufferedSink) // com.squareup.wire/ProtoWriter.<init>|<init>(okio.BufferedSink){}[0]
+
+    final fun writeBytes(okio/ByteString) // com.squareup.wire/ProtoWriter.writeBytes|writeBytes(okio.ByteString){}[0]
+    final fun writeFixed32(kotlin/Int) // com.squareup.wire/ProtoWriter.writeFixed32|writeFixed32(kotlin.Int){}[0]
+    final fun writeFixed64(kotlin/Long) // com.squareup.wire/ProtoWriter.writeFixed64|writeFixed64(kotlin.Long){}[0]
+    final fun writeString(kotlin/String) // com.squareup.wire/ProtoWriter.writeString|writeString(kotlin.String){}[0]
+    final fun writeTag(kotlin/Int, com.squareup.wire/FieldEncoding) // com.squareup.wire/ProtoWriter.writeTag|writeTag(kotlin.Int;com.squareup.wire.FieldEncoding){}[0]
+    final fun writeVarint32(kotlin/Int) // com.squareup.wire/ProtoWriter.writeVarint32|writeVarint32(kotlin.Int){}[0]
+    final fun writeVarint64(kotlin/Long) // com.squareup.wire/ProtoWriter.writeVarint64|writeVarint64(kotlin.Long){}[0]
+
+    final object Companion // com.squareup.wire/ProtoWriter.Companion|null[0]
+}
+
+final class com.squareup.wire/ReverseProtoWriter { // com.squareup.wire/ReverseProtoWriter|null[0]
+    constructor <init>() // com.squareup.wire/ReverseProtoWriter.<init>|<init>(){}[0]
+
+    final val byteCount // com.squareup.wire/ReverseProtoWriter.byteCount|{}byteCount[0]
+        final fun <get-byteCount>(): kotlin/Int // com.squareup.wire/ReverseProtoWriter.byteCount.<get-byteCount>|<get-byteCount>(){}[0]
+
+    final fun writeBytes(okio/ByteString) // com.squareup.wire/ReverseProtoWriter.writeBytes|writeBytes(okio.ByteString){}[0]
+    final fun writeFixed32(kotlin/Int) // com.squareup.wire/ReverseProtoWriter.writeFixed32|writeFixed32(kotlin.Int){}[0]
+    final fun writeFixed64(kotlin/Long) // com.squareup.wire/ReverseProtoWriter.writeFixed64|writeFixed64(kotlin.Long){}[0]
+    final fun writeString(kotlin/String) // com.squareup.wire/ReverseProtoWriter.writeString|writeString(kotlin.String){}[0]
+    final fun writeTag(kotlin/Int, com.squareup.wire/FieldEncoding) // com.squareup.wire/ReverseProtoWriter.writeTag|writeTag(kotlin.Int;com.squareup.wire.FieldEncoding){}[0]
+    final fun writeTo(okio/BufferedSink) // com.squareup.wire/ReverseProtoWriter.writeTo|writeTo(okio.BufferedSink){}[0]
+    final fun writeVarint32(kotlin/Int) // com.squareup.wire/ReverseProtoWriter.writeVarint32|writeVarint32(kotlin.Int){}[0]
+    final fun writeVarint64(kotlin/Long) // com.squareup.wire/ReverseProtoWriter.writeVarint64|writeVarint64(kotlin.Long){}[0]
+}
+
+open class com.squareup.wire/ProtoReader { // com.squareup.wire/ProtoReader|null[0]
+    constructor <init>(okio/BufferedSource) // com.squareup.wire/ProtoReader.<init>|<init>(okio.BufferedSource){}[0]
+    constructor <init>(okio/BufferedSource, kotlin/Int) // com.squareup.wire/ProtoReader.<init>|<init>(okio.BufferedSource;kotlin.Int){}[0]
+
+    final fun endMessage(kotlin/Long) // com.squareup.wire/ProtoReader.endMessage|endMessage(kotlin.Long){}[0]
+    final inline fun forEachTag(kotlin/Function1<kotlin/Int, kotlin/Any>): okio/ByteString // com.squareup.wire/ProtoReader.forEachTag|forEachTag(kotlin.Function1<kotlin.Int,kotlin.Any>){}[0]
+    open fun addUnknownField(kotlin/Int, com.squareup.wire/FieldEncoding, kotlin/Any?) // com.squareup.wire/ProtoReader.addUnknownField|addUnknownField(kotlin.Int;com.squareup.wire.FieldEncoding;kotlin.Any?){}[0]
+    open fun beginMessage(): kotlin/Long // com.squareup.wire/ProtoReader.beginMessage|beginMessage(){}[0]
+    open fun endMessageAndGetUnknownFields(kotlin/Long): okio/ByteString // com.squareup.wire/ProtoReader.endMessageAndGetUnknownFields|endMessageAndGetUnknownFields(kotlin.Long){}[0]
+    open fun nextFieldMinLengthInBytes(): kotlin/Long // com.squareup.wire/ProtoReader.nextFieldMinLengthInBytes|nextFieldMinLengthInBytes(){}[0]
+    open fun nextLengthDelimited(): kotlin/Int // com.squareup.wire/ProtoReader.nextLengthDelimited|nextLengthDelimited(){}[0]
+    open fun nextTag(): kotlin/Int // com.squareup.wire/ProtoReader.nextTag|nextTag(){}[0]
+    open fun peekFieldEncoding(): com.squareup.wire/FieldEncoding? // com.squareup.wire/ProtoReader.peekFieldEncoding|peekFieldEncoding(){}[0]
+    open fun readBytes(): okio/ByteString // com.squareup.wire/ProtoReader.readBytes|readBytes(){}[0]
+    open fun readFixed32(): kotlin/Int // com.squareup.wire/ProtoReader.readFixed32|readFixed32(){}[0]
+    open fun readFixed64(): kotlin/Long // com.squareup.wire/ProtoReader.readFixed64|readFixed64(){}[0]
+    open fun readString(): kotlin/String // com.squareup.wire/ProtoReader.readString|readString(){}[0]
+    open fun readUnknownField(kotlin/Int) // com.squareup.wire/ProtoReader.readUnknownField|readUnknownField(kotlin.Int){}[0]
+    open fun readVarint32(): kotlin/Int // com.squareup.wire/ProtoReader.readVarint32|readVarint32(){}[0]
+    open fun readVarint64(): kotlin/Long // com.squareup.wire/ProtoReader.readVarint64|readVarint64(){}[0]
+    open fun skip() // com.squareup.wire/ProtoReader.skip|skip(){}[0]
+
+    final object Companion { // com.squareup.wire/ProtoReader.Companion|null[0]
+        final const val DEFAULT_RECURSION_LIMIT // com.squareup.wire/ProtoReader.Companion.DEFAULT_RECURSION_LIMIT|{}DEFAULT_RECURSION_LIMIT[0]
+            final fun <get-DEFAULT_RECURSION_LIMIT>(): kotlin/Int // com.squareup.wire/ProtoReader.Companion.DEFAULT_RECURSION_LIMIT.<get-DEFAULT_RECURSION_LIMIT>|<get-DEFAULT_RECURSION_LIMIT>(){}[0]
+    }
+}
+
+final fun com.squareup.wire/ProtoReader32(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...): com.squareup.wire/ProtoReader32 // com.squareup.wire/ProtoReader32|ProtoReader32(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+final fun com.squareup.wire/ProtoReader32(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ..., kotlin/Int): com.squareup.wire/ProtoReader32 // com.squareup.wire/ProtoReader32|ProtoReader32(kotlin.ByteArray;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+final fun com.squareup.wire/ProtoReader32(okio/ByteString, kotlin/Int = ..., kotlin/Int = ...): com.squareup.wire/ProtoReader32 // com.squareup.wire/ProtoReader32|ProtoReader32(okio.ByteString;kotlin.Int;kotlin.Int){}[0]
+final fun com.squareup.wire/ProtoReader32(okio/ByteString, kotlin/Int = ..., kotlin/Int = ..., kotlin/Int): com.squareup.wire/ProtoReader32 // com.squareup.wire/ProtoReader32|ProtoReader32(okio.ByteString;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+final fun com.squareup.wire/durationOfSeconds(kotlin/Long, kotlin/Long): com.squareup.wire/Duration // com.squareup.wire/durationOfSeconds|durationOfSeconds(kotlin.Long;kotlin.Long){}[0]
+final fun com.squareup.wire/ofEpochSecond(kotlin/Long, kotlin/Long): com.squareup.wire/Instant // com.squareup.wire/ofEpochSecond|ofEpochSecond(kotlin.Long;kotlin.Long){}[0]
+final inline fun (com.squareup.wire/ProtoReader32).com.squareup.wire/forEachTag(kotlin/Function1<kotlin/Int, kotlin/Any>): okio/ByteString // com.squareup.wire/forEachTag|forEachTag@com.squareup.wire.ProtoReader32(kotlin.Function1<kotlin.Int,kotlin.Any>){}[0]

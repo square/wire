@@ -425,6 +425,11 @@ private class WireBuildExtensionImpl(private val project: Project) : WireBuildEx
       ignoredPackages += "com.squareup.wire.gradle.internal"
       ignoredPackages += "com.squareup.wire.internal"
       ignoredPackages += "com.squareup.wire.schema.internal"
+
+      // Check the Kotlin/JS, Kotlin/Native and Kotlin/Wasm ABI too. The JVM `.api` dumps don't see
+      // changes such as a new default parameter, which break klibs compiled against an older
+      // release. The dump covers every target, so only check it when they are all enabled.
+      klib.enabled = listOf("kjs", "knative", "kwasm").all { System.getProperty(it, "true").toBoolean() }
     }
   }
 
