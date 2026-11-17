@@ -38,7 +38,6 @@ import kotlin.Throws
 import com.squareup.wire.internal.and
 import com.squareup.wire.internal.shl
 import kotlin.jvm.JvmName
-import kotlin.jvm.JvmOverloads
 import okio.Buffer
 import okio.BufferedSource
 import okio.ByteString
@@ -50,12 +49,17 @@ import okio.IOException
  *
  * @param recursionLimit the maximum number of levels of message and group nesting to allow. A
  *     message nested deeper than this limit fails with an [IOException]. The limit protects the
- *     reader from stack overflows on malicious input. It defaults to [DEFAULT_RECURSION_LIMIT].
+ *     reader from stack overflows on malicious input. The constructor without this parameter uses
+ *     [DEFAULT_RECURSION_LIMIT].
  */
-open class ProtoReader @JvmOverloads constructor(
+open class ProtoReader(
   private val source: BufferedSource,
-  private val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
+  private val recursionLimit: Int,
 ) {
+  // An explicit overload, not a default value, keeps the existing constructor signature in JVM
+  // bytecode and in Kotlin/JS and Kotlin/Native klibs.
+  constructor(source: BufferedSource) : this(source, DEFAULT_RECURSION_LIMIT)
+
   init {
     require(recursionLimit >= 0) { "recursionLimit=$recursionLimit must not be negative" }
   }

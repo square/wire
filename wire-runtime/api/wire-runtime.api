@@ -291,7 +291,6 @@ public class com/squareup/wire/ProtoReader {
 	public final fun -forEachTag (Lkotlin/jvm/functions/Function1;)Lokio/ByteString;
 	public fun <init> (Lokio/BufferedSource;)V
 	public fun <init> (Lokio/BufferedSource;I)V
-	public synthetic fun <init> (Lokio/BufferedSource;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun addUnknownField (ILcom/squareup/wire/FieldEncoding;Ljava/lang/Object;)V
 	public fun beginMessage ()J
 	public final fun endMessage (J)V
