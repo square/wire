@@ -31,7 +31,10 @@ interface GrpcCall<S : Any, R : Any> {
   /** The method invoked by this call. */
   val method: GrpcMethod<S, R>
 
-  /** Configures how long the call can take to complete before it is automatically canceled. */
+  /**
+   * Configures how long the call can take to complete before it is automatically canceled.
+   * An expired call fails with a [GrpcException] that has [GrpcStatus.DEADLINE_EXCEEDED].
+   */
   val timeout: Timeout
 
   /**

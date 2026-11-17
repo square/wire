@@ -42,11 +42,16 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private var call: okhttp3.Call? = null
   private var canceled = false
 
+  /** Initialized once this is executed. */
+  internal lateinit var callTimeout: GrpcCallTimeout
+
   override val timeout: Timeout = ForwardingTimeout(Timeout())
 
   init {
     timeout.clearTimeout()
     timeout.clearDeadline()
+    // Start with the default timeout of the client. The user can change it before the call executes.
+    timeout.timeout(grpcClient.callTimeoutNanos, TimeUnit.NANOSECONDS)
   }
 
   override var requestMetadata: Map<String, String> = mapOf()
@@ -112,15 +117,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
 
   override fun clone(): GrpcStreamingCall<S, R> {
     val result = RealGrpcStreamingCall(grpcClient, method)
-    val oldTimeout = this.timeout
-    result.timeout.also { newTimeout ->
-      newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
-      if (oldTimeout.hasDeadline()) {
-        newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
-      } else {
-        newTimeout.clearDeadline()
-      }
-    }
+    timeout.copyTo(result.timeout)
     result.requestMetadata += this.requestMetadata
     return result
   }
@@ -131,7 +128,16 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result
     if (canceled) result.cancel()
-    (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    // Enforce the user-set timeout and deadline on the client, for the full lifetime of the call.
+    // The grpc-timeout header alone does nothing if the server or a proxy ignores it.
+    callTimeout = GrpcCallTimeout(result).also {
+      timeout.copyTo(it)
+      it.enter()
+    }
+    // Keep the user-set values readable. Without them, show the OkHttp call timeout.
+    if (!timeout.hasDeadline() && (timeout.timeoutNanos() == 0L)) {
+      (timeout as ForwardingTimeout).setDelegate(result.timeout())
+    }
     return result
   }
 }

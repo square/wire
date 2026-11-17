@@ -41,6 +41,7 @@ public final class com/squareup/wire/GrpcClient$Builder {
 	public final fun baseUrl (Lokhttp3/HttpUrl;)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun build ()Lcom/squareup/wire/GrpcClient;
 	public final fun callFactory (Lokhttp3/Call$Factory;)Lcom/squareup/wire/GrpcClient$Builder;
+	public final fun callTimeout (JLjava/util/concurrent/TimeUnit;)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun client (Lokhttp3/OkHttpClient;)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun minMessageToCompress (J)Lcom/squareup/wire/GrpcClient$Builder;
 }
