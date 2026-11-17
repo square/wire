@@ -1,6 +1,25 @@
 Change Log
 ==========
 
+Version 7.2.2
+---------------------
+
+_2026-11-17_
+
+### Common
+
+* New: `ProtoReader` and `ProtoReader32` accept a `recursionLimit`. It sets the maximum depth of nested messages and groups that the reader decodes. A message nested deeper than the limit fails with an `IOException`. The default stays at 100, as in Google's protobuf runtimes. The new `ProtoReader.DEFAULT_RECURSION_LIMIT` constant holds this value (#3767)
+
+### gRPC
+
+* New: `GrpcClient.Builder.callTimeout` sets the default timeout of each call that the client makes. A call can change or clear it with `GrpcCall.timeout` or `GrpcStreamingCall.timeout` before it executes (#3699)
+* Change: the client enforces the timeout and the deadline that are set on `GrpcCall.timeout` and `GrpcStreamingCall.timeout`. Before, the client only sent them in the `grpc-timeout` header, so a server that ignored the header or a stalled connection could keep the call open. The limit applies to the full lifetime of the call, including all the messages of a streaming call. An expired call fails with a `GrpcException` that has `GrpcStatus.DEADLINE_EXCEEDED` (#3699)
+* Fix: the `grpc-timeout` header holds the time that remains until the first of the timeout and the deadline expires. Before, the header sent the absolute deadline value as a duration, so a 2-second deadline became about 15 hours. A call with a timeout and a deadline also sent two headers (#3699)
+
+### Swift
+
+* Security: `ProtoReader` releases the unknown-field buffers of a nested message that ends at the wrong offset. Before, each such malformed message leaked memory ([GHSA-w9jg-j89r-wrp7][GHSA-w9jg-j89r-wrp7])
+
 Version 7.2.1
 ---------------------
 
@@ -2303,6 +2322,7 @@ Initial version.
  [GHSA-35ch-cghp-x9g6]: https://github.com/square/wire/security/advisories/GHSA-35ch-cghp-x9g6
  [GHSA-f4vm-4gr7-vrcg]: https://github.com/square/wire/security/advisories/GHSA-f4vm-4gr7-vrcg
  [GHSA-jmh4-c43f-w43x]: https://github.com/square/wire/security/advisories/GHSA-jmh4-c43f-w43x
+ [GHSA-w9jg-j89r-wrp7]: https://github.com/square/wire/security/advisories/GHSA-w9jg-j89r-wrp7
  [JGulbronson]: https://github.com/JGulbronson
  [JakeWharton]: https://github.com/JakeWharton
  [JustinBis]: https://github.com/JustinBis
