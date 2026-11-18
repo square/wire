@@ -2859,22 +2859,58 @@ class KotlinGeneratorTest {
     assertThat(code).contains("""numbers=${'$'}numbers""")
   }
 
+  @Test fun toStringSanitizesWrappedStringsAndStructs() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "google/protobuf/struct.proto";
+        |import "google/protobuf/wrappers.proto";
+        |message Wrapped {
+        |  optional google.protobuf.StringValue text = 1;
+        |  repeated google.protobuf.StringValue texts = 2;
+        |  optional google.protobuf.Int32Value number = 3;
+        |  optional google.protobuf.Struct struct = 4;
+        |  optional google.protobuf.ListValue list = 5;
+        |  optional google.protobuf.Value value = 6;
+        |  map<int32, google.protobuf.Struct> structs = 7;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Wrapped")
+    assertThat(code).contains("""text=${'$'}{sanitizeAny(text)}""")
+    assertThat(code).contains("""texts=${'$'}{sanitizeAny(texts)}""")
+    assertThat(code).contains("""number=${'$'}number""")
+    assertThat(code).contains("""struct=${'$'}{sanitizeAny(struct)}""")
+    assertThat(code).contains("""list=${'$'}{sanitizeAny(list)}""")
+    assertThat(code).contains("""value_=${'$'}{sanitizeAny(value_)}""")
+    assertThat(code).contains("""structs=${'$'}{sanitize(structs)}""")
+  }
+
   @Test fun sealedOneofStringsAreSanitizedInToString() {
     val schema = buildSchema {
       add(
         "message.proto".toPath(),
         """
         |syntax = "proto2";
+        |import "google/protobuf/struct.proto";
+        |import "google/protobuf/wrappers.proto";
         |message Choices {
         |  oneof choice {
         |    string text = 1;
         |    int32 number = 2;
+        |    google.protobuf.StringValue wrapped = 3;
+        |    google.protobuf.Struct struct = 4;
         |  }
         |}
         """.trimMargin(),
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = OneofMode.SEALED_CLASS)
+    assertThat(code).contains("override fun toString(): String = ${'"'}${'"'}${'"'}Wrapped(value=${'$'}{sanitizeAny(value)})${'"'}${'"'}${'"'}")
+    assertThat(code).contains("override fun toString(): String = ${'"'}${'"'}${'"'}Struct(value=${'$'}{sanitizeAny(value)})${'"'}${'"'}${'"'}")
     assertThat(code).contains("override fun toString(): String = ${'"'}${'"'}${'"'}Text(value=${'$'}{sanitize(value)})${'"'}${'"'}${'"'}")
     assertThat(code).doesNotContain("Number(value=")
   }

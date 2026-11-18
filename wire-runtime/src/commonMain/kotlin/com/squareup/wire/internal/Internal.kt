@@ -202,11 +202,12 @@ fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
 private const val ESCAPED_CHARS = ",[]{}\\"
 
 /**
- * Returns [value] in a form that is safe to print in `toString()`. It cannot forge a field, a
- * nested message, or a log line. Rules:
+ * Returns [value] in a form that has no control characters, so printing it cannot start a new line
+ * in a log. Rules:
  *
  *  * The characters `,[]{}` and `\` get a `\` prefix.
  *  * Newline, carriage return, and tab become `\n`, `\r`, and `\t`.
+ *  * U+2028 and U+2029 become `\u2028` and `\u2029`.
  *  * Every other control character becomes `\u` and four lowercase hex digits, like `\u001b` for
  *    ESC. Control characters are U+0000 to U+001F and U+007F to U+009F.
  *  * All other characters stay as they are.
@@ -221,7 +222,7 @@ fun sanitize(value: String): String = buildString(value.length) {
       char == '\n' -> append("\\n")
       char == '\r' -> append("\\r")
       char == '\t' -> append("\\t")
-      char.isISOControl() -> {
+      char.isISOControl() || char == '\u2028' || char == '\u2029' -> {
         append("\\u")
         append(char.code.toString(16).padStart(4, '0'))
       }
@@ -238,8 +239,11 @@ fun sanitize(values: Map<*, *>): String = values.entries.joinToString(prefix = "
   "${sanitizeAny(key)}=${sanitizeAny(value)}"
 }
 
-/** Returns [value] like `toString()`, with strings inside it escaped by [sanitize]. */
-internal fun sanitizeAny(value: Any?): String = when (value) {
+/**
+ * Returns [value] like `toString()`, with strings inside it escaped by [sanitize]. This covers
+ * strings in lists and maps, such as the values of `google.protobuf.Struct`.
+ */
+fun sanitizeAny(value: Any?): String = when (value) {
   is String -> sanitize(value)
   is List<*> -> value.joinToString(prefix = "[", postfix = "]", transform = ::sanitizeAny)
   is Map<*, *> -> sanitize(value)

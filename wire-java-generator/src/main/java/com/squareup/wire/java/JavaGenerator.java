@@ -2084,6 +2084,22 @@ public final class JavaGenerator {
     return result.build();
   }
 
+  /** True for types whose string content is escaped by {@code sanitize}, like {@code string}. */
+  private static boolean printsStrings(ProtoType type) {
+    return type.equals(ProtoType.STRING) || printsNestedStrings(type);
+  }
+
+  /**
+   * True for wrapped strings and the {@code google.protobuf.Struct} family. These go through {@code
+   * sanitizeAny}.
+   */
+  private static boolean printsNestedStrings(ProtoType type) {
+    return type.equals(ProtoType.STRING_VALUE)
+        || type.equals(ProtoType.STRUCT_MAP)
+        || type.equals(ProtoType.STRUCT_LIST)
+        || type.equals(ProtoType.STRUCT_VALUE);
+  }
+
   private MethodSpec messageToString(NameAllocator nameAllocator, MessageType type) {
     NameAllocator localNameAllocator = nameAllocator.clone();
 
@@ -2109,10 +2125,17 @@ public final class JavaGenerator {
             "$N.append(\", $N=$L\")", builderName, field.getName(), DOUBLE_FULL_BLOCK);
       } else if (field.getType().equals(ProtoType.STRING)
           || (field.getType().isMap()
-              && (field.getType().getKeyType().equals(ProtoType.STRING)
-                  || field.getType().getValueType().equals(ProtoType.STRING)))) {
+              && (printsStrings(field.getType().getKeyType())
+                  || printsStrings(field.getType().getValueType())))) {
         result.addStatement(
             "$N.append(\", $N=\").append($T.sanitize($L))",
+            builderName,
+            field.getName(),
+            Internal.class,
+            fieldName);
+      } else if (printsNestedStrings(field.getType())) {
+        result.addStatement(
+            "$N.append(\", $N=\").append($T.sanitizeAny($L))",
             builderName,
             field.getName(),
             Internal.class,
