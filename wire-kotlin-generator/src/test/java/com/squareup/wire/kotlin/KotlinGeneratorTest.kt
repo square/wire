@@ -1646,9 +1646,9 @@ class KotlinGeneratorTest {
     assertThat(code).contains("ProtoAdapter.FIELD_MASK")
     assertThat(code).contains("ProtoAdapter.FIELD_MASK.asRepeated()")
     assertThat(code).contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)")
-    assertThat(code).contains(
-      "oneof_mask = decodeMessageOrMerge(ProtoAdapter.FIELD_MASK, reader, oneof_mask)",
-    )
+    assertThat(code).contains("oneof_mask = ProtoAdapter.FIELD_MASK.decode(reader)")
+    assertThat(code).contains("merges = addMerge(merges, reader, 4)")
+    assertThat(code).contains("oneof_mask = finishMerge(merges, 4, ProtoAdapter.FIELD_MASK, oneof_mask)")
   }
 
   @Test fun flatOneOfDecodingIsConstantSizePerField() {
@@ -1675,7 +1675,8 @@ class KotlinGeneratorTest {
     // in the number of fields and can exceed the JVM method size limit on large oneofs.
     assertThat(code).contains("var choice_tag: Int = 0")
     assertThat(code).contains("if (choice_tag != 1)")
-    assertThat(code).contains("shipping = decodeMessageOrMerge(ShippingAddress.ADAPTER, reader, shipping)")
+    assertThat(code).contains("shipping = ShippingAddress.ADAPTER.decode(reader)")
+    assertThat(code).contains("merges = addMerge(merges, reader, 1)")
     assertThat(code).contains("choice_tag = 1")
     assertThat(code).contains("shipping = if (choice_tag == 1) shipping else null,")
     assertThat(code).contains("billing = if (choice_tag == 2) billing else null,")
@@ -2155,12 +2156,23 @@ class KotlinGeneratorTest {
         |      override fun decode(reader: ProtoReader): Feature {
         |        var name: String? = null
         |        var location: String? = null
+        |        var merges: MessageMerges? = null
         |        val unknownFields = reader.forEachTag { tag ->
         |          when (tag) {
         |            1 -> name = ProtoAdapter.STRING.decode(reader)
-        |            2 -> location = decodeMessageOrMerge(StringPointAdapter.INSTANCE, reader, location)
+        |            2 -> run {
+        |              if (location == null) {
+        |                location = StringPointAdapter.INSTANCE.decode(reader)
+        |              } else {
+        |                merges = addMerge(merges, reader, 2)
+        |              }
+        |            }
+        |
         |            else -> reader.readUnknownField(tag)
         |          }
+        |        }
+        |        if (merges != null) {
+        |          location = finishMerge(merges, 2, StringPointAdapter.INSTANCE, location)
         |        }
         |        return Feature(
         |          name = name,

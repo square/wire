@@ -355,6 +355,29 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, ex
   return decodeMerged(adapter, existing, bytes, reader.mergeContext())
 }
 
+/** Keeps a later occurrence of a singular message field to merge in [finishMerge]. */
+fun addMerge(merges: MessageMerges?, reader: ProtoReader, tag: Int): MessageMerges {
+  val bytes = reader.readBytes()
+  return (merges ?: MessageMerges(reader.mergeContext())).also { it.add(tag, bytes) }
+}
+
+/** Keeps a later occurrence of a singular message field to merge in [finishMerge]. */
+fun addMerge(merges: MessageMerges?, reader: ProtoReader32, tag: Int): MessageMerges {
+  val bytes = reader.readBytes()
+  return (merges ?: MessageMerges(reader.mergeContext())).also { it.add(tag, bytes) }
+}
+
+/** Forgets the occurrences kept for [tag], because the field was reset by another oneof member. */
+fun discardMerges(merges: MessageMerges?, tag: Int) {
+  merges?.discard(tag)
+}
+
+/**
+ * Merges the occurrences kept for [tag] into [existing], which is the first occurrence. Returns
+ * [existing] if none were kept.
+ */
+fun <E> finishMerge(merges: MessageMerges?, tag: Int, adapter: ProtoAdapter<E>, existing: E?): E? = merges?.finish(tag, adapter, existing) ?: existing
+
 /**
  * Encodes [existing], appends [bytes], and decodes the result. The new reader continues the
  * recursion depth of the caller, and the work counts against the budget of the outermost reader.

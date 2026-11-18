@@ -65,6 +65,7 @@ import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireEnumConstant;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
+import com.squareup.wire.internal.MessageMerges;
 import com.squareup.wire.schema.AdapterConstant;
 import com.squareup.wire.schema.EnclosingType;
 import com.squareup.wire.schema.EnumConstant;
@@ -117,6 +118,7 @@ public final class JavaGenerator {
   static final ClassName WIRE_ENCLOSING_TYPE = ClassName.get(WireEnclosingType.class);
   static final ClassName ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage");
   static final ClassName ADAPTER = ClassName.get(ProtoAdapter.class);
+  static final ClassName MESSAGE_MERGES = ClassName.get(MessageMerges.class);
   static final ClassName BUILDER = ClassName.get(Message.Builder.class);
   static final ClassName ENUM_ADAPTER = ClassName.get(EnumAdapter.class);
   static final ClassName NULLABLE = ClassName.get("androidx.annotation", "Nullable");
@@ -1369,6 +1371,19 @@ public final class JavaGenerator {
       }
     }
 
+    // Later occurrences of a singular message field are kept as bytes and merged once after the
+    // last tag, so that decoding is linear in the size of the input.
+    List<Field> mergedFields = new ArrayList<>();
+    for (Field field : fields) {
+      if (isMergedMessage(field)) mergedFields.add(field);
+    }
+    String mergesName = null;
+    if (!mergedFields.isEmpty()) {
+      NameAllocator localNames = nameAllocator.clone();
+      mergesName = localNames.newName("merges");
+      result.addStatement("$T $N = null", MESSAGE_MERGES, mergesName);
+    }
+
     result.addStatement("long token = reader.beginMessage()");
     result.beginControlFlow("for (int tag; (tag = reader.nextTag()) != -1;)");
     List<Field> singularPackableFields = new ArrayList<>();
@@ -1405,7 +1420,7 @@ public final class JavaGenerator {
       if (isEnum(field.getType()) && !field.getType().equals(ProtoType.STRUCT_NULL)) {
         result.beginControlFlow("case $L:", fieldTag);
         result.beginControlFlow("try");
-        result.addCode(decodeAndAssign(type, field, nameAllocator, useBuilder));
+        result.addCode(decodeAndAssign(type, field, nameAllocator, useBuilder, mergesName));
         result.addCode(";\n");
         if (useBuilder) {
           result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
@@ -1422,7 +1437,7 @@ public final class JavaGenerator {
         result.addCode(
             "case $L: $L; break;\n",
             fieldTag,
-            decodeAndAssign(type, field, nameAllocator, useBuilder));
+            decodeAndAssign(type, field, nameAllocator, useBuilder, mergesName));
       }
     }
 
@@ -1442,6 +1457,32 @@ public final class JavaGenerator {
       result.addStatement("reader.endMessageAndGetUnknownFields(token)");
     }
 
+    if (mergesName != null) {
+      result.beginControlFlow("if ($N != null)", mergesName);
+      for (Field field : mergedFields) {
+        String fieldName = nameAllocator.get(field);
+        CodeBlock adapter = singleAdapterFor(field, nameAllocator);
+        if (useBuilder) {
+          result.addStatement(
+              "builder.$1L($2T.finishMerge($3N, $4L, $5L, builder.$1L))",
+              fieldName,
+              Internal.class,
+              mergesName,
+              field.getTag(),
+              adapter);
+        } else {
+          result.addStatement(
+              "$1N = $2T.finishMerge($3N, $4L, $5L, $1N)",
+              fieldName,
+              Internal.class,
+              mergesName,
+              field.getTag(),
+              adapter);
+        }
+      }
+      result.endControlFlow();
+    }
+
     if (useBuilder) {
       result.addStatement("return builder.build()");
     } else {
@@ -1458,8 +1499,18 @@ public final class JavaGenerator {
     return result.build();
   }
 
+  private boolean isMergedMessage(Field field) {
+    return !field.isRepeated()
+        && !field.getType().isMap()
+        && schema.getType(field.getType()) instanceof MessageType;
+  }
+
   private CodeBlock decodeAndAssign(
-      MessageType message, Field field, NameAllocator nameAllocator, boolean useBuilder) {
+      MessageType message,
+      Field field,
+      NameAllocator nameAllocator,
+      boolean useBuilder,
+      String mergesName) {
     String fieldName = nameAllocator.get(field);
     CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field, nameAllocator));
     CodeBlock assignment;
@@ -1486,21 +1537,35 @@ public final class JavaGenerator {
               ? CodeBlock.of("builder.$L.putAll($L)", fieldName, decode)
               : CodeBlock.of("$L.putAll($L)", fieldName, decode);
     } else if (schema.getType(field.getType()) instanceof MessageType) {
-      CodeBlock adapter = singleAdapterFor(field, nameAllocator);
+      // Another member of a oneof may have cleared this field since an earlier occurrence.
+      CodeBlock discard =
+          field.isOneOf()
+              ? CodeBlock.of(
+                  "$T.discardMerges($N, $L); ", Internal.class, mergesName, field.getTag())
+              : CodeBlock.of("");
+      CodeBlock addMerge =
+          CodeBlock.of(
+              "$N = $T.addMerge($N, reader, $L)",
+              mergesName,
+              Internal.class,
+              mergesName,
+              field.getTag());
       assignment =
           useBuilder
               ? CodeBlock.of(
-                  "builder.$L($T.decodeMessageOrMerge($L, reader, builder.$L))",
+                  "if (builder.$L == null) { $Lbuilder.$L($L); } else $L",
                   fieldName,
-                  Internal.class,
-                  adapter,
-                  fieldName)
+                  discard,
+                  fieldName,
+                  decode,
+                  addMerge)
               : CodeBlock.of(
-                  "$L = $T.decodeMessageOrMerge($L, reader, $L)",
+                  "if ($L == null) { $L$L = $L; } else $L",
                   fieldName,
-                  Internal.class,
-                  adapter,
-                  fieldName);
+                  discard,
+                  fieldName,
+                  decode,
+                  addMerge);
     } else {
       assignment =
           useBuilder

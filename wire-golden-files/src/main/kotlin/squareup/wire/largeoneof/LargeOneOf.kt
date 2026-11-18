@@ -16,8 +16,11 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
+import com.squareup.wire.`internal`.MessageMerges
+import com.squareup.wire.`internal`.addMerge
 import com.squareup.wire.`internal`.countNonNull
-import com.squareup.wire.`internal`.decodeMessageOrMerge
+import com.squareup.wire.`internal`.discardMerges
+import com.squareup.wire.`internal`.finishMerge
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.AssertionError
@@ -2500,13 +2503,19 @@ public class LargeOneOf(
         var field159: Item? = null
         var field160: Item? = null
         var choice_tag: Int = 0
+        var merges: MessageMerges? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> run {
               if (choice_tag != 1) {
                 field001 = null
               }
-              field001 = decodeMessageOrMerge(Item.ADAPTER, reader, field001)
+              if (field001 == null) {
+                discardMerges(merges, 1)
+                field001 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 1)
+              }
               choice_tag = 1
             }
 
@@ -2514,7 +2523,12 @@ public class LargeOneOf(
               if (choice_tag != 2) {
                 field002 = null
               }
-              field002 = decodeMessageOrMerge(Item.ADAPTER, reader, field002)
+              if (field002 == null) {
+                discardMerges(merges, 2)
+                field002 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 2)
+              }
               choice_tag = 2
             }
 
@@ -2522,7 +2536,12 @@ public class LargeOneOf(
               if (choice_tag != 3) {
                 field003 = null
               }
-              field003 = decodeMessageOrMerge(Item.ADAPTER, reader, field003)
+              if (field003 == null) {
+                discardMerges(merges, 3)
+                field003 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 3)
+              }
               choice_tag = 3
             }
 
@@ -2530,7 +2549,12 @@ public class LargeOneOf(
               if (choice_tag != 4) {
                 field004 = null
               }
-              field004 = decodeMessageOrMerge(Item.ADAPTER, reader, field004)
+              if (field004 == null) {
+                discardMerges(merges, 4)
+                field004 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 4)
+              }
               choice_tag = 4
             }
 
@@ -2538,7 +2562,12 @@ public class LargeOneOf(
               if (choice_tag != 5) {
                 field005 = null
               }
-              field005 = decodeMessageOrMerge(Item.ADAPTER, reader, field005)
+              if (field005 == null) {
+                discardMerges(merges, 5)
+                field005 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 5)
+              }
               choice_tag = 5
             }
 
@@ -2546,7 +2575,12 @@ public class LargeOneOf(
               if (choice_tag != 6) {
                 field006 = null
               }
-              field006 = decodeMessageOrMerge(Item.ADAPTER, reader, field006)
+              if (field006 == null) {
+                discardMerges(merges, 6)
+                field006 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 6)
+              }
               choice_tag = 6
             }
 
@@ -2554,7 +2588,12 @@ public class LargeOneOf(
               if (choice_tag != 7) {
                 field007 = null
               }
-              field007 = decodeMessageOrMerge(Item.ADAPTER, reader, field007)
+              if (field007 == null) {
+                discardMerges(merges, 7)
+                field007 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 7)
+              }
               choice_tag = 7
             }
 
@@ -2562,7 +2601,12 @@ public class LargeOneOf(
               if (choice_tag != 8) {
                 field008 = null
               }
-              field008 = decodeMessageOrMerge(Item.ADAPTER, reader, field008)
+              if (field008 == null) {
+                discardMerges(merges, 8)
+                field008 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 8)
+              }
               choice_tag = 8
             }
 
@@ -2570,7 +2614,12 @@ public class LargeOneOf(
               if (choice_tag != 9) {
                 field009 = null
               }
-              field009 = decodeMessageOrMerge(Item.ADAPTER, reader, field009)
+              if (field009 == null) {
+                discardMerges(merges, 9)
+                field009 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 9)
+              }
               choice_tag = 9
             }
 
@@ -2578,7 +2627,12 @@ public class LargeOneOf(
               if (choice_tag != 10) {
                 field010 = null
               }
-              field010 = decodeMessageOrMerge(Item.ADAPTER, reader, field010)
+              if (field010 == null) {
+                discardMerges(merges, 10)
+                field010 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 10)
+              }
               choice_tag = 10
             }
 
@@ -2586,7 +2640,12 @@ public class LargeOneOf(
               if (choice_tag != 11) {
                 field011 = null
               }
-              field011 = decodeMessageOrMerge(Item.ADAPTER, reader, field011)
+              if (field011 == null) {
+                discardMerges(merges, 11)
+                field011 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 11)
+              }
               choice_tag = 11
             }
 
@@ -2594,7 +2653,12 @@ public class LargeOneOf(
               if (choice_tag != 12) {
                 field012 = null
               }
-              field012 = decodeMessageOrMerge(Item.ADAPTER, reader, field012)
+              if (field012 == null) {
+                discardMerges(merges, 12)
+                field012 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 12)
+              }
               choice_tag = 12
             }
 
@@ -2602,7 +2666,12 @@ public class LargeOneOf(
               if (choice_tag != 13) {
                 field013 = null
               }
-              field013 = decodeMessageOrMerge(Item.ADAPTER, reader, field013)
+              if (field013 == null) {
+                discardMerges(merges, 13)
+                field013 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 13)
+              }
               choice_tag = 13
             }
 
@@ -2610,7 +2679,12 @@ public class LargeOneOf(
               if (choice_tag != 14) {
                 field014 = null
               }
-              field014 = decodeMessageOrMerge(Item.ADAPTER, reader, field014)
+              if (field014 == null) {
+                discardMerges(merges, 14)
+                field014 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 14)
+              }
               choice_tag = 14
             }
 
@@ -2618,7 +2692,12 @@ public class LargeOneOf(
               if (choice_tag != 15) {
                 field015 = null
               }
-              field015 = decodeMessageOrMerge(Item.ADAPTER, reader, field015)
+              if (field015 == null) {
+                discardMerges(merges, 15)
+                field015 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 15)
+              }
               choice_tag = 15
             }
 
@@ -2626,7 +2705,12 @@ public class LargeOneOf(
               if (choice_tag != 16) {
                 field016 = null
               }
-              field016 = decodeMessageOrMerge(Item.ADAPTER, reader, field016)
+              if (field016 == null) {
+                discardMerges(merges, 16)
+                field016 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 16)
+              }
               choice_tag = 16
             }
 
@@ -2634,7 +2718,12 @@ public class LargeOneOf(
               if (choice_tag != 17) {
                 field017 = null
               }
-              field017 = decodeMessageOrMerge(Item.ADAPTER, reader, field017)
+              if (field017 == null) {
+                discardMerges(merges, 17)
+                field017 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 17)
+              }
               choice_tag = 17
             }
 
@@ -2642,7 +2731,12 @@ public class LargeOneOf(
               if (choice_tag != 18) {
                 field018 = null
               }
-              field018 = decodeMessageOrMerge(Item.ADAPTER, reader, field018)
+              if (field018 == null) {
+                discardMerges(merges, 18)
+                field018 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 18)
+              }
               choice_tag = 18
             }
 
@@ -2650,7 +2744,12 @@ public class LargeOneOf(
               if (choice_tag != 19) {
                 field019 = null
               }
-              field019 = decodeMessageOrMerge(Item.ADAPTER, reader, field019)
+              if (field019 == null) {
+                discardMerges(merges, 19)
+                field019 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 19)
+              }
               choice_tag = 19
             }
 
@@ -2658,7 +2757,12 @@ public class LargeOneOf(
               if (choice_tag != 20) {
                 field020 = null
               }
-              field020 = decodeMessageOrMerge(Item.ADAPTER, reader, field020)
+              if (field020 == null) {
+                discardMerges(merges, 20)
+                field020 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 20)
+              }
               choice_tag = 20
             }
 
@@ -2666,7 +2770,12 @@ public class LargeOneOf(
               if (choice_tag != 21) {
                 field021 = null
               }
-              field021 = decodeMessageOrMerge(Item.ADAPTER, reader, field021)
+              if (field021 == null) {
+                discardMerges(merges, 21)
+                field021 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 21)
+              }
               choice_tag = 21
             }
 
@@ -2674,7 +2783,12 @@ public class LargeOneOf(
               if (choice_tag != 22) {
                 field022 = null
               }
-              field022 = decodeMessageOrMerge(Item.ADAPTER, reader, field022)
+              if (field022 == null) {
+                discardMerges(merges, 22)
+                field022 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 22)
+              }
               choice_tag = 22
             }
 
@@ -2682,7 +2796,12 @@ public class LargeOneOf(
               if (choice_tag != 23) {
                 field023 = null
               }
-              field023 = decodeMessageOrMerge(Item.ADAPTER, reader, field023)
+              if (field023 == null) {
+                discardMerges(merges, 23)
+                field023 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 23)
+              }
               choice_tag = 23
             }
 
@@ -2690,7 +2809,12 @@ public class LargeOneOf(
               if (choice_tag != 24) {
                 field024 = null
               }
-              field024 = decodeMessageOrMerge(Item.ADAPTER, reader, field024)
+              if (field024 == null) {
+                discardMerges(merges, 24)
+                field024 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 24)
+              }
               choice_tag = 24
             }
 
@@ -2698,7 +2822,12 @@ public class LargeOneOf(
               if (choice_tag != 25) {
                 field025 = null
               }
-              field025 = decodeMessageOrMerge(Item.ADAPTER, reader, field025)
+              if (field025 == null) {
+                discardMerges(merges, 25)
+                field025 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 25)
+              }
               choice_tag = 25
             }
 
@@ -2706,7 +2835,12 @@ public class LargeOneOf(
               if (choice_tag != 26) {
                 field026 = null
               }
-              field026 = decodeMessageOrMerge(Item.ADAPTER, reader, field026)
+              if (field026 == null) {
+                discardMerges(merges, 26)
+                field026 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 26)
+              }
               choice_tag = 26
             }
 
@@ -2714,7 +2848,12 @@ public class LargeOneOf(
               if (choice_tag != 27) {
                 field027 = null
               }
-              field027 = decodeMessageOrMerge(Item.ADAPTER, reader, field027)
+              if (field027 == null) {
+                discardMerges(merges, 27)
+                field027 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 27)
+              }
               choice_tag = 27
             }
 
@@ -2722,7 +2861,12 @@ public class LargeOneOf(
               if (choice_tag != 28) {
                 field028 = null
               }
-              field028 = decodeMessageOrMerge(Item.ADAPTER, reader, field028)
+              if (field028 == null) {
+                discardMerges(merges, 28)
+                field028 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 28)
+              }
               choice_tag = 28
             }
 
@@ -2730,7 +2874,12 @@ public class LargeOneOf(
               if (choice_tag != 29) {
                 field029 = null
               }
-              field029 = decodeMessageOrMerge(Item.ADAPTER, reader, field029)
+              if (field029 == null) {
+                discardMerges(merges, 29)
+                field029 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 29)
+              }
               choice_tag = 29
             }
 
@@ -2738,7 +2887,12 @@ public class LargeOneOf(
               if (choice_tag != 30) {
                 field030 = null
               }
-              field030 = decodeMessageOrMerge(Item.ADAPTER, reader, field030)
+              if (field030 == null) {
+                discardMerges(merges, 30)
+                field030 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 30)
+              }
               choice_tag = 30
             }
 
@@ -2746,7 +2900,12 @@ public class LargeOneOf(
               if (choice_tag != 31) {
                 field031 = null
               }
-              field031 = decodeMessageOrMerge(Item.ADAPTER, reader, field031)
+              if (field031 == null) {
+                discardMerges(merges, 31)
+                field031 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 31)
+              }
               choice_tag = 31
             }
 
@@ -2754,7 +2913,12 @@ public class LargeOneOf(
               if (choice_tag != 32) {
                 field032 = null
               }
-              field032 = decodeMessageOrMerge(Item.ADAPTER, reader, field032)
+              if (field032 == null) {
+                discardMerges(merges, 32)
+                field032 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 32)
+              }
               choice_tag = 32
             }
 
@@ -2762,7 +2926,12 @@ public class LargeOneOf(
               if (choice_tag != 33) {
                 field033 = null
               }
-              field033 = decodeMessageOrMerge(Item.ADAPTER, reader, field033)
+              if (field033 == null) {
+                discardMerges(merges, 33)
+                field033 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 33)
+              }
               choice_tag = 33
             }
 
@@ -2770,7 +2939,12 @@ public class LargeOneOf(
               if (choice_tag != 34) {
                 field034 = null
               }
-              field034 = decodeMessageOrMerge(Item.ADAPTER, reader, field034)
+              if (field034 == null) {
+                discardMerges(merges, 34)
+                field034 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 34)
+              }
               choice_tag = 34
             }
 
@@ -2778,7 +2952,12 @@ public class LargeOneOf(
               if (choice_tag != 35) {
                 field035 = null
               }
-              field035 = decodeMessageOrMerge(Item.ADAPTER, reader, field035)
+              if (field035 == null) {
+                discardMerges(merges, 35)
+                field035 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 35)
+              }
               choice_tag = 35
             }
 
@@ -2786,7 +2965,12 @@ public class LargeOneOf(
               if (choice_tag != 36) {
                 field036 = null
               }
-              field036 = decodeMessageOrMerge(Item.ADAPTER, reader, field036)
+              if (field036 == null) {
+                discardMerges(merges, 36)
+                field036 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 36)
+              }
               choice_tag = 36
             }
 
@@ -2794,7 +2978,12 @@ public class LargeOneOf(
               if (choice_tag != 37) {
                 field037 = null
               }
-              field037 = decodeMessageOrMerge(Item.ADAPTER, reader, field037)
+              if (field037 == null) {
+                discardMerges(merges, 37)
+                field037 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 37)
+              }
               choice_tag = 37
             }
 
@@ -2802,7 +2991,12 @@ public class LargeOneOf(
               if (choice_tag != 38) {
                 field038 = null
               }
-              field038 = decodeMessageOrMerge(Item.ADAPTER, reader, field038)
+              if (field038 == null) {
+                discardMerges(merges, 38)
+                field038 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 38)
+              }
               choice_tag = 38
             }
 
@@ -2810,7 +3004,12 @@ public class LargeOneOf(
               if (choice_tag != 39) {
                 field039 = null
               }
-              field039 = decodeMessageOrMerge(Item.ADAPTER, reader, field039)
+              if (field039 == null) {
+                discardMerges(merges, 39)
+                field039 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 39)
+              }
               choice_tag = 39
             }
 
@@ -2818,7 +3017,12 @@ public class LargeOneOf(
               if (choice_tag != 40) {
                 field040 = null
               }
-              field040 = decodeMessageOrMerge(Item.ADAPTER, reader, field040)
+              if (field040 == null) {
+                discardMerges(merges, 40)
+                field040 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 40)
+              }
               choice_tag = 40
             }
 
@@ -2826,7 +3030,12 @@ public class LargeOneOf(
               if (choice_tag != 41) {
                 field041 = null
               }
-              field041 = decodeMessageOrMerge(Item.ADAPTER, reader, field041)
+              if (field041 == null) {
+                discardMerges(merges, 41)
+                field041 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 41)
+              }
               choice_tag = 41
             }
 
@@ -2834,7 +3043,12 @@ public class LargeOneOf(
               if (choice_tag != 42) {
                 field042 = null
               }
-              field042 = decodeMessageOrMerge(Item.ADAPTER, reader, field042)
+              if (field042 == null) {
+                discardMerges(merges, 42)
+                field042 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 42)
+              }
               choice_tag = 42
             }
 
@@ -2842,7 +3056,12 @@ public class LargeOneOf(
               if (choice_tag != 43) {
                 field043 = null
               }
-              field043 = decodeMessageOrMerge(Item.ADAPTER, reader, field043)
+              if (field043 == null) {
+                discardMerges(merges, 43)
+                field043 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 43)
+              }
               choice_tag = 43
             }
 
@@ -2850,7 +3069,12 @@ public class LargeOneOf(
               if (choice_tag != 44) {
                 field044 = null
               }
-              field044 = decodeMessageOrMerge(Item.ADAPTER, reader, field044)
+              if (field044 == null) {
+                discardMerges(merges, 44)
+                field044 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 44)
+              }
               choice_tag = 44
             }
 
@@ -2858,7 +3082,12 @@ public class LargeOneOf(
               if (choice_tag != 45) {
                 field045 = null
               }
-              field045 = decodeMessageOrMerge(Item.ADAPTER, reader, field045)
+              if (field045 == null) {
+                discardMerges(merges, 45)
+                field045 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 45)
+              }
               choice_tag = 45
             }
 
@@ -2866,7 +3095,12 @@ public class LargeOneOf(
               if (choice_tag != 46) {
                 field046 = null
               }
-              field046 = decodeMessageOrMerge(Item.ADAPTER, reader, field046)
+              if (field046 == null) {
+                discardMerges(merges, 46)
+                field046 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 46)
+              }
               choice_tag = 46
             }
 
@@ -2874,7 +3108,12 @@ public class LargeOneOf(
               if (choice_tag != 47) {
                 field047 = null
               }
-              field047 = decodeMessageOrMerge(Item.ADAPTER, reader, field047)
+              if (field047 == null) {
+                discardMerges(merges, 47)
+                field047 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 47)
+              }
               choice_tag = 47
             }
 
@@ -2882,7 +3121,12 @@ public class LargeOneOf(
               if (choice_tag != 48) {
                 field048 = null
               }
-              field048 = decodeMessageOrMerge(Item.ADAPTER, reader, field048)
+              if (field048 == null) {
+                discardMerges(merges, 48)
+                field048 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 48)
+              }
               choice_tag = 48
             }
 
@@ -2890,7 +3134,12 @@ public class LargeOneOf(
               if (choice_tag != 49) {
                 field049 = null
               }
-              field049 = decodeMessageOrMerge(Item.ADAPTER, reader, field049)
+              if (field049 == null) {
+                discardMerges(merges, 49)
+                field049 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 49)
+              }
               choice_tag = 49
             }
 
@@ -2898,7 +3147,12 @@ public class LargeOneOf(
               if (choice_tag != 50) {
                 field050 = null
               }
-              field050 = decodeMessageOrMerge(Item.ADAPTER, reader, field050)
+              if (field050 == null) {
+                discardMerges(merges, 50)
+                field050 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 50)
+              }
               choice_tag = 50
             }
 
@@ -2906,7 +3160,12 @@ public class LargeOneOf(
               if (choice_tag != 51) {
                 field051 = null
               }
-              field051 = decodeMessageOrMerge(Item.ADAPTER, reader, field051)
+              if (field051 == null) {
+                discardMerges(merges, 51)
+                field051 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 51)
+              }
               choice_tag = 51
             }
 
@@ -2914,7 +3173,12 @@ public class LargeOneOf(
               if (choice_tag != 52) {
                 field052 = null
               }
-              field052 = decodeMessageOrMerge(Item.ADAPTER, reader, field052)
+              if (field052 == null) {
+                discardMerges(merges, 52)
+                field052 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 52)
+              }
               choice_tag = 52
             }
 
@@ -2922,7 +3186,12 @@ public class LargeOneOf(
               if (choice_tag != 53) {
                 field053 = null
               }
-              field053 = decodeMessageOrMerge(Item.ADAPTER, reader, field053)
+              if (field053 == null) {
+                discardMerges(merges, 53)
+                field053 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 53)
+              }
               choice_tag = 53
             }
 
@@ -2930,7 +3199,12 @@ public class LargeOneOf(
               if (choice_tag != 54) {
                 field054 = null
               }
-              field054 = decodeMessageOrMerge(Item.ADAPTER, reader, field054)
+              if (field054 == null) {
+                discardMerges(merges, 54)
+                field054 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 54)
+              }
               choice_tag = 54
             }
 
@@ -2938,7 +3212,12 @@ public class LargeOneOf(
               if (choice_tag != 55) {
                 field055 = null
               }
-              field055 = decodeMessageOrMerge(Item.ADAPTER, reader, field055)
+              if (field055 == null) {
+                discardMerges(merges, 55)
+                field055 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 55)
+              }
               choice_tag = 55
             }
 
@@ -2946,7 +3225,12 @@ public class LargeOneOf(
               if (choice_tag != 56) {
                 field056 = null
               }
-              field056 = decodeMessageOrMerge(Item.ADAPTER, reader, field056)
+              if (field056 == null) {
+                discardMerges(merges, 56)
+                field056 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 56)
+              }
               choice_tag = 56
             }
 
@@ -2954,7 +3238,12 @@ public class LargeOneOf(
               if (choice_tag != 57) {
                 field057 = null
               }
-              field057 = decodeMessageOrMerge(Item.ADAPTER, reader, field057)
+              if (field057 == null) {
+                discardMerges(merges, 57)
+                field057 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 57)
+              }
               choice_tag = 57
             }
 
@@ -2962,7 +3251,12 @@ public class LargeOneOf(
               if (choice_tag != 58) {
                 field058 = null
               }
-              field058 = decodeMessageOrMerge(Item.ADAPTER, reader, field058)
+              if (field058 == null) {
+                discardMerges(merges, 58)
+                field058 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 58)
+              }
               choice_tag = 58
             }
 
@@ -2970,7 +3264,12 @@ public class LargeOneOf(
               if (choice_tag != 59) {
                 field059 = null
               }
-              field059 = decodeMessageOrMerge(Item.ADAPTER, reader, field059)
+              if (field059 == null) {
+                discardMerges(merges, 59)
+                field059 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 59)
+              }
               choice_tag = 59
             }
 
@@ -2978,7 +3277,12 @@ public class LargeOneOf(
               if (choice_tag != 60) {
                 field060 = null
               }
-              field060 = decodeMessageOrMerge(Item.ADAPTER, reader, field060)
+              if (field060 == null) {
+                discardMerges(merges, 60)
+                field060 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 60)
+              }
               choice_tag = 60
             }
 
@@ -2986,7 +3290,12 @@ public class LargeOneOf(
               if (choice_tag != 61) {
                 field061 = null
               }
-              field061 = decodeMessageOrMerge(Item.ADAPTER, reader, field061)
+              if (field061 == null) {
+                discardMerges(merges, 61)
+                field061 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 61)
+              }
               choice_tag = 61
             }
 
@@ -2994,7 +3303,12 @@ public class LargeOneOf(
               if (choice_tag != 62) {
                 field062 = null
               }
-              field062 = decodeMessageOrMerge(Item.ADAPTER, reader, field062)
+              if (field062 == null) {
+                discardMerges(merges, 62)
+                field062 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 62)
+              }
               choice_tag = 62
             }
 
@@ -3002,7 +3316,12 @@ public class LargeOneOf(
               if (choice_tag != 63) {
                 field063 = null
               }
-              field063 = decodeMessageOrMerge(Item.ADAPTER, reader, field063)
+              if (field063 == null) {
+                discardMerges(merges, 63)
+                field063 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 63)
+              }
               choice_tag = 63
             }
 
@@ -3010,7 +3329,12 @@ public class LargeOneOf(
               if (choice_tag != 64) {
                 field064 = null
               }
-              field064 = decodeMessageOrMerge(Item.ADAPTER, reader, field064)
+              if (field064 == null) {
+                discardMerges(merges, 64)
+                field064 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 64)
+              }
               choice_tag = 64
             }
 
@@ -3018,7 +3342,12 @@ public class LargeOneOf(
               if (choice_tag != 65) {
                 field065 = null
               }
-              field065 = decodeMessageOrMerge(Item.ADAPTER, reader, field065)
+              if (field065 == null) {
+                discardMerges(merges, 65)
+                field065 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 65)
+              }
               choice_tag = 65
             }
 
@@ -3026,7 +3355,12 @@ public class LargeOneOf(
               if (choice_tag != 66) {
                 field066 = null
               }
-              field066 = decodeMessageOrMerge(Item.ADAPTER, reader, field066)
+              if (field066 == null) {
+                discardMerges(merges, 66)
+                field066 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 66)
+              }
               choice_tag = 66
             }
 
@@ -3034,7 +3368,12 @@ public class LargeOneOf(
               if (choice_tag != 67) {
                 field067 = null
               }
-              field067 = decodeMessageOrMerge(Item.ADAPTER, reader, field067)
+              if (field067 == null) {
+                discardMerges(merges, 67)
+                field067 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 67)
+              }
               choice_tag = 67
             }
 
@@ -3042,7 +3381,12 @@ public class LargeOneOf(
               if (choice_tag != 68) {
                 field068 = null
               }
-              field068 = decodeMessageOrMerge(Item.ADAPTER, reader, field068)
+              if (field068 == null) {
+                discardMerges(merges, 68)
+                field068 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 68)
+              }
               choice_tag = 68
             }
 
@@ -3050,7 +3394,12 @@ public class LargeOneOf(
               if (choice_tag != 69) {
                 field069 = null
               }
-              field069 = decodeMessageOrMerge(Item.ADAPTER, reader, field069)
+              if (field069 == null) {
+                discardMerges(merges, 69)
+                field069 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 69)
+              }
               choice_tag = 69
             }
 
@@ -3058,7 +3407,12 @@ public class LargeOneOf(
               if (choice_tag != 70) {
                 field070 = null
               }
-              field070 = decodeMessageOrMerge(Item.ADAPTER, reader, field070)
+              if (field070 == null) {
+                discardMerges(merges, 70)
+                field070 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 70)
+              }
               choice_tag = 70
             }
 
@@ -3066,7 +3420,12 @@ public class LargeOneOf(
               if (choice_tag != 71) {
                 field071 = null
               }
-              field071 = decodeMessageOrMerge(Item.ADAPTER, reader, field071)
+              if (field071 == null) {
+                discardMerges(merges, 71)
+                field071 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 71)
+              }
               choice_tag = 71
             }
 
@@ -3074,7 +3433,12 @@ public class LargeOneOf(
               if (choice_tag != 72) {
                 field072 = null
               }
-              field072 = decodeMessageOrMerge(Item.ADAPTER, reader, field072)
+              if (field072 == null) {
+                discardMerges(merges, 72)
+                field072 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 72)
+              }
               choice_tag = 72
             }
 
@@ -3082,7 +3446,12 @@ public class LargeOneOf(
               if (choice_tag != 73) {
                 field073 = null
               }
-              field073 = decodeMessageOrMerge(Item.ADAPTER, reader, field073)
+              if (field073 == null) {
+                discardMerges(merges, 73)
+                field073 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 73)
+              }
               choice_tag = 73
             }
 
@@ -3090,7 +3459,12 @@ public class LargeOneOf(
               if (choice_tag != 74) {
                 field074 = null
               }
-              field074 = decodeMessageOrMerge(Item.ADAPTER, reader, field074)
+              if (field074 == null) {
+                discardMerges(merges, 74)
+                field074 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 74)
+              }
               choice_tag = 74
             }
 
@@ -3098,7 +3472,12 @@ public class LargeOneOf(
               if (choice_tag != 75) {
                 field075 = null
               }
-              field075 = decodeMessageOrMerge(Item.ADAPTER, reader, field075)
+              if (field075 == null) {
+                discardMerges(merges, 75)
+                field075 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 75)
+              }
               choice_tag = 75
             }
 
@@ -3106,7 +3485,12 @@ public class LargeOneOf(
               if (choice_tag != 76) {
                 field076 = null
               }
-              field076 = decodeMessageOrMerge(Item.ADAPTER, reader, field076)
+              if (field076 == null) {
+                discardMerges(merges, 76)
+                field076 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 76)
+              }
               choice_tag = 76
             }
 
@@ -3114,7 +3498,12 @@ public class LargeOneOf(
               if (choice_tag != 77) {
                 field077 = null
               }
-              field077 = decodeMessageOrMerge(Item.ADAPTER, reader, field077)
+              if (field077 == null) {
+                discardMerges(merges, 77)
+                field077 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 77)
+              }
               choice_tag = 77
             }
 
@@ -3122,7 +3511,12 @@ public class LargeOneOf(
               if (choice_tag != 78) {
                 field078 = null
               }
-              field078 = decodeMessageOrMerge(Item.ADAPTER, reader, field078)
+              if (field078 == null) {
+                discardMerges(merges, 78)
+                field078 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 78)
+              }
               choice_tag = 78
             }
 
@@ -3130,7 +3524,12 @@ public class LargeOneOf(
               if (choice_tag != 79) {
                 field079 = null
               }
-              field079 = decodeMessageOrMerge(Item.ADAPTER, reader, field079)
+              if (field079 == null) {
+                discardMerges(merges, 79)
+                field079 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 79)
+              }
               choice_tag = 79
             }
 
@@ -3138,7 +3537,12 @@ public class LargeOneOf(
               if (choice_tag != 80) {
                 field080 = null
               }
-              field080 = decodeMessageOrMerge(Item.ADAPTER, reader, field080)
+              if (field080 == null) {
+                discardMerges(merges, 80)
+                field080 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 80)
+              }
               choice_tag = 80
             }
 
@@ -3146,7 +3550,12 @@ public class LargeOneOf(
               if (choice_tag != 81) {
                 field081 = null
               }
-              field081 = decodeMessageOrMerge(Item.ADAPTER, reader, field081)
+              if (field081 == null) {
+                discardMerges(merges, 81)
+                field081 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 81)
+              }
               choice_tag = 81
             }
 
@@ -3154,7 +3563,12 @@ public class LargeOneOf(
               if (choice_tag != 82) {
                 field082 = null
               }
-              field082 = decodeMessageOrMerge(Item.ADAPTER, reader, field082)
+              if (field082 == null) {
+                discardMerges(merges, 82)
+                field082 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 82)
+              }
               choice_tag = 82
             }
 
@@ -3162,7 +3576,12 @@ public class LargeOneOf(
               if (choice_tag != 83) {
                 field083 = null
               }
-              field083 = decodeMessageOrMerge(Item.ADAPTER, reader, field083)
+              if (field083 == null) {
+                discardMerges(merges, 83)
+                field083 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 83)
+              }
               choice_tag = 83
             }
 
@@ -3170,7 +3589,12 @@ public class LargeOneOf(
               if (choice_tag != 84) {
                 field084 = null
               }
-              field084 = decodeMessageOrMerge(Item.ADAPTER, reader, field084)
+              if (field084 == null) {
+                discardMerges(merges, 84)
+                field084 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 84)
+              }
               choice_tag = 84
             }
 
@@ -3178,7 +3602,12 @@ public class LargeOneOf(
               if (choice_tag != 85) {
                 field085 = null
               }
-              field085 = decodeMessageOrMerge(Item.ADAPTER, reader, field085)
+              if (field085 == null) {
+                discardMerges(merges, 85)
+                field085 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 85)
+              }
               choice_tag = 85
             }
 
@@ -3186,7 +3615,12 @@ public class LargeOneOf(
               if (choice_tag != 86) {
                 field086 = null
               }
-              field086 = decodeMessageOrMerge(Item.ADAPTER, reader, field086)
+              if (field086 == null) {
+                discardMerges(merges, 86)
+                field086 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 86)
+              }
               choice_tag = 86
             }
 
@@ -3194,7 +3628,12 @@ public class LargeOneOf(
               if (choice_tag != 87) {
                 field087 = null
               }
-              field087 = decodeMessageOrMerge(Item.ADAPTER, reader, field087)
+              if (field087 == null) {
+                discardMerges(merges, 87)
+                field087 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 87)
+              }
               choice_tag = 87
             }
 
@@ -3202,7 +3641,12 @@ public class LargeOneOf(
               if (choice_tag != 88) {
                 field088 = null
               }
-              field088 = decodeMessageOrMerge(Item.ADAPTER, reader, field088)
+              if (field088 == null) {
+                discardMerges(merges, 88)
+                field088 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 88)
+              }
               choice_tag = 88
             }
 
@@ -3210,7 +3654,12 @@ public class LargeOneOf(
               if (choice_tag != 89) {
                 field089 = null
               }
-              field089 = decodeMessageOrMerge(Item.ADAPTER, reader, field089)
+              if (field089 == null) {
+                discardMerges(merges, 89)
+                field089 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 89)
+              }
               choice_tag = 89
             }
 
@@ -3218,7 +3667,12 @@ public class LargeOneOf(
               if (choice_tag != 90) {
                 field090 = null
               }
-              field090 = decodeMessageOrMerge(Item.ADAPTER, reader, field090)
+              if (field090 == null) {
+                discardMerges(merges, 90)
+                field090 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 90)
+              }
               choice_tag = 90
             }
 
@@ -3226,7 +3680,12 @@ public class LargeOneOf(
               if (choice_tag != 91) {
                 field091 = null
               }
-              field091 = decodeMessageOrMerge(Item.ADAPTER, reader, field091)
+              if (field091 == null) {
+                discardMerges(merges, 91)
+                field091 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 91)
+              }
               choice_tag = 91
             }
 
@@ -3234,7 +3693,12 @@ public class LargeOneOf(
               if (choice_tag != 92) {
                 field092 = null
               }
-              field092 = decodeMessageOrMerge(Item.ADAPTER, reader, field092)
+              if (field092 == null) {
+                discardMerges(merges, 92)
+                field092 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 92)
+              }
               choice_tag = 92
             }
 
@@ -3242,7 +3706,12 @@ public class LargeOneOf(
               if (choice_tag != 93) {
                 field093 = null
               }
-              field093 = decodeMessageOrMerge(Item.ADAPTER, reader, field093)
+              if (field093 == null) {
+                discardMerges(merges, 93)
+                field093 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 93)
+              }
               choice_tag = 93
             }
 
@@ -3250,7 +3719,12 @@ public class LargeOneOf(
               if (choice_tag != 94) {
                 field094 = null
               }
-              field094 = decodeMessageOrMerge(Item.ADAPTER, reader, field094)
+              if (field094 == null) {
+                discardMerges(merges, 94)
+                field094 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 94)
+              }
               choice_tag = 94
             }
 
@@ -3258,7 +3732,12 @@ public class LargeOneOf(
               if (choice_tag != 95) {
                 field095 = null
               }
-              field095 = decodeMessageOrMerge(Item.ADAPTER, reader, field095)
+              if (field095 == null) {
+                discardMerges(merges, 95)
+                field095 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 95)
+              }
               choice_tag = 95
             }
 
@@ -3266,7 +3745,12 @@ public class LargeOneOf(
               if (choice_tag != 96) {
                 field096 = null
               }
-              field096 = decodeMessageOrMerge(Item.ADAPTER, reader, field096)
+              if (field096 == null) {
+                discardMerges(merges, 96)
+                field096 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 96)
+              }
               choice_tag = 96
             }
 
@@ -3274,7 +3758,12 @@ public class LargeOneOf(
               if (choice_tag != 97) {
                 field097 = null
               }
-              field097 = decodeMessageOrMerge(Item.ADAPTER, reader, field097)
+              if (field097 == null) {
+                discardMerges(merges, 97)
+                field097 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 97)
+              }
               choice_tag = 97
             }
 
@@ -3282,7 +3771,12 @@ public class LargeOneOf(
               if (choice_tag != 98) {
                 field098 = null
               }
-              field098 = decodeMessageOrMerge(Item.ADAPTER, reader, field098)
+              if (field098 == null) {
+                discardMerges(merges, 98)
+                field098 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 98)
+              }
               choice_tag = 98
             }
 
@@ -3290,7 +3784,12 @@ public class LargeOneOf(
               if (choice_tag != 99) {
                 field099 = null
               }
-              field099 = decodeMessageOrMerge(Item.ADAPTER, reader, field099)
+              if (field099 == null) {
+                discardMerges(merges, 99)
+                field099 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 99)
+              }
               choice_tag = 99
             }
 
@@ -3298,7 +3797,12 @@ public class LargeOneOf(
               if (choice_tag != 100) {
                 field100 = null
               }
-              field100 = decodeMessageOrMerge(Item.ADAPTER, reader, field100)
+              if (field100 == null) {
+                discardMerges(merges, 100)
+                field100 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 100)
+              }
               choice_tag = 100
             }
 
@@ -3306,7 +3810,12 @@ public class LargeOneOf(
               if (choice_tag != 101) {
                 field101 = null
               }
-              field101 = decodeMessageOrMerge(Item.ADAPTER, reader, field101)
+              if (field101 == null) {
+                discardMerges(merges, 101)
+                field101 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 101)
+              }
               choice_tag = 101
             }
 
@@ -3314,7 +3823,12 @@ public class LargeOneOf(
               if (choice_tag != 102) {
                 field102 = null
               }
-              field102 = decodeMessageOrMerge(Item.ADAPTER, reader, field102)
+              if (field102 == null) {
+                discardMerges(merges, 102)
+                field102 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 102)
+              }
               choice_tag = 102
             }
 
@@ -3322,7 +3836,12 @@ public class LargeOneOf(
               if (choice_tag != 103) {
                 field103 = null
               }
-              field103 = decodeMessageOrMerge(Item.ADAPTER, reader, field103)
+              if (field103 == null) {
+                discardMerges(merges, 103)
+                field103 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 103)
+              }
               choice_tag = 103
             }
 
@@ -3330,7 +3849,12 @@ public class LargeOneOf(
               if (choice_tag != 104) {
                 field104 = null
               }
-              field104 = decodeMessageOrMerge(Item.ADAPTER, reader, field104)
+              if (field104 == null) {
+                discardMerges(merges, 104)
+                field104 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 104)
+              }
               choice_tag = 104
             }
 
@@ -3338,7 +3862,12 @@ public class LargeOneOf(
               if (choice_tag != 105) {
                 field105 = null
               }
-              field105 = decodeMessageOrMerge(Item.ADAPTER, reader, field105)
+              if (field105 == null) {
+                discardMerges(merges, 105)
+                field105 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 105)
+              }
               choice_tag = 105
             }
 
@@ -3346,7 +3875,12 @@ public class LargeOneOf(
               if (choice_tag != 106) {
                 field106 = null
               }
-              field106 = decodeMessageOrMerge(Item.ADAPTER, reader, field106)
+              if (field106 == null) {
+                discardMerges(merges, 106)
+                field106 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 106)
+              }
               choice_tag = 106
             }
 
@@ -3354,7 +3888,12 @@ public class LargeOneOf(
               if (choice_tag != 107) {
                 field107 = null
               }
-              field107 = decodeMessageOrMerge(Item.ADAPTER, reader, field107)
+              if (field107 == null) {
+                discardMerges(merges, 107)
+                field107 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 107)
+              }
               choice_tag = 107
             }
 
@@ -3362,7 +3901,12 @@ public class LargeOneOf(
               if (choice_tag != 108) {
                 field108 = null
               }
-              field108 = decodeMessageOrMerge(Item.ADAPTER, reader, field108)
+              if (field108 == null) {
+                discardMerges(merges, 108)
+                field108 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 108)
+              }
               choice_tag = 108
             }
 
@@ -3370,7 +3914,12 @@ public class LargeOneOf(
               if (choice_tag != 109) {
                 field109 = null
               }
-              field109 = decodeMessageOrMerge(Item.ADAPTER, reader, field109)
+              if (field109 == null) {
+                discardMerges(merges, 109)
+                field109 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 109)
+              }
               choice_tag = 109
             }
 
@@ -3378,7 +3927,12 @@ public class LargeOneOf(
               if (choice_tag != 110) {
                 field110 = null
               }
-              field110 = decodeMessageOrMerge(Item.ADAPTER, reader, field110)
+              if (field110 == null) {
+                discardMerges(merges, 110)
+                field110 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 110)
+              }
               choice_tag = 110
             }
 
@@ -3386,7 +3940,12 @@ public class LargeOneOf(
               if (choice_tag != 111) {
                 field111 = null
               }
-              field111 = decodeMessageOrMerge(Item.ADAPTER, reader, field111)
+              if (field111 == null) {
+                discardMerges(merges, 111)
+                field111 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 111)
+              }
               choice_tag = 111
             }
 
@@ -3394,7 +3953,12 @@ public class LargeOneOf(
               if (choice_tag != 112) {
                 field112 = null
               }
-              field112 = decodeMessageOrMerge(Item.ADAPTER, reader, field112)
+              if (field112 == null) {
+                discardMerges(merges, 112)
+                field112 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 112)
+              }
               choice_tag = 112
             }
 
@@ -3402,7 +3966,12 @@ public class LargeOneOf(
               if (choice_tag != 113) {
                 field113 = null
               }
-              field113 = decodeMessageOrMerge(Item.ADAPTER, reader, field113)
+              if (field113 == null) {
+                discardMerges(merges, 113)
+                field113 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 113)
+              }
               choice_tag = 113
             }
 
@@ -3410,7 +3979,12 @@ public class LargeOneOf(
               if (choice_tag != 114) {
                 field114 = null
               }
-              field114 = decodeMessageOrMerge(Item.ADAPTER, reader, field114)
+              if (field114 == null) {
+                discardMerges(merges, 114)
+                field114 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 114)
+              }
               choice_tag = 114
             }
 
@@ -3418,7 +3992,12 @@ public class LargeOneOf(
               if (choice_tag != 115) {
                 field115 = null
               }
-              field115 = decodeMessageOrMerge(Item.ADAPTER, reader, field115)
+              if (field115 == null) {
+                discardMerges(merges, 115)
+                field115 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 115)
+              }
               choice_tag = 115
             }
 
@@ -3426,7 +4005,12 @@ public class LargeOneOf(
               if (choice_tag != 116) {
                 field116 = null
               }
-              field116 = decodeMessageOrMerge(Item.ADAPTER, reader, field116)
+              if (field116 == null) {
+                discardMerges(merges, 116)
+                field116 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 116)
+              }
               choice_tag = 116
             }
 
@@ -3434,7 +4018,12 @@ public class LargeOneOf(
               if (choice_tag != 117) {
                 field117 = null
               }
-              field117 = decodeMessageOrMerge(Item.ADAPTER, reader, field117)
+              if (field117 == null) {
+                discardMerges(merges, 117)
+                field117 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 117)
+              }
               choice_tag = 117
             }
 
@@ -3442,7 +4031,12 @@ public class LargeOneOf(
               if (choice_tag != 118) {
                 field118 = null
               }
-              field118 = decodeMessageOrMerge(Item.ADAPTER, reader, field118)
+              if (field118 == null) {
+                discardMerges(merges, 118)
+                field118 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 118)
+              }
               choice_tag = 118
             }
 
@@ -3450,7 +4044,12 @@ public class LargeOneOf(
               if (choice_tag != 119) {
                 field119 = null
               }
-              field119 = decodeMessageOrMerge(Item.ADAPTER, reader, field119)
+              if (field119 == null) {
+                discardMerges(merges, 119)
+                field119 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 119)
+              }
               choice_tag = 119
             }
 
@@ -3458,7 +4057,12 @@ public class LargeOneOf(
               if (choice_tag != 120) {
                 field120 = null
               }
-              field120 = decodeMessageOrMerge(Item.ADAPTER, reader, field120)
+              if (field120 == null) {
+                discardMerges(merges, 120)
+                field120 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 120)
+              }
               choice_tag = 120
             }
 
@@ -3466,7 +4070,12 @@ public class LargeOneOf(
               if (choice_tag != 121) {
                 field121 = null
               }
-              field121 = decodeMessageOrMerge(Item.ADAPTER, reader, field121)
+              if (field121 == null) {
+                discardMerges(merges, 121)
+                field121 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 121)
+              }
               choice_tag = 121
             }
 
@@ -3474,7 +4083,12 @@ public class LargeOneOf(
               if (choice_tag != 122) {
                 field122 = null
               }
-              field122 = decodeMessageOrMerge(Item.ADAPTER, reader, field122)
+              if (field122 == null) {
+                discardMerges(merges, 122)
+                field122 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 122)
+              }
               choice_tag = 122
             }
 
@@ -3482,7 +4096,12 @@ public class LargeOneOf(
               if (choice_tag != 123) {
                 field123 = null
               }
-              field123 = decodeMessageOrMerge(Item.ADAPTER, reader, field123)
+              if (field123 == null) {
+                discardMerges(merges, 123)
+                field123 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 123)
+              }
               choice_tag = 123
             }
 
@@ -3490,7 +4109,12 @@ public class LargeOneOf(
               if (choice_tag != 124) {
                 field124 = null
               }
-              field124 = decodeMessageOrMerge(Item.ADAPTER, reader, field124)
+              if (field124 == null) {
+                discardMerges(merges, 124)
+                field124 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 124)
+              }
               choice_tag = 124
             }
 
@@ -3498,7 +4122,12 @@ public class LargeOneOf(
               if (choice_tag != 125) {
                 field125 = null
               }
-              field125 = decodeMessageOrMerge(Item.ADAPTER, reader, field125)
+              if (field125 == null) {
+                discardMerges(merges, 125)
+                field125 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 125)
+              }
               choice_tag = 125
             }
 
@@ -3506,7 +4135,12 @@ public class LargeOneOf(
               if (choice_tag != 126) {
                 field126 = null
               }
-              field126 = decodeMessageOrMerge(Item.ADAPTER, reader, field126)
+              if (field126 == null) {
+                discardMerges(merges, 126)
+                field126 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 126)
+              }
               choice_tag = 126
             }
 
@@ -3514,7 +4148,12 @@ public class LargeOneOf(
               if (choice_tag != 127) {
                 field127 = null
               }
-              field127 = decodeMessageOrMerge(Item.ADAPTER, reader, field127)
+              if (field127 == null) {
+                discardMerges(merges, 127)
+                field127 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 127)
+              }
               choice_tag = 127
             }
 
@@ -3522,7 +4161,12 @@ public class LargeOneOf(
               if (choice_tag != 128) {
                 field128 = null
               }
-              field128 = decodeMessageOrMerge(Item.ADAPTER, reader, field128)
+              if (field128 == null) {
+                discardMerges(merges, 128)
+                field128 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 128)
+              }
               choice_tag = 128
             }
 
@@ -3530,7 +4174,12 @@ public class LargeOneOf(
               if (choice_tag != 129) {
                 field129 = null
               }
-              field129 = decodeMessageOrMerge(Item.ADAPTER, reader, field129)
+              if (field129 == null) {
+                discardMerges(merges, 129)
+                field129 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 129)
+              }
               choice_tag = 129
             }
 
@@ -3538,7 +4187,12 @@ public class LargeOneOf(
               if (choice_tag != 130) {
                 field130 = null
               }
-              field130 = decodeMessageOrMerge(Item.ADAPTER, reader, field130)
+              if (field130 == null) {
+                discardMerges(merges, 130)
+                field130 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 130)
+              }
               choice_tag = 130
             }
 
@@ -3546,7 +4200,12 @@ public class LargeOneOf(
               if (choice_tag != 131) {
                 field131 = null
               }
-              field131 = decodeMessageOrMerge(Item.ADAPTER, reader, field131)
+              if (field131 == null) {
+                discardMerges(merges, 131)
+                field131 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 131)
+              }
               choice_tag = 131
             }
 
@@ -3554,7 +4213,12 @@ public class LargeOneOf(
               if (choice_tag != 132) {
                 field132 = null
               }
-              field132 = decodeMessageOrMerge(Item.ADAPTER, reader, field132)
+              if (field132 == null) {
+                discardMerges(merges, 132)
+                field132 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 132)
+              }
               choice_tag = 132
             }
 
@@ -3562,7 +4226,12 @@ public class LargeOneOf(
               if (choice_tag != 133) {
                 field133 = null
               }
-              field133 = decodeMessageOrMerge(Item.ADAPTER, reader, field133)
+              if (field133 == null) {
+                discardMerges(merges, 133)
+                field133 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 133)
+              }
               choice_tag = 133
             }
 
@@ -3570,7 +4239,12 @@ public class LargeOneOf(
               if (choice_tag != 134) {
                 field134 = null
               }
-              field134 = decodeMessageOrMerge(Item.ADAPTER, reader, field134)
+              if (field134 == null) {
+                discardMerges(merges, 134)
+                field134 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 134)
+              }
               choice_tag = 134
             }
 
@@ -3578,7 +4252,12 @@ public class LargeOneOf(
               if (choice_tag != 135) {
                 field135 = null
               }
-              field135 = decodeMessageOrMerge(Item.ADAPTER, reader, field135)
+              if (field135 == null) {
+                discardMerges(merges, 135)
+                field135 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 135)
+              }
               choice_tag = 135
             }
 
@@ -3586,7 +4265,12 @@ public class LargeOneOf(
               if (choice_tag != 136) {
                 field136 = null
               }
-              field136 = decodeMessageOrMerge(Item.ADAPTER, reader, field136)
+              if (field136 == null) {
+                discardMerges(merges, 136)
+                field136 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 136)
+              }
               choice_tag = 136
             }
 
@@ -3594,7 +4278,12 @@ public class LargeOneOf(
               if (choice_tag != 137) {
                 field137 = null
               }
-              field137 = decodeMessageOrMerge(Item.ADAPTER, reader, field137)
+              if (field137 == null) {
+                discardMerges(merges, 137)
+                field137 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 137)
+              }
               choice_tag = 137
             }
 
@@ -3602,7 +4291,12 @@ public class LargeOneOf(
               if (choice_tag != 138) {
                 field138 = null
               }
-              field138 = decodeMessageOrMerge(Item.ADAPTER, reader, field138)
+              if (field138 == null) {
+                discardMerges(merges, 138)
+                field138 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 138)
+              }
               choice_tag = 138
             }
 
@@ -3610,7 +4304,12 @@ public class LargeOneOf(
               if (choice_tag != 139) {
                 field139 = null
               }
-              field139 = decodeMessageOrMerge(Item.ADAPTER, reader, field139)
+              if (field139 == null) {
+                discardMerges(merges, 139)
+                field139 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 139)
+              }
               choice_tag = 139
             }
 
@@ -3618,7 +4317,12 @@ public class LargeOneOf(
               if (choice_tag != 140) {
                 field140 = null
               }
-              field140 = decodeMessageOrMerge(Item.ADAPTER, reader, field140)
+              if (field140 == null) {
+                discardMerges(merges, 140)
+                field140 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 140)
+              }
               choice_tag = 140
             }
 
@@ -3626,7 +4330,12 @@ public class LargeOneOf(
               if (choice_tag != 141) {
                 field141 = null
               }
-              field141 = decodeMessageOrMerge(Item.ADAPTER, reader, field141)
+              if (field141 == null) {
+                discardMerges(merges, 141)
+                field141 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 141)
+              }
               choice_tag = 141
             }
 
@@ -3634,7 +4343,12 @@ public class LargeOneOf(
               if (choice_tag != 142) {
                 field142 = null
               }
-              field142 = decodeMessageOrMerge(Item.ADAPTER, reader, field142)
+              if (field142 == null) {
+                discardMerges(merges, 142)
+                field142 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 142)
+              }
               choice_tag = 142
             }
 
@@ -3642,7 +4356,12 @@ public class LargeOneOf(
               if (choice_tag != 143) {
                 field143 = null
               }
-              field143 = decodeMessageOrMerge(Item.ADAPTER, reader, field143)
+              if (field143 == null) {
+                discardMerges(merges, 143)
+                field143 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 143)
+              }
               choice_tag = 143
             }
 
@@ -3650,7 +4369,12 @@ public class LargeOneOf(
               if (choice_tag != 144) {
                 field144 = null
               }
-              field144 = decodeMessageOrMerge(Item.ADAPTER, reader, field144)
+              if (field144 == null) {
+                discardMerges(merges, 144)
+                field144 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 144)
+              }
               choice_tag = 144
             }
 
@@ -3658,7 +4382,12 @@ public class LargeOneOf(
               if (choice_tag != 145) {
                 field145 = null
               }
-              field145 = decodeMessageOrMerge(Item.ADAPTER, reader, field145)
+              if (field145 == null) {
+                discardMerges(merges, 145)
+                field145 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 145)
+              }
               choice_tag = 145
             }
 
@@ -3666,7 +4395,12 @@ public class LargeOneOf(
               if (choice_tag != 146) {
                 field146 = null
               }
-              field146 = decodeMessageOrMerge(Item.ADAPTER, reader, field146)
+              if (field146 == null) {
+                discardMerges(merges, 146)
+                field146 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 146)
+              }
               choice_tag = 146
             }
 
@@ -3674,7 +4408,12 @@ public class LargeOneOf(
               if (choice_tag != 147) {
                 field147 = null
               }
-              field147 = decodeMessageOrMerge(Item.ADAPTER, reader, field147)
+              if (field147 == null) {
+                discardMerges(merges, 147)
+                field147 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 147)
+              }
               choice_tag = 147
             }
 
@@ -3682,7 +4421,12 @@ public class LargeOneOf(
               if (choice_tag != 148) {
                 field148 = null
               }
-              field148 = decodeMessageOrMerge(Item.ADAPTER, reader, field148)
+              if (field148 == null) {
+                discardMerges(merges, 148)
+                field148 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 148)
+              }
               choice_tag = 148
             }
 
@@ -3690,7 +4434,12 @@ public class LargeOneOf(
               if (choice_tag != 149) {
                 field149 = null
               }
-              field149 = decodeMessageOrMerge(Item.ADAPTER, reader, field149)
+              if (field149 == null) {
+                discardMerges(merges, 149)
+                field149 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 149)
+              }
               choice_tag = 149
             }
 
@@ -3698,7 +4447,12 @@ public class LargeOneOf(
               if (choice_tag != 150) {
                 field150 = null
               }
-              field150 = decodeMessageOrMerge(Item.ADAPTER, reader, field150)
+              if (field150 == null) {
+                discardMerges(merges, 150)
+                field150 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 150)
+              }
               choice_tag = 150
             }
 
@@ -3706,7 +4460,12 @@ public class LargeOneOf(
               if (choice_tag != 151) {
                 field151 = null
               }
-              field151 = decodeMessageOrMerge(Item.ADAPTER, reader, field151)
+              if (field151 == null) {
+                discardMerges(merges, 151)
+                field151 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 151)
+              }
               choice_tag = 151
             }
 
@@ -3714,7 +4473,12 @@ public class LargeOneOf(
               if (choice_tag != 152) {
                 field152 = null
               }
-              field152 = decodeMessageOrMerge(Item.ADAPTER, reader, field152)
+              if (field152 == null) {
+                discardMerges(merges, 152)
+                field152 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 152)
+              }
               choice_tag = 152
             }
 
@@ -3722,7 +4486,12 @@ public class LargeOneOf(
               if (choice_tag != 153) {
                 field153 = null
               }
-              field153 = decodeMessageOrMerge(Item.ADAPTER, reader, field153)
+              if (field153 == null) {
+                discardMerges(merges, 153)
+                field153 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 153)
+              }
               choice_tag = 153
             }
 
@@ -3730,7 +4499,12 @@ public class LargeOneOf(
               if (choice_tag != 154) {
                 field154 = null
               }
-              field154 = decodeMessageOrMerge(Item.ADAPTER, reader, field154)
+              if (field154 == null) {
+                discardMerges(merges, 154)
+                field154 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 154)
+              }
               choice_tag = 154
             }
 
@@ -3738,7 +4512,12 @@ public class LargeOneOf(
               if (choice_tag != 155) {
                 field155 = null
               }
-              field155 = decodeMessageOrMerge(Item.ADAPTER, reader, field155)
+              if (field155 == null) {
+                discardMerges(merges, 155)
+                field155 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 155)
+              }
               choice_tag = 155
             }
 
@@ -3746,7 +4525,12 @@ public class LargeOneOf(
               if (choice_tag != 156) {
                 field156 = null
               }
-              field156 = decodeMessageOrMerge(Item.ADAPTER, reader, field156)
+              if (field156 == null) {
+                discardMerges(merges, 156)
+                field156 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 156)
+              }
               choice_tag = 156
             }
 
@@ -3754,7 +4538,12 @@ public class LargeOneOf(
               if (choice_tag != 157) {
                 field157 = null
               }
-              field157 = decodeMessageOrMerge(Item.ADAPTER, reader, field157)
+              if (field157 == null) {
+                discardMerges(merges, 157)
+                field157 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 157)
+              }
               choice_tag = 157
             }
 
@@ -3762,7 +4551,12 @@ public class LargeOneOf(
               if (choice_tag != 158) {
                 field158 = null
               }
-              field158 = decodeMessageOrMerge(Item.ADAPTER, reader, field158)
+              if (field158 == null) {
+                discardMerges(merges, 158)
+                field158 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 158)
+              }
               choice_tag = 158
             }
 
@@ -3770,7 +4564,12 @@ public class LargeOneOf(
               if (choice_tag != 159) {
                 field159 = null
               }
-              field159 = decodeMessageOrMerge(Item.ADAPTER, reader, field159)
+              if (field159 == null) {
+                discardMerges(merges, 159)
+                field159 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 159)
+              }
               choice_tag = 159
             }
 
@@ -3778,12 +4577,179 @@ public class LargeOneOf(
               if (choice_tag != 160) {
                 field160 = null
               }
-              field160 = decodeMessageOrMerge(Item.ADAPTER, reader, field160)
+              if (field160 == null) {
+                discardMerges(merges, 160)
+                field160 = Item.ADAPTER.decode(reader)
+              } else {
+                merges = addMerge(merges, reader, 160)
+              }
               choice_tag = 160
             }
 
             else -> reader.readUnknownField(tag)
           }
+        }
+        if (merges != null) {
+          field001 = finishMerge(merges, 1, Item.ADAPTER, field001)
+          field002 = finishMerge(merges, 2, Item.ADAPTER, field002)
+          field003 = finishMerge(merges, 3, Item.ADAPTER, field003)
+          field004 = finishMerge(merges, 4, Item.ADAPTER, field004)
+          field005 = finishMerge(merges, 5, Item.ADAPTER, field005)
+          field006 = finishMerge(merges, 6, Item.ADAPTER, field006)
+          field007 = finishMerge(merges, 7, Item.ADAPTER, field007)
+          field008 = finishMerge(merges, 8, Item.ADAPTER, field008)
+          field009 = finishMerge(merges, 9, Item.ADAPTER, field009)
+          field010 = finishMerge(merges, 10, Item.ADAPTER, field010)
+          field011 = finishMerge(merges, 11, Item.ADAPTER, field011)
+          field012 = finishMerge(merges, 12, Item.ADAPTER, field012)
+          field013 = finishMerge(merges, 13, Item.ADAPTER, field013)
+          field014 = finishMerge(merges, 14, Item.ADAPTER, field014)
+          field015 = finishMerge(merges, 15, Item.ADAPTER, field015)
+          field016 = finishMerge(merges, 16, Item.ADAPTER, field016)
+          field017 = finishMerge(merges, 17, Item.ADAPTER, field017)
+          field018 = finishMerge(merges, 18, Item.ADAPTER, field018)
+          field019 = finishMerge(merges, 19, Item.ADAPTER, field019)
+          field020 = finishMerge(merges, 20, Item.ADAPTER, field020)
+          field021 = finishMerge(merges, 21, Item.ADAPTER, field021)
+          field022 = finishMerge(merges, 22, Item.ADAPTER, field022)
+          field023 = finishMerge(merges, 23, Item.ADAPTER, field023)
+          field024 = finishMerge(merges, 24, Item.ADAPTER, field024)
+          field025 = finishMerge(merges, 25, Item.ADAPTER, field025)
+          field026 = finishMerge(merges, 26, Item.ADAPTER, field026)
+          field027 = finishMerge(merges, 27, Item.ADAPTER, field027)
+          field028 = finishMerge(merges, 28, Item.ADAPTER, field028)
+          field029 = finishMerge(merges, 29, Item.ADAPTER, field029)
+          field030 = finishMerge(merges, 30, Item.ADAPTER, field030)
+          field031 = finishMerge(merges, 31, Item.ADAPTER, field031)
+          field032 = finishMerge(merges, 32, Item.ADAPTER, field032)
+          field033 = finishMerge(merges, 33, Item.ADAPTER, field033)
+          field034 = finishMerge(merges, 34, Item.ADAPTER, field034)
+          field035 = finishMerge(merges, 35, Item.ADAPTER, field035)
+          field036 = finishMerge(merges, 36, Item.ADAPTER, field036)
+          field037 = finishMerge(merges, 37, Item.ADAPTER, field037)
+          field038 = finishMerge(merges, 38, Item.ADAPTER, field038)
+          field039 = finishMerge(merges, 39, Item.ADAPTER, field039)
+          field040 = finishMerge(merges, 40, Item.ADAPTER, field040)
+          field041 = finishMerge(merges, 41, Item.ADAPTER, field041)
+          field042 = finishMerge(merges, 42, Item.ADAPTER, field042)
+          field043 = finishMerge(merges, 43, Item.ADAPTER, field043)
+          field044 = finishMerge(merges, 44, Item.ADAPTER, field044)
+          field045 = finishMerge(merges, 45, Item.ADAPTER, field045)
+          field046 = finishMerge(merges, 46, Item.ADAPTER, field046)
+          field047 = finishMerge(merges, 47, Item.ADAPTER, field047)
+          field048 = finishMerge(merges, 48, Item.ADAPTER, field048)
+          field049 = finishMerge(merges, 49, Item.ADAPTER, field049)
+          field050 = finishMerge(merges, 50, Item.ADAPTER, field050)
+          field051 = finishMerge(merges, 51, Item.ADAPTER, field051)
+          field052 = finishMerge(merges, 52, Item.ADAPTER, field052)
+          field053 = finishMerge(merges, 53, Item.ADAPTER, field053)
+          field054 = finishMerge(merges, 54, Item.ADAPTER, field054)
+          field055 = finishMerge(merges, 55, Item.ADAPTER, field055)
+          field056 = finishMerge(merges, 56, Item.ADAPTER, field056)
+          field057 = finishMerge(merges, 57, Item.ADAPTER, field057)
+          field058 = finishMerge(merges, 58, Item.ADAPTER, field058)
+          field059 = finishMerge(merges, 59, Item.ADAPTER, field059)
+          field060 = finishMerge(merges, 60, Item.ADAPTER, field060)
+          field061 = finishMerge(merges, 61, Item.ADAPTER, field061)
+          field062 = finishMerge(merges, 62, Item.ADAPTER, field062)
+          field063 = finishMerge(merges, 63, Item.ADAPTER, field063)
+          field064 = finishMerge(merges, 64, Item.ADAPTER, field064)
+          field065 = finishMerge(merges, 65, Item.ADAPTER, field065)
+          field066 = finishMerge(merges, 66, Item.ADAPTER, field066)
+          field067 = finishMerge(merges, 67, Item.ADAPTER, field067)
+          field068 = finishMerge(merges, 68, Item.ADAPTER, field068)
+          field069 = finishMerge(merges, 69, Item.ADAPTER, field069)
+          field070 = finishMerge(merges, 70, Item.ADAPTER, field070)
+          field071 = finishMerge(merges, 71, Item.ADAPTER, field071)
+          field072 = finishMerge(merges, 72, Item.ADAPTER, field072)
+          field073 = finishMerge(merges, 73, Item.ADAPTER, field073)
+          field074 = finishMerge(merges, 74, Item.ADAPTER, field074)
+          field075 = finishMerge(merges, 75, Item.ADAPTER, field075)
+          field076 = finishMerge(merges, 76, Item.ADAPTER, field076)
+          field077 = finishMerge(merges, 77, Item.ADAPTER, field077)
+          field078 = finishMerge(merges, 78, Item.ADAPTER, field078)
+          field079 = finishMerge(merges, 79, Item.ADAPTER, field079)
+          field080 = finishMerge(merges, 80, Item.ADAPTER, field080)
+          field081 = finishMerge(merges, 81, Item.ADAPTER, field081)
+          field082 = finishMerge(merges, 82, Item.ADAPTER, field082)
+          field083 = finishMerge(merges, 83, Item.ADAPTER, field083)
+          field084 = finishMerge(merges, 84, Item.ADAPTER, field084)
+          field085 = finishMerge(merges, 85, Item.ADAPTER, field085)
+          field086 = finishMerge(merges, 86, Item.ADAPTER, field086)
+          field087 = finishMerge(merges, 87, Item.ADAPTER, field087)
+          field088 = finishMerge(merges, 88, Item.ADAPTER, field088)
+          field089 = finishMerge(merges, 89, Item.ADAPTER, field089)
+          field090 = finishMerge(merges, 90, Item.ADAPTER, field090)
+          field091 = finishMerge(merges, 91, Item.ADAPTER, field091)
+          field092 = finishMerge(merges, 92, Item.ADAPTER, field092)
+          field093 = finishMerge(merges, 93, Item.ADAPTER, field093)
+          field094 = finishMerge(merges, 94, Item.ADAPTER, field094)
+          field095 = finishMerge(merges, 95, Item.ADAPTER, field095)
+          field096 = finishMerge(merges, 96, Item.ADAPTER, field096)
+          field097 = finishMerge(merges, 97, Item.ADAPTER, field097)
+          field098 = finishMerge(merges, 98, Item.ADAPTER, field098)
+          field099 = finishMerge(merges, 99, Item.ADAPTER, field099)
+          field100 = finishMerge(merges, 100, Item.ADAPTER, field100)
+          field101 = finishMerge(merges, 101, Item.ADAPTER, field101)
+          field102 = finishMerge(merges, 102, Item.ADAPTER, field102)
+          field103 = finishMerge(merges, 103, Item.ADAPTER, field103)
+          field104 = finishMerge(merges, 104, Item.ADAPTER, field104)
+          field105 = finishMerge(merges, 105, Item.ADAPTER, field105)
+          field106 = finishMerge(merges, 106, Item.ADAPTER, field106)
+          field107 = finishMerge(merges, 107, Item.ADAPTER, field107)
+          field108 = finishMerge(merges, 108, Item.ADAPTER, field108)
+          field109 = finishMerge(merges, 109, Item.ADAPTER, field109)
+          field110 = finishMerge(merges, 110, Item.ADAPTER, field110)
+          field111 = finishMerge(merges, 111, Item.ADAPTER, field111)
+          field112 = finishMerge(merges, 112, Item.ADAPTER, field112)
+          field113 = finishMerge(merges, 113, Item.ADAPTER, field113)
+          field114 = finishMerge(merges, 114, Item.ADAPTER, field114)
+          field115 = finishMerge(merges, 115, Item.ADAPTER, field115)
+          field116 = finishMerge(merges, 116, Item.ADAPTER, field116)
+          field117 = finishMerge(merges, 117, Item.ADAPTER, field117)
+          field118 = finishMerge(merges, 118, Item.ADAPTER, field118)
+          field119 = finishMerge(merges, 119, Item.ADAPTER, field119)
+          field120 = finishMerge(merges, 120, Item.ADAPTER, field120)
+          field121 = finishMerge(merges, 121, Item.ADAPTER, field121)
+          field122 = finishMerge(merges, 122, Item.ADAPTER, field122)
+          field123 = finishMerge(merges, 123, Item.ADAPTER, field123)
+          field124 = finishMerge(merges, 124, Item.ADAPTER, field124)
+          field125 = finishMerge(merges, 125, Item.ADAPTER, field125)
+          field126 = finishMerge(merges, 126, Item.ADAPTER, field126)
+          field127 = finishMerge(merges, 127, Item.ADAPTER, field127)
+          field128 = finishMerge(merges, 128, Item.ADAPTER, field128)
+          field129 = finishMerge(merges, 129, Item.ADAPTER, field129)
+          field130 = finishMerge(merges, 130, Item.ADAPTER, field130)
+          field131 = finishMerge(merges, 131, Item.ADAPTER, field131)
+          field132 = finishMerge(merges, 132, Item.ADAPTER, field132)
+          field133 = finishMerge(merges, 133, Item.ADAPTER, field133)
+          field134 = finishMerge(merges, 134, Item.ADAPTER, field134)
+          field135 = finishMerge(merges, 135, Item.ADAPTER, field135)
+          field136 = finishMerge(merges, 136, Item.ADAPTER, field136)
+          field137 = finishMerge(merges, 137, Item.ADAPTER, field137)
+          field138 = finishMerge(merges, 138, Item.ADAPTER, field138)
+          field139 = finishMerge(merges, 139, Item.ADAPTER, field139)
+          field140 = finishMerge(merges, 140, Item.ADAPTER, field140)
+          field141 = finishMerge(merges, 141, Item.ADAPTER, field141)
+          field142 = finishMerge(merges, 142, Item.ADAPTER, field142)
+          field143 = finishMerge(merges, 143, Item.ADAPTER, field143)
+          field144 = finishMerge(merges, 144, Item.ADAPTER, field144)
+          field145 = finishMerge(merges, 145, Item.ADAPTER, field145)
+          field146 = finishMerge(merges, 146, Item.ADAPTER, field146)
+          field147 = finishMerge(merges, 147, Item.ADAPTER, field147)
+          field148 = finishMerge(merges, 148, Item.ADAPTER, field148)
+          field149 = finishMerge(merges, 149, Item.ADAPTER, field149)
+          field150 = finishMerge(merges, 150, Item.ADAPTER, field150)
+          field151 = finishMerge(merges, 151, Item.ADAPTER, field151)
+          field152 = finishMerge(merges, 152, Item.ADAPTER, field152)
+          field153 = finishMerge(merges, 153, Item.ADAPTER, field153)
+          field154 = finishMerge(merges, 154, Item.ADAPTER, field154)
+          field155 = finishMerge(merges, 155, Item.ADAPTER, field155)
+          field156 = finishMerge(merges, 156, Item.ADAPTER, field156)
+          field157 = finishMerge(merges, 157, Item.ADAPTER, field157)
+          field158 = finishMerge(merges, 158, Item.ADAPTER, field158)
+          field159 = finishMerge(merges, 159, Item.ADAPTER, field159)
+          field160 = finishMerge(merges, 160, Item.ADAPTER, field160)
         }
         return LargeOneOf(
           field001 = if (choice_tag == 1) field001 else null,

@@ -386,6 +386,7 @@ public final class JavaGeneratorTest {
                 + "import com.squareup.wire.ReverseProtoWriter;\n"
                 + "import com.squareup.wire.Syntax;\n"
                 + "import com.squareup.wire.internal.Internal;\n"
+                + "import com.squareup.wire.internal.MessageMerges;\n"
                 + "import foo.java.Bar;\n"
                 + "import foo.java.CoinFlip;\n"
                 + "import foo.java.Foo;\n"
@@ -447,6 +448,7 @@ public final class JavaGeneratorTest {
                 + "    Map<String, Bar> bars = Internal.newMutableMap();\n"
                 + "    List<Integer> numbers = Internal.newMutableList();\n"
                 + "    CoinFlip coin_flip = null;\n"
+                + "    MessageMerges merges = null;\n"
                 + "    long token = reader.beginMessage();\n"
                 + "    for (int tag; (tag = reader.nextTag()) != -1;) {\n"
                 + "      if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {\n"
@@ -457,7 +459,7 @@ public final class JavaGeneratorTest {
                 + "        }\n"
                 + "      }\n"
                 + "      switch (tag) {\n"
-                + "        case 1: field = Internal.decodeMessageOrMerge(Foo.ADAPTER, reader, field); break;\n"
+                + "        case 1: if (field == null) { field = Foo.ADAPTER.decode(reader); } else merges = Internal.addMerge(merges, reader, 1); break;\n"
                 + "        case 2: bars.putAll(barsAdapter().decode(reader)); break;\n"
                 + "        case 3: ProtoAdapter.INT32.tryDecode(reader, numbers); break;\n"
                 + "        case 4: {\n"
@@ -473,6 +475,9 @@ public final class JavaGeneratorTest {
                 + "      }\n"
                 + "    }\n"
                 + "    reader.endMessageAndGetUnknownFields(token);\n"
+                + "    if (merges != null) {\n"
+                + "      field = Internal.finishMerge(merges, 1, Foo.ADAPTER, field);\n"
+                + "    }\n"
                 + "    return fromProto(field, numbers, coin_flip, bars);\n"
                 + "  }\n"
                 + "\n"
@@ -1018,7 +1023,7 @@ public final class JavaGeneratorTest {
         .contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)");
     assertThat(code)
         .contains(
-            "builder.oneof_mask(Internal.decodeMessageOrMerge(ProtoAdapter.FIELD_MASK, reader, builder.oneof_mask))");
+            "if (builder.oneof_mask == null) { Internal.discardMerges(merges, 4); builder.oneof_mask(ProtoAdapter.FIELD_MASK.decode(reader)); } else merges = Internal.addMerge(merges, reader, 4)");
   }
 
   @Test

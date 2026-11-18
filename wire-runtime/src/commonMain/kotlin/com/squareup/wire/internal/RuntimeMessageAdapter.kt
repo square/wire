@@ -162,6 +162,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
   override fun decode(reader: ProtoReader): M {
     val builder = newBuilder()
+    var merges: MessageMerges? = null
     val token = reader.beginMessage()
     while (true) {
       val tag = reader.nextTag()
@@ -192,8 +193,12 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
             ) {
               @Suppress("UNCHECKED_CAST")
               val adapter = singleAdapter as ProtoAdapter<Any>
-              val value = decodeMessageOrMerge(adapter, reader, field.getFromBuilder(builder))
-              field.set(builder, value)
+              if (field.getFromBuilder(builder) == null) {
+                discardMerges(merges, tag)
+                field.set(builder, adapter.decode(reader))
+              } else {
+                merges = addMerge(merges, reader, tag)
+              }
             } else {
               val value = singleAdapter.decode(reader)
               field.value(builder, value!!)
@@ -209,6 +214,16 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       }
     }
     reader.endMessageAndGetUnknownFields(token) // Ignore return value
+
+    if (merges != null) {
+      for (tag in merges.tags()) {
+        val field = fields.getValue(tag)
+
+        @Suppress("UNCHECKED_CAST")
+        val adapter = field.singleAdapter as ProtoAdapter<Any>
+        field.set(builder, finishMerge(merges, tag, adapter, field.getFromBuilder(builder)))
+      }
+    }
 
     return binding.build(builder)
   }

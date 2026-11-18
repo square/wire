@@ -14,6 +14,7 @@ import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
+import com.squareup.wire.internal.MessageMerges;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -2886,6 +2887,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     @Override
     public AllTypes decode(ProtoReader reader) throws IOException {
       Builder builder = new Builder();
+      MessageMerges merges = null;
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
         if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
@@ -2947,15 +2949,15 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
-          case 17: builder.nested_message(Internal.decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.nested_message)); break;
-          case 18: builder.any(Internal.decodeMessageOrMerge(AnyMessage.ADAPTER, reader, builder.any)); break;
-          case 19: builder.duration(Internal.decodeMessageOrMerge(ProtoAdapter.DURATION, reader, builder.duration)); break;
-          case 20: builder.struct(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_MAP, reader, builder.struct)); break;
-          case 21: builder.list_value(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_LIST, reader, builder.list_value)); break;
-          case 22: builder.value(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_VALUE, reader, builder.value)); break;
+          case 17: if (builder.nested_message == null) { builder.nested_message(NestedMessage.ADAPTER.decode(reader)); } else merges = Internal.addMerge(merges, reader, 17); break;
+          case 18: if (builder.any == null) { builder.any(AnyMessage.ADAPTER.decode(reader)); } else merges = Internal.addMerge(merges, reader, 18); break;
+          case 19: if (builder.duration == null) { builder.duration(ProtoAdapter.DURATION.decode(reader)); } else merges = Internal.addMerge(merges, reader, 19); break;
+          case 20: if (builder.struct == null) { builder.struct(ProtoAdapter.STRUCT_MAP.decode(reader)); } else merges = Internal.addMerge(merges, reader, 20); break;
+          case 21: if (builder.list_value == null) { builder.list_value(ProtoAdapter.STRUCT_LIST.decode(reader)); } else merges = Internal.addMerge(merges, reader, 21); break;
+          case 22: if (builder.value == null) { builder.value(ProtoAdapter.STRUCT_VALUE.decode(reader)); } else merges = Internal.addMerge(merges, reader, 22); break;
           case 23: builder.null_value((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
-          case 24: builder.empty(Internal.decodeMessageOrMerge(ProtoAdapter.EMPTY, reader, builder.empty)); break;
-          case 25: builder.timestamp(Internal.decodeMessageOrMerge(ProtoAdapter.INSTANT, reader, builder.timestamp)); break;
+          case 24: if (builder.empty == null) { builder.empty(ProtoAdapter.EMPTY.decode(reader)); } else merges = Internal.addMerge(merges, reader, 24); break;
+          case 25: if (builder.timestamp == null) { builder.timestamp(ProtoAdapter.INSTANT.decode(reader)); } else merges = Internal.addMerge(merges, reader, 25); break;
           case 101: builder.opt_int32(ProtoAdapter.INT32.decode(reader)); break;
           case 102: builder.opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
           case 103: builder.opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
@@ -3039,19 +3041,36 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 525: builder.map_int32_timestamp.putAll(map_int32_timestampAdapter().decode(reader)); break;
           case 601: builder.oneof_string(ProtoAdapter.STRING.decode(reader)); break;
           case 602: builder.oneof_int32(ProtoAdapter.INT32.decode(reader)); break;
-          case 603: builder.oneof_nested_message(Internal.decodeMessageOrMerge(NestedMessage.ADAPTER, reader, builder.oneof_nested_message)); break;
-          case 618: builder.oneof_any(Internal.decodeMessageOrMerge(AnyMessage.ADAPTER, reader, builder.oneof_any)); break;
-          case 619: builder.oneof_duration(Internal.decodeMessageOrMerge(ProtoAdapter.DURATION, reader, builder.oneof_duration)); break;
-          case 620: builder.oneof_struct(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_MAP, reader, builder.oneof_struct)); break;
-          case 621: builder.oneof_list_value(Internal.decodeMessageOrMerge(ProtoAdapter.STRUCT_LIST, reader, builder.oneof_list_value)); break;
-          case 624: builder.oneof_empty(Internal.decodeMessageOrMerge(ProtoAdapter.EMPTY, reader, builder.oneof_empty)); break;
-          case 625: builder.oneof_timestamp(Internal.decodeMessageOrMerge(ProtoAdapter.INSTANT, reader, builder.oneof_timestamp)); break;
+          case 603: if (builder.oneof_nested_message == null) { Internal.discardMerges(merges, 603); builder.oneof_nested_message(NestedMessage.ADAPTER.decode(reader)); } else merges = Internal.addMerge(merges, reader, 603); break;
+          case 618: if (builder.oneof_any == null) { Internal.discardMerges(merges, 618); builder.oneof_any(AnyMessage.ADAPTER.decode(reader)); } else merges = Internal.addMerge(merges, reader, 618); break;
+          case 619: if (builder.oneof_duration == null) { Internal.discardMerges(merges, 619); builder.oneof_duration(ProtoAdapter.DURATION.decode(reader)); } else merges = Internal.addMerge(merges, reader, 619); break;
+          case 620: if (builder.oneof_struct == null) { Internal.discardMerges(merges, 620); builder.oneof_struct(ProtoAdapter.STRUCT_MAP.decode(reader)); } else merges = Internal.addMerge(merges, reader, 620); break;
+          case 621: if (builder.oneof_list_value == null) { Internal.discardMerges(merges, 621); builder.oneof_list_value(ProtoAdapter.STRUCT_LIST.decode(reader)); } else merges = Internal.addMerge(merges, reader, 621); break;
+          case 624: if (builder.oneof_empty == null) { Internal.discardMerges(merges, 624); builder.oneof_empty(ProtoAdapter.EMPTY.decode(reader)); } else merges = Internal.addMerge(merges, reader, 624); break;
+          case 625: if (builder.oneof_timestamp == null) { Internal.discardMerges(merges, 625); builder.oneof_timestamp(ProtoAdapter.INSTANT.decode(reader)); } else merges = Internal.addMerge(merges, reader, 625); break;
           default: {
             reader.readUnknownField(tag);
           }
         }
       }
       builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
+      if (merges != null) {
+        builder.nested_message(Internal.finishMerge(merges, 17, NestedMessage.ADAPTER, builder.nested_message));
+        builder.any(Internal.finishMerge(merges, 18, AnyMessage.ADAPTER, builder.any));
+        builder.duration(Internal.finishMerge(merges, 19, ProtoAdapter.DURATION, builder.duration));
+        builder.struct(Internal.finishMerge(merges, 20, ProtoAdapter.STRUCT_MAP, builder.struct));
+        builder.list_value(Internal.finishMerge(merges, 21, ProtoAdapter.STRUCT_LIST, builder.list_value));
+        builder.value(Internal.finishMerge(merges, 22, ProtoAdapter.STRUCT_VALUE, builder.value));
+        builder.empty(Internal.finishMerge(merges, 24, ProtoAdapter.EMPTY, builder.empty));
+        builder.timestamp(Internal.finishMerge(merges, 25, ProtoAdapter.INSTANT, builder.timestamp));
+        builder.oneof_nested_message(Internal.finishMerge(merges, 603, NestedMessage.ADAPTER, builder.oneof_nested_message));
+        builder.oneof_any(Internal.finishMerge(merges, 618, AnyMessage.ADAPTER, builder.oneof_any));
+        builder.oneof_duration(Internal.finishMerge(merges, 619, ProtoAdapter.DURATION, builder.oneof_duration));
+        builder.oneof_struct(Internal.finishMerge(merges, 620, ProtoAdapter.STRUCT_MAP, builder.oneof_struct));
+        builder.oneof_list_value(Internal.finishMerge(merges, 621, ProtoAdapter.STRUCT_LIST, builder.oneof_list_value));
+        builder.oneof_empty(Internal.finishMerge(merges, 624, ProtoAdapter.EMPTY, builder.oneof_empty));
+        builder.oneof_timestamp(Internal.finishMerge(merges, 625, ProtoAdapter.INSTANT, builder.oneof_timestamp));
+      }
       return builder.build();
     }
 

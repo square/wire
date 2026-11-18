@@ -15,13 +15,16 @@
  */
 package com.squareup.wire.schema
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.startsWith
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.google.protobuf.Descriptors
 import com.google.protobuf.DynamicMessage
+import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.internal.SchemaEncoder
@@ -921,5 +924,71 @@ class SchemaProtoAdapterTest {
     val adapter = schema.protoAdapter("CafeDrink", false)
     assertThat(adapter.decode(Buffer().write(dansCoffeeEncoded)))
       .isEqualTo(dansCoffeeWithoutUnknowns)
+  }
+
+  private val nodeSchema = buildSchema {
+    add(
+      "node.proto".toPath(),
+      """
+          |message Node {
+          |  optional Node child = 1;
+          |  repeated int32 values = 2;
+          |}
+      """.trimMargin(),
+    )
+  }
+
+  private fun lengthDelimited(tag: Int, value: ByteString): ByteString {
+    val buffer = Buffer()
+    ProtoAdapter.BYTES.encodeWithTag(ProtoWriter(buffer), tag, value)
+    return buffer.readByteString()
+  }
+
+  private fun int32(tag: Int, value: Int): ByteString {
+    val buffer = Buffer()
+    ProtoAdapter.INT32.encodeWithTag(ProtoWriter(buffer), tag, value)
+    return buffer.readByteString()
+  }
+
+  @Test
+  fun repeatedMessageFieldsAreMerged() {
+    val first = Buffer().write(int32(2, 1)).write(lengthDelimited(1, int32(2, 10))).readByteString()
+    val second = Buffer().write(int32(2, 2)).write(lengthDelimited(1, int32(2, 20))).readByteString()
+    val encoded = Buffer().write(lengthDelimited(1, first)).write(lengthDelimited(1, second))
+
+    val adapter = nodeSchema.protoAdapter("Node", true)
+    assertThat(adapter.decode(encoded)).isEqualTo(
+      mapOf(
+        "child" to mapOf(
+          "values" to listOf(1, 2),
+          "child" to mapOf("values" to listOf(10, 20)),
+        ),
+      ),
+    )
+  }
+
+  @Test
+  fun manyRepeatedMessageFieldsAreMerged() {
+    val occurrence = lengthDelimited(1, Buffer().write(int32(2, 1)).write(int32(2, 1)).readByteString())
+    val encoded = Buffer()
+    repeat(200_000) { encoded.write(occurrence) }
+
+    val adapter = nodeSchema.protoAdapter("Node", true)
+    val node = adapter.decode(encoded) as Map<*, *>
+    val child = node["child"] as Map<*, *>
+    assertThat((child["values"] as List<*>).size).isEqualTo(400_000)
+  }
+
+  @Test
+  fun mergedMessagesShareTheRecursionLimit() {
+    var current = ByteString.EMPTY
+    repeat(5_000) {
+      current = Buffer().write(lengthDelimited(1, ByteString.EMPTY)).write(lengthDelimited(1, current)).readByteString()
+    }
+
+    val adapter = nodeSchema.protoAdapter("Node", true)
+    assertFailure { adapter.decode(Buffer().write(current)) }
+      .isInstanceOf<IOException>()
+      .hasMessage("Wire recursion limit exceeded")
   }
 }
