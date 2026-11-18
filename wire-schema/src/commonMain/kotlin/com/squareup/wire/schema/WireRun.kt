@@ -250,8 +250,12 @@ class WireRun(
 
     // Validate the schema and resolve references
     eventListeners.forEach(EventListener::loadSchemaStart)
-    val fullSchema = schemaLoader.loadSchema()
-    schemaLoader.warnings.forEach(logger::warning)
+    val fullSchema = try {
+      schemaLoader.loadSchema()
+    } finally {
+      // Warn even if loading fails: a risky import path is a likely cause of "unable to find".
+      schemaLoader.warnings.forEach(logger::warning)
+    }
     eventListeners.forEach { it.loadSchemaSuccess(fullSchema) }
 
     // Refactor the schema.
