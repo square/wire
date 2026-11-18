@@ -31,6 +31,8 @@ actual typealias ObjectStreamException = java.io.ObjectStreamException
 
 actual typealias ProtocolException = java.net.ProtocolException
 
+internal actual fun protocolExceptionWithCause(message: String, cause: Throwable): ProtocolException = ProtocolException(message).apply { initCause(cause) }
+
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> =
   Collections.unmodifiableList(this)

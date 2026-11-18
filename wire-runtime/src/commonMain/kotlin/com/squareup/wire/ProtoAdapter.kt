@@ -25,6 +25,7 @@ import com.squareup.wire.ProtoWriter.Companion.int32Size
 import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
+import com.squareup.wire.internal.protocolExceptionWithCause
 import kotlin.reflect.KClass
 import okio.Buffer
 import okio.BufferedSink
@@ -1259,7 +1260,7 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> reader.readUnknownField(tag)
       }
     }
-    return durationOfSeconds(seconds, nanos.toLong())
+    return durationOfSecondsOrThrow(seconds, nanos)
   }
 
   override fun decode(reader: ProtoReader32): Duration {
@@ -1276,7 +1277,7 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> reader.readUnknownField(tag)
       }
     }
-    return durationOfSeconds(seconds, nanos.toLong())
+    return durationOfSecondsOrThrow(seconds, nanos)
   }
 
   override fun redact(value: Duration): Duration = value
@@ -1304,6 +1305,24 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> getNano()
       }
     }
+}
+
+/** Throws a [ProtocolException] if the seconds and nanos are too large for a [Duration]. */
+private fun durationOfSecondsOrThrow(seconds: Long, nanos: Int): Duration {
+  try {
+    return durationOfSeconds(seconds, nanos.toLong())
+  } catch (e: RuntimeException) {
+    throw protocolExceptionWithCause("Duration out of range: seconds=$seconds nanos=$nanos", e)
+  }
+}
+
+/** Throws a [ProtocolException] if the seconds and nanos are too large for an [Instant]. */
+private fun ofEpochSecondOrThrow(seconds: Long, nanos: Int): Instant {
+  try {
+    return ofEpochSecond(seconds, nanos.toLong())
+  } catch (e: RuntimeException) {
+    throw protocolExceptionWithCause("Timestamp out of range: seconds=$seconds nanos=$nanos", e)
+  }
 }
 
 // Protobuf Timestamp valid range: 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z inclusive.
@@ -1366,7 +1385,7 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
         else -> reader.readUnknownField(tag)
       }
     }
-    return ofEpochSecond(seconds, nanos.toLong())
+    return ofEpochSecondOrThrow(seconds, nanos)
   }
 
   override fun decode(reader: ProtoReader32): Instant {
@@ -1383,7 +1402,7 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
         else -> reader.readUnknownField(tag)
       }
     }
-    return ofEpochSecond(seconds, nanos.toLong())
+    return ofEpochSecondOrThrow(seconds, nanos)
   }
 
   override fun redact(value: Instant): Instant = value
