@@ -2879,9 +2879,12 @@ class KotlinGeneratorTest {
         """
         |syntax = "proto2";
         |import "google/protobuf/duration.proto";
+        |import "google/protobuf/wrappers.proto";
         |import "option_redacted.proto";
         |message Choices {
         |  oneof choice {
+        |    google.protobuf.StringValue wrapped = 6;
+        |    google.protobuf.Int32Value counter = 7;
         |    Inner inner = 1;
         |    string text = 2;
         |    string secret = 3 [(squareup.protos.redacted_option.redacted) = true];
@@ -2921,6 +2924,8 @@ class KotlinGeneratorTest {
       assertThat(code).contains("CHOICE_DURATION -> OneOf(CHOICE_DURATION, ProtoAdapter.DURATION.redact(choice.value as Duration))")
       assertThat(code).doesNotContain("CHOICE_TEXT ->")
       assertThat(code).doesNotContain("CHOICE_KIND ->")
+      assertThat(code).doesNotContain("CHOICE_WRAPPED ->")
+      assertThat(code).doesNotContain("CHOICE_COUNTER ->")
       assertThat(code).contains("else -> choice")
     }
   }

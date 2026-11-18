@@ -140,6 +140,12 @@ public class BoxedOneOfs(
       }
 
       override fun redact(`value`: BoxedOneOfs): BoxedOneOfs = value.copy(
+        value_ = value.value_?.let { value_ ->
+          when (value_.key) {
+            VALUE_INNER -> OneOf(VALUE_INNER, Inner.ADAPTER.redact(value_.value as Inner))
+            else -> value_
+          }
+        },
         unknownFields = ByteString.EMPTY
       )
     }
@@ -154,9 +160,15 @@ public class BoxedOneOfs(
     public val VALUE_VALUE: Value<String> =
         Value<String>(tag = 3, adapter = ProtoAdapter.STRING, declaredName = "value")
 
+    public val VALUE_INNER: Value<Inner> =
+        Value<Inner>(tag = 4, adapter = Inner.ADAPTER, declaredName = "inner")
+
+    public val VALUE_WRAPPED: Value<String?> =
+        Value<String?>(tag = 5, adapter = ProtoAdapter.STRING_VALUE, declaredName = "wrapped")
+
     @JvmStatic
     public val VALUE__KEYS: Set<Value<*>> =
-        setOf(VALUE_FIRST_VALUE, VALUE_SECOND_VALUE, VALUE_VALUE)
+        setOf(VALUE_FIRST_VALUE, VALUE_SECOND_VALUE, VALUE_VALUE, VALUE_INNER, VALUE_WRAPPED)
 
     private const val serialVersionUID: Long = 0L
 

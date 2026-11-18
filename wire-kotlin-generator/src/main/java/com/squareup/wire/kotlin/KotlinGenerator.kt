@@ -2553,7 +2553,11 @@ class KotlinGenerator private constructor(
     className: ClassName,
     nameAllocator: NameAllocator,
   ): CodeBlock? {
-    val fieldsToRedact = fields.filter { it.isRedacted || (!it.type!!.isScalar && !it.type!!.isEnum) }
+    // Boxed oneofs skip wrapper types: they hold only a scalar, so they have nothing nested to redact.
+    val skipWrappers = oneofMode != OneofMode.SEALED_CLASS
+    val fieldsToRedact = fields.filter {
+      it.isRedacted || (!it.type!!.isScalar && !it.type!!.isEnum && !(skipWrappers && it.type!!.isWrapper))
+    }
     if (fieldsToRedact.isEmpty()) return null
 
     if (oneofMode != OneofMode.SEALED_CLASS) {

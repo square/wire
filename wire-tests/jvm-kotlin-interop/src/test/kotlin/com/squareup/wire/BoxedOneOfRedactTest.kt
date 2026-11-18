@@ -67,10 +67,23 @@ class BoxedOneOfRedactTest {
     val messages = listOf(
       BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_TEXT, "text")),
       BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STATE, State.DONE)),
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STRING_VALUE, "wrapped")),
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_INT32_VALUE, 3)),
       BoxedRedactedOneOf(),
     )
     for (message in messages) {
       assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(message)
+    }
+  }
+
+  @Test fun wrapperBranchesArePreserved_buildersOnly() {
+    val branches = listOf(
+      OneOf(BoxedRedactedOneOfBuildersOnly.VARIANT_STRING_VALUE, "wrapped"),
+      OneOf(BoxedRedactedOneOfBuildersOnly.VARIANT_INT32_VALUE, 3),
+    )
+    for (branch in branches) {
+      val message = BoxedRedactedOneOfBuildersOnly.Builder().variant(branch).build()
+      assertThat(BoxedRedactedOneOfBuildersOnly.ADAPTER.redact(message)).isEqualTo(message)
     }
   }
 
