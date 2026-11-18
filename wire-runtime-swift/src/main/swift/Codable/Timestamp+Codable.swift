@@ -17,7 +17,19 @@ import Foundation
 
 extension TimeInterval {
     func decomposed() -> (seconds: Int64, nanos: Int32) {
-        let seconds = Int64(self.rounded())
+        // `Int64(_:)` traps on NaN, infinity, and values outside the `Int64` range.
+        guard self.isFinite else {
+            switch self {
+            case .infinity: return (Int64.max, 0)
+            case -.infinity: return (Int64.min, 0)
+            default: return (0, 0)
+            }
+        }
+
+        let rounded = self.rounded()
+        guard let seconds = Int64(exactly: rounded) else {
+            return (rounded < 0 ? Int64.min : Int64.max, 0)
+        }
         let remainder = self.remainder(dividingBy: 1)
         let nanos = Int32(remainder * 1_000_000_000)
 
@@ -45,19 +57,26 @@ extension Wire.Timestamp {
     }
 
     private var timeIntervalSinceReferenceDate: TimeInterval {
+        let offset = Int64(Date.timeIntervalBetween1970AndReferenceDate)
+        let (referenceSeconds, overflow) = seconds.subtractingReportingOverflow(offset)
+        if overflow {
+            // `seconds` is within `offset` of `Int64.min`. Subtract in `Double` instead of trapping.
+            return TimeInterval(seconds: seconds, nanos: nanos) - TimeInterval(offset)
+        }
+
         // This should be marginally less lossy than using Epoch time
-        TimeInterval(
-            seconds: seconds - Int64(Date.timeIntervalBetween1970AndReferenceDate),
-            nanos: nanos
-        )
+        return TimeInterval(seconds: referenceSeconds, nanos: nanos)
     }
 
     private init(timeIntervalSinceReferenceDate: TimeInterval) {
         // This should be marginally less lossy than using Epoch time
         let decomposed = timeIntervalSinceReferenceDate.decomposed()
+        let offset = Int64(Date.timeIntervalBetween1970AndReferenceDate)
+        // Clamp instead of trapping when the sum does not fit in an `Int64`.
+        let (seconds, overflow) = decomposed.seconds.addingReportingOverflow(offset)
 
         self.init(
-            seconds: decomposed.seconds + Int64(Date.timeIntervalBetween1970AndReferenceDate),
+            seconds: overflow ? Int64.max : seconds,
             nanos: decomposed.nanos
         )
     }

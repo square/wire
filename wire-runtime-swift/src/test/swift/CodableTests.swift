@@ -424,6 +424,110 @@ extension CodableTests {
         try assertDecode(json: json, expected: proto)
         try assertEncode(proto: proto, expected: json)
     }
+
+    func testMinimumDurationRoundtrip() throws {
+        let json = """
+        {"duration":"-9223372036854775808.500s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: Int64.min, nanos: -500_000_000)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testMinimumSecondsDurationRoundtrip() throws {
+        let json = """
+        {"duration":"-9223372036854775808s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: Int64.min, nanos: 0)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testMaximumSecondsDurationRoundtrip() throws {
+        let json = """
+        {"duration":"9223372036854775807s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: Int64.max, nanos: 0)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testDurationWithNegatedSecondsOverflowThrows() throws {
+        let json = """
+        {"duration":"--9223372036854775808s"}
+        """
+
+        XCTAssertThrowsError(try JSONDecoder().decode(DurationAndTimestamp.self, from: json.data(using: .utf8)!)) { error in
+            XCTAssertTrue(error is DecodingError, "\(error)")
+        }
+    }
+
+    func testDurationBeyondInt64Throws() throws {
+        for value in ["9223372036854775808s", "-9223372036854775809s", "-18446744073709551615s"] {
+            let json = "{\"duration\":\"\(value)\"}"
+            XCTAssertThrowsError(try JSONDecoder().decode(DurationAndTimestamp.self, from: json.data(using: .utf8)!), value) { error in
+                XCTAssertTrue(error is DecodingError, "\(error)")
+            }
+        }
+    }
+
+    func testTimestampDateWithMinimumSecondsDoesNotTrap() throws {
+        // Varint encoding of `seconds = Int64.min` in field 1.
+        let bytes = Foundation.Data([0x08, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x01])
+        let timestamp = try ProtoDecoder().decode(Wire.Timestamp.self, from: bytes)
+        XCTAssertEqual(timestamp.seconds, Int64.min)
+
+        XCTAssertLessThan(timestamp.date.timeIntervalSince1970, 0)
+        XCTAssertLessThan(timestamp.timeIntervalSince1970, 0)
+    }
+
+    func testTimestampDateWithSecondsNearMinimumDoesNotTrap() {
+        let offset = Int64(Date.timeIntervalBetween1970AndReferenceDate)
+
+        for seconds in [Int64.min, Int64.min + 1, Int64.min + offset - 1, Int64.min + offset, Int64.min + offset + 1] {
+            XCTAssertLessThan(Wire.Timestamp(seconds: seconds, nanos: 0).date.timeIntervalSince1970, 0, "\(seconds)")
+        }
+    }
+
+    func testTimestampDateWithMaximumSecondsDoesNotTrap() {
+        let timestamp = Wire.Timestamp(seconds: Int64.max, nanos: 999_999_999)
+
+        XCTAssertGreaterThan(timestamp.date.timeIntervalSince1970, 0)
+    }
+
+    func testTimestampFromHugeDateClampsInsteadOfTrapping() {
+        let huge = Date(timeIntervalSinceReferenceDate: 9.223372036e18)
+        XCTAssertEqual(Wire.Timestamp(date: huge).seconds, Int64.max)
+
+        let tiny = Date(timeIntervalSinceReferenceDate: -9.2e18)
+        XCTAssertLessThan(Wire.Timestamp(date: tiny).seconds, -9_000_000_000_000_000_000)
+
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: 1e30)).seconds, Int64.max)
+        XCTAssertLessThan(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: -1e30)).seconds, -9_223_372_035_000_000_000)
+    }
+
+    func testTimestampFromNonFiniteTimeIntervalDoesNotTrap() {
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: .infinity).seconds, Int64.max)
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: -.infinity).seconds, Int64.min)
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: .nan), Wire.Timestamp(seconds: 0, nanos: 0))
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: 1e19).seconds, Int64.max)
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: -1e19).seconds, Int64.min)
+    }
+
+    func testTimestampWithMinimumSecondsEncodesJson() throws {
+        let proto = DurationAndTimestamp(timestamp: Timestamp(seconds: Int64.min, nanos: 0))
+
+        XCTAssertNoThrow(try JSONEncoder().encode(proto))
+    }
 }
 
 // MARK: - Private Methods
