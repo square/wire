@@ -361,6 +361,23 @@ class WireJsonTest {
     assertThat(value.delivered_within_or_free).isEqualTo(durationOfSeconds(5L, 3L))
   }
 
+  @Test fun lastMemberOfOneOfWinsOnReading() {
+    val parsed = jsonLibrary.fromJson(
+      """{"oneof_string":"a","oneof_int32":1}""",
+      AllTypesProto3::class.java,
+    )
+    assertThat(parsed).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
+  }
+
+  @Test fun unknownEnumValueIsKeptAsUnknownField() {
+    // nested_enum (tag 16) holds 99, which no constant declares.
+    val bytes = "800163".decodeHex()
+
+    val value = AllTypesProto3.ADAPTER.decode(bytes)
+
+    assertThat(value.unknownFields).isEqualTo(bytes)
+  }
+
   @Test fun anyMessageWithUnregisteredTypeOnReading() {
     try {
       jsonLibrary.fromJson(PIZZA_DELIVERY_UNKNOWN_TYPE_JSON, PizzaDelivery::class.java)
