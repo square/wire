@@ -274,7 +274,7 @@ class KotlinSchemaHandler(
       kotlinFile.packageName.replace(".", "/") /
       "${kotlinFile.name}.kt"
     checkPathInOutDirectory(filePath, modulePath)
-    checkNoCaseOnlyCollision(filePath, "$source at $location")
+    checkNoCaseOnlyCollision(filePath, "$source at $location", context)
 
     context.logger.artifactHandled(
       modulePath,
@@ -293,16 +293,24 @@ class KotlinSchemaHandler(
   }
 
   /**
-   * Throws if [filePath] differs only by case from a file written earlier. Such files overwrite
-   * each other on a case-insensitive file system.
+   * Warns if [filePath] differs only by case from a file written earlier. Such files overwrite
+   * each other on a case-insensitive file system, so this throws if the file system folds case.
+   * It does when [filePath] already exists and holds the same text as the earlier file.
    */
-  private fun checkNoCaseOnlyCollision(filePath: Path, description: String) {
+  private fun checkNoCaseOnlyCollision(filePath: Path, description: String, context: Context) {
     val previous = writtenPaths.getOrPut(filePath.toString().lowercase()) { filePath to description }
-    check(previous.first == filePath) {
-      "Files $filePath and ${previous.first} differ only by case and would overwrite each other:\n" +
-        "  ${previous.second}\n" +
-        "  $description"
-    }
+    if (previous.first == filePath) return
+
+    val message = "Files $filePath and ${previous.first} differ only by case and would " +
+      "overwrite each other on a case-insensitive file system:\n" +
+      "  ${previous.second}\n" +
+      "  $description"
+    val fileSystem = context.fileSystem
+    check(
+      !fileSystem.exists(filePath) ||
+        fileSystem.read(filePath) { readUtf8() } != fileSystem.read(previous.first) { readUtf8() },
+    ) { message }
+    context.logger.warning(message)
   }
 
   companion object {

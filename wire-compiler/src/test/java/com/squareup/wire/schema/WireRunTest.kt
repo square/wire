@@ -41,11 +41,18 @@ import com.squareup.wire.testing.add
 import com.squareup.wire.testing.containsExactlyInAnyOrderAsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
+import okio.FileSystem
+import okio.ForwardingFileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.junit.Assert.fail
 import org.junit.Test
+
+/** A file system that treats paths without regard to case, like the default on macOS and Windows. */
+private class CaseFoldingFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
+  override fun onPathParameter(path: Path, functionName: String, parameterName: String): Path = path.toString().lowercase().toPath()
+}
 
 class WireRunTest {
   private val fs = FakeFileSystem().apply {
@@ -1516,22 +1523,34 @@ class WireRunTest {
     }
   }
 
-  @Test fun kotlinFilesDifferingOnlyByCaseAreRejected() {
-    fs.add(
-      "protos/case.proto",
-      """
-          |package p;
-          |message Baz {}
-          |message baz {}
-          |
-      """.trimMargin(),
+  @Test fun kotlinFilesDifferingOnlyByCaseWarnOnCaseSensitiveFileSystem() {
+    writeCaseProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).all {
+      contains("Warning: Files ")
+      contains("differ only by case")
+      contains("p.Baz at protos/case.proto:2:1")
+      contains("p.baz at protos/case.proto:3:1")
+    }
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/p/Baz.kt",
+      "generated/kt/p/baz.kt",
+    )
+  }
+
+  @Test fun kotlinFilesDifferingOnlyByCaseFailOnCaseFoldingFileSystem() {
+    writeCaseProto()
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("protos")),
       targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
     )
 
-    assertFailure { wireRun.execute(fs, logger) }
+    assertFailure { wireRun.execute(CaseFoldingFileSystem(fs), logger) }
       .isInstanceOf<IllegalStateException>()
       .message()
       .isNotNull()
@@ -1542,22 +1561,34 @@ class WireRunTest {
       }
   }
 
-  @Test fun swiftFilesDifferingOnlyByCaseAreRejected() {
-    fs.add(
-      "protos/case.proto",
-      """
-          |package p;
-          |message Baz {}
-          |message baz {}
-          |
-      """.trimMargin(),
+  @Test fun swiftFilesDifferingOnlyByCaseWarnOnCaseSensitiveFileSystem() {
+    writeCaseProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(SwiftTarget(outDirectory = "generated/swift")),
     )
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).all {
+      contains("Warning: Files ")
+      contains("differ only by case")
+      contains("p.Baz at protos/case.proto:2:1")
+      contains("p.baz at protos/case.proto:3:1")
+    }
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/swift/Baz.swift",
+      "generated/swift/baz.swift",
+    )
+  }
+
+  @Test fun swiftFilesDifferingOnlyByCaseFailOnCaseFoldingFileSystem() {
+    writeCaseProto()
     val wireRun = WireRun(
       sourcePath = listOf(Location.get("protos")),
       targets = listOf(SwiftTarget(outDirectory = "generated/swift")),
     )
 
-    assertFailure { wireRun.execute(fs, logger) }
+    assertFailure { wireRun.execute(CaseFoldingFileSystem(fs), logger) }
       .isInstanceOf<IllegalStateException>()
       .message()
       .isNotNull()
@@ -2160,6 +2191,18 @@ class WireRunTest {
           |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
           |  rpc GetUpdatedBlue(squareup.colors.Blue) returns (squareup.colors.Blue) {}
           |}
+      """.trimMargin(),
+    )
+  }
+
+  private fun writeCaseProto() {
+    fs.add(
+      "protos/case.proto",
+      """
+          |package p;
+          |message Baz {}
+          |message baz {}
+          |
       """.trimMargin(),
     )
   }
