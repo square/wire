@@ -2553,12 +2553,36 @@ class KotlinGenerator private constructor(
     className: ClassName,
     nameAllocator: NameAllocator,
   ): CodeBlock? {
-    if (oneofMode != OneofMode.SEALED_CLASS) {
-      return if (fields.any { it.isRedacted }) CodeBlock.of("null") else null
-    }
-
     val fieldsToRedact = fields.filter { it.isRedacted || (!it.type!!.isScalar && !it.type!!.isEnum) }
     if (fieldsToRedact.isEmpty()) return null
+
+    if (oneofMode != OneofMode.SEALED_CLASS) {
+      // Boxed oneof. Redacted members become null, and message members redact themselves.
+      val oneOfClassName = com.squareup.wire.OneOf::class.asClassName()
+      return buildCodeBlock {
+        beginControlFlow("value.%1N?.let { %1N ->", fieldName)
+        beginControlFlow("when (%N.key)", fieldName)
+        for (field in fieldsToRedact) {
+          val keyName = nameAllocator[boxedOneOfKeyFieldName(name, field.name)]
+          if (field.isRedacted) {
+            addStatement("%N -> null", keyName)
+          } else {
+            addStatement(
+              "%1N -> %2T(%1N, %3L.redact(%4N.value as %5T))",
+              keyName,
+              oneOfClassName,
+              field.getAdapterName(),
+              fieldName,
+              field.type!!.typeName,
+            )
+          }
+        }
+        addStatement("else -> %N", fieldName)
+        endControlFlow()
+        unindent()
+        add("}")
+      }
+    }
 
     val sealedClassName = className.nestedClass(nameAllocator[boxedOneOfClassName(name)])
     val subclassNameAllocator = sealedSubclassNameAllocator(this)
