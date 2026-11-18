@@ -196,7 +196,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
               field.set(builder, value)
             } else {
               val value = singleAdapter.decode(reader)
-              field.value(builder, value!!)
+              field.value(builder, value)
             }
           }
         } else {
