@@ -77,6 +77,7 @@ extension ListValue: ProtoMessage {
 #if !WIRE_REMOVE_CODABLE
 extension ListValue: Codable {
     public init(from decoder: Decoder) throws {
+        try decoder.checkStructNestingDepth()
         let container = try decoder.singleValueContainer()
         self.values = try container.decode([StructValue].self)
     }

@@ -100,7 +100,7 @@ public final class ProtoReader {
     // MARK: - Private Properties - Constants
 
     /** The standard number of levels of message nesting to allow. */
-    private static let recursionLimit: Int = 65
+    static let recursionLimit: Int = 65
 
     // MARK: - Initialization
 

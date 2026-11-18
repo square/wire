@@ -288,6 +288,61 @@ final class StructTests: XCTestCase {
         XCTAssertThrowsError(try JSONDecoder().decode(StructNull.self, from: jsonData))
     }
 
+    // MARK: - JSON nesting depth
+
+    func testStructValueJSONNestedWithinLimitDecodes() throws {
+        let depth = 60
+        let arrays = String(repeating: "[", count: depth) + "1" + String(repeating: "]", count: depth)
+        XCTAssertNoThrow(try JSONDecoder().decode(StructValue.self, from: arrays.data(using: .utf8)!))
+        XCTAssertNoThrow(try JSONDecoder().decode(ListValue.self, from: arrays.data(using: .utf8)!))
+
+        let objects = String(repeating: "{\"a\":", count: depth) + "1" + String(repeating: "}", count: depth)
+        XCTAssertNoThrow(try JSONDecoder().decode(StructValue.self, from: objects.data(using: .utf8)!))
+        XCTAssertNoThrow(try JSONDecoder().decode(StructMessage.self, from: objects.data(using: .utf8)!))
+    }
+
+    func testStructValueJSONNestedBeyondLimitThrows() throws {
+        let depth = 400
+        let arrays = String(repeating: "[", count: depth) + "1" + String(repeating: "]", count: depth)
+        let objects = String(repeating: "{\"a\":", count: depth) + "1" + String(repeating: "}", count: depth)
+
+        // Decode on a thread with a small stack, like the ones used by background queues.
+        // Without a depth limit, the stack overflows before Foundation's own limit of 512 applies.
+        onSmallStackThread {
+            for json in [arrays, objects] {
+                self.assertDecodingFails(StructValue.self, json: json)
+                self.assertDecodingFails(ListValue.self, json: json)
+                self.assertDecodingFails(StructMessage.self, json: json)
+                self.assertDecodingFails(MessageContainingStruct.self, json: "{\"someValue\":\(json)}")
+            }
+        }
+    }
+
+    private func assertDecodingFails<T: Decodable>(
+        _ type: T.Type,
+        json: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        do {
+            _ = try JSONDecoder().decode(type, from: json.data(using: .utf8)!)
+            XCTFail("Expected \(type) to fail decoding", file: file, line: line)
+        } catch {
+            XCTAssertTrue(error is DecodingError, "\(error)", file: file, line: line)
+        }
+    }
+
+    private func onSmallStackThread(_ work: @escaping @Sendable () -> Void) {
+        let finished = expectation(description: "finished")
+        let thread = Thread {
+            work()
+            finished.fulfill()
+        }
+        thread.stackSize = 512 * 1024
+        thread.start()
+        wait(for: [finished], timeout: 60)
+    }
+
     // MARK: - Generated Code (MessageContainingStruct)
 
     func testGeneratedMessageContainingStructRoundTrip() throws {

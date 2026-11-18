@@ -110,6 +110,7 @@ extension StructValue: ProtoMessage {
 #if !WIRE_REMOVE_CODABLE
 extension StructValue: Codable {
     public init(from decoder: Decoder) throws {
+        try decoder.checkStructNestingDepth()
         let container = try decoder.singleValueContainer()
 
         // Foundation's JSONDecoder permits multiple decode attempts on a single
@@ -151,6 +152,26 @@ extension StructValue: Codable {
             try container.encode(value)
         case .listValue(let value):
             try container.encode(value)
+        }
+    }
+}
+
+extension Decoder {
+    /**
+     Throws if the decoder is nested too deeply to decode a `google.protobuf.Struct`, `Value`, or `ListValue`.
+
+     Each level of JSON object or array adds one element to the coding path, and the check uses the
+     same limit as the binary decoder. Without it, the recursion of the `Codable` implementations
+     overflows the stack of threads with a small stack before `JSONDecoder` stops at its own limit.
+     */
+    func checkStructNestingDepth() throws {
+        if codingPath.count > ProtoReader.recursionLimit {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: codingPath,
+                    debugDescription: "Exceeded the maximum nesting depth of \(ProtoReader.recursionLimit) for google.protobuf.Struct"
+                )
+            )
         }
     }
 }

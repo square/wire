@@ -77,6 +77,7 @@ extension StructMessage: ProtoMessage {
 #if !WIRE_REMOVE_CODABLE
 extension StructMessage: Codable {
     public init(from decoder: Decoder) throws {
+        try decoder.checkStructNestingDepth()
         let container = try decoder.singleValueContainer()
         self.fields = try container.decode([String: StructValue].self)
     }
