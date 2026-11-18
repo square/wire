@@ -23,6 +23,12 @@ import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import java.io.IOException
 
+/** The JSON readers of Gson and Moshi reject documents nested more than 255 levels deep. */
+private const val MAX_WRITE_DEPTH = 254
+
+/** The number of [AnyMessage] values being written by the current thread. */
+private val writeDepth: ThreadLocal<Int> = ThreadLocal.withInitial { 0 }
+
 class AnyMessageTypeAdapter(
   private val gson: Gson,
   private val typeUrlToAdapter: Map<String, ProtoAdapter<*>>,
@@ -35,6 +41,21 @@ class AnyMessageTypeAdapter(
       writer.nullValue()
       return
     }
+
+    // Gson's writer has no nesting limit, so an Any inside an Any inside an Any could overflow the stack.
+    val depth = writeDepth.get()
+    if (depth >= MAX_WRITE_DEPTH) {
+      throw IOException("Any messages are nested more than $MAX_WRITE_DEPTH levels deep")
+    }
+    writeDepth.set(depth + 1)
+    try {
+      writeAny(writer, value)
+    } finally {
+      writeDepth.set(depth)
+    }
+  }
+
+  private fun writeAny(writer: JsonWriter, value: AnyMessage) {
     writer.beginObject()
 
     writer.name("@type")

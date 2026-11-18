@@ -414,6 +414,32 @@ class WireJsonTest {
     }
   }
 
+  @Test fun nestedAnyMessagesWithinLimitRoundTrip() {
+    val value = nestedPizzaDeliveries(depth = 253)
+    val json = jsonLibrary.toJson(value, PizzaDelivery::class.java)
+    assertThat(jsonLibrary.fromJson(json, PizzaDelivery::class.java)).isEqualTo(value)
+  }
+
+  @Test fun deeplyNestedAnyMessagesFailToEncode() {
+    val value = nestedPizzaDeliveries(depth = 3_000)
+    try {
+      jsonLibrary.toJson(value, PizzaDelivery::class.java)
+      fail()
+    } catch (expected: JsonDataException) {
+      // Moshi.
+    } catch (expected: JsonIOException) {
+      // Gson.
+    }
+  }
+
+  private fun nestedPizzaDeliveries(depth: Int): PizzaDelivery {
+    var result = PizzaDelivery.Builder().address("507 Cross Street").build()
+    repeat(depth) {
+      result = PizzaDelivery.Builder().promotion(AnyMessage.pack(result)).build()
+    }
+    return result
+  }
+
   @Test fun anyMessageWithoutType() {
     try {
       jsonLibrary.fromJson(PIZZA_DELIVERY_WITHOUT_TYPE_JSON, PizzaDelivery::class.java)
@@ -1351,7 +1377,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
         )
         .build()
 
@@ -1373,7 +1399,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1396,7 +1422,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
         )
         .build()
 
@@ -1418,7 +1444,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1441,7 +1467,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
         )
         .build()
 
@@ -1463,7 +1489,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
