@@ -78,6 +78,29 @@ jobs:
         run: |
           ./gradlew -Pswift=false build --stacktrace --warning-mode all
 
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: 3.14
+
+      # Check that the pinned docs packages still build the website. The release workflow also
+      # generates the API docs first. This job skips them to stay fast.
+      - name: Build mkdocs
+        run: |
+          cp CHANGELOG.md docs/changelog.md
+          cp CONTRIBUTING.md docs/contributing.md
+          pip3 install -r .github/workflows/mkdocs-requirements.txt
+          mkdocs build
+
   windows:
     runs-on: windows-latest
 
