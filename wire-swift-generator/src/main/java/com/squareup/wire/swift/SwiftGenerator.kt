@@ -1963,7 +1963,7 @@ class SwiftGenerator private constructor(
         else -> name.toSwiftIdentifier()
       }
 
-    val OneOf.safeName: String
+    private val OneOf.safeName: String
       get() = name.toSwiftIdentifier()
 
     /**
