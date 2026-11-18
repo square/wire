@@ -119,6 +119,42 @@ final class ProtoDecoderTests: XCTestCase {
         XCTAssertEqual(object, [])
     }
 
+    func testDecodeSizeDelimitedZeroLengthElementIsEmptyMessage() throws {
+        let decoder = ProtoDecoder()
+        let data = Foundation.Data(hexEncoded: """
+            02 10 01 // id = 1
+            00       // Empty message
+            02 10 07 // id = 7
+        """)!
+
+        let objects = try decoder.decodeSizeDelimited(Person3.self, from: data)
+
+        XCTAssertEqual(objects, [
+            Person3(name: "", id: 1),
+            Person3(name: "", id: 0),
+            Person3(name: "", id: 7),
+        ])
+    }
+
+    func testDecodeSizeDelimitedLeadingAndTrailingZeroLengthElements() throws {
+        let decoder = ProtoDecoder()
+        let data = Foundation.Data(hexEncoded: """
+            00       // Empty message
+            02 10 01 // id = 1
+            00       // Empty message
+            00       // Empty message
+        """)!
+
+        let objects = try decoder.decodeSizeDelimited(Person3.self, from: data)
+
+        XCTAssertEqual(objects, [
+            Person3(name: "", id: 0),
+            Person3(name: "", id: 1),
+            Person3(name: "", id: 0),
+            Person3(name: "", id: 0),
+        ])
+    }
+
     func testDecodeSizeDelimitedRejectsUnrepresentableSize() throws {
         let decoder = ProtoDecoder()
         let data = Foundation.Data(hexEncoded: """

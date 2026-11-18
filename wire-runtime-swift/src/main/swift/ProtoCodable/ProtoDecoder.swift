@@ -328,9 +328,13 @@ public final class ProtoDecoder {
 
             while fullBuffer.isDataRemaining {
                 let size = try fullBuffer.readVarint()
-                if size == 0 { break }
                 guard let size = Int(exactly: size) else {
                     throw ProtoDecoder.Error.unexpectedEndOfData
+                }
+                if size == 0 {
+                    // A zero-length element is an empty message. Keep reading the stream.
+                    values.append(try T(from: .empty))
+                    continue
                 }
                 try fullBuffer.verifyAdditional(count: size)
 
