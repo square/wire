@@ -40,6 +40,27 @@ internal fun Location.sourcePathForComment(): String = buildString {
   }
 }
 
+/** Escapes [this] so it can sit between double quotes in `.proto` source. */
+internal fun String.escapeQuotedString(): String = buildString {
+  for (ch in this@escapeQuotedString) {
+    append(
+      when (ch) {
+        '"' -> "\\\""
+        '\'' -> "\\'"
+        '\\' -> "\\\\"
+        '\b' -> "\\b"
+        '\n' -> "\\n"
+        '\r' -> "\\r"
+        '\t' -> "\\t"
+        '\u0007' -> "\\a"
+        '\u000C' -> "\\f"
+        '\u000b' -> "\\v"
+        else -> ch
+      },
+    )
+  }
+}
+
 // TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-34102
 fun StringBuilder.appendDocumentation(
   documentation: String,

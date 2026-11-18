@@ -80,6 +80,24 @@ class OptionElementTest {
   }
 
   @Test
+  fun mapStringValuesAreEscaped() {
+    val option = OptionElement.create(
+      "foo",
+      MAP,
+      mapOf("ping" to "a\"b\\c\nd", "kit" to listOf("e\"f")),
+    )
+    val expected = """
+        |foo = {
+        |  ping: "a\"b\\c\nd",
+        |  kit: [
+        |    "e\"f"
+        |  ]
+        |}
+    """.trimMargin()
+    assertThat(option.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
   fun booleanToSchema() {
     val option = OptionElement.create("foo", BOOLEAN, "false")
     val expected = "foo = false"

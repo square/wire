@@ -149,6 +149,26 @@ class ProtoFileElementTest {
   }
 
   @Test
+  fun importPathsAreEscaped() {
+    val file = ProtoFileElement(
+      location = location,
+      imports = listOf("a\"b.proto"),
+      publicImports = listOf("c\\d.proto"),
+      weakImports = listOf("e\nf.proto"),
+    )
+    val expected = """
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
+        |import "a\"b.proto";
+        |import public "c\\d.proto";
+        |import weak "e\nf.proto";
+        |
+    """.trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
   fun addMultipleDependencies() {
     val element = MessageElement(
       location = location,

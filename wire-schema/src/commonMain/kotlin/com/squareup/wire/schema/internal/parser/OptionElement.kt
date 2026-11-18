@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.internal.appendIndented
 import com.squareup.wire.schema.internal.appendOptions
+import com.squareup.wire.schema.internal.escapeQuotedString
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.ENUM
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST
@@ -47,26 +48,6 @@ data class OptionElement(
   data class OptionPrimitive(val kind: Kind, val value: Any)
 
   private val formattedName = if (isParenthesized) "($name)" else name
-
-  private fun String.escapeQuotedString(): String = buildString {
-    for (ch in this@escapeQuotedString) {
-      append(
-        when (ch) {
-          '"' -> "\\\""
-          '\'' -> "\\'"
-          '\\' -> "\\\\"
-          '\b' -> "\\b"
-          '\n' -> "\\n"
-          '\r' -> "\\r"
-          '\t' -> "\\t"
-          '\u0007' -> "\\a"
-          '\u000C' -> "\\f"
-          '\u000b' -> "\\v"
-          else -> ch
-        },
-      )
-    }
-  }
 
   fun toSchema(): String = buildString {
     when (kind) {
@@ -110,7 +91,7 @@ data class OptionElement(
   private fun formatOptionMapValue(value: Any): String = buildString {
     when (value) {
       is String -> {
-        append(""""$value"""")
+        append(""""${value.escapeQuotedString()}"""")
       }
       is OptionPrimitive -> {
         when (value.kind) {
