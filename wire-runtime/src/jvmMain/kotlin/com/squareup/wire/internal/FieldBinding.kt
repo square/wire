@@ -20,6 +20,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
@@ -74,15 +75,30 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
       }
     }
     else -> {
-      val field = try {
-        builderType.getField(name)
-      } catch (_: NoSuchFieldException) {
-        throw AssertionError("No builder field ${builderType.name}.$name")
-      }
-      { builder, value ->
-        field.set(builder, value)
+      // Generated Java does not emit `ONE_OF` labels. The builder method of a oneof member clears
+      // the other members, so the last member on the wire wins.
+      val oneOfMethod = if (wireField.oneofName.isNotEmpty()) builderOneOfMethod(builderType) else null
+      if (oneOfMethod != null) {
+        { builder, value ->
+          oneOfMethod.invoke(builder, value)
+        }
+      } else {
+        val field = try {
+          builderType.getField(name)
+        } catch (_: NoSuchFieldException) {
+          throw AssertionError("No builder field ${builderType.name}.$name")
+        }
+        { builder, value ->
+          field.set(builder, value)
+        }
       }
     }
+  }
+
+  private fun builderOneOfMethod(builderType: Class<*>): Method? = try {
+    builderType.getMethod(name, messageField.type)
+  } catch (_: NoSuchMethodException) {
+    null
   }
 
   private fun getBuilderGetter(builderType: Class<*>, wireField: WireField): (B) -> Any? = if (builderType.isAssignableFrom(KotlinConstructorBuilder::class.java)) {
@@ -116,12 +132,12 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
-  override fun value(builder: B, value: Any) {
+  override fun value(builder: B, value: Any?) {
     when {
       label.isRepeated -> {
         @Suppress("UNCHECKED_CAST")
         when (val list = getFromBuilder(builder)) {
-          is MutableList<*> -> (list as MutableList<Any>).add(value)
+          is MutableList<*> -> (list as MutableList<Any?>).add(value)
           // TODO(Benoit) Doesn't seem reachable, maybe remove?
           is List<*> -> {
             val mutableList = list.toMutableList()
