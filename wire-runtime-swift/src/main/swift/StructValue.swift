@@ -125,9 +125,9 @@ extension StructValue: Codable {
             self = .numberValue(numberValue)
         } else if let stringValue = try? container.decode(String.self) {
             self = .stringValue(stringValue)
-        } else if let structValue = try? container.decode(StructMessage.self) {
+        } else if let structValue = try container.decodeIfMatching(StructMessage.self) {
             self = .structValue(structValue)
-        } else if let listValue = try? container.decode(ListValue.self) {
+        } else if let listValue = try container.decodeIfMatching(ListValue.self) {
             self = .listValue(listValue)
         } else {
             throw DecodingError.dataCorruptedError(
@@ -156,20 +156,41 @@ extension StructValue: Codable {
     }
 }
 
+/** Marks the error for a document that is nested too deeply, so that it is not mistaken for a type mismatch. */
+private struct StructNestingDepthError: Error {}
+
+extension SingleValueDecodingContainer {
+    /**
+     Decodes `type`, or returns nil if the value does not have that shape.
+     An error for a document that is nested too deeply is not a type mismatch, so it is thrown.
+     */
+    fileprivate func decodeIfMatching<T: Decodable>(_ type: T.Type) throws -> T? {
+        do {
+            return try decode(type)
+        } catch let DecodingError.dataCorrupted(context) where context.underlyingError is StructNestingDepthError {
+            throw DecodingError.dataCorrupted(context)
+        } catch {
+            return nil
+        }
+    }
+}
+
 extension Decoder {
     /**
      Throws if the decoder is nested too deeply to decode a `google.protobuf.Struct`, `Value`, or `ListValue`.
 
-     Each level of JSON object or array adds one element to the coding path, and the check uses the
-     same limit as the binary decoder. Without it, the recursion of the `Codable` implementations
-     overflows the stack of threads with a small stack before `JSONDecoder` stops at its own limit.
+     Each level of JSON object or array adds one element to the coding path.
+     The check compares the length of the coding path with `ProtoReader.recursionLimit`, the constant that the binary decoder uses for message nesting.
+     The two checks count different things, so the same document can pass one and fail the other.
+     Without the check, the recursion of the `Codable` implementations overflows the stack of threads with a small stack before `JSONDecoder` stops at its own limit.
      */
     func checkStructNestingDepth() throws {
         if codingPath.count > ProtoReader.recursionLimit {
             throw DecodingError.dataCorrupted(
                 DecodingError.Context(
                     codingPath: codingPath,
-                    debugDescription: "Exceeded the maximum nesting depth of \(ProtoReader.recursionLimit) for google.protobuf.Struct"
+                    debugDescription: "Exceeded the maximum nesting depth of \(ProtoReader.recursionLimit) for google.protobuf.Struct",
+                    underlyingError: StructNestingDepthError()
                 )
             )
         }
