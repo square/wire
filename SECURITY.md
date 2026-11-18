@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Security fixes ship in a new release of the latest minor version.
+Only the latest minor version gets security fixes.
 
 | Version | Supported |
 |---------|-----------|
