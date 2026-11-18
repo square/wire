@@ -33,6 +33,7 @@ import com.squareup.wire.schema.parse
 import com.squareup.wire.schema.roots
 import okio.FileSystem
 import okio.IOException
+import okio.Path.Companion.toPath
 
 /**
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
@@ -70,6 +71,12 @@ internal class CommonSchemaLoader :
   /** Keys are a [Location.base]; values are the roots that those locations loaded from. */
   private val baseToRoots: MutableMap<String, List<Root>>
 
+  /** Warnings for questionable inputs that did not stop the load. Shared with enclosed loaders. */
+  private val warningsSet: MutableSet<String>
+
+  /** Warnings for questionable inputs that did not stop the load, in the order found. */
+  val warnings: List<String> get() = warningsSet.toList()
+
   constructor(fileSystem: FileSystem) {
     this.fileSystem = fileSystem
     this.errors = ErrorCollector()
@@ -77,6 +84,7 @@ internal class CommonSchemaLoader :
     this.protoPathRoots = null
     this.sourcePathFiles = listOf()
     this.baseToRoots = mutableMapOf()
+    this.warningsSet = linkedSetOf()
   }
 
   internal constructor(enclosing: CommonSchemaLoader, errors: ErrorCollector) {
@@ -86,6 +94,7 @@ internal class CommonSchemaLoader :
     this.protoPathRoots = enclosing.protoPathRoots
     this.sourcePathFiles = enclosing.sourcePathFiles
     this.baseToRoots = enclosing.baseToRoots
+    this.warningsSet = enclosing.warningsSet
   }
 
   override fun withErrors(errors: ErrorCollector): Loader = CommonSchemaLoader(this, errors)
@@ -133,6 +142,11 @@ internal class CommonSchemaLoader :
   }
 
   override fun load(path: String): ProtoFile {
+    if (path.isRiskyImportPath()) {
+      warningsSet += "Import \"$path\" is an absolute path or has a \"..\" segment. " +
+        "It can point outside the proto path. Use a path relative to a proto path root."
+    }
+
     // Traverse roots in search of the one that has this path.
     var loadFrom: ProtoFilePath? = null
     for (protoPathRoot in protoPathRoots!!) {
@@ -191,6 +205,12 @@ internal class CommonSchemaLoader :
       }
     }
     return result
+  }
+
+  /** True if this import path is absolute or has a `..` segment, so it can leave the proto path. */
+  private fun String.isRiskyImportPath(): Boolean {
+    val importPath = toPath()
+    return importPath.isAbsolute || importPath.segments.any { it == ".." }
   }
 
   internal fun reportLoadingErrors() {

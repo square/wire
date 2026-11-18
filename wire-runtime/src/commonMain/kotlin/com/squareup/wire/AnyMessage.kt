@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import com.squareup.wire.AnyMessage.Companion.pack
+import com.squareup.wire.internal.sanitize
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -70,7 +71,7 @@ class AnyMessage(
     return result
   }
 
-  override fun toString() = "Any{type_url=$typeUrl, size=${value.size}}"
+  override fun toString() = "Any{type_url=${sanitize(typeUrl)}, size=${value.size}}"
 
   fun copy(
     typeUrl: String = this.typeUrl,

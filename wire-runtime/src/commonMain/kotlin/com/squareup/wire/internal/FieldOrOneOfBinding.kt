@@ -69,7 +69,8 @@ abstract class FieldOrOneOfBinding<M, B> {
     }
   }
 
-  abstract fun value(builder: B, value: Any)
+  /** Adds [value] to the builder. The value is null for `google.protobuf.NullValue` and `Value`. */
+  abstract fun value(builder: B, value: Any?)
 
   abstract fun set(builder: B, value: Any?)
 

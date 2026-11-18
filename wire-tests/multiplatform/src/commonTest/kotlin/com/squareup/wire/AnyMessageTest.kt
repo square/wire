@@ -96,6 +96,13 @@ class AnyMessageTest {
     assertThat(any.toString()).isEqualTo("Any{type_url=type.googleapis.com/example.Secret, size=7}")
   }
 
+  @Test fun toStringEscapesTypeUrl() {
+    val any = AnyMessage("type.googleapis.com/x, forged=1\nINFO forged log line", ByteString.EMPTY)
+    assertThat(any.toString()).isEqualTo(
+      """Any{type_url=type.googleapis.com/x\, forged=1\nINFO forged log line, size=0}""",
+    )
+  }
+
   @Test fun decodingWithMissingTypeUrl() {
     val hex = "0a0412020803120412020803120412020804"
 
