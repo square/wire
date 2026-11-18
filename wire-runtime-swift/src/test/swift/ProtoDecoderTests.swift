@@ -155,6 +155,55 @@ final class ProtoDecoderTests: XCTestCase {
         ])
     }
 
+    func testDecodeSizeDelimitedOnlyZeroLengthElements() throws {
+        let decoder = ProtoDecoder()
+        let data = Foundation.Data([0x00, 0x00, 0x00])
+
+        let objects = try decoder.decodeSizeDelimited(Person3.self, from: data)
+
+        XCTAssertEqual(objects, [
+            Person3(name: "", id: 0),
+            Person3(name: "", id: 0),
+            Person3(name: "", id: 0),
+        ])
+    }
+
+    func testDecodeSizeDelimitedNonMinimalZeroLengthVarint() throws {
+        let decoder = ProtoDecoder()
+        let data = Foundation.Data(hexEncoded: """
+            02 10 01 // id = 1
+            80 00    // Empty message, with a size that is not encoded in the fewest bytes
+            02 10 07 // id = 7
+        """)!
+
+        let objects = try decoder.decodeSizeDelimited(Person3.self, from: data)
+
+        XCTAssertEqual(objects, [
+            Person3(name: "", id: 1),
+            Person3(name: "", id: 0),
+            Person3(name: "", id: 7),
+        ])
+    }
+
+    func testDecodeSizeDelimitedZeroLengthElementOfTypeWithRequiredFieldsThrows() throws {
+        let decoder = ProtoDecoder()
+        let data = Foundation.Data([0x00])
+
+        func assertMissingRequiredField(_ operation: () throws -> Void) {
+            XCTAssertThrowsError(try operation()) { error in
+                guard case ProtoDecoder.Error.missingRequiredField(let typeName, let fieldName) = error else {
+                    return XCTFail("Unexpected error: \(error)")
+                }
+                XCTAssertEqual(typeName, "SimpleRequired2")
+                XCTAssertEqual(fieldName, "req_int32")
+            }
+        }
+
+        // An empty message is as incomplete as an empty payload.
+        assertMissingRequiredField { _ = try decoder.decode(SimpleRequired2.self, from: Foundation.Data()) }
+        assertMissingRequiredField { _ = try decoder.decodeSizeDelimited(SimpleRequired2.self, from: data) }
+    }
+
     func testDecodeSizeDelimitedRejectsUnrepresentableSize() throws {
         let decoder = ProtoDecoder()
         let data = Foundation.Data(hexEncoded: """

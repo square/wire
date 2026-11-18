@@ -307,6 +307,9 @@ public final class ProtoDecoder {
      * A size-delimited collection of messages is a sequence of varint + message pairs
      * where the varint indicates the size of the subsequent message.
      *
+     * A size of zero decodes as an empty message, and decoding continues with the next element.
+     * `ProtoEncoder.encodeSizeDelimited(_:)` does not write empty messages, so encoding and then decoding drops them.
+     *
      * - Parameters:
      *   - type: the type to decode
      *   - data: the serialized size-delimited data for the messages
