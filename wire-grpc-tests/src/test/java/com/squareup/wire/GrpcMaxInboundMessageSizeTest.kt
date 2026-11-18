@@ -103,15 +103,15 @@ class GrpcMaxInboundMessageSizeTest {
 
   @Test
   fun compressedMessageOverTheLimitAfterInflatingFails() {
-    // The message is small on the wire and large once inflated.
+    // The frame is small on the wire, under the limit, and the message is large once inflated.
     val message = Feature.ADAPTER.encode(featureOfSize(16 * 1024 * 1024))
     val framed = frame(message, gzip = true)
     assertThat(framed.size < 64 * 1024).isEqualTo(true)
     enqueue(framed, gzip = true)
 
     assertFailure {
-      client(maxInboundMessageSize = 1024).newCall(method).executeBlocking(Point())
-    }.isMessageTooLarge()
+      client(maxInboundMessageSize = 1024 * 1024).newCall(method).executeBlocking(Point())
+    }.isMessageTooLarge(messageContains = "Decompressed gRPC message exceeds maximum size")
   }
 
   @Test
@@ -246,9 +246,9 @@ class GrpcMaxInboundMessageSizeTest {
     )
   }
 
-  private fun Assert<Throwable>.isMessageTooLarge() {
+  private fun Assert<Throwable>.isMessageTooLarge(messageContains: String = "exceeds maximum size") {
     val exception = isInstanceOf<GrpcException>()
     exception.prop(GrpcException::grpcStatus).isEqualTo(GrpcStatus.RESOURCE_EXHAUSTED)
-    exception.prop(GrpcException::grpcMessage).isNotNull().contains("exceeds maximum size")
+    exception.prop(GrpcException::grpcMessage).isNotNull().contains(messageContains)
   }
 }

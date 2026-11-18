@@ -196,13 +196,17 @@ actual abstract class GrpcClient actual constructor() {
     }
 
     /**
-     * Sets the largest response message (in bytes) that this client accepts. A larger message
-     * fails the call with a [GrpcException] that has [GrpcStatus.RESOURCE_EXHAUSTED].
+     * Sets the largest response message (in bytes) that this client accepts.
+     * A larger message fails the call with a [GrpcException] that has [GrpcStatus.RESOURCE_EXHAUSTED].
      *
-     * The limit applies to each message, both as it is on the wire and after decompression. It
-     * does not limit the number of messages in a stream.
+     * The limit applies to each message, both as it is on the wire and after decompression.
+     * This means that a compressed message is also rejected when its compressed frame is over the limit, like in grpc-java.
+     * It does not limit the number of messages in a stream.
      *
-     * This is 64 MiB by default. Use a lower value if the server is not trusted.
+     * This is 64 MiB by default.
+     * Use a lower value if the server is not trusted.
+     * Pass [Long.MAX_VALUE] to remove the limit and accept any message, as earlier versions did.
+     * A frame is still at most 4 GiB.
      */
     fun maxInboundMessageSize(bytes: Long): Builder = apply {
       require(bytes >= 0) { "maxInboundMessageSize must not be negative: $bytes" }
