@@ -377,8 +377,7 @@ class ProtoParser internal constructor(
     val jsonName = stripJsonName(options)
     reader.require(';')
 
-    @Suppress("NAME_SHADOWING")
-    val documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val withTrailing = reader.tryAppendTrailingDocumentation(documentation)
 
     return FieldElement(
       location = location,
@@ -388,7 +387,8 @@ class ProtoParser internal constructor(
       defaultValue = defaultValue,
       jsonName = jsonName,
       tag = tag,
-      documentation = documentation,
+      documentation = withTrailing.merged,
+      trailingDocumentation = withTrailing.trailing,
       options = options.toList(),
     )
   }
@@ -517,12 +517,12 @@ class ProtoParser internal constructor(
       "'reserved' must have at least one field name or tag"
     }
 
-    @Suppress("NAME_SHADOWING")
-    val documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val withTrailing = reader.tryAppendTrailingDocumentation(documentation)
 
     return ReservedElement(
       location = location,
-      documentation = documentation,
+      documentation = withTrailing.merged,
+      trailingDocumentation = withTrailing.trailing,
       values = values,
     )
   }
@@ -580,14 +580,14 @@ class ProtoParser internal constructor(
     val options = OptionReader(reader).readOptions()
     reader.require(';')
 
-    @Suppress("NAME_SHADOWING")
-    val documentation = reader.tryAppendTrailingDocumentation(documentation)
+    val withTrailing = reader.tryAppendTrailingDocumentation(documentation)
 
     return EnumConstantElement(
       location = location,
       name = label,
       tag = tag,
-      documentation = documentation,
+      documentation = withTrailing.merged,
+      trailingDocumentation = withTrailing.trailing,
       options = options,
     )
   }
