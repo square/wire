@@ -146,3 +146,12 @@ message RedactedLargeUnderscores {
   optional string __opt_double__ = 24 [(squareup.protos.redacted_option.redacted) = true];
   optional string opt_visible_ = 25;
 }
+
+// A redacted message with optional, repeated, and map fields.
+message RedactedCollections {
+  required string secret = 1 [(squareup.protos.redacted_option.redacted) = true];
+  optional string opt = 2;
+  repeated string list = 3;
+  map<string, string> entries = 4;
+  optional RedactedCollections child = 5;
+}

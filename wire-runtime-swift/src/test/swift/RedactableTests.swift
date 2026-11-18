@@ -169,6 +169,28 @@ final class RedactableTests: XCTestCase {
         XCTAssertEqual(choice.description, #"Choice(choice_visible: "v\", forged: 1)\nINFO forged")"#)
     }
 
+    func testLineBreakingScalarsAreEscapedInOptionalRepeatedAndMapFields() {
+        let breaks = "a\u{85}b\u{2028}c\u{2029}d"
+        let escaped = #"a\u{85}b\u{2028}c\u{2029}d"#
+        let redacted = RedactedCollections(secret: "secret-value") {
+            $0.opt = breaks
+            $0.list = [breaks]
+            $0.entries = [breaks: breaks]
+            $0.child = RedactedCollections(secret: "secret-value") {
+                $0.opt = breaks
+                $0.list = [breaks]
+                $0.entries = [breaks: breaks]
+            }
+        }
+        let description = redacted.description
+        XCTAssertFalse(description.contains("secret-value"), description)
+        XCTAssertEqual(description.components(separatedBy: escaped).count - 1, 8, description)
+        let controls = description.unicodeScalars.filter {
+            $0.value < 0x20 || (0x7F...0x9F).contains($0.value) || $0.value == 0x2028 || $0.value == 0x2029
+        }
+        XCTAssertTrue(controls.isEmpty, description)
+    }
+
     private func assertOnlyVisible(
         _ description: String,
         secrets: [String],
