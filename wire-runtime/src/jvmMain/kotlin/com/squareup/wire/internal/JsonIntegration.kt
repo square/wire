@@ -158,6 +158,9 @@ abstract class JsonIntegration<F, A> {
     private val power64 = BigInteger("18446744073709551616")
     private val maxUnsignedLong = power64.subtract(BigInteger.ONE)
 
+    // Wire has always decoded a negative value that fits in a signed 64-bit integer to the same bits.
+    private val minSignedLong = BigInteger.valueOf(Long.MIN_VALUE)
+
     // Real values need 20 digits. The extra room allows leading and trailing zeros.
     private const val MAX_LENGTH = 1000
     private const val MAX_EXPONENT = 1000
@@ -170,8 +173,8 @@ abstract class JsonIntegration<F, A> {
         checkExponent(value)
         BigDecimal(value).toBigInteger() // Handle extra trailing values like 5.0.
       }
-      if (bigInteger.signum() < 0 || bigInteger > maxUnsignedLong) {
-        throw NumberFormatException("value is out of range for an unsigned 64-bit integer")
+      if (bigInteger < minSignedLong || bigInteger > maxUnsignedLong) {
+        throw NumberFormatException("value is out of range for a 64-bit integer")
       }
       return bigInteger.toLong() // The low 64 bits, which is the unsigned value.
     }

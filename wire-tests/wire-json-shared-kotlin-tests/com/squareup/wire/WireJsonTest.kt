@@ -605,7 +605,7 @@ class WireJsonTest {
       "1e-100000000",
       "1e1001",
       "18446744073709551616",
-      "-1",
+      "-9223372036854775809",
       "9".repeat(1_000_000),
     )
     for (bad in badValues) {
@@ -630,6 +630,14 @@ class WireJsonTest {
         All64::class.java,
       ),
     ).isEqualTo(max)
+
+    val negative = All64.Builder().my_uint64(-1L).my_fixed64(Long.MIN_VALUE).build()
+    assertThat(
+      jsonLibrary.fromJson(
+        """{"myUint64":"-1","myFixed64":-9223372036854775808}""",
+        All64::class.java,
+      ),
+    ).isEqualTo(negative)
 
     val small = All64.Builder().my_uint64(1000L).my_fixed64(5L).build()
     assertThat(
