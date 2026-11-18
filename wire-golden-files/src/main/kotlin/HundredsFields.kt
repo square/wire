@@ -14,9 +14,7 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.MessageMerges
-import com.squareup.wire.`internal`.addMerge
-import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.decodeMessageOrMerge
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -4329,1831 +4327,212 @@ public class HundredsFields(
         var field200: Field? = null
         var field201: Field? = null
         var field202: Field? = null
-        var merges: MessageMerges? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> run {
-              if (field1 == null) {
-                field1 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 1)
-              }
-            }
-
-            2 -> run {
-              if (field2 == null) {
-                field2 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 2)
-              }
-            }
-
-            3 -> run {
-              if (field3 == null) {
-                field3 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 3)
-              }
-            }
-
-            4 -> run {
-              if (field4 == null) {
-                field4 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 4)
-              }
-            }
-
-            5 -> run {
-              if (field5 == null) {
-                field5 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 5)
-              }
-            }
-
-            6 -> run {
-              if (field6 == null) {
-                field6 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 6)
-              }
-            }
-
-            7 -> run {
-              if (field7 == null) {
-                field7 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 7)
-              }
-            }
-
-            8 -> run {
-              if (field8 == null) {
-                field8 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 8)
-              }
-            }
-
-            9 -> run {
-              if (field9 == null) {
-                field9 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 9)
-              }
-            }
-
-            10 -> run {
-              if (field10 == null) {
-                field10 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 10)
-              }
-            }
-
-            11 -> run {
-              if (field11 == null) {
-                field11 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 11)
-              }
-            }
-
-            12 -> run {
-              if (field12 == null) {
-                field12 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 12)
-              }
-            }
-
-            13 -> run {
-              if (field13 == null) {
-                field13 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 13)
-              }
-            }
-
-            14 -> run {
-              if (field14 == null) {
-                field14 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 14)
-              }
-            }
-
-            15 -> run {
-              if (field15 == null) {
-                field15 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 15)
-              }
-            }
-
-            16 -> run {
-              if (field16 == null) {
-                field16 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 16)
-              }
-            }
-
-            17 -> run {
-              if (field17 == null) {
-                field17 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 17)
-              }
-            }
-
-            18 -> run {
-              if (field18 == null) {
-                field18 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 18)
-              }
-            }
-
-            19 -> run {
-              if (field19 == null) {
-                field19 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 19)
-              }
-            }
-
-            20 -> run {
-              if (field20 == null) {
-                field20 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 20)
-              }
-            }
-
-            21 -> run {
-              if (field21 == null) {
-                field21 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 21)
-              }
-            }
-
-            22 -> run {
-              if (field22 == null) {
-                field22 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 22)
-              }
-            }
-
-            23 -> run {
-              if (field23 == null) {
-                field23 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 23)
-              }
-            }
-
-            24 -> run {
-              if (field24 == null) {
-                field24 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 24)
-              }
-            }
-
-            25 -> run {
-              if (field25 == null) {
-                field25 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 25)
-              }
-            }
-
-            26 -> run {
-              if (field26 == null) {
-                field26 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 26)
-              }
-            }
-
-            27 -> run {
-              if (field27 == null) {
-                field27 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 27)
-              }
-            }
-
-            28 -> run {
-              if (field28 == null) {
-                field28 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 28)
-              }
-            }
-
-            29 -> run {
-              if (field29 == null) {
-                field29 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 29)
-              }
-            }
-
-            30 -> run {
-              if (field30 == null) {
-                field30 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 30)
-              }
-            }
-
-            31 -> run {
-              if (field31 == null) {
-                field31 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 31)
-              }
-            }
-
-            32 -> run {
-              if (field32 == null) {
-                field32 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 32)
-              }
-            }
-
-            33 -> run {
-              if (field33 == null) {
-                field33 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 33)
-              }
-            }
-
-            34 -> run {
-              if (field34 == null) {
-                field34 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 34)
-              }
-            }
-
-            35 -> run {
-              if (field35 == null) {
-                field35 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 35)
-              }
-            }
-
-            36 -> run {
-              if (field36 == null) {
-                field36 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 36)
-              }
-            }
-
-            37 -> run {
-              if (field37 == null) {
-                field37 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 37)
-              }
-            }
-
-            38 -> run {
-              if (field38 == null) {
-                field38 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 38)
-              }
-            }
-
-            39 -> run {
-              if (field39 == null) {
-                field39 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 39)
-              }
-            }
-
-            40 -> run {
-              if (field40 == null) {
-                field40 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 40)
-              }
-            }
-
-            41 -> run {
-              if (field41 == null) {
-                field41 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 41)
-              }
-            }
-
-            42 -> run {
-              if (field42 == null) {
-                field42 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 42)
-              }
-            }
-
-            43 -> run {
-              if (field43 == null) {
-                field43 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 43)
-              }
-            }
-
-            44 -> run {
-              if (field44 == null) {
-                field44 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 44)
-              }
-            }
-
-            45 -> run {
-              if (field45 == null) {
-                field45 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 45)
-              }
-            }
-
-            46 -> run {
-              if (field46 == null) {
-                field46 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 46)
-              }
-            }
-
-            47 -> run {
-              if (field47 == null) {
-                field47 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 47)
-              }
-            }
-
-            48 -> run {
-              if (field48 == null) {
-                field48 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 48)
-              }
-            }
-
-            49 -> run {
-              if (field49 == null) {
-                field49 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 49)
-              }
-            }
-
-            50 -> run {
-              if (field50 == null) {
-                field50 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 50)
-              }
-            }
-
-            51 -> run {
-              if (field51 == null) {
-                field51 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 51)
-              }
-            }
-
-            52 -> run {
-              if (field52 == null) {
-                field52 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 52)
-              }
-            }
-
-            53 -> run {
-              if (field53 == null) {
-                field53 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 53)
-              }
-            }
-
-            54 -> run {
-              if (field54 == null) {
-                field54 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 54)
-              }
-            }
-
-            55 -> run {
-              if (field55 == null) {
-                field55 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 55)
-              }
-            }
-
-            56 -> run {
-              if (field56 == null) {
-                field56 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 56)
-              }
-            }
-
-            57 -> run {
-              if (field57 == null) {
-                field57 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 57)
-              }
-            }
-
-            58 -> run {
-              if (field58 == null) {
-                field58 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 58)
-              }
-            }
-
-            59 -> run {
-              if (field59 == null) {
-                field59 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 59)
-              }
-            }
-
-            60 -> run {
-              if (field60 == null) {
-                field60 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 60)
-              }
-            }
-
-            61 -> run {
-              if (field61 == null) {
-                field61 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 61)
-              }
-            }
-
-            62 -> run {
-              if (field62 == null) {
-                field62 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 62)
-              }
-            }
-
-            63 -> run {
-              if (field63 == null) {
-                field63 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 63)
-              }
-            }
-
-            64 -> run {
-              if (field64 == null) {
-                field64 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 64)
-              }
-            }
-
-            65 -> run {
-              if (field65 == null) {
-                field65 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 65)
-              }
-            }
-
-            66 -> run {
-              if (field66 == null) {
-                field66 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 66)
-              }
-            }
-
-            67 -> run {
-              if (field67 == null) {
-                field67 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 67)
-              }
-            }
-
-            68 -> run {
-              if (field68 == null) {
-                field68 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 68)
-              }
-            }
-
-            69 -> run {
-              if (field69 == null) {
-                field69 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 69)
-              }
-            }
-
-            70 -> run {
-              if (field70 == null) {
-                field70 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 70)
-              }
-            }
-
-            71 -> run {
-              if (field71 == null) {
-                field71 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 71)
-              }
-            }
-
-            72 -> run {
-              if (field72 == null) {
-                field72 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 72)
-              }
-            }
-
-            73 -> run {
-              if (field73 == null) {
-                field73 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 73)
-              }
-            }
-
-            74 -> run {
-              if (field74 == null) {
-                field74 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 74)
-              }
-            }
-
-            75 -> run {
-              if (field75 == null) {
-                field75 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 75)
-              }
-            }
-
-            76 -> run {
-              if (field76 == null) {
-                field76 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 76)
-              }
-            }
-
-            77 -> run {
-              if (field77 == null) {
-                field77 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 77)
-              }
-            }
-
-            78 -> run {
-              if (field78 == null) {
-                field78 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 78)
-              }
-            }
-
-            79 -> run {
-              if (field79 == null) {
-                field79 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 79)
-              }
-            }
-
-            80 -> run {
-              if (field80 == null) {
-                field80 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 80)
-              }
-            }
-
-            81 -> run {
-              if (field81 == null) {
-                field81 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 81)
-              }
-            }
-
-            82 -> run {
-              if (field82 == null) {
-                field82 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 82)
-              }
-            }
-
-            83 -> run {
-              if (field83 == null) {
-                field83 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 83)
-              }
-            }
-
-            84 -> run {
-              if (field84 == null) {
-                field84 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 84)
-              }
-            }
-
-            85 -> run {
-              if (field85 == null) {
-                field85 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 85)
-              }
-            }
-
-            86 -> run {
-              if (field86 == null) {
-                field86 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 86)
-              }
-            }
-
-            87 -> run {
-              if (field87 == null) {
-                field87 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 87)
-              }
-            }
-
-            88 -> run {
-              if (field88 == null) {
-                field88 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 88)
-              }
-            }
-
-            89 -> run {
-              if (field89 == null) {
-                field89 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 89)
-              }
-            }
-
-            90 -> run {
-              if (field90 == null) {
-                field90 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 90)
-              }
-            }
-
-            91 -> run {
-              if (field91 == null) {
-                field91 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 91)
-              }
-            }
-
-            92 -> run {
-              if (field92 == null) {
-                field92 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 92)
-              }
-            }
-
-            93 -> run {
-              if (field93 == null) {
-                field93 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 93)
-              }
-            }
-
-            94 -> run {
-              if (field94 == null) {
-                field94 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 94)
-              }
-            }
-
-            95 -> run {
-              if (field95 == null) {
-                field95 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 95)
-              }
-            }
-
-            96 -> run {
-              if (field96 == null) {
-                field96 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 96)
-              }
-            }
-
-            97 -> run {
-              if (field97 == null) {
-                field97 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 97)
-              }
-            }
-
-            98 -> run {
-              if (field98 == null) {
-                field98 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 98)
-              }
-            }
-
-            99 -> run {
-              if (field99 == null) {
-                field99 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 99)
-              }
-            }
-
-            100 -> run {
-              if (field100 == null) {
-                field100 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 100)
-              }
-            }
-
-            101 -> run {
-              if (field101 == null) {
-                field101 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 101)
-              }
-            }
-
-            102 -> run {
-              if (field102 == null) {
-                field102 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 102)
-              }
-            }
-
-            103 -> run {
-              if (field103 == null) {
-                field103 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 103)
-              }
-            }
-
-            104 -> run {
-              if (field104 == null) {
-                field104 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 104)
-              }
-            }
-
-            105 -> run {
-              if (field105 == null) {
-                field105 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 105)
-              }
-            }
-
-            106 -> run {
-              if (field106 == null) {
-                field106 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 106)
-              }
-            }
-
-            107 -> run {
-              if (field107 == null) {
-                field107 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 107)
-              }
-            }
-
-            108 -> run {
-              if (field108 == null) {
-                field108 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 108)
-              }
-            }
-
-            109 -> run {
-              if (field109 == null) {
-                field109 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 109)
-              }
-            }
-
-            110 -> run {
-              if (field110 == null) {
-                field110 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 110)
-              }
-            }
-
-            111 -> run {
-              if (field111 == null) {
-                field111 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 111)
-              }
-            }
-
-            112 -> run {
-              if (field112 == null) {
-                field112 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 112)
-              }
-            }
-
-            113 -> run {
-              if (field113 == null) {
-                field113 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 113)
-              }
-            }
-
-            114 -> run {
-              if (field114 == null) {
-                field114 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 114)
-              }
-            }
-
-            115 -> run {
-              if (field115 == null) {
-                field115 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 115)
-              }
-            }
-
-            116 -> run {
-              if (field116 == null) {
-                field116 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 116)
-              }
-            }
-
-            117 -> run {
-              if (field117 == null) {
-                field117 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 117)
-              }
-            }
-
-            118 -> run {
-              if (field118 == null) {
-                field118 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 118)
-              }
-            }
-
-            119 -> run {
-              if (field119 == null) {
-                field119 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 119)
-              }
-            }
-
-            120 -> run {
-              if (field120 == null) {
-                field120 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 120)
-              }
-            }
-
-            121 -> run {
-              if (field121 == null) {
-                field121 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 121)
-              }
-            }
-
-            122 -> run {
-              if (field122 == null) {
-                field122 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 122)
-              }
-            }
-
-            123 -> run {
-              if (field123 == null) {
-                field123 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 123)
-              }
-            }
-
-            124 -> run {
-              if (field124 == null) {
-                field124 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 124)
-              }
-            }
-
-            125 -> run {
-              if (field125 == null) {
-                field125 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 125)
-              }
-            }
-
-            126 -> run {
-              if (field126 == null) {
-                field126 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 126)
-              }
-            }
-
-            127 -> run {
-              if (field127 == null) {
-                field127 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 127)
-              }
-            }
-
-            128 -> run {
-              if (field128 == null) {
-                field128 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 128)
-              }
-            }
-
-            129 -> run {
-              if (field129 == null) {
-                field129 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 129)
-              }
-            }
-
-            130 -> run {
-              if (field130 == null) {
-                field130 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 130)
-              }
-            }
-
-            131 -> run {
-              if (field131 == null) {
-                field131 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 131)
-              }
-            }
-
-            132 -> run {
-              if (field132 == null) {
-                field132 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 132)
-              }
-            }
-
-            133 -> run {
-              if (field133 == null) {
-                field133 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 133)
-              }
-            }
-
-            134 -> run {
-              if (field134 == null) {
-                field134 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 134)
-              }
-            }
-
-            135 -> run {
-              if (field135 == null) {
-                field135 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 135)
-              }
-            }
-
-            136 -> run {
-              if (field136 == null) {
-                field136 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 136)
-              }
-            }
-
-            137 -> run {
-              if (field137 == null) {
-                field137 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 137)
-              }
-            }
-
-            138 -> run {
-              if (field138 == null) {
-                field138 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 138)
-              }
-            }
-
-            139 -> run {
-              if (field139 == null) {
-                field139 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 139)
-              }
-            }
-
-            140 -> run {
-              if (field140 == null) {
-                field140 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 140)
-              }
-            }
-
-            141 -> run {
-              if (field141 == null) {
-                field141 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 141)
-              }
-            }
-
-            142 -> run {
-              if (field142 == null) {
-                field142 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 142)
-              }
-            }
-
-            143 -> run {
-              if (field143 == null) {
-                field143 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 143)
-              }
-            }
-
-            144 -> run {
-              if (field144 == null) {
-                field144 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 144)
-              }
-            }
-
-            145 -> run {
-              if (field145 == null) {
-                field145 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 145)
-              }
-            }
-
-            146 -> run {
-              if (field146 == null) {
-                field146 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 146)
-              }
-            }
-
-            147 -> run {
-              if (field147 == null) {
-                field147 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 147)
-              }
-            }
-
-            148 -> run {
-              if (field148 == null) {
-                field148 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 148)
-              }
-            }
-
-            149 -> run {
-              if (field149 == null) {
-                field149 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 149)
-              }
-            }
-
-            150 -> run {
-              if (field150 == null) {
-                field150 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 150)
-              }
-            }
-
-            151 -> run {
-              if (field151 == null) {
-                field151 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 151)
-              }
-            }
-
-            152 -> run {
-              if (field152 == null) {
-                field152 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 152)
-              }
-            }
-
-            153 -> run {
-              if (field153 == null) {
-                field153 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 153)
-              }
-            }
-
-            154 -> run {
-              if (field154 == null) {
-                field154 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 154)
-              }
-            }
-
-            155 -> run {
-              if (field155 == null) {
-                field155 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 155)
-              }
-            }
-
-            156 -> run {
-              if (field156 == null) {
-                field156 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 156)
-              }
-            }
-
-            157 -> run {
-              if (field157 == null) {
-                field157 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 157)
-              }
-            }
-
-            158 -> run {
-              if (field158 == null) {
-                field158 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 158)
-              }
-            }
-
-            159 -> run {
-              if (field159 == null) {
-                field159 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 159)
-              }
-            }
-
-            160 -> run {
-              if (field160 == null) {
-                field160 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 160)
-              }
-            }
-
-            161 -> run {
-              if (field161 == null) {
-                field161 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 161)
-              }
-            }
-
-            162 -> run {
-              if (field162 == null) {
-                field162 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 162)
-              }
-            }
-
-            163 -> run {
-              if (field163 == null) {
-                field163 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 163)
-              }
-            }
-
-            164 -> run {
-              if (field164 == null) {
-                field164 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 164)
-              }
-            }
-
-            165 -> run {
-              if (field165 == null) {
-                field165 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 165)
-              }
-            }
-
-            166 -> run {
-              if (field166 == null) {
-                field166 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 166)
-              }
-            }
-
-            167 -> run {
-              if (field167 == null) {
-                field167 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 167)
-              }
-            }
-
-            168 -> run {
-              if (field168 == null) {
-                field168 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 168)
-              }
-            }
-
-            169 -> run {
-              if (field169 == null) {
-                field169 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 169)
-              }
-            }
-
-            170 -> run {
-              if (field170 == null) {
-                field170 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 170)
-              }
-            }
-
-            171 -> run {
-              if (field171 == null) {
-                field171 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 171)
-              }
-            }
-
-            172 -> run {
-              if (field172 == null) {
-                field172 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 172)
-              }
-            }
-
-            173 -> run {
-              if (field173 == null) {
-                field173 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 173)
-              }
-            }
-
-            174 -> run {
-              if (field174 == null) {
-                field174 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 174)
-              }
-            }
-
-            175 -> run {
-              if (field175 == null) {
-                field175 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 175)
-              }
-            }
-
-            176 -> run {
-              if (field176 == null) {
-                field176 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 176)
-              }
-            }
-
-            177 -> run {
-              if (field177 == null) {
-                field177 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 177)
-              }
-            }
-
-            178 -> run {
-              if (field178 == null) {
-                field178 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 178)
-              }
-            }
-
-            179 -> run {
-              if (field179 == null) {
-                field179 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 179)
-              }
-            }
-
-            180 -> run {
-              if (field180 == null) {
-                field180 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 180)
-              }
-            }
-
-            181 -> run {
-              if (field181 == null) {
-                field181 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 181)
-              }
-            }
-
-            182 -> run {
-              if (field182 == null) {
-                field182 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 182)
-              }
-            }
-
-            183 -> run {
-              if (field183 == null) {
-                field183 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 183)
-              }
-            }
-
-            184 -> run {
-              if (field184 == null) {
-                field184 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 184)
-              }
-            }
-
-            185 -> run {
-              if (field185 == null) {
-                field185 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 185)
-              }
-            }
-
-            186 -> run {
-              if (field186 == null) {
-                field186 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 186)
-              }
-            }
-
-            187 -> run {
-              if (field187 == null) {
-                field187 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 187)
-              }
-            }
-
-            188 -> run {
-              if (field188 == null) {
-                field188 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 188)
-              }
-            }
-
-            189 -> run {
-              if (field189 == null) {
-                field189 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 189)
-              }
-            }
-
-            190 -> run {
-              if (field190 == null) {
-                field190 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 190)
-              }
-            }
-
-            191 -> run {
-              if (field191 == null) {
-                field191 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 191)
-              }
-            }
-
-            192 -> run {
-              if (field192 == null) {
-                field192 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 192)
-              }
-            }
-
-            193 -> run {
-              if (field193 == null) {
-                field193 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 193)
-              }
-            }
-
-            194 -> run {
-              if (field194 == null) {
-                field194 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 194)
-              }
-            }
-
-            195 -> run {
-              if (field195 == null) {
-                field195 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 195)
-              }
-            }
-
-            196 -> run {
-              if (field196 == null) {
-                field196 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 196)
-              }
-            }
-
-            197 -> run {
-              if (field197 == null) {
-                field197 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 197)
-              }
-            }
-
-            198 -> run {
-              if (field198 == null) {
-                field198 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 198)
-              }
-            }
-
-            199 -> run {
-              if (field199 == null) {
-                field199 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 199)
-              }
-            }
-
-            200 -> run {
-              if (field200 == null) {
-                field200 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 200)
-              }
-            }
-
-            201 -> run {
-              if (field201 == null) {
-                field201 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 201)
-              }
-            }
-
-            202 -> run {
-              if (field202 == null) {
-                field202 = Field.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 202)
-              }
-            }
-
+            1 -> field1 = decodeMessageOrMerge(Field.ADAPTER, reader, field1)
+            2 -> field2 = decodeMessageOrMerge(Field.ADAPTER, reader, field2)
+            3 -> field3 = decodeMessageOrMerge(Field.ADAPTER, reader, field3)
+            4 -> field4 = decodeMessageOrMerge(Field.ADAPTER, reader, field4)
+            5 -> field5 = decodeMessageOrMerge(Field.ADAPTER, reader, field5)
+            6 -> field6 = decodeMessageOrMerge(Field.ADAPTER, reader, field6)
+            7 -> field7 = decodeMessageOrMerge(Field.ADAPTER, reader, field7)
+            8 -> field8 = decodeMessageOrMerge(Field.ADAPTER, reader, field8)
+            9 -> field9 = decodeMessageOrMerge(Field.ADAPTER, reader, field9)
+            10 -> field10 = decodeMessageOrMerge(Field.ADAPTER, reader, field10)
+            11 -> field11 = decodeMessageOrMerge(Field.ADAPTER, reader, field11)
+            12 -> field12 = decodeMessageOrMerge(Field.ADAPTER, reader, field12)
+            13 -> field13 = decodeMessageOrMerge(Field.ADAPTER, reader, field13)
+            14 -> field14 = decodeMessageOrMerge(Field.ADAPTER, reader, field14)
+            15 -> field15 = decodeMessageOrMerge(Field.ADAPTER, reader, field15)
+            16 -> field16 = decodeMessageOrMerge(Field.ADAPTER, reader, field16)
+            17 -> field17 = decodeMessageOrMerge(Field.ADAPTER, reader, field17)
+            18 -> field18 = decodeMessageOrMerge(Field.ADAPTER, reader, field18)
+            19 -> field19 = decodeMessageOrMerge(Field.ADAPTER, reader, field19)
+            20 -> field20 = decodeMessageOrMerge(Field.ADAPTER, reader, field20)
+            21 -> field21 = decodeMessageOrMerge(Field.ADAPTER, reader, field21)
+            22 -> field22 = decodeMessageOrMerge(Field.ADAPTER, reader, field22)
+            23 -> field23 = decodeMessageOrMerge(Field.ADAPTER, reader, field23)
+            24 -> field24 = decodeMessageOrMerge(Field.ADAPTER, reader, field24)
+            25 -> field25 = decodeMessageOrMerge(Field.ADAPTER, reader, field25)
+            26 -> field26 = decodeMessageOrMerge(Field.ADAPTER, reader, field26)
+            27 -> field27 = decodeMessageOrMerge(Field.ADAPTER, reader, field27)
+            28 -> field28 = decodeMessageOrMerge(Field.ADAPTER, reader, field28)
+            29 -> field29 = decodeMessageOrMerge(Field.ADAPTER, reader, field29)
+            30 -> field30 = decodeMessageOrMerge(Field.ADAPTER, reader, field30)
+            31 -> field31 = decodeMessageOrMerge(Field.ADAPTER, reader, field31)
+            32 -> field32 = decodeMessageOrMerge(Field.ADAPTER, reader, field32)
+            33 -> field33 = decodeMessageOrMerge(Field.ADAPTER, reader, field33)
+            34 -> field34 = decodeMessageOrMerge(Field.ADAPTER, reader, field34)
+            35 -> field35 = decodeMessageOrMerge(Field.ADAPTER, reader, field35)
+            36 -> field36 = decodeMessageOrMerge(Field.ADAPTER, reader, field36)
+            37 -> field37 = decodeMessageOrMerge(Field.ADAPTER, reader, field37)
+            38 -> field38 = decodeMessageOrMerge(Field.ADAPTER, reader, field38)
+            39 -> field39 = decodeMessageOrMerge(Field.ADAPTER, reader, field39)
+            40 -> field40 = decodeMessageOrMerge(Field.ADAPTER, reader, field40)
+            41 -> field41 = decodeMessageOrMerge(Field.ADAPTER, reader, field41)
+            42 -> field42 = decodeMessageOrMerge(Field.ADAPTER, reader, field42)
+            43 -> field43 = decodeMessageOrMerge(Field.ADAPTER, reader, field43)
+            44 -> field44 = decodeMessageOrMerge(Field.ADAPTER, reader, field44)
+            45 -> field45 = decodeMessageOrMerge(Field.ADAPTER, reader, field45)
+            46 -> field46 = decodeMessageOrMerge(Field.ADAPTER, reader, field46)
+            47 -> field47 = decodeMessageOrMerge(Field.ADAPTER, reader, field47)
+            48 -> field48 = decodeMessageOrMerge(Field.ADAPTER, reader, field48)
+            49 -> field49 = decodeMessageOrMerge(Field.ADAPTER, reader, field49)
+            50 -> field50 = decodeMessageOrMerge(Field.ADAPTER, reader, field50)
+            51 -> field51 = decodeMessageOrMerge(Field.ADAPTER, reader, field51)
+            52 -> field52 = decodeMessageOrMerge(Field.ADAPTER, reader, field52)
+            53 -> field53 = decodeMessageOrMerge(Field.ADAPTER, reader, field53)
+            54 -> field54 = decodeMessageOrMerge(Field.ADAPTER, reader, field54)
+            55 -> field55 = decodeMessageOrMerge(Field.ADAPTER, reader, field55)
+            56 -> field56 = decodeMessageOrMerge(Field.ADAPTER, reader, field56)
+            57 -> field57 = decodeMessageOrMerge(Field.ADAPTER, reader, field57)
+            58 -> field58 = decodeMessageOrMerge(Field.ADAPTER, reader, field58)
+            59 -> field59 = decodeMessageOrMerge(Field.ADAPTER, reader, field59)
+            60 -> field60 = decodeMessageOrMerge(Field.ADAPTER, reader, field60)
+            61 -> field61 = decodeMessageOrMerge(Field.ADAPTER, reader, field61)
+            62 -> field62 = decodeMessageOrMerge(Field.ADAPTER, reader, field62)
+            63 -> field63 = decodeMessageOrMerge(Field.ADAPTER, reader, field63)
+            64 -> field64 = decodeMessageOrMerge(Field.ADAPTER, reader, field64)
+            65 -> field65 = decodeMessageOrMerge(Field.ADAPTER, reader, field65)
+            66 -> field66 = decodeMessageOrMerge(Field.ADAPTER, reader, field66)
+            67 -> field67 = decodeMessageOrMerge(Field.ADAPTER, reader, field67)
+            68 -> field68 = decodeMessageOrMerge(Field.ADAPTER, reader, field68)
+            69 -> field69 = decodeMessageOrMerge(Field.ADAPTER, reader, field69)
+            70 -> field70 = decodeMessageOrMerge(Field.ADAPTER, reader, field70)
+            71 -> field71 = decodeMessageOrMerge(Field.ADAPTER, reader, field71)
+            72 -> field72 = decodeMessageOrMerge(Field.ADAPTER, reader, field72)
+            73 -> field73 = decodeMessageOrMerge(Field.ADAPTER, reader, field73)
+            74 -> field74 = decodeMessageOrMerge(Field.ADAPTER, reader, field74)
+            75 -> field75 = decodeMessageOrMerge(Field.ADAPTER, reader, field75)
+            76 -> field76 = decodeMessageOrMerge(Field.ADAPTER, reader, field76)
+            77 -> field77 = decodeMessageOrMerge(Field.ADAPTER, reader, field77)
+            78 -> field78 = decodeMessageOrMerge(Field.ADAPTER, reader, field78)
+            79 -> field79 = decodeMessageOrMerge(Field.ADAPTER, reader, field79)
+            80 -> field80 = decodeMessageOrMerge(Field.ADAPTER, reader, field80)
+            81 -> field81 = decodeMessageOrMerge(Field.ADAPTER, reader, field81)
+            82 -> field82 = decodeMessageOrMerge(Field.ADAPTER, reader, field82)
+            83 -> field83 = decodeMessageOrMerge(Field.ADAPTER, reader, field83)
+            84 -> field84 = decodeMessageOrMerge(Field.ADAPTER, reader, field84)
+            85 -> field85 = decodeMessageOrMerge(Field.ADAPTER, reader, field85)
+            86 -> field86 = decodeMessageOrMerge(Field.ADAPTER, reader, field86)
+            87 -> field87 = decodeMessageOrMerge(Field.ADAPTER, reader, field87)
+            88 -> field88 = decodeMessageOrMerge(Field.ADAPTER, reader, field88)
+            89 -> field89 = decodeMessageOrMerge(Field.ADAPTER, reader, field89)
+            90 -> field90 = decodeMessageOrMerge(Field.ADAPTER, reader, field90)
+            91 -> field91 = decodeMessageOrMerge(Field.ADAPTER, reader, field91)
+            92 -> field92 = decodeMessageOrMerge(Field.ADAPTER, reader, field92)
+            93 -> field93 = decodeMessageOrMerge(Field.ADAPTER, reader, field93)
+            94 -> field94 = decodeMessageOrMerge(Field.ADAPTER, reader, field94)
+            95 -> field95 = decodeMessageOrMerge(Field.ADAPTER, reader, field95)
+            96 -> field96 = decodeMessageOrMerge(Field.ADAPTER, reader, field96)
+            97 -> field97 = decodeMessageOrMerge(Field.ADAPTER, reader, field97)
+            98 -> field98 = decodeMessageOrMerge(Field.ADAPTER, reader, field98)
+            99 -> field99 = decodeMessageOrMerge(Field.ADAPTER, reader, field99)
+            100 -> field100 = decodeMessageOrMerge(Field.ADAPTER, reader, field100)
+            101 -> field101 = decodeMessageOrMerge(Field.ADAPTER, reader, field101)
+            102 -> field102 = decodeMessageOrMerge(Field.ADAPTER, reader, field102)
+            103 -> field103 = decodeMessageOrMerge(Field.ADAPTER, reader, field103)
+            104 -> field104 = decodeMessageOrMerge(Field.ADAPTER, reader, field104)
+            105 -> field105 = decodeMessageOrMerge(Field.ADAPTER, reader, field105)
+            106 -> field106 = decodeMessageOrMerge(Field.ADAPTER, reader, field106)
+            107 -> field107 = decodeMessageOrMerge(Field.ADAPTER, reader, field107)
+            108 -> field108 = decodeMessageOrMerge(Field.ADAPTER, reader, field108)
+            109 -> field109 = decodeMessageOrMerge(Field.ADAPTER, reader, field109)
+            110 -> field110 = decodeMessageOrMerge(Field.ADAPTER, reader, field110)
+            111 -> field111 = decodeMessageOrMerge(Field.ADAPTER, reader, field111)
+            112 -> field112 = decodeMessageOrMerge(Field.ADAPTER, reader, field112)
+            113 -> field113 = decodeMessageOrMerge(Field.ADAPTER, reader, field113)
+            114 -> field114 = decodeMessageOrMerge(Field.ADAPTER, reader, field114)
+            115 -> field115 = decodeMessageOrMerge(Field.ADAPTER, reader, field115)
+            116 -> field116 = decodeMessageOrMerge(Field.ADAPTER, reader, field116)
+            117 -> field117 = decodeMessageOrMerge(Field.ADAPTER, reader, field117)
+            118 -> field118 = decodeMessageOrMerge(Field.ADAPTER, reader, field118)
+            119 -> field119 = decodeMessageOrMerge(Field.ADAPTER, reader, field119)
+            120 -> field120 = decodeMessageOrMerge(Field.ADAPTER, reader, field120)
+            121 -> field121 = decodeMessageOrMerge(Field.ADAPTER, reader, field121)
+            122 -> field122 = decodeMessageOrMerge(Field.ADAPTER, reader, field122)
+            123 -> field123 = decodeMessageOrMerge(Field.ADAPTER, reader, field123)
+            124 -> field124 = decodeMessageOrMerge(Field.ADAPTER, reader, field124)
+            125 -> field125 = decodeMessageOrMerge(Field.ADAPTER, reader, field125)
+            126 -> field126 = decodeMessageOrMerge(Field.ADAPTER, reader, field126)
+            127 -> field127 = decodeMessageOrMerge(Field.ADAPTER, reader, field127)
+            128 -> field128 = decodeMessageOrMerge(Field.ADAPTER, reader, field128)
+            129 -> field129 = decodeMessageOrMerge(Field.ADAPTER, reader, field129)
+            130 -> field130 = decodeMessageOrMerge(Field.ADAPTER, reader, field130)
+            131 -> field131 = decodeMessageOrMerge(Field.ADAPTER, reader, field131)
+            132 -> field132 = decodeMessageOrMerge(Field.ADAPTER, reader, field132)
+            133 -> field133 = decodeMessageOrMerge(Field.ADAPTER, reader, field133)
+            134 -> field134 = decodeMessageOrMerge(Field.ADAPTER, reader, field134)
+            135 -> field135 = decodeMessageOrMerge(Field.ADAPTER, reader, field135)
+            136 -> field136 = decodeMessageOrMerge(Field.ADAPTER, reader, field136)
+            137 -> field137 = decodeMessageOrMerge(Field.ADAPTER, reader, field137)
+            138 -> field138 = decodeMessageOrMerge(Field.ADAPTER, reader, field138)
+            139 -> field139 = decodeMessageOrMerge(Field.ADAPTER, reader, field139)
+            140 -> field140 = decodeMessageOrMerge(Field.ADAPTER, reader, field140)
+            141 -> field141 = decodeMessageOrMerge(Field.ADAPTER, reader, field141)
+            142 -> field142 = decodeMessageOrMerge(Field.ADAPTER, reader, field142)
+            143 -> field143 = decodeMessageOrMerge(Field.ADAPTER, reader, field143)
+            144 -> field144 = decodeMessageOrMerge(Field.ADAPTER, reader, field144)
+            145 -> field145 = decodeMessageOrMerge(Field.ADAPTER, reader, field145)
+            146 -> field146 = decodeMessageOrMerge(Field.ADAPTER, reader, field146)
+            147 -> field147 = decodeMessageOrMerge(Field.ADAPTER, reader, field147)
+            148 -> field148 = decodeMessageOrMerge(Field.ADAPTER, reader, field148)
+            149 -> field149 = decodeMessageOrMerge(Field.ADAPTER, reader, field149)
+            150 -> field150 = decodeMessageOrMerge(Field.ADAPTER, reader, field150)
+            151 -> field151 = decodeMessageOrMerge(Field.ADAPTER, reader, field151)
+            152 -> field152 = decodeMessageOrMerge(Field.ADAPTER, reader, field152)
+            153 -> field153 = decodeMessageOrMerge(Field.ADAPTER, reader, field153)
+            154 -> field154 = decodeMessageOrMerge(Field.ADAPTER, reader, field154)
+            155 -> field155 = decodeMessageOrMerge(Field.ADAPTER, reader, field155)
+            156 -> field156 = decodeMessageOrMerge(Field.ADAPTER, reader, field156)
+            157 -> field157 = decodeMessageOrMerge(Field.ADAPTER, reader, field157)
+            158 -> field158 = decodeMessageOrMerge(Field.ADAPTER, reader, field158)
+            159 -> field159 = decodeMessageOrMerge(Field.ADAPTER, reader, field159)
+            160 -> field160 = decodeMessageOrMerge(Field.ADAPTER, reader, field160)
+            161 -> field161 = decodeMessageOrMerge(Field.ADAPTER, reader, field161)
+            162 -> field162 = decodeMessageOrMerge(Field.ADAPTER, reader, field162)
+            163 -> field163 = decodeMessageOrMerge(Field.ADAPTER, reader, field163)
+            164 -> field164 = decodeMessageOrMerge(Field.ADAPTER, reader, field164)
+            165 -> field165 = decodeMessageOrMerge(Field.ADAPTER, reader, field165)
+            166 -> field166 = decodeMessageOrMerge(Field.ADAPTER, reader, field166)
+            167 -> field167 = decodeMessageOrMerge(Field.ADAPTER, reader, field167)
+            168 -> field168 = decodeMessageOrMerge(Field.ADAPTER, reader, field168)
+            169 -> field169 = decodeMessageOrMerge(Field.ADAPTER, reader, field169)
+            170 -> field170 = decodeMessageOrMerge(Field.ADAPTER, reader, field170)
+            171 -> field171 = decodeMessageOrMerge(Field.ADAPTER, reader, field171)
+            172 -> field172 = decodeMessageOrMerge(Field.ADAPTER, reader, field172)
+            173 -> field173 = decodeMessageOrMerge(Field.ADAPTER, reader, field173)
+            174 -> field174 = decodeMessageOrMerge(Field.ADAPTER, reader, field174)
+            175 -> field175 = decodeMessageOrMerge(Field.ADAPTER, reader, field175)
+            176 -> field176 = decodeMessageOrMerge(Field.ADAPTER, reader, field176)
+            177 -> field177 = decodeMessageOrMerge(Field.ADAPTER, reader, field177)
+            178 -> field178 = decodeMessageOrMerge(Field.ADAPTER, reader, field178)
+            179 -> field179 = decodeMessageOrMerge(Field.ADAPTER, reader, field179)
+            180 -> field180 = decodeMessageOrMerge(Field.ADAPTER, reader, field180)
+            181 -> field181 = decodeMessageOrMerge(Field.ADAPTER, reader, field181)
+            182 -> field182 = decodeMessageOrMerge(Field.ADAPTER, reader, field182)
+            183 -> field183 = decodeMessageOrMerge(Field.ADAPTER, reader, field183)
+            184 -> field184 = decodeMessageOrMerge(Field.ADAPTER, reader, field184)
+            185 -> field185 = decodeMessageOrMerge(Field.ADAPTER, reader, field185)
+            186 -> field186 = decodeMessageOrMerge(Field.ADAPTER, reader, field186)
+            187 -> field187 = decodeMessageOrMerge(Field.ADAPTER, reader, field187)
+            188 -> field188 = decodeMessageOrMerge(Field.ADAPTER, reader, field188)
+            189 -> field189 = decodeMessageOrMerge(Field.ADAPTER, reader, field189)
+            190 -> field190 = decodeMessageOrMerge(Field.ADAPTER, reader, field190)
+            191 -> field191 = decodeMessageOrMerge(Field.ADAPTER, reader, field191)
+            192 -> field192 = decodeMessageOrMerge(Field.ADAPTER, reader, field192)
+            193 -> field193 = decodeMessageOrMerge(Field.ADAPTER, reader, field193)
+            194 -> field194 = decodeMessageOrMerge(Field.ADAPTER, reader, field194)
+            195 -> field195 = decodeMessageOrMerge(Field.ADAPTER, reader, field195)
+            196 -> field196 = decodeMessageOrMerge(Field.ADAPTER, reader, field196)
+            197 -> field197 = decodeMessageOrMerge(Field.ADAPTER, reader, field197)
+            198 -> field198 = decodeMessageOrMerge(Field.ADAPTER, reader, field198)
+            199 -> field199 = decodeMessageOrMerge(Field.ADAPTER, reader, field199)
+            200 -> field200 = decodeMessageOrMerge(Field.ADAPTER, reader, field200)
+            201 -> field201 = decodeMessageOrMerge(Field.ADAPTER, reader, field201)
+            202 -> field202 = decodeMessageOrMerge(Field.ADAPTER, reader, field202)
             else -> reader.readUnknownField(tag)
           }
-        }
-        if (merges != null) {
-          field1 = finishMerge(merges, 1, Field.ADAPTER, field1)
-          field2 = finishMerge(merges, 2, Field.ADAPTER, field2)
-          field3 = finishMerge(merges, 3, Field.ADAPTER, field3)
-          field4 = finishMerge(merges, 4, Field.ADAPTER, field4)
-          field5 = finishMerge(merges, 5, Field.ADAPTER, field5)
-          field6 = finishMerge(merges, 6, Field.ADAPTER, field6)
-          field7 = finishMerge(merges, 7, Field.ADAPTER, field7)
-          field8 = finishMerge(merges, 8, Field.ADAPTER, field8)
-          field9 = finishMerge(merges, 9, Field.ADAPTER, field9)
-          field10 = finishMerge(merges, 10, Field.ADAPTER, field10)
-          field11 = finishMerge(merges, 11, Field.ADAPTER, field11)
-          field12 = finishMerge(merges, 12, Field.ADAPTER, field12)
-          field13 = finishMerge(merges, 13, Field.ADAPTER, field13)
-          field14 = finishMerge(merges, 14, Field.ADAPTER, field14)
-          field15 = finishMerge(merges, 15, Field.ADAPTER, field15)
-          field16 = finishMerge(merges, 16, Field.ADAPTER, field16)
-          field17 = finishMerge(merges, 17, Field.ADAPTER, field17)
-          field18 = finishMerge(merges, 18, Field.ADAPTER, field18)
-          field19 = finishMerge(merges, 19, Field.ADAPTER, field19)
-          field20 = finishMerge(merges, 20, Field.ADAPTER, field20)
-          field21 = finishMerge(merges, 21, Field.ADAPTER, field21)
-          field22 = finishMerge(merges, 22, Field.ADAPTER, field22)
-          field23 = finishMerge(merges, 23, Field.ADAPTER, field23)
-          field24 = finishMerge(merges, 24, Field.ADAPTER, field24)
-          field25 = finishMerge(merges, 25, Field.ADAPTER, field25)
-          field26 = finishMerge(merges, 26, Field.ADAPTER, field26)
-          field27 = finishMerge(merges, 27, Field.ADAPTER, field27)
-          field28 = finishMerge(merges, 28, Field.ADAPTER, field28)
-          field29 = finishMerge(merges, 29, Field.ADAPTER, field29)
-          field30 = finishMerge(merges, 30, Field.ADAPTER, field30)
-          field31 = finishMerge(merges, 31, Field.ADAPTER, field31)
-          field32 = finishMerge(merges, 32, Field.ADAPTER, field32)
-          field33 = finishMerge(merges, 33, Field.ADAPTER, field33)
-          field34 = finishMerge(merges, 34, Field.ADAPTER, field34)
-          field35 = finishMerge(merges, 35, Field.ADAPTER, field35)
-          field36 = finishMerge(merges, 36, Field.ADAPTER, field36)
-          field37 = finishMerge(merges, 37, Field.ADAPTER, field37)
-          field38 = finishMerge(merges, 38, Field.ADAPTER, field38)
-          field39 = finishMerge(merges, 39, Field.ADAPTER, field39)
-          field40 = finishMerge(merges, 40, Field.ADAPTER, field40)
-          field41 = finishMerge(merges, 41, Field.ADAPTER, field41)
-          field42 = finishMerge(merges, 42, Field.ADAPTER, field42)
-          field43 = finishMerge(merges, 43, Field.ADAPTER, field43)
-          field44 = finishMerge(merges, 44, Field.ADAPTER, field44)
-          field45 = finishMerge(merges, 45, Field.ADAPTER, field45)
-          field46 = finishMerge(merges, 46, Field.ADAPTER, field46)
-          field47 = finishMerge(merges, 47, Field.ADAPTER, field47)
-          field48 = finishMerge(merges, 48, Field.ADAPTER, field48)
-          field49 = finishMerge(merges, 49, Field.ADAPTER, field49)
-          field50 = finishMerge(merges, 50, Field.ADAPTER, field50)
-          field51 = finishMerge(merges, 51, Field.ADAPTER, field51)
-          field52 = finishMerge(merges, 52, Field.ADAPTER, field52)
-          field53 = finishMerge(merges, 53, Field.ADAPTER, field53)
-          field54 = finishMerge(merges, 54, Field.ADAPTER, field54)
-          field55 = finishMerge(merges, 55, Field.ADAPTER, field55)
-          field56 = finishMerge(merges, 56, Field.ADAPTER, field56)
-          field57 = finishMerge(merges, 57, Field.ADAPTER, field57)
-          field58 = finishMerge(merges, 58, Field.ADAPTER, field58)
-          field59 = finishMerge(merges, 59, Field.ADAPTER, field59)
-          field60 = finishMerge(merges, 60, Field.ADAPTER, field60)
-          field61 = finishMerge(merges, 61, Field.ADAPTER, field61)
-          field62 = finishMerge(merges, 62, Field.ADAPTER, field62)
-          field63 = finishMerge(merges, 63, Field.ADAPTER, field63)
-          field64 = finishMerge(merges, 64, Field.ADAPTER, field64)
-          field65 = finishMerge(merges, 65, Field.ADAPTER, field65)
-          field66 = finishMerge(merges, 66, Field.ADAPTER, field66)
-          field67 = finishMerge(merges, 67, Field.ADAPTER, field67)
-          field68 = finishMerge(merges, 68, Field.ADAPTER, field68)
-          field69 = finishMerge(merges, 69, Field.ADAPTER, field69)
-          field70 = finishMerge(merges, 70, Field.ADAPTER, field70)
-          field71 = finishMerge(merges, 71, Field.ADAPTER, field71)
-          field72 = finishMerge(merges, 72, Field.ADAPTER, field72)
-          field73 = finishMerge(merges, 73, Field.ADAPTER, field73)
-          field74 = finishMerge(merges, 74, Field.ADAPTER, field74)
-          field75 = finishMerge(merges, 75, Field.ADAPTER, field75)
-          field76 = finishMerge(merges, 76, Field.ADAPTER, field76)
-          field77 = finishMerge(merges, 77, Field.ADAPTER, field77)
-          field78 = finishMerge(merges, 78, Field.ADAPTER, field78)
-          field79 = finishMerge(merges, 79, Field.ADAPTER, field79)
-          field80 = finishMerge(merges, 80, Field.ADAPTER, field80)
-          field81 = finishMerge(merges, 81, Field.ADAPTER, field81)
-          field82 = finishMerge(merges, 82, Field.ADAPTER, field82)
-          field83 = finishMerge(merges, 83, Field.ADAPTER, field83)
-          field84 = finishMerge(merges, 84, Field.ADAPTER, field84)
-          field85 = finishMerge(merges, 85, Field.ADAPTER, field85)
-          field86 = finishMerge(merges, 86, Field.ADAPTER, field86)
-          field87 = finishMerge(merges, 87, Field.ADAPTER, field87)
-          field88 = finishMerge(merges, 88, Field.ADAPTER, field88)
-          field89 = finishMerge(merges, 89, Field.ADAPTER, field89)
-          field90 = finishMerge(merges, 90, Field.ADAPTER, field90)
-          field91 = finishMerge(merges, 91, Field.ADAPTER, field91)
-          field92 = finishMerge(merges, 92, Field.ADAPTER, field92)
-          field93 = finishMerge(merges, 93, Field.ADAPTER, field93)
-          field94 = finishMerge(merges, 94, Field.ADAPTER, field94)
-          field95 = finishMerge(merges, 95, Field.ADAPTER, field95)
-          field96 = finishMerge(merges, 96, Field.ADAPTER, field96)
-          field97 = finishMerge(merges, 97, Field.ADAPTER, field97)
-          field98 = finishMerge(merges, 98, Field.ADAPTER, field98)
-          field99 = finishMerge(merges, 99, Field.ADAPTER, field99)
-          field100 = finishMerge(merges, 100, Field.ADAPTER, field100)
-          field101 = finishMerge(merges, 101, Field.ADAPTER, field101)
-          field102 = finishMerge(merges, 102, Field.ADAPTER, field102)
-          field103 = finishMerge(merges, 103, Field.ADAPTER, field103)
-          field104 = finishMerge(merges, 104, Field.ADAPTER, field104)
-          field105 = finishMerge(merges, 105, Field.ADAPTER, field105)
-          field106 = finishMerge(merges, 106, Field.ADAPTER, field106)
-          field107 = finishMerge(merges, 107, Field.ADAPTER, field107)
-          field108 = finishMerge(merges, 108, Field.ADAPTER, field108)
-          field109 = finishMerge(merges, 109, Field.ADAPTER, field109)
-          field110 = finishMerge(merges, 110, Field.ADAPTER, field110)
-          field111 = finishMerge(merges, 111, Field.ADAPTER, field111)
-          field112 = finishMerge(merges, 112, Field.ADAPTER, field112)
-          field113 = finishMerge(merges, 113, Field.ADAPTER, field113)
-          field114 = finishMerge(merges, 114, Field.ADAPTER, field114)
-          field115 = finishMerge(merges, 115, Field.ADAPTER, field115)
-          field116 = finishMerge(merges, 116, Field.ADAPTER, field116)
-          field117 = finishMerge(merges, 117, Field.ADAPTER, field117)
-          field118 = finishMerge(merges, 118, Field.ADAPTER, field118)
-          field119 = finishMerge(merges, 119, Field.ADAPTER, field119)
-          field120 = finishMerge(merges, 120, Field.ADAPTER, field120)
-          field121 = finishMerge(merges, 121, Field.ADAPTER, field121)
-          field122 = finishMerge(merges, 122, Field.ADAPTER, field122)
-          field123 = finishMerge(merges, 123, Field.ADAPTER, field123)
-          field124 = finishMerge(merges, 124, Field.ADAPTER, field124)
-          field125 = finishMerge(merges, 125, Field.ADAPTER, field125)
-          field126 = finishMerge(merges, 126, Field.ADAPTER, field126)
-          field127 = finishMerge(merges, 127, Field.ADAPTER, field127)
-          field128 = finishMerge(merges, 128, Field.ADAPTER, field128)
-          field129 = finishMerge(merges, 129, Field.ADAPTER, field129)
-          field130 = finishMerge(merges, 130, Field.ADAPTER, field130)
-          field131 = finishMerge(merges, 131, Field.ADAPTER, field131)
-          field132 = finishMerge(merges, 132, Field.ADAPTER, field132)
-          field133 = finishMerge(merges, 133, Field.ADAPTER, field133)
-          field134 = finishMerge(merges, 134, Field.ADAPTER, field134)
-          field135 = finishMerge(merges, 135, Field.ADAPTER, field135)
-          field136 = finishMerge(merges, 136, Field.ADAPTER, field136)
-          field137 = finishMerge(merges, 137, Field.ADAPTER, field137)
-          field138 = finishMerge(merges, 138, Field.ADAPTER, field138)
-          field139 = finishMerge(merges, 139, Field.ADAPTER, field139)
-          field140 = finishMerge(merges, 140, Field.ADAPTER, field140)
-          field141 = finishMerge(merges, 141, Field.ADAPTER, field141)
-          field142 = finishMerge(merges, 142, Field.ADAPTER, field142)
-          field143 = finishMerge(merges, 143, Field.ADAPTER, field143)
-          field144 = finishMerge(merges, 144, Field.ADAPTER, field144)
-          field145 = finishMerge(merges, 145, Field.ADAPTER, field145)
-          field146 = finishMerge(merges, 146, Field.ADAPTER, field146)
-          field147 = finishMerge(merges, 147, Field.ADAPTER, field147)
-          field148 = finishMerge(merges, 148, Field.ADAPTER, field148)
-          field149 = finishMerge(merges, 149, Field.ADAPTER, field149)
-          field150 = finishMerge(merges, 150, Field.ADAPTER, field150)
-          field151 = finishMerge(merges, 151, Field.ADAPTER, field151)
-          field152 = finishMerge(merges, 152, Field.ADAPTER, field152)
-          field153 = finishMerge(merges, 153, Field.ADAPTER, field153)
-          field154 = finishMerge(merges, 154, Field.ADAPTER, field154)
-          field155 = finishMerge(merges, 155, Field.ADAPTER, field155)
-          field156 = finishMerge(merges, 156, Field.ADAPTER, field156)
-          field157 = finishMerge(merges, 157, Field.ADAPTER, field157)
-          field158 = finishMerge(merges, 158, Field.ADAPTER, field158)
-          field159 = finishMerge(merges, 159, Field.ADAPTER, field159)
-          field160 = finishMerge(merges, 160, Field.ADAPTER, field160)
-          field161 = finishMerge(merges, 161, Field.ADAPTER, field161)
-          field162 = finishMerge(merges, 162, Field.ADAPTER, field162)
-          field163 = finishMerge(merges, 163, Field.ADAPTER, field163)
-          field164 = finishMerge(merges, 164, Field.ADAPTER, field164)
-          field165 = finishMerge(merges, 165, Field.ADAPTER, field165)
-          field166 = finishMerge(merges, 166, Field.ADAPTER, field166)
-          field167 = finishMerge(merges, 167, Field.ADAPTER, field167)
-          field168 = finishMerge(merges, 168, Field.ADAPTER, field168)
-          field169 = finishMerge(merges, 169, Field.ADAPTER, field169)
-          field170 = finishMerge(merges, 170, Field.ADAPTER, field170)
-          field171 = finishMerge(merges, 171, Field.ADAPTER, field171)
-          field172 = finishMerge(merges, 172, Field.ADAPTER, field172)
-          field173 = finishMerge(merges, 173, Field.ADAPTER, field173)
-          field174 = finishMerge(merges, 174, Field.ADAPTER, field174)
-          field175 = finishMerge(merges, 175, Field.ADAPTER, field175)
-          field176 = finishMerge(merges, 176, Field.ADAPTER, field176)
-          field177 = finishMerge(merges, 177, Field.ADAPTER, field177)
-          field178 = finishMerge(merges, 178, Field.ADAPTER, field178)
-          field179 = finishMerge(merges, 179, Field.ADAPTER, field179)
-          field180 = finishMerge(merges, 180, Field.ADAPTER, field180)
-          field181 = finishMerge(merges, 181, Field.ADAPTER, field181)
-          field182 = finishMerge(merges, 182, Field.ADAPTER, field182)
-          field183 = finishMerge(merges, 183, Field.ADAPTER, field183)
-          field184 = finishMerge(merges, 184, Field.ADAPTER, field184)
-          field185 = finishMerge(merges, 185, Field.ADAPTER, field185)
-          field186 = finishMerge(merges, 186, Field.ADAPTER, field186)
-          field187 = finishMerge(merges, 187, Field.ADAPTER, field187)
-          field188 = finishMerge(merges, 188, Field.ADAPTER, field188)
-          field189 = finishMerge(merges, 189, Field.ADAPTER, field189)
-          field190 = finishMerge(merges, 190, Field.ADAPTER, field190)
-          field191 = finishMerge(merges, 191, Field.ADAPTER, field191)
-          field192 = finishMerge(merges, 192, Field.ADAPTER, field192)
-          field193 = finishMerge(merges, 193, Field.ADAPTER, field193)
-          field194 = finishMerge(merges, 194, Field.ADAPTER, field194)
-          field195 = finishMerge(merges, 195, Field.ADAPTER, field195)
-          field196 = finishMerge(merges, 196, Field.ADAPTER, field196)
-          field197 = finishMerge(merges, 197, Field.ADAPTER, field197)
-          field198 = finishMerge(merges, 198, Field.ADAPTER, field198)
-          field199 = finishMerge(merges, 199, Field.ADAPTER, field199)
-          field200 = finishMerge(merges, 200, Field.ADAPTER, field200)
-          field201 = finishMerge(merges, 201, Field.ADAPTER, field201)
-          field202 = finishMerge(merges, 202, Field.ADAPTER, field202)
         }
         return HundredsFields(
           field1 = field1,

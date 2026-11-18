@@ -16,9 +16,10 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.MessageMerges
-import com.squareup.wire.`internal`.addMerge
+import com.squareup.wire.`internal`.decodeMessageOrDefer
+import com.squareup.wire.`internal`.endMerges
 import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.hasMerges
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -110,23 +111,16 @@ public class MutablePacket(
       override fun decode(reader: ProtoReader): MutablePacket {
         var header_: MutableHeader? = null
         val payload = mutableListOf<MutablePayload>()
-        var merges: MessageMerges? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> run {
-              if (header_ == null) {
-                header_ = MutableHeader.ADAPTER.decode(reader)
-              } else {
-                merges = addMerge(merges, reader, 1)
-              }
-            }
-
+            1 -> header_ = decodeMessageOrDefer(MutableHeader.ADAPTER, reader, 1, header_)
             2 -> payload.add(MutablePayload.ADAPTER.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
-        if (merges != null) {
-          header_ = finishMerge(merges, 1, MutableHeader.ADAPTER, header_)
+        if (hasMerges(reader)) {
+          header_ = finishMerge(reader, 1, MutableHeader.ADAPTER, header_)
+          endMerges(reader)
         }
         return MutablePacket(
           header_ = header_,

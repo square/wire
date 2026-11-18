@@ -47,6 +47,11 @@ wire {
   }
 
   kotlin {
+    includes = listOf("squareup.protos.kotlin.edgecases.MergeChoiceBuildersOnly")
+    buildersOnly = true
+    javaInterop = true
+  }
+  kotlin {
     includes = listOf("squareup.protos.kotlin.sealed_redacted.SealedRedactedOneOfBuildersOnly")
     oneofMode = "sealed_class"
     buildersOnly = true

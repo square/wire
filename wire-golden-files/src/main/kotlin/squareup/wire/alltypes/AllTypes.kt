@@ -24,10 +24,9 @@ import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmStatic
 import com.squareup.wire.`internal`.JvmSynthetic
 import com.squareup.wire.`internal`.LongArrayList
-import com.squareup.wire.`internal`.MessageMerges
-import com.squareup.wire.`internal`.addMerge
 import com.squareup.wire.`internal`.beforePossiblyPackedScalar
 import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.decodeMessageOrDefer
 import com.squareup.wire.`internal`.decodePrimitive_double
 import com.squareup.wire.`internal`.decodePrimitive_fixed32
 import com.squareup.wire.`internal`.decodePrimitive_fixed64
@@ -52,7 +51,9 @@ import com.squareup.wire.`internal`.encodeArray_sint32
 import com.squareup.wire.`internal`.encodeArray_sint64
 import com.squareup.wire.`internal`.encodeArray_uint32
 import com.squareup.wire.`internal`.encodeArray_uint64
+import com.squareup.wire.`internal`.endMerges
 import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.hasMerges
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.redactElements
 import com.squareup.wire.`internal`.sanitize
@@ -3927,7 +3928,6 @@ public class AllTypes private constructor(
         var ext_pack_float: MutableList<Float>? = null
         var ext_pack_double: MutableList<Double>? = null
         val ext_pack_nested_enum = mutableListOf<NestedEnum>()
-        var merges: MessageMerges? = null
         val unknownFields = reader.forEachTag { tag ->
           if (reader.peekFieldEncoding() == FieldEncoding.LENGTH_DELIMITED) {
             when (tag) {
@@ -3958,14 +3958,7 @@ public class AllTypes private constructor(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            17 -> run {
-              if (builder.opt_nested_message == null) {
-                builder.opt_nested_message(NestedMessage.ADAPTER.decode(reader))
-              } else {
-                merges = addMerge(merges, reader, 17)
-              }
-            }
-
+            17 -> builder.opt_nested_message(decodeMessageOrDefer(NestedMessage.ADAPTER, reader, 17, builder.opt_nested_message))
             101 -> builder.req_int32(ProtoAdapter.INT32.decode(reader))
             102 -> builder.req_uint32(ProtoAdapter.UINT32.decode(reader))
             103 -> builder.req_sint32(ProtoAdapter.SINT32.decode(reader))
@@ -3986,14 +3979,7 @@ public class AllTypes private constructor(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            117 -> run {
-              if (builder.req_nested_message == null) {
-                builder.req_nested_message(NestedMessage.ADAPTER.decode(reader))
-              } else {
-                merges = addMerge(merges, reader, 117)
-              }
-            }
-
+            117 -> builder.req_nested_message(decodeMessageOrDefer(NestedMessage.ADAPTER, reader, 117, builder.req_nested_message))
             201 -> ProtoAdapter.INT32.tryDecode(reader, rep_int32)
             202 -> ProtoAdapter.UINT32.tryDecode(reader, rep_uint32)
             203 -> ProtoAdapter.SINT32.tryDecode(reader, rep_sint32)
@@ -4302,14 +4288,7 @@ public class AllTypes private constructor(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            1_017 -> run {
-              if (builder.ext_opt_nested_message == null) {
-                builder.ext_opt_nested_message(NestedMessage.ADAPTER.decode(reader))
-              } else {
-                merges = addMerge(merges, reader, 1_017)
-              }
-            }
-
+            1_017 -> builder.ext_opt_nested_message(decodeMessageOrDefer(NestedMessage.ADAPTER, reader, 1_017, builder.ext_opt_nested_message))
             1_101 -> ProtoAdapter.INT32.tryDecode(reader, ext_rep_int32)
             1_102 -> ProtoAdapter.UINT32.tryDecode(reader, ext_rep_uint32)
             1_103 -> ProtoAdapter.SINT32.tryDecode(reader, ext_rep_sint32)
@@ -4469,10 +4448,11 @@ public class AllTypes private constructor(
             else -> reader.readUnknownField(tag)
           }
         }
-        if (merges != null) {
-          builder.opt_nested_message(finishMerge(merges, 17, NestedMessage.ADAPTER, builder.opt_nested_message))
-          builder.req_nested_message(finishMerge(merges, 117, NestedMessage.ADAPTER, builder.req_nested_message))
-          builder.ext_opt_nested_message(finishMerge(merges, 1_017, NestedMessage.ADAPTER, builder.ext_opt_nested_message))
+        if (hasMerges(reader)) {
+          builder.opt_nested_message(finishMerge(reader, 17, NestedMessage.ADAPTER, builder.opt_nested_message))
+          builder.req_nested_message(finishMerge(reader, 117, NestedMessage.ADAPTER, builder.req_nested_message))
+          builder.ext_opt_nested_message(finishMerge(reader, 1_017, NestedMessage.ADAPTER, builder.ext_opt_nested_message))
+          endMerges(reader)
         }
         return AllTypes(
           builder = builder

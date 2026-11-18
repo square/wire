@@ -66,5 +66,9 @@ internal class ProtoReader32AsProtoReader(
 
   override fun mergeContext() = delegate.mergeContext()
 
+  override fun mergeBudgetOrNull() = (delegate as? ByteArrayProtoReader32)?.mergeBudgetOrNull()
+
+  override fun mergeDepth() = (delegate as? ByteArrayProtoReader32)?.mergeDepth() ?: 0
+
   override fun nextFieldMinLengthInBytes() = delegate.nextFieldMinLengthInBytes().toLong()
 }

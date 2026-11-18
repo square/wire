@@ -39,6 +39,18 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
    * [jsonNames], [jsonAlternateNames], and the result of [writeAllFields]'s `jsonAdapters`.
    */
   val fieldBindingsArray: Array<FieldOrOneOfBinding<M, B>> = fields.values.toTypedArray()
+
+  /** The singular message fields, whose repeated occurrences are merged after the last tag. */
+  private val mergedFields: List<Pair<Int, FieldOrOneOfBinding<M, B>>> by lazy {
+    fields.entries
+      .filter { (_, field) ->
+        !field.isMap &&
+          !field.label.isRepeated &&
+          (field.isMessage || field.singleAdapter in MESSAGE_BACKED_BUILT_IN_ADAPTERS)
+      }
+      .map { (tag, field) -> tag to field }
+  }
+
   val jsonNames: List<String> = fieldBindingsArray.map { it.jsonName }
 
   /**
@@ -162,7 +174,6 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
   override fun decode(reader: ProtoReader): M {
     val builder = newBuilder()
-    var merges: MessageMerges? = null
     val token = reader.beginMessage()
     while (true) {
       val tag = reader.nextTag()
@@ -193,12 +204,9 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
             ) {
               @Suppress("UNCHECKED_CAST")
               val adapter = singleAdapter as ProtoAdapter<Any>
-              if (field.getFromBuilder(builder) == null) {
-                discardMerges(merges, tag)
-                field.set(builder, adapter.decode(reader))
-              } else {
-                merges = addMerge(merges, reader, tag)
-              }
+              val existing = field.getFromBuilder(builder)
+              val value = decodeMessageOrDefer(adapter, reader, tag, existing)
+              if (value !== existing) field.set(builder, value)
             } else {
               val value = singleAdapter.decode(reader)
               field.value(builder, value!!)
@@ -215,14 +223,17 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     }
     reader.endMessageAndGetUnknownFields(token) // Ignore return value
 
-    if (merges != null) {
-      for (tag in merges.tags()) {
-        val field = fields.getValue(tag)
+    if (hasMerges(reader)) {
+      for ((tag, field) in mergedFields) {
+        // A oneof member that another member replaced has no value to merge into.
+        val existing = field.getFromBuilder(builder) ?: continue
 
         @Suppress("UNCHECKED_CAST")
         val adapter = field.singleAdapter as ProtoAdapter<Any>
-        field.set(builder, finishMerge(merges, tag, adapter, field.getFromBuilder(builder)))
+        val merged = finishMerge(reader, tag, adapter, existing)
+        if (merged !== existing) field.set(builder, merged)
       }
+      endMerges(reader)
     }
 
     return binding.build(builder)
