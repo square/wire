@@ -71,8 +71,8 @@ class InternalTest {
   }
 
   @Test fun sanitizeAnyEscapesNestedStrings() {
-    val struct = mapOf("k\n1" to listOf("a\nb", 2.0, mapOf("c" to "d,e")), "n" to null)
-    assertThat(sanitizeAny(struct)).isEqualTo("""{k\n1=[a\nb, 2.0, {c=d\,e}], n=null}""")
+    val struct = mapOf("k\n1" to listOf("a\nb", 2.5, mapOf("c" to "d,e")), "n" to null)
+    assertThat(sanitizeAny(struct)).isEqualTo("""{k\n1=[a\nb, 2.5, {c=d\,e}], n=null}""")
     assertThat(sanitizeAny("a\nb")).isEqualTo("""a\nb""")
     assertThat(sanitizeAny(null)).isEqualTo("null")
     assertThat(sanitizeAny(5)).isEqualTo("5")
