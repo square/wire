@@ -288,6 +288,98 @@ final class StructTests: XCTestCase {
         XCTAssertThrowsError(try JSONDecoder().decode(StructNull.self, from: jsonData))
     }
 
+    // MARK: - JSON nesting depth
+
+    func testStructValueJSONNestedWithinLimitDecodes() throws {
+        let depth = 60
+        let arrays = nestedArrays(depth: depth)
+        XCTAssertNoThrow(try JSONDecoder().decode(StructValue.self, from: arrays.data(using: .utf8)!))
+        XCTAssertNoThrow(try JSONDecoder().decode(ListValue.self, from: arrays.data(using: .utf8)!))
+
+        let objects = nestedObjects(depth: depth)
+        XCTAssertNoThrow(try JSONDecoder().decode(StructValue.self, from: objects.data(using: .utf8)!))
+        XCTAssertNoThrow(try JSONDecoder().decode(StructMessage.self, from: objects.data(using: .utf8)!))
+    }
+
+    func testStructValueJSONNestedAtLimitDecodesAndBeyondLimitThrows() throws {
+        // Decode on a thread with a small stack, like the ones used by background queues.
+        onSmallStackThread {
+            for (atLimit, beyondLimit) in [(self.nestedArrays(depth: 65), self.nestedArrays(depth: 66)), (self.nestedObjects(depth: 65), self.nestedObjects(depth: 66))] {
+                self.assertDecodes(StructValue.self, json: atLimit)
+                self.assertDecodingFails(StructValue.self, json: beyondLimit, message: "maximum nesting depth of 65")
+            }
+            self.assertDecodes(ListValue.self, json: self.nestedArrays(depth: 65))
+            self.assertDecodingFails(ListValue.self, json: self.nestedArrays(depth: 66), message: "maximum nesting depth of 65")
+            self.assertDecodes(StructMessage.self, json: self.nestedObjects(depth: 65))
+            self.assertDecodingFails(StructMessage.self, json: self.nestedObjects(depth: 66), message: "maximum nesting depth of 65")
+        }
+    }
+
+    func testStructValueJSONNestedBeyondLimitThrows() throws {
+        let arrays = nestedArrays(depth: 400)
+        let objects = nestedObjects(depth: 400)
+
+        // Without a depth limit, the stack overflows before Foundation's own limit of 512 applies.
+        onSmallStackThread {
+            let message = "maximum nesting depth of 65"
+            for json in [arrays, objects] {
+                self.assertDecodingFails(StructValue.self, json: json, message: message)
+                self.assertDecodingFails(MessageContainingStruct.self, json: "{\"someValue\":\(json)}", message: message)
+            }
+            self.assertDecodingFails(ListValue.self, json: arrays, message: message)
+            self.assertDecodingFails(StructMessage.self, json: objects, message: message)
+        }
+    }
+
+    private func nestedArrays(depth: Int) -> String {
+        String(repeating: "[", count: depth) + "1" + String(repeating: "]", count: depth)
+    }
+
+    private func nestedObjects(depth: Int) -> String {
+        String(repeating: "{\"a\":", count: depth) + "1" + String(repeating: "}", count: depth)
+    }
+
+    private func assertDecodes<T: Decodable>(
+        _ type: T.Type,
+        json: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        do {
+            _ = try JSONDecoder().decode(type, from: json.data(using: .utf8)!)
+        } catch {
+            XCTFail("Expected \(type) to decode, got \(error)", file: file, line: line)
+        }
+    }
+
+    private func assertDecodingFails<T: Decodable>(
+        _ type: T.Type,
+        json: String,
+        message: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        do {
+            _ = try JSONDecoder().decode(type, from: json.data(using: .utf8)!)
+            XCTFail("Expected \(type) to fail decoding", file: file, line: line)
+        } catch let DecodingError.dataCorrupted(context) {
+            XCTAssertTrue(context.debugDescription.contains(message), context.debugDescription, file: file, line: line)
+        } catch {
+            XCTFail("Unexpected error \(error)", file: file, line: line)
+        }
+    }
+
+    private func onSmallStackThread(_ work: @escaping @Sendable () -> Void) {
+        let finished = expectation(description: "finished")
+        let thread = Thread {
+            work()
+            finished.fulfill()
+        }
+        thread.stackSize = 512 * 1024
+        thread.start()
+        wait(for: [finished], timeout: 60)
+    }
+
     // MARK: - Generated Code (MessageContainingStruct)
 
     func testGeneratedMessageContainingStructRoundTrip() throws {
