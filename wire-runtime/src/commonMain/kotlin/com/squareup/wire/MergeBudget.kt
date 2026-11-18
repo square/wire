@@ -49,7 +49,7 @@ internal class MergeContext(
 )
 
 /** Bytes of merge work allowed regardless of input size. */
-internal const val MERGE_ALLOWANCE_BYTES = 16L * 1024 * 1024
+internal const val MERGE_ALLOWANCE_BYTES = 512L * 1024 * 1024
 
 /** Bytes of merge work allowed for each byte the outermost reader consumed. */
 internal const val MERGE_ALLOWANCE_PER_INPUT_BYTE = 64L
