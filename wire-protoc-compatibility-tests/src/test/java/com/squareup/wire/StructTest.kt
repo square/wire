@@ -199,6 +199,61 @@ class StructTest {
     }
   }
 
+  @Test fun redactMapRedactsNestedValues() {
+    val value = mapOf(
+      "text" to "secret",
+      "number" to 1.0,
+      "flag" to true,
+      "nothing" to null,
+      "list" to listOf("secret", 2.0, mapOf("inner" to "secret")),
+      "map" to mapOf("inner" to "secret", "number" to 3.0),
+    )
+    assertThat(ProtoAdapter.STRUCT_MAP.redact(value)).isEqualTo(
+      mapOf(
+        "text" to null,
+        "number" to 1.0,
+        "flag" to true,
+        "nothing" to null,
+        "list" to listOf(null, 2.0, mapOf("inner" to null)),
+        "map" to mapOf("inner" to null, "number" to 3.0),
+      ),
+    )
+    assertThat(ProtoAdapter.STRUCT_MAP.redact(null)).isEqualTo(null)
+    assertThat(ProtoAdapter.STRUCT_MAP.redact(mapOf<String, Any?>())).isEqualTo(mapOf<String, Any?>())
+  }
+
+  @Test fun redactValueRedactsNestedValues() {
+    assertThat(ProtoAdapter.STRUCT_VALUE.redact(mapOf("a" to listOf("secret")))).isEqualTo(
+      mapOf("a" to listOf(null)),
+    )
+    assertThat(ProtoAdapter.STRUCT_LIST.redact(listOf(mapOf("a" to "secret")))).isEqualTo(
+      listOf(mapOf("a" to null)),
+    )
+  }
+
+  @Test fun redactErrorsDoNotIncludeData() {
+    val unsupportedValue = mapOf("a" to StringBuilder("android-secret"))
+    val unsupportedList = listOf(StringBuilder("android-secret"))
+
+    @Suppress("UNCHECKED_CAST") // Totally unsafe.
+    val unsupportedKey = mapOf(5 to "android-secret") as Map<String, Any?>
+    for (block in listOf<() -> Unit>(
+      { ProtoAdapter.STRUCT_MAP.redact(unsupportedValue) },
+      { ProtoAdapter.STRUCT_LIST.redact(unsupportedList) },
+      { ProtoAdapter.STRUCT_VALUE.redact(StringBuilder("android-secret")) },
+      { ProtoAdapter.STRUCT_MAP.redact(unsupportedKey) },
+      { ProtoAdapter.STRUCT_MAP.encode(unsupportedValue) },
+      { ProtoAdapter.STRUCT_LIST.encode(unsupportedList) },
+    )) {
+      try {
+        block()
+        fail()
+      } catch (e: IllegalArgumentException) {
+        assertThat(e.message!!.contains("android-secret")).isEqualTo(false)
+      }
+    }
+  }
+
   @Test fun unsupportedValueType() {
     val wireMessage = mapOf("a" to StringBuilder("android"))
 
