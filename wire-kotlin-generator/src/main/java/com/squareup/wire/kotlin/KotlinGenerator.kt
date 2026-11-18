@@ -1519,6 +1519,10 @@ class KotlinGenerator private constructor(
                       } else {
                         add("=\${%M(%N)}", sanitizeMember, fieldName)
                       }
+                    } else if (fieldOrOneOf.isMap &&
+                      (fieldOrOneOf.type!!.keyType == ProtoType.STRING || fieldOrOneOf.type!!.valueType == ProtoType.STRING)
+                    ) {
+                      add("=\${%M(%N)}", sanitizeMember, fieldName)
                     } else if (fieldOrOneOf.useArray) {
                       add("=\${")
                       add("%N", fieldName)
@@ -3395,6 +3399,19 @@ class KotlinGenerator private constructor(
             .build(),
         )
         .apply {
+          if (field.type == ProtoType.STRING) {
+            // The data class `toString` would print the string without escaping it.
+            addFunction(
+              FunSpec.builder("toString")
+                .addModifiers(KModifier.OVERRIDE)
+                .returns(String::class)
+                .addStatement(
+                  "return %P",
+                  CodeBlock.of("%L(value=\${%M(value)})", subclassName, MemberName("com.squareup.wire.internal", "sanitize")),
+                )
+                .build(),
+            )
+          }
           addAnnotation(wireOneofFieldAnnotation(field))
           if (field.isDeprecated) {
             addAnnotation(

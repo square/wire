@@ -201,16 +201,50 @@ fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
 
 private const val ESCAPED_CHARS = ",[]{}\\"
 
-/** Return a string where `,[]{}\` are escaped with a `\`. */
+/**
+ * Returns [value] in a form that is safe to print in `toString()`. It cannot forge a field, a
+ * nested message, or a log line. Rules:
+ *
+ *  * The characters `,[]{}` and `\` get a `\` prefix.
+ *  * Newline, carriage return, and tab become `\n`, `\r`, and `\t`.
+ *  * Every other control character becomes `\u` and four lowercase hex digits, like `\u001b` for
+ *    ESC. Control characters are U+0000 to U+001F and U+007F to U+009F.
+ *  * All other characters stay as they are.
+ */
 fun sanitize(value: String): String = buildString(value.length) {
   value.forEach { char ->
-    if (char in ESCAPED_CHARS) append('\\')
-    append(char)
+    when {
+      char in ESCAPED_CHARS -> {
+        append('\\')
+        append(char)
+      }
+      char == '\n' -> append("\\n")
+      char == '\r' -> append("\\r")
+      char == '\t' -> append("\\t")
+      char.isISOControl() -> {
+        append("\\u")
+        append(char.code.toString(16).padStart(4, '0'))
+      }
+      else -> append(char)
+    }
   }
 }
 
-/** Return a string where `,[]{}\` are escaped with a `\`. */
+/** Returns a list of [values], each escaped with [sanitize]. */
 fun sanitize(values: List<String>): String = values.joinToString(prefix = "[", postfix = "]", transform = ::sanitize)
+
+/** Returns [values] like [Map.toString], with each string key and value escaped by [sanitize]. */
+fun sanitize(values: Map<*, *>): String = values.entries.joinToString(prefix = "{", postfix = "}") { (key, value) ->
+  "${sanitizeAny(key)}=${sanitizeAny(value)}"
+}
+
+/** Returns [value] like `toString()`, with strings inside it escaped by [sanitize]. */
+internal fun sanitizeAny(value: Any?): String = when (value) {
+  is String -> sanitize(value)
+  is List<*> -> value.joinToString(prefix = "[", postfix = "]", transform = ::sanitizeAny)
+  is Map<*, *> -> sanitize(value)
+  else -> value.toString()
+}
 
 fun boxedOneOfClassName(oneOfName: String): String = oneOfName.replaceFirstChar(Char::titlecase)
 

@@ -2107,7 +2107,10 @@ public final class JavaGenerator {
       if (field.isRedacted()) {
         result.addStatement(
             "$N.append(\", $N=$L\")", builderName, field.getName(), DOUBLE_FULL_BLOCK);
-      } else if (field.getType().equals(ProtoType.STRING)) {
+      } else if (field.getType().equals(ProtoType.STRING)
+          || (field.getType().isMap()
+              && (field.getType().getKeyType().equals(ProtoType.STRING)
+                  || field.getType().getValueType().equals(ProtoType.STRING)))) {
         result.addStatement(
             "$N.append(\", $N=\").append($T.sanitize($L))",
             builderName,

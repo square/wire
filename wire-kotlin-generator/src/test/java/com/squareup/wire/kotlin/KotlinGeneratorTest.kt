@@ -2668,7 +2668,9 @@ class KotlinGeneratorTest {
       |    )
       |    public data class CardId(
       |      public val `value`: String,
-      |    ) : Method()
+      |    ) : Method() {
+      |      override fun toString(): String = ${'"'}${'"'}${'"'}CardId(value=${'$'}{sanitize(value)})${'"'}${'"'}${'"'}
+      |    }
       |
       |    @WireOneofField(
       |      tag = 2,
@@ -2677,7 +2679,9 @@ class KotlinGeneratorTest {
       |    )
       |    public data class Cash(
       |      public val `value`: String,
-      |    ) : Method()
+      |    ) : Method() {
+      |      override fun toString(): String = ${'"'}${'"'}${'"'}Cash(value=${'$'}{sanitize(value)})${'"'}${'"'}${'"'}
+      |    }
       |  }
       """.trimMargin(),
     )
@@ -2833,6 +2837,46 @@ class KotlinGeneratorTest {
     )
     assertThat(code).contains("""if (`in` != null) result += ""${'"'}in=${'$'}`in`""${'"'}""")
     assertThat(code).contains("""if (`object` != null) result += ""${'"'}object=${'$'}`object`""${'"'}""")
+  }
+
+  @Test fun toStringSanitizesStringKeysAndValuesOfMaps() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Tags {
+        |  map<string, int32> by_key = 1;
+        |  map<int32, string> by_value = 2;
+        |  map<int32, int32> numbers = 3;
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Tags")
+    assertThat(code).contains("""by_key=${'$'}{sanitize(by_key)}""")
+    assertThat(code).contains("""by_value=${'$'}{sanitize(by_value)}""")
+    assertThat(code).contains("""numbers=${'$'}numbers""")
+  }
+
+  @Test fun sealedOneofStringsAreSanitizedInToString() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Choices {
+        |  oneof choice {
+        |    string text = 1;
+        |    int32 number = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = OneofMode.SEALED_CLASS)
+    assertThat(code).contains("override fun toString(): String = ${'"'}${'"'}${'"'}Text(value=${'$'}{sanitize(value)})${'"'}${'"'}${'"'}")
+    assertThat(code).doesNotContain("Number(value=")
   }
 
   @Test fun boxedOneofEscapesKeywordNames() {

@@ -1379,9 +1379,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (!pack_nested_enum.isEmpty()) builder.append(", pack_nested_enum=").append(pack_nested_enum);
     if (!pack_null_value.isEmpty()) builder.append(", pack_null_value=").append(pack_null_value);
     if (!map_int32_int32.isEmpty()) builder.append(", map_int32_int32=").append(map_int32_int32);
-    if (!map_string_string.isEmpty()) builder.append(", map_string_string=").append(map_string_string);
-    if (!map_string_message.isEmpty()) builder.append(", map_string_message=").append(map_string_message);
-    if (!map_string_enum.isEmpty()) builder.append(", map_string_enum=").append(map_string_enum);
+    if (!map_string_string.isEmpty()) builder.append(", map_string_string=").append(Internal.sanitize(map_string_string));
+    if (!map_string_message.isEmpty()) builder.append(", map_string_message=").append(Internal.sanitize(map_string_message));
+    if (!map_string_enum.isEmpty()) builder.append(", map_string_enum=").append(Internal.sanitize(map_string_enum));
     if (!map_int32_any.isEmpty()) builder.append(", map_int32_any=").append(map_int32_any);
     if (!map_int32_duration.isEmpty()) builder.append(", map_int32_duration=").append(map_int32_duration);
     if (!map_int32_struct.isEmpty()) builder.append(", map_int32_struct=").append(map_int32_struct);

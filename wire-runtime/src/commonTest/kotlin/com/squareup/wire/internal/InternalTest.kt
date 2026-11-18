@@ -57,6 +57,24 @@ class InternalTest {
     ).isEqualTo("""[\,, \{, \}, \[, \], \\]""")
   }
 
+  @Test fun sanitizeEscapesControlCharacters() {
+    assertThat(sanitize("a\nb")).isEqualTo("""a\nb""")
+    assertThat(sanitize("a\r\nb")).isEqualTo("""a\r\nb""")
+    assertThat(sanitize("a\tb")).isEqualTo("""a\tb""")
+    assertThat(sanitize("\u001b[31mred")).isEqualTo("""\u001b\[31mred""")
+    assertThat(sanitize("\u0000\u0001\u001f\u007f\u0085\u009b")).isEqualTo("""\u0000\u0001\u001f\u007f\u0085\u009b""")
+    // A literal backslash followed by `n` stays distinct from a newline.
+    assertThat(sanitize("""a\nb""")).isEqualTo("""a\\nb""")
+    assertThat(sanitize(" ~é🦕")).isEqualTo(" ~é🦕")
+    assertThat(sanitize(listOf("a\nb", "c"))).isEqualTo("""[a\nb, c]""")
+  }
+
+  @Test fun sanitizeMaps() {
+    assertThat(sanitize(mapOf("k1, forged=1" to "v}\nforged"))).isEqualTo("""{k1\, forged=1=v\}\nforged}""")
+    assertThat(sanitize(mapOf(1 to "a\nb", 2 to 3))).isEqualTo("""{1=a\nb, 2=3}""")
+    assertThat(sanitize(emptyMap<String, String>())).isEqualTo("{}")
+  }
+
   @Test fun lowerCamelCase() {
     assertThat(camelCase("")).isEqualTo("")
     assertThat(camelCase("_")).isEqualTo("")

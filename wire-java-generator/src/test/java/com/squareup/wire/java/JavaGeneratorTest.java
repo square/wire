@@ -493,6 +493,26 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void toStringSanitizesStringKeysAndValuesOfMaps() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "message Tags {\n"
+                    + "  map<string, int32> by_key = 1;\n"
+                    + "  map<int32, string> by_value = 2;\n"
+                    + "  map<int32, int32> numbers = 3;\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("Tags");
+    assertThat(code).contains("builder.append(\", by_key=\").append(Internal.sanitize(by_key))");
+    assertThat(code)
+        .contains("builder.append(\", by_value=\").append(Internal.sanitize(by_value))");
+    assertThat(code).contains("builder.append(\", numbers=\").append(numbers)");
+  }
+
+  @Test
   public void generateAbstractAdapterForEnum() throws Exception {
     Schema schema =
         new SchemaBuilder()
