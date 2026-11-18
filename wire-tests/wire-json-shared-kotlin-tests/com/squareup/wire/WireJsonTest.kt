@@ -653,6 +653,49 @@ class WireJsonTest {
     ).isEqualTo(keys)
   }
 
+  @Test(timeout = 10_000)
+  fun signedLongThatIsTooLongOrOutOfRangeIsRejected() {
+    for (bad in listOf("9".repeat(1_000_000), "1e100000000", "1e-100000000", "9223372036854775808")) {
+      for (json in listOf("\"$bad\"", bad)) {
+        assertFailsToDecode("""{"myInt64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"mySint64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"mySfixed64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"repInt64":[$json]}""", All64::class.java)
+        assertFailsToDecode("""{"int64Value":$json}""", AllWrappers::class.java)
+        assertFailsToDecode("""{"mapInt64Int64":{"1":$json}}""", MapTypes::class.java)
+      }
+      assertFailsToDecode("""{"mapInt64Int64":{"$bad":"1"}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapSint64Sint64":{"$bad":"1"}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapSfixed64Sfixed64":{"$bad":"1"}}""", MapTypes::class.java)
+    }
+  }
+
+  @Test fun signedLongLimitsAndExponentFormsAreAccepted() {
+    val min = All64.Builder().my_int64(Long.MIN_VALUE).my_sint64(Long.MIN_VALUE).build()
+    for (json in listOf(
+      """{"myInt64":"-9223372036854775808","mySint64":-9223372036854775808}""",
+      """{"myInt64":"-9.223372036854775808E18","mySint64":-9.223372036854775808e18}""",
+    )) {
+      assertThat(jsonLibrary.fromJson(json, All64::class.java)).isEqualTo(min)
+    }
+
+    val max = All64.Builder().my_int64(Long.MAX_VALUE).build()
+    assertThat(jsonLibrary.fromJson("""{"myInt64":9223372036854775807}""", All64::class.java))
+      .isEqualTo(max)
+
+    val small = All64.Builder().my_int64(1000L).my_sint64(5L).build()
+    assertThat(jsonLibrary.fromJson("""{"myInt64":"1e3","mySint64":5.0}""", All64::class.java))
+      .isEqualTo(small)
+
+    val keys = MapTypes.Builder().map_int64_int64(mapOf(Long.MIN_VALUE to 1000L)).build()
+    assertThat(
+      jsonLibrary.fromJson(
+        """{"mapInt64Int64":{"-9223372036854775808":"1e3"}}""",
+        MapTypes::class.java,
+      ),
+    ).isEqualTo(keys)
+  }
+
   @Test fun unsignedIntOutOfRangeIsRejected() {
     for (bad in listOf("4294967296", "-2147483649", "1e30", "1".repeat(1_000_000))) {
       for (json in listOf("\"$bad\"", bad)) {

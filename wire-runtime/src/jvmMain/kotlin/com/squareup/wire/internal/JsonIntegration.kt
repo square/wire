@@ -161,32 +161,17 @@ abstract class JsonIntegration<F, A> {
     // Wire has always decoded a negative value that fits in a signed 64-bit integer to the same bits.
     private val minSignedLong = BigInteger.valueOf(Long.MIN_VALUE)
 
-    // Real values need 20 digits. The extra room allows leading and trailing zeros.
-    private const val MAX_LENGTH = 1000
-    private const val MAX_EXPONENT = 1000
-
     override fun fromString(value: String): Long {
-      if (value.length > MAX_LENGTH) throw NumberFormatException("value is too long")
+      checkNumberSize(value)
       val bigInteger = try {
         BigInteger(value)
       } catch (e: NumberFormatException) {
-        checkExponent(value)
         BigDecimal(value).toBigInteger() // Handle extra trailing values like 5.0.
       }
       if (bigInteger < minSignedLong || bigInteger > maxUnsignedLong) {
         throw NumberFormatException("value is out of range for a 64-bit integer")
       }
       return bigInteger.toLong() // The low 64 bits, which is the unsigned value.
-    }
-
-    /** Throws if [value] has an exponent that would make [BigDecimal] slow. */
-    private fun checkExponent(value: String) {
-      val exponentIndex = value.indexOfFirst { it == 'e' || it == 'E' }
-      if (exponentIndex == -1) return
-      val exponent = value.substring(exponentIndex + 1).toInt()
-      if (exponent > MAX_EXPONENT || exponent < -MAX_EXPONENT) {
-        throw NumberFormatException("exponent is too large")
-      }
     }
 
     override fun toStringOrNumber(value: Long): Any = when {
@@ -205,10 +190,13 @@ abstract class JsonIntegration<F, A> {
   /** Encodes an signed value with quotes, like `"-123"`. */
   private object LongAsStringJsonFormatter : JsonFormatter<Long> {
     override fun toStringOrNumber(value: Long) = value.toString()
-    override fun fromString(value: String): Long = try {
-      value.toLong()
-    } catch (e: Exception) {
-      BigDecimal(value).longValueExact() // Handle extra trailing values like 5.0.
+    override fun fromString(value: String): Long {
+      checkNumberSize(value)
+      return try {
+        value.toLong()
+      } catch (e: Exception) {
+        BigDecimal(value).longValueExact() // Handle extra trailing values like 5.0.
+      }
     }
   }
 
@@ -280,5 +268,20 @@ abstract class JsonIntegration<F, A> {
 private fun checkUnsignedIntRange(value: Long) {
   if (value < Int.MIN_VALUE.toLong() || value > UInt.MAX_VALUE.toLong()) {
     throw NumberFormatException("value is out of range for an unsigned 32-bit integer")
+  }
+}
+
+// Real 64-bit values need at most 20 digits. The extra room allows leading and trailing zeros.
+private const val MAX_NUMBER_LENGTH = 1000
+private const val MAX_NUMBER_EXPONENT = 1000
+
+/** Throws if [value] is long, or has an exponent, that would make [BigDecimal] or [BigInteger] slow. */
+private fun checkNumberSize(value: String) {
+  if (value.length > MAX_NUMBER_LENGTH) throw NumberFormatException("value is too long")
+  val exponentIndex = value.indexOfFirst { it == 'e' || it == 'E' }
+  if (exponentIndex == -1) return
+  val exponent = value.substring(exponentIndex + 1).toInt()
+  if (exponent > MAX_NUMBER_EXPONENT || exponent < -MAX_NUMBER_EXPONENT) {
+    throw NumberFormatException("exponent is too large")
   }
 }
