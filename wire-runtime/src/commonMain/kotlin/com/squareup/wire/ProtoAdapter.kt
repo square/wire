@@ -1545,6 +1545,7 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
     return result
   }
 
+  /** Redacts every value like [STRUCT_VALUE]: strings become null, and numbers, booleans, and null stay. */
   override fun redact(value: Map<String, *>?): Map<String, *>? {
     if (value == null) return null
     val result = LinkedHashMap<String, Any?>(value.size)
