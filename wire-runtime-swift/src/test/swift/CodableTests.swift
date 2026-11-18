@@ -426,6 +426,55 @@ extension CodableTests {
     }
 }
 
+// MARK: - Nesting depth
+
+extension CodableTests {
+    func testRecursiveMessageJSONNestedWithinLimitDecodes() throws {
+        let repeated = nestedJSON(prefix: "{\"repeatedA\":[", suffix: "]}", depth: 30)
+        XCTAssertNoThrow(try JSONDecoder().decode(A.self, from: repeated.data(using: .utf8)!))
+
+        let singular = nestedJSON(prefix: "{\"child\":", suffix: "}", depth: 60)
+        XCTAssertNoThrow(try JSONDecoder().decode(RecursiveMessage.self, from: singular.data(using: .utf8)!))
+    }
+
+    func testRecursiveMessageJSONNestedBeyondLimitThrows() throws {
+        // Without a limit, the stack of a thread with a small stack overflows before
+        // Foundation's own limit of 512 levels applies.
+        let repeated = nestedJSON(prefix: "{\"repeatedA\":[", suffix: "]}", depth: 200)
+        let singular = nestedJSON(prefix: "{\"child\":", suffix: "}", depth: 400)
+
+        let finished = expectation(description: "finished")
+        let thread = Thread {
+            self.assertDecodingFails(A.self, json: repeated)
+            self.assertDecodingFails(RecursiveMessage.self, json: singular)
+            finished.fulfill()
+        }
+        thread.stackSize = 512 * 1024
+        thread.start()
+        wait(for: [finished], timeout: 60)
+    }
+
+    private func nestedJSON(prefix: String, suffix: String, depth: Int) -> String {
+        String(repeating: prefix, count: depth) + "{}" + String(repeating: suffix, count: depth)
+    }
+
+    private func assertDecodingFails<T: Decodable>(
+        _ type: T.Type,
+        json: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        do {
+            _ = try JSONDecoder().decode(type, from: json.data(using: .utf8)!)
+            XCTFail("Expected \(type) to fail decoding", file: file, line: line)
+        } catch let DecodingError.dataCorrupted(context) {
+            XCTAssertTrue(context.debugDescription.contains("maximum nesting depth"), context.debugDescription, file: file, line: line)
+        } catch {
+            XCTFail("Unexpected error \(error)", file: file, line: line)
+        }
+    }
+}
+
 // MARK: - Private Methods
 
 extension CodableTests {

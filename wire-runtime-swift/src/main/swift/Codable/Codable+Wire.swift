@@ -15,6 +15,45 @@
  */
 import Foundation
 
+// MARK: - Nesting depth
+
+extension Decoder {
+    /**
+     Returns the keyed container that generated `Codable` initializers decode a message from.
+
+     This overload is more specific than `Decoder.container(keyedBy:)`, so generated code calls it.
+     It throws when the message is nested too deeply.
+     Without the check, deeply nested JSON for a recursive message overflows the stack of threads with a small stack before `JSONDecoder` stops at its own limit.
+     */
+    public func container(
+        keyedBy type: StringLiteralCodingKeys.Type
+    ) throws -> KeyedDecodingContainer<StringLiteralCodingKeys> {
+        if codingPath.count > maximumMessageCodingPathLength {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: codingPath,
+                    debugDescription: "Exceeded the maximum nesting depth of \(maximumMessageCodingPathLength) for a message"
+                )
+            )
+        }
+        return try keyedContainer(of: self, keyedBy: type)
+    }
+}
+
+/**
+ The longest coding path at which a message can start decoding.
+ A message nested in a repeated or map field adds two elements to the path, a key and an index, so this allows about 65 levels like the binary decoder.
+ */
+private let maximumMessageCodingPathLength = 130
+
+/** Calls the generic `Decoder.container(keyedBy:)`, which the overload above would otherwise hide. */
+private func keyedContainer<Key: CodingKey>(
+    of decoder: Decoder,
+    keyedBy type: Key.Type
+) throws -> KeyedDecodingContainer<Key> {
+    return try decoder.container(keyedBy: type)
+}
+
 // MARK: decode(_:,firstOfKeys:)
 
 extension KeyedDecodingContainer {
