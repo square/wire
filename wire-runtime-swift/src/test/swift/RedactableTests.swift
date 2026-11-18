@@ -92,4 +92,71 @@ final class RedactableTests: XCTestCase {
             "Action(description: <redacted>)"
         )
     }
+
+    func testRedactedFieldsWithUnderscoreNames() {
+        let redacted = RedactedUnderscores(
+            req_under: "secret-req-under",
+            _req_lead: "secret-req-lead",
+            req_trail_: "secret-req-trail",
+            __req_double__: "secret-req-double",
+            req_visible_: "visible-req"
+        ) {
+            $0._opt_lead = "secret-opt-lead"
+            $0.opt_trail_ = "secret-opt-trail"
+            $0.__opt_double__ = "secret-opt-double"
+            $0.opt_visible_ = "visible-opt"
+            $0.description_ = "secret-description"
+        }
+        assertOnlyVisible(redacted.description, secrets: [
+            "secret-req-under", "secret-req-lead", "secret-req-trail", "secret-req-double",
+            "secret-opt-lead", "secret-opt-trail", "secret-opt-double", "secret-description",
+        ], visible: ["visible-req", "visible-opt"])
+    }
+
+    func testRedactedOneOfFieldsWithUnderscoreNames() {
+        let leading = RedactedUnderscores.Choice._choice_lead("secret-choice-lead")
+        let trailing = RedactedUnderscores.Choice.choice_trail_("secret-choice-trail")
+        let double = RedactedUnderscores.Choice.__choice_double__("secret-choice-double")
+        let visible = RedactedUnderscores.Choice.choice_visible_("visible-choice")
+        for choice in [leading, trailing, double] {
+            assertOnlyVisible(choice.description, secrets: [
+                "secret-choice-lead", "secret-choice-trail", "secret-choice-double",
+            ], visible: [])
+        }
+        assertOnlyVisible(visible.description, secrets: [], visible: ["visible-choice"])
+    }
+
+    func testRedactedFieldsWithUnderscoreNamesInHeapStorage() {
+        let redacted = RedactedLargeUnderscores(
+            req_under: "secret-req-under",
+            _req_lead: "secret-req-lead",
+            req_trail_: "secret-req-trail",
+            __req_double__: "secret-req-double",
+            req_visible_: "visible-req"
+        ) {
+            $0._opt_lead = "secret-opt-lead"
+            $0.opt_trail_ = "secret-opt-trail"
+            $0.__opt_double__ = "secret-opt-double"
+            $0.opt_visible_ = "visible-opt"
+        }
+        assertOnlyVisible(redacted.description, secrets: [
+            "secret-req-under", "secret-req-lead", "secret-req-trail", "secret-req-double",
+            "secret-opt-lead", "secret-opt-trail", "secret-opt-double",
+        ], visible: ["visible-req", "visible-opt"])
+    }
+
+    private func assertOnlyVisible(
+        _ description: String,
+        secrets: [String],
+        visible: [String],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for secret in secrets {
+            XCTAssertFalse(description.contains(secret), "\(secret) leaked in \(description)", file: file, line: line)
+        }
+        for value in visible {
+            XCTAssertTrue(description.contains(value), "\(value) missing in \(description)", file: file, line: line)
+        }
+    }
 }

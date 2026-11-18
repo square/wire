@@ -34,6 +34,29 @@ public protocol RedactedKey {
 extension Redactable {
 
     /**
+     Returns true if a mirror label names a redacted field.
+
+     The generator emits the proto field name in `RedactedKeys`. Mirror labels can differ from that
+     name: property wrappers prefix a `_`, and `description` is renamed to `description_`. Field
+     names can also start or end with `_` themselves, so this checks every name the label can map to.
+     */
+    private func isRedacted(label: String) -> Bool {
+        var names = [label]
+        if label.hasPrefix("_") {
+            names.append(String(label.dropFirst(1)))
+        }
+        for name in names {
+            if RedactedKeys(rawValue: name) != nil {
+                return true
+            }
+            if name == "description_" && RedactedKeys(rawValue: "description") != nil {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
      Prints a redacted summary of the object.
      */
     public var description: String {
@@ -51,7 +74,7 @@ extension Redactable {
             if (strippedLabel.hasSuffix("_")) {
                 strippedLabel = String(strippedLabel.dropLast(1))
             }
-            if RedactedKeys(rawValue: strippedLabel) != nil {
+            if isRedacted(label: label) {
                 // This is a redacted field, but if it's nil then that's ok to print
                 if "\(value)" != "nil" {
                     return "\(strippedLabel): <redacted>"
