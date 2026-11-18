@@ -18,8 +18,10 @@ package com.squareup.wire
 import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.MappyTwo
 import com.squareup.wire.protos.kotlin.map.Thing
+import java.net.ProtocolException
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -80,9 +82,18 @@ class ProtoReader32MapTest {
   }
 
   @Test
-  fun mapEntryWithoutEnumValueHasDefaultValue() {
+  fun mapEntryWithoutEnumValueHasZeroValueAsBefore() {
     for (message in decodeMappyTwo("0a030a016b".decodeHex())) {
       assertEquals(mapOf("k" to MappyTwo.ValueEnum.DEFAULT), message.string_enums)
     }
+  }
+
+  @Test
+  fun rootMapEntryWithUnknownEnumValueFails() {
+    // There is no parent message to hold the unknown field.
+    val mapAdapter = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, MappyTwo.ValueEnum.ADAPTER)
+    val entry = "0a016b104d".decodeHex()
+    assertFailsWith<ProtocolException> { mapAdapter.decode(entry.toByteArray()) }
+    assertFailsWith<ProtocolException> { mapAdapter.decode(Buffer().write(entry)) }
   }
 }

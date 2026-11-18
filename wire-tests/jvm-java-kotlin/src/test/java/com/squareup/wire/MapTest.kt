@@ -15,9 +15,11 @@
  */
 package com.squareup.wire
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.map.Mappy
@@ -25,6 +27,7 @@ import com.squareup.wire.map.MappyTwo
 import com.squareup.wire.map.MappyTwo.ValueEnum
 import com.squareup.wire.map.Thing
 import java.io.IOException
+import java.net.ProtocolException
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -105,9 +108,18 @@ class MapTest {
   }
 
   @Test
-  fun mapEntryWithoutEnumValueHasDefaultValue() {
+  fun mapEntryWithoutEnumValueHasZeroValueAsBefore() {
     val message = adapterTwo.decode("0a030a016b".decodeHex())
     assertThat(message.string_enums).isEqualTo(mapOf("k" to ValueEnum.DEFAULT))
+  }
+
+  @Test
+  fun rootMapEntryWithUnknownEnumValueFails() {
+    // There is no parent message to hold the unknown field.
+    val mapAdapter = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, MappyTwo.ValueEnum.ADAPTER)
+    val entry = "0a016b104d".decodeHex()
+    assertFailure { mapAdapter.decode(entry) }.isInstanceOf<ProtocolException>()
+    assertFailure { mapAdapter.decode(Buffer().write(entry)) }.isInstanceOf<ProtocolException>()
   }
 
   companion object {

@@ -778,6 +778,7 @@ internal class MapProtoAdapter<K, V> internal constructor(
   }
 
   override fun decode(reader: ProtoReader): Map<K, V> {
+    // Read the parent tag before beginMessage(), which changes the last tag.
     val parentTag = reader.lastTag()
     var key: K? = entryAdapter.keyAdapter.identity
     var value: V? = entryAdapter.valueAdapter.identity
@@ -814,15 +815,17 @@ internal class MapProtoAdapter<K, V> internal constructor(
 
     if (unknownEnumValue != null) {
       // Like protobuf-java, keep an entry with an unknown enum value as an unknown field of the parent message.
-      if (parentTag > 0) {
-        reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
+      if (parentTag <= 0) {
+        throw ProtocolException("Unknown enum value $unknownEnumValue in a map entry without a parent field")
       }
+      reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
       return emptyMap()
     }
     return singleEntry(key, value)
   }
 
   override fun decode(reader: ProtoReader32): Map<K, V> {
+    // Read the parent tag before beginMessage(), which changes the last tag.
     val parentTag = (reader as? ByteArrayProtoReader32)?.lastTag() ?: -1
     var key: K? = entryAdapter.keyAdapter.identity
     var value: V? = entryAdapter.valueAdapter.identity
@@ -859,9 +862,10 @@ internal class MapProtoAdapter<K, V> internal constructor(
 
     if (unknownEnumValue != null) {
       // Like protobuf-java, keep an entry with an unknown enum value as an unknown field of the parent message.
-      if (parentTag > 0) {
-        reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
+      if (parentTag <= 0) {
+        throw ProtocolException("Unknown enum value $unknownEnumValue in a map entry without a parent field")
       }
+      reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
       return emptyMap()
     }
     return singleEntry(key, value)
