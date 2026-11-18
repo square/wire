@@ -113,6 +113,10 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     }
   }
 
+  /**
+   * Like generated code, this clears redacted fields, redacts nested messages, and drops unknown
+   * fields. Every other field keeps its value.
+   */
   override fun redact(value: M): M {
     val builder = binding.newBuilder()
     for (field in fields.values) {
@@ -121,23 +125,26 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
           "Field '${field.name}' in $type is required and cannot be redacted.",
         )
       }
-      val isMessage = field.isMessage
-      if (field.redacted || isMessage && !field.label.isRepeated) {
-        val builderValue = field.getFromBuilder(builder)
-        if (builderValue != null) {
-          val redactedValue = field.adapter.redact(builderValue)
-          field.set(builder, redactedValue)
+      if (field.redacted) continue
+      val fieldValue = field[value] ?: continue
+      val redactedValue = when {
+        !field.isMessage -> when (fieldValue) {
+          is List<*> -> fieldValue.toMutableList()
+          is Map<*, *> -> LinkedHashMap(fieldValue)
+          else -> fieldValue
         }
-      } else if (isMessage && field.label.isRepeated) {
-        @Suppress("UNCHECKED_CAST")
-        val values = field.getFromBuilder(builder) as List<Any>
-
-        @Suppress("UNCHECKED_CAST")
-        val adapter = field.singleAdapter as ProtoAdapter<Any>
-        field.set(builder, values.redactElements(adapter))
+        field.isMap -> {
+          @Suppress("UNCHECKED_CAST")
+          (fieldValue as Map<Any?, Any>).redactElements(field.singleAdapter as ProtoAdapter<Any>)
+        }
+        field.label.isRepeated -> {
+          @Suppress("UNCHECKED_CAST")
+          (fieldValue as List<Any>).redactElements(field.singleAdapter as ProtoAdapter<Any>)
+        }
+        else -> field.adapter.redact(fieldValue)
       }
+      field.set(builder, redactedValue)
     }
-    binding.clearUnknownFields(builder)
     return binding.build(builder)
   }
 

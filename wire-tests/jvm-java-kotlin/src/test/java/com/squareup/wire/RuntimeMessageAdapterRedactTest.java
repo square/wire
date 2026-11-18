@@ -23,10 +23,13 @@ import com.squareup.wire.protos.redacted.RedactedChild;
 import com.squareup.wire.protos.redacted.RedactedCycleA;
 import com.squareup.wire.protos.redacted.RedactedExtension;
 import com.squareup.wire.protos.redacted.RedactedFields;
+import com.squareup.wire.protos.redacted.RedactedMap;
+import com.squareup.wire.protos.redacted.RedactedOneOf;
 import com.squareup.wire.protos.redacted.RedactedRepeated;
 import com.squareup.wire.protos.redacted.RedactedRequired;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 public class RuntimeMessageAdapterRedactTest {
@@ -129,5 +132,117 @@ public class RuntimeMessageAdapterRedactTest {
   public void requiredRedactedFieldToString() {
     ProtoAdapter<RedactedRequired> adapter = RedactedRequired.ADAPTER;
     assertThat(adapter.toString(new RedactedRequired("a"))).isEqualTo("RedactedRequired{a=██}");
+  }
+
+  @Test
+  public void reflectiveMessage() {
+    ProtoAdapter<RedactedFields> adapter = ProtoAdapter.newMessageAdapter(RedactedFields.class);
+    RedactedFields message = new RedactedFields.Builder().a("a").b("b").c("c").build();
+    assertThat(adapter.redact(message)).isEqualTo(message.newBuilder().a(null).build());
+  }
+
+  @Test
+  public void reflectiveMessageWithNoRedactions() {
+    ProtoAdapter<NotRedacted> adapter = ProtoAdapter.newMessageAdapter(NotRedacted.class);
+    NotRedacted message = new NotRedacted.Builder().a("a").b("b").build();
+    assertThat(adapter.redact(message)).isEqualTo(message);
+  }
+
+  @Test
+  public void reflectiveDropsUnknownFields() {
+    ProtoAdapter<NotRedacted> adapter = ProtoAdapter.newMessageAdapter(NotRedacted.class);
+    NotRedacted message =
+        new NotRedacted.Builder().a("a").addUnknownField(9, FieldEncoding.VARINT, 1L).build();
+    assertThat(adapter.redact(message)).isEqualTo(new NotRedacted.Builder().a("a").build());
+  }
+
+  @Test
+  public void reflectiveNestedRedactions() {
+    ProtoAdapter<RedactedChild> adapter = ProtoAdapter.newMessageAdapter(RedactedChild.class);
+    RedactedChild message =
+        new RedactedChild.Builder()
+            .a("a")
+            .b(new RedactedFields.Builder().a("a").b("b").c("c").build())
+            .c(new NotRedacted.Builder().a("a").b("b").build())
+            .build();
+    RedactedChild expected = message.newBuilder().b(message.b.newBuilder().a(null).build()).build();
+    assertThat(adapter.redact(message)).isEqualTo(expected);
+  }
+
+  @Test
+  public void reflectiveRedactedExtensions() {
+    ProtoAdapter<RedactedFields> adapter = ProtoAdapter.newMessageAdapter(RedactedFields.class);
+    RedactedFields message =
+        new RedactedFields.Builder()
+            .extension(new RedactedExtension.Builder().d("d").e("e").build())
+            .build();
+    RedactedFields expected =
+        new RedactedFields.Builder()
+            .extension(new RedactedExtension.Builder().e("e").build())
+            .build();
+    assertThat(adapter.redact(message)).isEqualTo(expected);
+  }
+
+  @Test
+  public void reflectiveRepeatedField() {
+    ProtoAdapter<RedactedRepeated> adapter = ProtoAdapter.newMessageAdapter(RedactedRepeated.class);
+    RedactedRepeated message =
+        new RedactedRepeated.Builder()
+            .a(Arrays.asList("a", "b"))
+            .b(
+                Arrays.asList(
+                    new RedactedFields("a", "b", "c", null),
+                    new RedactedFields("d", "e", "f", null)))
+            .build();
+    RedactedRepeated expected =
+        new RedactedRepeated.Builder()
+            .b(
+                Arrays.asList(
+                    new RedactedFields(null, "b", "c", null),
+                    new RedactedFields(null, "e", "f", null)))
+            .build();
+    assertThat(adapter.redact(message)).isEqualTo(expected);
+    // The original message is unchanged.
+    assertThat(message.b.get(0).a).isEqualTo("a");
+  }
+
+  @Test
+  public void reflectiveMapField() {
+    ProtoAdapter<RedactedMap> adapter = ProtoAdapter.newMessageAdapter(RedactedMap.class);
+    RedactedMap message =
+        new RedactedMap.Builder()
+            .a(Collections.singletonMap("k", new RedactedFields("a", "b", "c", null)))
+            .build();
+    RedactedMap expected =
+        new RedactedMap.Builder()
+            .a(Collections.singletonMap("k", new RedactedFields(null, "b", "c", null)))
+            .build();
+    assertThat(adapter.redact(message)).isEqualTo(expected);
+    assertThat(message.a.get("k").a).isEqualTo("a");
+  }
+
+  @Test
+  public void reflectiveOneOf() {
+    ProtoAdapter<RedactedOneOf> adapter = ProtoAdapter.newMessageAdapter(RedactedOneOf.class);
+    assertThat(adapter.redact(new RedactedOneOf.Builder().a("a").build()))
+        .isEqualTo(new RedactedOneOf.Builder().build());
+    assertThat(adapter.redact(new RedactedOneOf.Builder().c("c").build()))
+        .isEqualTo(new RedactedOneOf.Builder().c("c").build());
+    assertThat(
+            adapter.redact(
+                new RedactedOneOf.Builder().b(new RedactedFields("a", "b", "c", null)).build()))
+        .isEqualTo(new RedactedOneOf.Builder().b(new RedactedFields(null, "b", "c", null)).build());
+  }
+
+  @Test
+  public void reflectiveRequiredRedactedFieldThrowsRedacting() {
+    ProtoAdapter<RedactedRequired> adapter = ProtoAdapter.newMessageAdapter(RedactedRequired.class);
+    try {
+      adapter.redact(new RedactedRequired("a"));
+      fail();
+    } catch (UnsupportedOperationException e) {
+      assertThat(e).hasMessageThat().contains("Field 'a' in ");
+      assertThat(e).hasMessageThat().contains("is required and cannot be redacted.");
+    }
   }
 }

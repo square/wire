@@ -52,6 +52,19 @@ message RedactedRepeated {
   repeated RedactedFields b = 2;
 }
 
+message RedactedMap {
+  // Values in the map need redacting.
+  map<string, RedactedFields> a = 1;
+}
+
+message RedactedOneOf {
+  oneof choice {
+    string a = 1 [(squareup.protos.redacted_option.redacted) = true];
+    RedactedFields b = 2;
+    string c = 3;
+  }
+}
+
 message RedactedRequired {
   required string a = 1 [(squareup.protos.redacted_option.redacted) = true];
 }
