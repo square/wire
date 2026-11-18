@@ -155,7 +155,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       first = false
       append(field.name)
       append('=')
-      append(if (field.redacted) REDACTED else binding)
+      append(if (field.redacted) REDACTED else sanitizeAny(binding))
     }
     append('}')
   }
