@@ -20,6 +20,8 @@ wire {
       "all_types.proto",
       "empty_packed.proto",
       "one_of.proto",
+      "option_redacted.proto",
+      "redacted_map.proto",
     )
   }
 

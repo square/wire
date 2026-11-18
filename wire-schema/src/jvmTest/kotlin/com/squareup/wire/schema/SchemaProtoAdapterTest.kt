@@ -922,4 +922,59 @@ class SchemaProtoAdapterTest {
     assertThat(adapter.decode(Buffer().write(dansCoffeeEncoded)))
       .isEqualTo(dansCoffeeWithoutUnknowns)
   }
+
+  @Test
+  fun redactClearsRedactedFieldsInNestedMessages() {
+    val schema = buildSchema {
+      add(
+        "redacted.proto".toPath(),
+        """
+            |package squareup.redaction;
+            |import "google/protobuf/descriptor.proto";
+            |extend google.protobuf.FieldOptions {
+            |  optional bool redacted = 22001;
+            |}
+            |message Inner {
+            |  optional string secret = 1 [(redacted) = true];
+            |  optional string keep = 2;
+            |}
+            |message Outer {
+            |  optional string name = 1;
+            |  optional string password = 2 [(redacted) = true];
+            |  optional Inner one = 3;
+            |  repeated Inner many = 4;
+            |  map<string, Inner> by_key = 5;
+            |  oneof choice {
+            |    Inner left = 6;
+            |    string right = 7;
+            |  }
+            |}
+        """.trimMargin(),
+      )
+    }
+    val inner = mapOf("secret" to "S", "keep" to "K")
+    val redactedInner = mapOf("keep" to "K")
+    val adapter = schema.protoAdapter("squareup.redaction.Outer", false)
+
+    val redacted = adapter.redact(
+      mapOf(
+        "name" to "N",
+        "password" to "P",
+        "one" to inner,
+        "many" to listOf(inner),
+        "by_key" to mapOf("k" to inner),
+        "left" to inner,
+      ),
+    )
+
+    assertThat(redacted).isEqualTo(
+      mapOf(
+        "name" to "N",
+        "one" to redactedInner,
+        "many" to listOf(redactedInner),
+        "by_key" to mapOf("k" to redactedInner),
+        "left" to redactedInner,
+      ),
+    )
+  }
 }
