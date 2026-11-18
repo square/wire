@@ -43,6 +43,7 @@ public final class com/squareup/wire/GrpcClient$Builder {
 	public final fun callFactory (Lokhttp3/Call$Factory;)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun callTimeout (JLjava/util/concurrent/TimeUnit;)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun client (Lokhttp3/OkHttpClient;)Lcom/squareup/wire/GrpcClient$Builder;
+	public final fun maxInboundMessageSize (J)Lcom/squareup/wire/GrpcClient$Builder;
 	public final fun minMessageToCompress (J)Lcom/squareup/wire/GrpcClient$Builder;
 }
 

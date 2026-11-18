@@ -36,6 +36,7 @@ internal class BlockingMessageSource<R : Any>(
   val grpcCall: RealGrpcStreamingCall<*, R>,
   val responseAdapter: ProtoAdapter<R>,
   val call: Call,
+  val maxInboundMessageSize: Long,
 ) : MessageSource<R> {
   private val queue = LinkedBlockingDeque<Any>(1)
 
@@ -69,7 +70,7 @@ internal class BlockingMessageSource<R : Any>(
         grpcCall.callTimeout.exitAfter {
           grpcCall.responseMetadata = response.headers.toMap()
           response.use {
-            response.messageSource(responseAdapter).use { reader ->
+            response.messageSource(responseAdapter, maxInboundMessageSize).use { reader ->
               while (true) {
                 val message = reader.read() ?: break
                 queue.put(message)

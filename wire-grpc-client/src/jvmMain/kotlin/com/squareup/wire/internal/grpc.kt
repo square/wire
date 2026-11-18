@@ -86,6 +86,7 @@ internal fun <S : Any> PipeDuplexRequestBody.messageSink(
 internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
   grpcCall: RealGrpcStreamingCall<*, R>,
   responseAdapter: ProtoAdapter<R>,
+  maxInboundMessageSize: Long,
 ): Callback {
   return object : Callback {
     override fun onFailure(call: Call, e: IOException) {
@@ -98,7 +99,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
       runBlocking {
         response.use {
           val messageSource = try {
-            response.messageSource(responseAdapter)
+            response.messageSource(responseAdapter, maxInboundMessageSize)
           } catch (exception: IOException) {
             try {
               close(grpcCall.callTimeout.exit(exception))
@@ -184,11 +185,12 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
 /** Reads messages from the response body. */
 internal fun <R : Any> Response.messageSource(
   protoAdapter: ProtoAdapter<R>,
+  maxMessageSize: Long,
 ): GrpcMessageSource<R> {
   checkGrpcResponse()
   val grpcEncoding = header("grpc-encoding")
   val responseSource = body!!.source()
-  return GrpcMessageSource(responseSource, protoAdapter, grpcEncoding)
+  return GrpcMessageSource(responseSource, protoAdapter, grpcEncoding, maxMessageSize)
 }
 
 /** Returns an exception if the response does not follow the protocol. */
@@ -206,6 +208,9 @@ private fun Response.checkGrpcResponse() {
 
 /** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
 internal fun Response.grpcResponseToException(suppressed: IOException? = null): IOException? {
+  // The client already chose this status, like when a message is too large.
+  if (suppressed is GrpcException) return suppressed
+
   var trailers = headersOf()
   var transportException = suppressed
   if (suppressed == null) {
