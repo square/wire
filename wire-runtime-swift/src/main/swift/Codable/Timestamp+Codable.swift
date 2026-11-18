@@ -69,6 +69,12 @@ extension Wire.Timestamp {
     }
 
     private init(timeIntervalSinceReferenceDate: TimeInterval) {
+        guard timeIntervalSinceReferenceDate.isFinite else {
+            // NaN becomes the epoch and infinities clamp, like `init(timeIntervalSince1970:)`.
+            self.init(timeIntervalSince1970: timeIntervalSinceReferenceDate)
+            return
+        }
+
         // This should be marginally less lossy than using Epoch time
         let decomposed = timeIntervalSinceReferenceDate.decomposed()
         let offset = Int64(Date.timeIntervalBetween1970AndReferenceDate)

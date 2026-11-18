@@ -19,22 +19,29 @@ import Foundation
 
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
 extension Swift.Duration {
-    fileprivate var nanos: Int32 {
-        let nanos = components.attoseconds / 1_000_000_000
-        return Int32(truncatingIfNeeded: nanos)
+    /// The largest and smallest values for which `components` does not trap.
+    /// `components` needs the whole seconds to fit in an `Int64`.
+    fileprivate static let largestRepresentable: Swift.Duration = .seconds(Int64.max) + .nanoseconds(999_999_999)
+    fileprivate static let smallestRepresentable: Swift.Duration = .seconds(Int64.min) - .nanoseconds(999_999_999)
+
+    fileprivate var clampedToRepresentableComponents: Swift.Duration {
+        return Swift.min(Swift.max(self, Swift.Duration.smallestRepresentable), Swift.Duration.largestRepresentable)
     }
 }
 
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
 extension Wire.Duration {
     public func toSwiftDuration() -> Swift.Duration {
-        return .seconds(seconds) + .nanoseconds(nanos)
+        // The sum can be out of range when `seconds` is near the limits of `Int64`.
+        return (.seconds(seconds) + .nanoseconds(nanos)).clampedToRepresentableComponents
     }
 
     public init(duration: Swift.Duration) {
+        // Reading `components` traps for values with more seconds than an `Int64` can hold.
+        let components = duration.clampedToRepresentableComponents.components
         self.init(
-            seconds: duration.components.seconds,
-            nanos: duration.nanos
+            seconds: components.seconds,
+            nanos: Int32(truncatingIfNeeded: components.attoseconds / 1_000_000_000)
         )
     }
 }

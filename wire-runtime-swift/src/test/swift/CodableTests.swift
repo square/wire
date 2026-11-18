@@ -379,6 +379,46 @@ extension CodableTests {
         XCTAssertEqual(Wire.Duration(seconds: -1, nanos: -900).toSwiftDuration(), .seconds(-1) + .nanoseconds(-900))
     }
 
+    func testDurationConversionClampsExtremeValues() {
+        guard #available(macOS 13, iOS 16, watchOS 9, tvOS 16, *) else {
+            return
+        }
+
+        // Reading `components` of a `Swift.Duration` with more than `Int64.max` seconds traps.
+        let tooLarge = Swift.Duration.seconds(Int64.max) + Swift.Duration.seconds(1)
+        let fromTooLarge = Wire.Duration(duration: tooLarge)
+        XCTAssertEqual(fromTooLarge.seconds, Int64.max)
+        XCTAssertEqual(fromTooLarge.nanos, 999_999_999)
+
+        let tooSmall = Swift.Duration.seconds(Int64.min) - Swift.Duration.seconds(1)
+        let fromTooSmall = Wire.Duration(duration: tooSmall)
+        XCTAssertEqual(fromTooSmall.seconds, Int64.min)
+        XCTAssertEqual(fromTooSmall.nanos, -999_999_999)
+
+        let converted = Wire.Duration(seconds: Int64.max, nanos: Int32.max).toSwiftDuration()
+        XCTAssertEqual(Wire.Duration(duration: converted).seconds, Int64.max)
+
+        let convertedMin = Wire.Duration(seconds: Int64.min, nanos: Int32.min).toSwiftDuration()
+        XCTAssertEqual(Wire.Duration(duration: convertedMin).seconds, Int64.min)
+    }
+
+    func testDurationConversionRoundtripsLimits() {
+        guard #available(macOS 13, iOS 16, watchOS 9, tvOS 16, *) else {
+            return
+        }
+
+        let values = [
+            Wire.Duration(seconds: Int64.max, nanos: 999_999_999),
+            Wire.Duration(seconds: Int64.max, nanos: 0),
+            Wire.Duration(seconds: Int64.min, nanos: -999_999_999),
+            Wire.Duration(seconds: Int64.min, nanos: 0),
+            Wire.Duration(seconds: 1, nanos: 5),
+        ]
+        for value in values {
+            XCTAssertEqual(Wire.Duration(duration: value.toSwiftDuration()), value)
+        }
+    }
+
     func testLargeDurationRoundtrip() throws {
         let json = """
         {
@@ -521,6 +561,15 @@ extension CodableTests {
         XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: .nan), Wire.Timestamp(seconds: 0, nanos: 0))
         XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: 1e19).seconds, Int64.max)
         XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: -1e19).seconds, Int64.min)
+    }
+
+    func testTimestampFromNonFiniteDateDoesNotTrap() {
+        let epoch = Wire.Timestamp(seconds: 0, nanos: 0)
+
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: .nan)), epoch)
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: .nan)), Wire.Timestamp(timeIntervalSince1970: .nan))
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: .infinity)).seconds, Int64.max)
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: -.infinity)).seconds, Int64.min)
     }
 
     func testTimestampWithMinimumSecondsEncodesJson() throws {
