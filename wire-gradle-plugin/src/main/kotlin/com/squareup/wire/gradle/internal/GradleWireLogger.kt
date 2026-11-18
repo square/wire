@@ -56,6 +56,10 @@ internal object GradleWireLogger : WireLogger {
     )
   }
 
+  override fun warning(message: String) {
+    slf4jLogger.warn(message)
+  }
+
   override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
     slf4jLogger.debug("Writing {} to {} (target={})", qualifiedName, outputPath, targetName)
   }
