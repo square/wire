@@ -86,6 +86,47 @@ class FieldElementTest {
   }
 
   @Test
+  fun bytesDefaultIsQuotedAndEscaped() {
+    val field = FieldElement(
+      location = location,
+      label = OPTIONAL,
+      type = "bytes",
+      name = "data",
+      tag = 1,
+      defaultValue = "a\"b\nc\u0000",
+    )
+
+    assertThat(field.toSchema())
+      .isEqualTo(
+        """
+            |optional bytes data = 1 [default = "a\"b\nc\000"];
+            |
+        """.trimMargin(),
+      )
+  }
+
+  @Test
+  fun bytesDefaultRoundTrips() {
+    val defaultValue = "a\"b\nc\u0000d"
+    val field = FieldElement(
+      location = location,
+      label = OPTIONAL,
+      type = "bytes",
+      name = "data",
+      tag = 1,
+      defaultValue = defaultValue,
+    )
+    val message = MessageElement(location = location, name = "M", fields = listOf(field))
+    val schema = ProtoFileElement(location = location, types = listOf(message)).toSchema()
+
+    val parsed = ProtoParser.parse(location, schema)
+
+    val parsedField = (parsed.types.single() as MessageElement).fields.single()
+    assertThat(parsedField.defaultValue).isEqualTo(defaultValue)
+    assertThat(parsed.types).hasSize(1)
+  }
+
+  @Test
   fun jsonNameAndDefaultValue() {
     val field = FieldElement(
       location = location,

@@ -76,8 +76,9 @@ data class FieldElement(
   // Only non-repeated scalar types and Enums support default values.
   private fun ProtoType.toKind(): OptionElement.Kind = when (simpleName) {
     "bool" -> OptionElement.Kind.BOOLEAN
-    "string" -> OptionElement.Kind.STRING
+    "string",
     "bytes",
+    -> OptionElement.Kind.STRING
     "double",
     "float",
     "fixed32",

@@ -55,6 +55,8 @@ internal fun String.escapeQuotedString(): String = buildString {
         '\u0007' -> "\\a"
         '\u000C' -> "\\f"
         '\u000b' -> "\\v"
+        // Other control characters get three octal digits, like protoc, so a digit after them is safe.
+        in '\u0000'..'\u001f', '\u007f' -> "\\" + ch.code.toString(8).padStart(3, '0')
         else -> ch
       },
     )
