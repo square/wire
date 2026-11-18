@@ -81,9 +81,9 @@ internal class BlockingMessageSource<R : Any>(
           }
         }
         queue.put(Complete)
-      } catch (e: IOException) {
+      } catch (e: Throwable) {
         call.cancel() // Break the request stream if the response stream breaks.
-        queue.put(Failure(e))
+        queue.put(Failure(e.asIOException()))
       }
     }
   }

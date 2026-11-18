@@ -120,6 +120,8 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
               exception = response.grpcResponseToException(e)
             } catch (e: Exception) {
               exception = e
+            } catch (e: Throwable) {
+              exception = e.asIOException()
             } finally {
               if (exception is IOException) {
                 exception = grpcCall.callTimeout.exit(exception)
@@ -203,6 +205,9 @@ private fun Response.checkGrpcResponse() {
     throw IOException("expected gRPC but was HTTP status=$code, content-type=$contentType")
   }
 }
+
+/** Returns this if it is an [IOException], or an [IOException] that wraps it. */
+internal fun Throwable.asIOException(): IOException = this as? IOException ?: IOException(message, this)
 
 /** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
 internal fun Response.grpcResponseToException(suppressed: IOException? = null): IOException? {

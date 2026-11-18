@@ -70,15 +70,17 @@ internal class RealGrpcCall<S : Any, R : Any>(
         }
 
         override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-          try {
-            val message = callTimeout.exitAfter {
+          val message = try {
+            callTimeout.exitAfter {
               responseMetadata = response.headers.toMap()
               response.readExactlyOneAndClose()
             }
-            continuation.resume(message)
-          } catch (e: IOException) {
-            continuation.resumeWithException(e)
+          } catch (e: Throwable) {
+            // Always complete the call. OkHttp would otherwise rethrow on its dispatcher thread.
+            continuation.resumeWithException(e.asIOException())
+            return
           }
+          continuation.resume(message)
         }
       })
     }
@@ -101,15 +103,17 @@ internal class RealGrpcCall<S : Any, R : Any>(
       }
 
       override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-        try {
-          val message = callTimeout.exitAfter {
+        val message = try {
+          callTimeout.exitAfter {
             responseMetadata = response.headers.toMap()
             response.readExactlyOneAndClose()
           }
-          callback.onSuccess(this@RealGrpcCall, message)
-        } catch (e: IOException) {
-          callback.onFailure(this@RealGrpcCall, e)
+        } catch (e: Throwable) {
+          // Always complete the call. OkHttp would otherwise rethrow on its dispatcher thread.
+          callback.onFailure(this@RealGrpcCall, e.asIOException())
+          return
         }
+        callback.onSuccess(this@RealGrpcCall, message)
       }
     })
   }

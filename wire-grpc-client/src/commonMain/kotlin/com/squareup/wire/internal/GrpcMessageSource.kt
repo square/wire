@@ -19,6 +19,7 @@ import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import okio.Buffer
 import okio.BufferedSource
+import okio.IOException
 import okio.buffer
 
 /**
@@ -57,7 +58,13 @@ internal class GrpcMessageSource<T : Any>(
     val encodedMessage = Buffer().write(source, encodedLength)
 
     return messageDecoding.decode(encodedMessage).buffer().use(BufferedSource::close) {
-      messageAdapter.decode(it)
+      try {
+        messageAdapter.decode(it)
+      } catch (e: RuntimeException) {
+        // A decoder can throw an unchecked exception for a message that is not valid, like one that
+        // omits a required field. Report it like any other failure to read the response.
+        throw IOException("failed to decode message: ${e.message}", e)
+      }
     }
   }
 
