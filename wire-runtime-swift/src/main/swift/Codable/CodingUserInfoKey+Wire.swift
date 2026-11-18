@@ -180,4 +180,10 @@ public struct StringLiteralCodingKeys : CodingKey, ExpressibleByStringLiteral {
         self.stringValue = stringLiteral
         self.intValue = nil
     }
+
+    /** A key for a map entry. Its `intValue` tells message nesting depth checks that it is not a field name. */
+    internal init(mapEntryKey stringValue: String) {
+        self.stringValue = stringValue
+        self.intValue = 0
+    }
 }
