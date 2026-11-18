@@ -156,17 +156,33 @@ abstract class JsonIntegration<F, A> {
   private object UnsignedLongAsNumberJsonFormatter : JsonFormatter<Long> {
     // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
     private val power64 = BigInteger("18446744073709551616")
-    private val maxLong = BigInteger.valueOf(Long.MAX_VALUE)
+    private val maxUnsignedLong = power64.subtract(BigInteger.ONE)
+
+    // Real values need 20 digits. The extra room allows leading and trailing zeros.
+    private const val MAX_LENGTH = 1000
+    private const val MAX_EXPONENT = 1000
 
     override fun fromString(value: String): Long {
+      if (value.length > MAX_LENGTH) throw NumberFormatException("value is too long")
       val bigInteger = try {
         BigInteger(value)
-      } catch (e: Exception) {
+      } catch (e: NumberFormatException) {
+        checkExponent(value)
         BigDecimal(value).toBigInteger() // Handle extra trailing values like 5.0.
       }
-      return when {
-        bigInteger > maxLong -> bigInteger.subtract(power64).toLong()
-        else -> bigInteger.toLong()
+      if (bigInteger.signum() < 0 || bigInteger > maxUnsignedLong) {
+        throw NumberFormatException("value is out of range for an unsigned 64-bit integer")
+      }
+      return bigInteger.toLong() // The low 64 bits, which is the unsigned value.
+    }
+
+    /** Throws if [value] has an exponent that would make [BigDecimal] slow. */
+    private fun checkExponent(value: String) {
+      val exponentIndex = value.indexOfFirst { it == 'e' || it == 'E' }
+      if (exponentIndex == -1) return
+      val exponent = value.substring(exponentIndex + 1).toInt()
+      if (exponent > MAX_EXPONENT || exponent < -MAX_EXPONENT) {
+        throw NumberFormatException("exponent is too large")
       }
     }
 
@@ -204,6 +220,7 @@ abstract class JsonIntegration<F, A> {
 
     override fun fromString(value: String): Int {
       val longValue = value.toDouble().toLong() // Handle extra trailing values like 5.0.
+      checkUnsignedIntRange(longValue)
       return when {
         longValue >= maxInt -> (longValue - power32).toInt()
         else -> longValue.toInt()
@@ -222,7 +239,11 @@ abstract class JsonIntegration<F, A> {
     @Suppress("ktlint:standard:property-naming")
     private const val power32 = 1L shl 32
 
-    override fun fromString(value: String) = value.toLong().toInt()
+    override fun fromString(value: String): Int {
+      val longValue = value.toLong()
+      checkUnsignedIntRange(longValue)
+      return longValue.toInt()
+    }
 
     override fun toStringOrNumber(value: Int): Any = when {
       value < 0 -> (value + power32).toString()
@@ -246,5 +267,15 @@ abstract class JsonIntegration<F, A> {
   private object StringJsonFormatter : JsonFormatter<String> {
     override fun toStringOrNumber(value: String) = value
     override fun fromString(value: String) = value
+  }
+}
+
+/**
+ * Accepts the unsigned 32-bit range, and also negative values that fit in a signed 32-bit
+ * integer. Wire has always decoded those to the same bits.
+ */
+private fun checkUnsignedIntRange(value: Long) {
+  if (value < Int.MIN_VALUE.toLong() || value > UInt.MAX_VALUE.toLong()) {
+    throw NumberFormatException("value is out of range for an unsigned 32-bit integer")
   }
 }

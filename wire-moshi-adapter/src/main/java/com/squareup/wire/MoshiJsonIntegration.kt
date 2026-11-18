@@ -118,8 +118,13 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
       reader.beginObject()
       while (reader.hasNext()) {
         val name = reader.nextName()
-        val key = keyFormatter.fromString(name) as K
-        val value = valueAdapter.fromJson(reader)!!
+        val key = try {
+          keyFormatter.fromString(name) as K
+        } catch (_: RuntimeException) {
+          throw JsonDataException("decode failed: $name at path ${reader.path}")
+        }
+        val value = valueAdapter.fromJson(reader)
+          ?: throw JsonDataException("expected a value for key $name at path ${reader.path}")
         result[key] = value
       }
       reader.endObject()
