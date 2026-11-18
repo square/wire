@@ -145,6 +145,30 @@ final class RedactableTests: XCTestCase {
         ], visible: ["visible-req", "visible-opt"])
     }
 
+    func testStringFieldsAreEscaped() {
+        let redacted = RedactedUnderscores(
+            req_under: "secret",
+            _req_lead: "secret",
+            req_trail_: "secret",
+            __req_double__: "secret",
+            req_visible_: "a\"b\\c\nINFO forged\r\n\tx\u{1B}[31m\u{0}\u{7F}\u{85}\u{2028}é"
+        )
+        let description = redacted.description
+        XCTAssertTrue(
+            description.contains(#"req_visible: "a\"b\\c\nINFO forged\r\n\tx\u{1B}[31m\0\u{7F}\u{85}\u{2028}é""#),
+            description
+        )
+        let controls = description.unicodeScalars.filter {
+            $0.value < 0x20 || (0x7F...0x9F).contains($0.value) || $0.value == 0x2028
+        }
+        XCTAssertTrue(controls.isEmpty, description)
+    }
+
+    func testOneOfStringsAreEscaped() {
+        let choice = RedactedUnderscores.Choice.choice_visible_("v\", forged: 1)\nINFO forged")
+        XCTAssertEqual(choice.description, #"Choice(choice_visible: "v\", forged: 1)\nINFO forged")"#)
+    }
+
     private func assertOnlyVisible(
         _ description: String,
         secrets: [String],

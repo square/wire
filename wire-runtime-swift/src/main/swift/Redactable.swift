@@ -57,6 +57,30 @@ extension Redactable {
     }
 
     /**
+     Returns a string in quotes, with quotes, backslashes, and control characters escaped.
+
+     This keeps a string value from ending its field or starting a new log line.
+     */
+    private func quoted(_ string: String) -> String {
+        var result = "\""
+        for scalar in string.unicodeScalars {
+            switch scalar {
+            case "\"": result += "\\\""
+            case "\\": result += "\\\\"
+            case "\n": result += "\\n"
+            case "\r": result += "\\r"
+            case "\t": result += "\\t"
+            case "\0": result += "\\0"
+            case "\u{0}"..."\u{1F}", "\u{7F}"..."\u{9F}", "\u{2028}", "\u{2029}":
+                let hex = String(scalar.value, radix: 16, uppercase: true)
+                result += "\\u{" + (hex.count < 2 ? "0" : "") + hex + "}"
+            default: result.unicodeScalars.append(scalar)
+            }
+        }
+        return result + "\""
+    }
+
+    /**
      Prints a redacted summary of the object.
      */
     public var description: String {
@@ -80,8 +104,8 @@ extension Redactable {
                     return "\(strippedLabel): <redacted>"
                 }
             }
-            if value is String {
-                return "\(strippedLabel): \"\(value)\""
+            if let string = value as? String {
+                return "\(strippedLabel): \(quoted(string))"
             }
             return "\(strippedLabel): \(value)"
         }
