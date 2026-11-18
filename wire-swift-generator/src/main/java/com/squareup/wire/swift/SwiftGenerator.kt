@@ -162,13 +162,13 @@ class SwiftGenerator private constructor(
       else -> isMap || isRepeated
     }
 
-  private val Field.codableDefaultValue: String?
+  private val Field.codableDefaultValue: CodeBlock?
     get() = default?.let {
-      return it
+      return defaultFieldInitializer(type!!, it)
     } ?: when (typeName.makeNonOptional()) {
-      BOOL -> "false"
-      DOUBLE, FLOAT -> "0"
-      INT32, UINT32, INT64, UINT64 -> "0"
+      BOOL -> CodeBlock.of("false")
+      DOUBLE, FLOAT -> CodeBlock.of("0")
+      INT32, UINT32, INT64, UINT64 -> CodeBlock.of("0")
       else -> null
     }
 
@@ -188,7 +188,7 @@ class SwiftGenerator private constructor(
       // Proto2 allows for non-zero default values
       // We can only handle them if the enum has no pruned values
       syntax == PROTO_3
-    }?.firstOrNull { it.tag == 0 }?.name
+    }?.firstOrNull { it.tag == 0 }?.name?.toSwiftIdentifier()
 
   private val Field.isProtoDefaulted: Boolean
     get() {
@@ -310,11 +310,11 @@ class SwiftGenerator private constructor(
   ): List<TypeSpec> {
     val structType = type.typeName
     val oneOfEnumNames = type.oneOfs.associateWith {
-      structType.nestedType(it.name.replaceFirstChar(Char::uppercase))
+      structType.nestedType(it.safeName.replaceFirstChar(Char::uppercase))
     }
 
     // TODO use a NameAllocator
-    val propertyNames = type.declaredFields.map { it.name } + type.oneOfs.map { it.name }
+    val propertyNames = type.declaredFields.map { it.safeName } + type.oneOfs.map { it.safeName }
 
     val storageType = structType.nestedType("Storage")
     val storageName = if ("storage" in propertyNames) "_storage" else "storage"
@@ -400,7 +400,7 @@ class SwiftGenerator private constructor(
             .apply {
               type.fields.forEach { field ->
                 if (field.isRedacted) {
-                  addEnumCase(field.name)
+                  addEnumCase(field.name.toSwiftIdentifier())
                 }
               }
             }
@@ -606,7 +606,7 @@ class SwiftGenerator private constructor(
             .associateWith { allocateLocalName("${it.safeName}ProtoData") }
           val oneOfTagNames = type.oneOfs
             .filter { oneOf -> oneOf.fields.any { it.isMessage } }
-            .associateWith { allocateLocalName("${it.name}ProtoTag") }
+            .associateWith { allocateLocalName("${it.safeName}ProtoTag") }
 
           // ProtoReader.decode() returns nil for an unrecognized enum value after retaining it in
           // unknownFields. Bind the result so an unknown occurrence never overwrites an earlier
@@ -644,7 +644,7 @@ class SwiftGenerator private constructor(
           }
           type.oneOfs.forEach { oneOf ->
             val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
-            addStatement("var %N: %T = nil", oneOf.name, enumName.makeOptional())
+            addStatement("var %N: %T = nil", oneOf.safeName, enumName.makeOptional())
             oneOfTagNames[oneOf]?.let { tagName ->
               addStatement("var %N: %T = nil", tagName, UINT32.makeOptional())
             }
@@ -718,7 +718,7 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: if let %6N = try $reader.decode(%4T.self) { %5N = %1L; %2N = .%3N(%6N) }",
                       field.tag,
-                      oneOf.name,
+                      oneOf.safeName,
                       field.safeName,
                       field.typeName.makeNonOptional(),
                       tagName,
@@ -728,7 +728,7 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: if let %5N = try $reader.decode(%4T.self) { %2N = .%3N(%5N) }",
                       field.tag,
-                      oneOf.name,
+                      oneOf.safeName,
                       field.safeName,
                       field.typeName.makeNonOptional(),
                       enumValue,
@@ -741,7 +741,7 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: %5N = %1L; %2N = .%3N(try $reader.decode(%4T.self))",
                       field.tag,
-                      oneOf.name,
+                      oneOf.safeName,
                       field.safeName,
                       field.typeName.makeNonOptional(),
                       tagName,
@@ -750,7 +750,7 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: %2N = .%3N(try $reader.decode(%4T.self))",
                       field.tag,
-                      oneOf.name,
+                      oneOf.safeName,
                       field.safeName,
                       field.typeName.makeNonOptional(),
                     )
@@ -780,7 +780,7 @@ class SwiftGenerator private constructor(
               beginControlFlow("if", "%N == %L, let %N", tagName, field.tag, dataName)
               addStatement(
                 "%N = .%N(try $reader.decodeMergedMessage(%T.self, from: %N))",
-                oneOf.name,
+                oneOf.safeName,
                 field.safeName,
                 field.typeName.makeNonOptional(),
                 dataName,
@@ -824,7 +824,7 @@ class SwiftGenerator private constructor(
             )
           }
           type.oneOfs.forEach { oneOf ->
-            addStatement("self.%1N = %1N", oneOf.name)
+            addStatement("self.%1N = %1N", oneOf.safeName)
           }
         }
         .build(),
@@ -859,8 +859,8 @@ class SwiftGenerator private constructor(
             }
           }
           type.oneOfs.forEach { oneOf ->
-            beginControlFlow("if", "let %1N = self.%1N", oneOf.name)
-            addStatement("try %N.encode(to: $writer)", oneOf.name)
+            beginControlFlow("if", "let %1N = self.%1N", oneOf.safeName)
+            addStatement("try %N.encode(to: $writer)", oneOf.safeName)
             endControlFlow("if")
           }
         }
@@ -1041,10 +1041,10 @@ class SwiftGenerator private constructor(
                       keyName,
                     )
                   }
-                  addStatement("self.%1N = .%2N(%3N)", oneOf.name, field.safeName, fieldName)
+                  addStatement("self.%1N = .%2N(%3N)", oneOf.safeName, field.safeName, fieldName)
                 }
                 nextControlFlow("else", "")
-                addStatement("self.%N = nil", oneOf.name)
+                addStatement("self.%N = nil", oneOf.safeName)
                 endControlFlow("if")
               }
             }
@@ -1112,7 +1112,7 @@ class SwiftGenerator private constructor(
                   addEncode()
                   endControlFlow("if")
                 } else if (defaultValue != null) {
-                  beginControlFlow("if", "includeDefaults || self.%N != $defaultValue", field.safeName)
+                  beginControlFlow("if", "includeDefaults || self.%N != %L", field.safeName, defaultValue)
                   addEncode()
                   endControlFlow("if")
                 } else {
@@ -1123,7 +1123,7 @@ class SwiftGenerator private constructor(
               }
 
               type.oneOfs.forEach { oneOf ->
-                beginControlFlow("switch", "self.%N", oneOf.name)
+                beginControlFlow("switch", "self.%N", oneOf.safeName)
                 oneOf.fields.forEach { field ->
                   val (keys, args) = field.codableName?.let { codableName ->
                     Pair(
@@ -1178,7 +1178,7 @@ class SwiftGenerator private constructor(
       type.oneOfs.forEach { oneOf ->
         val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
         addParameter(
-          ParameterSpec.builder(oneOf.name, enumName)
+          ParameterSpec.builder(oneOf.safeName, enumName)
             .defaultValue("nil")
             .build(),
         )
@@ -1506,7 +1506,7 @@ class SwiftGenerator private constructor(
       val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
 
       addProperty(
-        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+        PropertySpec.varBuilder(oneOf.safeName, enumName.makeOptional(), PUBLIC)
           .apply {
             if (oneOf.documentation.isNotBlank()) {
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
@@ -1540,13 +1540,13 @@ class SwiftGenerator private constructor(
       typeName == UINT64 -> defaultValue.toUInt64FieldInitializer()
       typeName == FLOAT -> defaultValue.toFloatFieldInitializer()
       typeName == DOUBLE -> defaultValue.toDoubleFieldInitializer()
-      typeName == STRING -> CodeBlock.of("%S", defaultValue)
+      typeName == STRING -> CodeBlock.of("%L", defaultValue.toString().toSwiftStringLiteral())
       typeName == DATA -> CodeBlock.of(
         "%T(base64Encoded: %S)!",
         FOUNDATION_DATA,
         defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
       )
-      protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue)
+      protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue.toString().toSwiftIdentifier())
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
   }
@@ -1586,7 +1586,11 @@ class SwiftGenerator private constructor(
     "-inf" -> CodeBlock.of("-Float.infinity")
     "nan" -> CodeBlock.of("Float.nan")
     "-nan" -> CodeBlock.of("Float.nan * -1")
-    else -> CodeBlock.of("%L", this.toString())
+    else -> {
+      // Swift rejects literals such as `1.` and `.5`, so rewrite anything that is not plain.
+      val text = this.toString()
+      CodeBlock.of("%L", if (SWIFT_FLOAT_LITERAL.matches(text)) text else text.toFloat().toString())
+    }
   }
 
   private fun Any.toDoubleFieldInitializer(): CodeBlock = when (this) {
@@ -1661,15 +1665,15 @@ class SwiftGenerator private constructor(
       val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
 
       addProperty(
-        PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+        PropertySpec.varBuilder(oneOf.safeName, enumName.makeOptional(), PUBLIC)
           .getter(
             FunctionSpec.getterBuilder()
-              .addStatement("%N.%N", storageName, oneOf.name)
+              .addStatement("%N.%N", storageName, oneOf.safeName)
               .build(),
           )
           .setter(
             FunctionSpec.setterBuilder()
-              .addStatement("%N.%N = newValue", storageName, oneOf.name)
+              .addStatement("%N.%N = newValue", storageName, oneOf.safeName)
               .build(),
           )
           .apply {
@@ -1778,7 +1782,7 @@ class SwiftGenerator private constructor(
               .apply {
                 oneOf.fields.forEach { field ->
                   if (field.isRedacted) {
-                    addEnumCase(field.name)
+                    addEnumCase(field.name.toSwiftIdentifier())
                   }
                 }
               }
@@ -1806,7 +1810,7 @@ class SwiftGenerator private constructor(
 
     while (currentType != null) {
       val simpleName = currentType.simpleName
-      if (oneOf.name.equals(simpleName, ignoreCase = true)) {
+      if (oneOf.safeName.equals(simpleName, ignoreCase = true)) {
         return oneOfTypeName.peerType("${oneOfTypeName.simpleName}_OneOf")
       }
 
@@ -1859,7 +1863,7 @@ class SwiftGenerator private constructor(
         }
         type.constants.forEach { constant ->
           addEnumCase(
-            EnumerationCaseSpec.builder(constant.name, constant.tag)
+            EnumerationCaseSpec.builder(constant.name.toSwiftIdentifier(), constant.tag)
               .apply {
                 if (constant.documentation.isNotBlank()) {
                   addDoc("%L\n", constant.documentation.sanitizeDoc())
@@ -1880,7 +1884,7 @@ class SwiftGenerator private constructor(
                 .beginControlFlow("switch", "self")
                 .apply {
                   type.constants.forEach { constant ->
-                    addStatement("case .%1N: return \"%1N\"", constant.name)
+                    addStatement("case .%N: return %S", constant.name.toSwiftIdentifier(), constant.name)
                   }
                 }
                 .endControlFlow("switch")
@@ -1899,7 +1903,7 @@ class SwiftGenerator private constructor(
                 FunctionSpec.getterBuilder()
                   .addStatement(
                     "return [%L]",
-                    type.constants.map { CodeBlock.of(".%N", it.name) }
+                    type.constants.map { CodeBlock.of(".%N", it.name.toSwiftIdentifier()) }
                       .joinToCode(",%W"),
                   )
                   .build(),
@@ -1948,7 +1952,7 @@ class SwiftGenerator private constructor(
           "Type" -> "Type_"
           "Error" -> "Error_"
           "Self" -> "Self_"
-          else -> this.simpleName
+          else -> this.simpleName.toSwiftIdentifier()
         }
       }
 
@@ -1956,8 +1960,35 @@ class SwiftGenerator private constructor(
     val Field.safeName: String
       get() = when (name) {
         "description" -> "description_"
-        else -> name
+        else -> name.toSwiftIdentifier()
       }
+
+    val OneOf.safeName: String
+      get() = name.toSwiftIdentifier()
+
+    /**
+     * Returns this string as a Swift string literal. SwiftPoet's `%S` writes `$` as `${'$'}`, which
+     * is Kotlin syntax and wrong in Swift.
+     */
+    private fun String.toSwiftStringLiteral(): String = buildString {
+      append('"')
+      for (c in this@toSwiftStringLiteral) {
+        when {
+          c == '"' -> append("\\\"")
+          c == '\\' -> append("\\\\")
+          c == '\n' -> append("\\n")
+          c == '\r' -> append("\\r")
+          c == '\t' -> append("\\t")
+          c == '\u0000' -> append("\\0")
+          c < ' ' || c == '\u007f' -> append("\\u{").append(c.code.toString(16)).append('}')
+          else -> append(c)
+        }
+      }
+      append('"')
+    }
+
+    /** Proto names can hold `-` and `.`, which Swift identifiers cannot. */
+    private fun String.toSwiftIdentifier(): String = replace('-', '_').replace('.', '_')
 
     val MessageType.isExtensible: Boolean
       get() = extensionsList.isNotEmpty()
@@ -2032,6 +2063,8 @@ class SwiftGenerator private constructor(
     private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
     private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
     private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
+
+    private val SWIFT_FLOAT_LITERAL = Regex("-?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?")
 
     private val NEEDS_CUSTOM_CODABLE = setOf("Duration", "Timestamp")
 
