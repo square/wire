@@ -91,7 +91,7 @@ class SchemaReflector(
       return ServerReflectionResponse(
         error_response = ErrorResponse(
           error_code = GrpcStatus.NOT_FOUND.code,
-          error_message = "unknown type: \"$extension.containing_type\"",
+          error_message = "unknown type: \"${extension.containing_type}\"",
         ),
       )
     }
@@ -101,7 +101,7 @@ class SchemaReflector(
       ?: return ServerReflectionResponse(
         error_response = ErrorResponse(
           error_code = GrpcStatus.NOT_FOUND.code,
-          error_message = "unknown type: \"$extension.containing_type\"",
+          error_message = "unknown type: \"${extension.containing_type}\"",
         ),
       )
 
@@ -136,7 +136,14 @@ class SchemaReflector(
   }
 
   private fun fileByFilename(request: ServerReflectionRequest): ServerReflectionResponse {
-    val protoFile = schema.protoFile(request.file_by_filename!!)!!
+    val fileName = request.file_by_filename!!
+    val protoFile = schema.protoFile(fileName)
+      ?: return ServerReflectionResponse(
+        error_response = ErrorResponse(
+          error_code = GrpcStatus.NOT_FOUND.code,
+          error_message = "unknown file: $fileName",
+        ),
+      )
     val allProtoFiles = allDependencies(protoFile)
     val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
@@ -170,8 +177,9 @@ class SchemaReflector(
     val type = schema.getType(symbol)
     if (type != null) return type.location
 
+    if ('.' !in symbol) return null
     val beforeLastDotName = symbol.substringBeforeLast(".")
-    val afterLastDot = symbol.substring(beforeLastDotName.length + 1)
+    val afterLastDot = symbol.substringAfterLast(".")
 
     val serviceWithMethod = schema.getService(beforeLastDotName)
     if (serviceWithMethod?.rpc(afterLastDot) != null) return serviceWithMethod.location
