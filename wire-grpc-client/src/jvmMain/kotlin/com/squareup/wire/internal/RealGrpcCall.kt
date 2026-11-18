@@ -76,8 +76,9 @@ internal class RealGrpcCall<S : Any, R : Any>(
               response.readExactlyOneAndClose()
             }
           } catch (e: Throwable) {
-            // Always complete the call. OkHttp would otherwise rethrow on its dispatcher thread.
+            // Complete the call first. Like OkHttp, then rethrow an Error that nothing should handle.
             continuation.resumeWithException(e.asIOException())
+            if (e is Error) throw e
             return
           }
           continuation.resume(message)
@@ -109,8 +110,9 @@ internal class RealGrpcCall<S : Any, R : Any>(
             response.readExactlyOneAndClose()
           }
         } catch (e: Throwable) {
-          // Always complete the call. OkHttp would otherwise rethrow on its dispatcher thread.
+          // Complete the call first. Like OkHttp, then rethrow an Error that nothing should handle.
           callback.onFailure(this@RealGrpcCall, e.asIOException())
+          if (e is Error) throw e
           return
         }
         callback.onSuccess(this@RealGrpcCall, message)

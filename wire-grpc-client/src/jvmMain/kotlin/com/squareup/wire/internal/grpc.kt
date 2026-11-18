@@ -110,6 +110,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
 
           messageSource.use { reader ->
             var exception: Exception? = null
+            var fatal: Error? = null
             try {
               while (true) {
                 val message = reader.read() ?: break
@@ -120,8 +121,9 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
               exception = response.grpcResponseToException(e)
             } catch (e: Exception) {
               exception = e
-            } catch (e: Throwable) {
+            } catch (e: Error) {
               exception = e.asIOException()
+              fatal = e
             } finally {
               if (exception is IOException) {
                 exception = grpcCall.callTimeout.exit(exception)
@@ -134,6 +136,8 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
                 // If it's already canceled, there's nothing more to do.
               }
             }
+            // Like OkHttp, rethrow an Error that nothing should handle after the call completed.
+            fatal?.let { throw it }
           }
         }
       }

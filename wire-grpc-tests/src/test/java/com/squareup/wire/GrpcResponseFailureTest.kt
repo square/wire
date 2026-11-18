@@ -21,9 +21,11 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotInstanceOf
+import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
@@ -34,6 +36,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import okio.IOException
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -57,7 +60,12 @@ class GrpcResponseFailureTest {
   private lateinit var grpcClient: GrpcClient
 
   /** A method that fails to decode like a generated adapter does when a required field is absent. */
-  private val undecodableMethod = GrpcMethod(
+  private val undecodableMethod = methodThatFailsToDecode { IllegalStateException("Required field not set") }
+
+  /** A method whose decoder throws an [Error], which the client does not turn into a message. */
+  private val brokenDecoderMethod = methodThatFailsToDecode { AssertionError("broken decoder") }
+
+  private fun methodThatFailsToDecode(failure: () -> Throwable) = GrpcMethod(
     path = "/routeguide.RouteGuide/GetFeature",
     requestAdapter = Point.ADAPTER,
     responseAdapter = object : ProtoAdapter<Feature>(
@@ -69,9 +77,13 @@ class GrpcResponseFailureTest {
       override fun redact(value: Feature) = value
       override fun encodedSize(value: Feature) = Feature.ADAPTER.encodedSize(value)
       override fun encode(writer: ProtoWriter, value: Feature) = Feature.ADAPTER.encode(writer, value)
-      override fun decode(reader: ProtoReader): Feature = throw IllegalStateException("Required field not set")
+      override fun decode(reader: ProtoReader): Feature = throw failure()
     },
   )
+
+  /** Errors that reached the uncaught exception handler, like OkHttp's dispatcher thread does. */
+  private val uncaught = LinkedBlockingQueue<Throwable>()
+  private var previousUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
   private val method = GrpcMethod(
     path = "/routeguide.RouteGuide/GetFeature",
@@ -81,6 +93,8 @@ class GrpcResponseFailureTest {
 
   @Before
   fun setUp() {
+    previousUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+    Thread.setDefaultUncaughtExceptionHandler { _, e -> uncaught += e }
     mockWebServer.protocols = listOf(Protocol.H2_PRIOR_KNOWLEDGE)
     val okhttpClient = OkHttpClient.Builder()
       .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
@@ -89,6 +103,11 @@ class GrpcResponseFailureTest {
       .client(okhttpClient)
       .baseUrl(mockWebServer.url("/"))
       .build()
+  }
+
+  @After
+  fun tearDown() {
+    Thread.setDefaultUncaughtExceptionHandler(previousUncaughtExceptionHandler)
   }
 
   @Test
@@ -198,6 +217,66 @@ class GrpcResponseFailureTest {
     val (sink, response) = grpcClient.newClientStreamingCall(undecodableMethod).executeBlocking()
     sink.close()
     assertFailure { response.get() }.isDecodeFailure()
+  }
+
+  @Test
+  fun errorWhileDecodingBlockingUnaryIsThrownToTheCaller() {
+    enqueue(grpcStatus = "0")
+    assertFailure {
+      grpcClient.newCall(brokenDecoderMethod).executeBlocking(Point())
+    }.isInstanceOf<AssertionError>()
+  }
+
+  @Test
+  fun errorWhileDecodingSuspend() {
+    enqueue(grpcStatus = "0")
+    assertFailure {
+      runBlocking { grpcClient.newCall(brokenDecoderMethod).execute(Point()) }
+    }.isFailureCausedByError()
+    assertThatErrorIsRethrown()
+  }
+
+  @Test
+  fun errorWhileDecodingCallback() {
+    enqueue(grpcStatus = "0")
+    assertFailure {
+      awaitCallback(grpcClient.newCall(brokenDecoderMethod))
+    }.isFailureCausedByError()
+    assertThatErrorIsRethrown()
+  }
+
+  @Test
+  fun errorWhileDecodingStreamingBlocking() {
+    enqueue(grpcStatus = "0")
+    val (sink, source) = grpcClient.newStreamingCall(brokenDecoderMethod).executeBlocking()
+    sink.close()
+    assertFailure { source.read() }.isFailureCausedByError()
+    assertThatErrorIsRethrown()
+  }
+
+  @Test
+  fun errorWhileDecodingStreamingSuspend() {
+    enqueue(grpcStatus = "0")
+    val (requests, responses) = grpcClient.newStreamingCall(brokenDecoderMethod).executeIn(GlobalScope)
+    requests.close()
+    assertFailure {
+      runBlocking { responses.receive() }
+    }.isFailureCausedByError()
+    assertThatErrorIsRethrown()
+  }
+
+  /** Like OkHttp, the client completes the call and then rethrows the [Error]. */
+  private fun assertThatErrorIsRethrown() {
+    val error = uncaught.poll(10, TimeUnit.SECONDS)
+    assertThat(error).isNotNull().isInstanceOf<AssertionError>()
+  }
+
+  private fun Assert<Throwable>.isFailureCausedByError() {
+    isInstanceOf<IOException>()
+    isNotInstanceOf<GrpcException>()
+    transform("causes") { generateSequence<Throwable>(it) { e -> e.cause }.toList() }
+      .transform("has AssertionError") { causes -> causes.any { it is AssertionError } }
+      .isTrue()
   }
 
   /** Enqueues one empty message followed by the trailers. */
