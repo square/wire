@@ -60,6 +60,14 @@ open class ProtoReader(
   // bytecode and in Kotlin/JS and Kotlin/Native klibs.
   constructor(source: BufferedSource) : this(source, DEFAULT_RECURSION_LIMIT)
 
+  /** Creates a reader that decodes a merged message at the recursion depth of its caller. */
+  internal constructor(source: BufferedSource, context: MergeContext) : this(source, context.recursionLimit) {
+    recursionBase = context.recursionDepth
+    recursionDepth = context.recursionDepth
+    mergeBudget = context.budget
+    mergeAllowance = context.allowance
+  }
+
   init {
     require(recursionLimit >= 0) { "recursionLimit=$recursionLimit must not be negative" }
   }
@@ -83,6 +91,15 @@ open class ProtoReader(
   /** The current number of levels of message nesting. */
   private var recursionDepth = 0
 
+  /** The nesting level of the caller if this reader decodes a merged message, or 0. */
+  private var recursionBase = 0
+
+  /** Shared by all readers that decode merged messages for the same outermost reader. */
+  private var mergeBudget: MergeBudget? = null
+
+  /** The merge work allowed for this reader, or null to compute it from the bytes consumed. */
+  private var mergeAllowance: Long? = null
+
   /** How to interpret the next read call. */
   private var state = STATE_LENGTH_DELIMITED
 
@@ -95,7 +112,7 @@ open class ProtoReader(
   /** The encoding of the next value to be read. */
   private var nextFieldEncoding: FieldEncoding? = null
 
-  /** Pooled buffers for unknown fields, indexed by [recursionDepth]. */
+  /** Pooled buffers for unknown fields, indexed by [recursionDepth] minus [recursionBase]. */
   private val bufferStack = mutableListOf<Buffer>()
 
   /**
@@ -112,7 +129,7 @@ open class ProtoReader(
       throw IOException("Wire recursion limit exceeded")
     }
     // Allocate a buffer to store unknown fields encountered at this recursion level.
-    if (recursionDepth > bufferStack.size) bufferStack += Buffer()
+    if (recursionDepth - recursionBase > bufferStack.size) bufferStack += Buffer()
     // Give the pushed limit to the caller to hold. The value is returned in endMessage() where we
     // resume using it as our limit.
     val token = pushedLimit
@@ -130,12 +147,12 @@ open class ProtoReader(
   @Throws(IOException::class)
   open fun endMessageAndGetUnknownFields(token: Long): ByteString {
     check(state == STATE_TAG) { "Unexpected call to endMessage()" }
-    check(--recursionDepth >= 0 && pushedLimit == -1L) { "No corresponding call to beginMessage()" }
-    if (pos != limit && recursionDepth != 0) {
+    check(--recursionDepth >= recursionBase && pushedLimit == -1L) { "No corresponding call to beginMessage()" }
+    if (pos != limit && recursionDepth != recursionBase) {
       throw IOException("Expected to end at $limit but was $pos")
     }
     limit = token
-    val unknownFieldsBuffer = bufferStack[recursionDepth]
+    val unknownFieldsBuffer = bufferStack[recursionDepth - recursionBase]
     return if (unknownFieldsBuffer.size > 0L) {
       unknownFieldsBuffer.readByteString()
     } else {
@@ -521,7 +538,7 @@ open class ProtoReader(
     fieldEncoding: FieldEncoding,
     value: Any?,
   ) {
-    val unknownFieldsWriter = ProtoWriter(bufferStack[recursionDepth - 1])
+    val unknownFieldsWriter = ProtoWriter(bufferStack[recursionDepth - recursionBase - 1])
     val protoAdapter = fieldEncoding.rawProtoAdapter()
     @Suppress("UNCHECKED_CAST") // We encode and decode the same types.
     (protoAdapter as ProtoAdapter<Any>).encodeWithTag(unknownFieldsWriter, tag, value)
@@ -542,6 +559,12 @@ open class ProtoReader(
       FieldEncoding.VARINT -> 1
       null -> throw IllegalStateException("nextFieldEncoding is not set")
     }
+  }
+
+  /** Returns what a decode of a merged message needs to continue where this reader is. */
+  internal open fun mergeContext(): MergeContext {
+    val budget = mergeBudget ?: MergeBudget().also { mergeBudget = it }
+    return MergeContext(recursionLimit, recursionDepth, budget, mergeAllowance ?: allowedMergeBytes(pos))
   }
 
   private fun skip(byteCount: Long) {

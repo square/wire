@@ -23,14 +23,17 @@ import com.squareup.wire.Duration
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldMask
 import com.squareup.wire.Instant
+import com.squareup.wire.MergeContext
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoReader32
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
+import com.squareup.wire.mergeContext
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import okio.Buffer
+import okio.ByteString
 
 // Methods for generated code use only. Not subject to public API rules.
 
@@ -339,10 +342,7 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader, exis
     return (existing as FieldMask).append(ProtoAdapter.FIELD_MASK.decode(reader).paths) as E
   }
   val bytes = reader.readBytes()
-  val buffer = Buffer()
-  adapter.encode(buffer, existing)
-  buffer.write(bytes)
-  return adapter.decode(buffer)
+  return decodeMerged(adapter, existing, bytes, reader.mergeContext())
 }
 
 fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, existing: E?): E {
@@ -352,10 +352,24 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, ex
     return (existing as FieldMask).append(ProtoAdapter.FIELD_MASK.decode(reader).paths) as E
   }
   val bytes = reader.readBytes()
+  return decodeMerged(adapter, existing, bytes, reader.mergeContext())
+}
+
+/**
+ * Encodes [existing], appends [bytes], and decodes the result. The new reader continues the
+ * recursion depth of the caller, and the work counts against the budget of the outermost reader.
+ */
+private fun <E> decodeMerged(
+  adapter: ProtoAdapter<E>,
+  existing: E,
+  bytes: ByteString,
+  context: MergeContext,
+): E {
   val buffer = Buffer()
   adapter.encode(buffer, existing)
+  context.budget.charge(buffer.size + bytes.size, context.allowance)
   buffer.write(bytes)
-  return adapter.decode(buffer)
+  return adapter.decode(ProtoReader(buffer, context))
 }
 
 /** Prepares generated primitive-array decoding and skips empty packed records. */
