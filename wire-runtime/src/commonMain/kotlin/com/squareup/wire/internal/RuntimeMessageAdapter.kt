@@ -156,7 +156,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       first = false
       append(field.name)
       append('=')
-      append(if (field.redacted) REDACTED else binding)
+      append(if (field.redacted) REDACTED else sanitizeAny(binding))
     }
     append('}')
   }
@@ -197,7 +197,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
               field.set(builder, value)
             } else {
               val value = singleAdapter.decode(reader)
-              field.value(builder, value!!)
+              field.value(builder, value)
             }
           }
         } else {

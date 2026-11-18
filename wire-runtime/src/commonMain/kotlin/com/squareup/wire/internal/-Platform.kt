@@ -33,6 +33,9 @@ expect abstract class ObjectStreamException : IOException
 
 expect class ProtocolException(host: String) : IOException
 
+/** Returns a [ProtocolException] with the given [cause], which the constructor does not accept. */
+internal expect fun protocolExceptionWithCause(message: String, cause: Throwable): ProtocolException
+
 expect fun <T> MutableList<T>.toUnmodifiableList(): List<T>
 
 expect fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V>

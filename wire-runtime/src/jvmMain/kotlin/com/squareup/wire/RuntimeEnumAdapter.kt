@@ -35,7 +35,7 @@ class RuntimeEnumAdapter<E : WireEnum> internal constructor(
   }
 
   @Suppress("UNCHECKED_CAST")
-  override fun fromValue(value: Int): E = getFromValueMethod().invoke(null, value) as E
+  override fun fromValue(value: Int): E? = getFromValueMethod().invoke(null, value) as E?
 
   override fun equals(other: Any?) = other is RuntimeEnumAdapter<*> && other.type == type
 

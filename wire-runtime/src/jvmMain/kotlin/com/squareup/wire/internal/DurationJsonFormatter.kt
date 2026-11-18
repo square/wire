@@ -16,6 +16,7 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.Duration
+import java.util.Locale
 
 /**
  * Encode a duration as a JSON string like "1.200s". From the spec:
@@ -46,10 +47,10 @@ object DurationJsonFormatter : JsonFormatter<Duration> {
       }
     }
     return when {
-      nanos == 0 -> "%s%ds".format(prefix, seconds)
-      nanos % 1_000_000 == 0 -> "%s%d.%03ds".format(prefix, seconds, nanos / 1_000_000L)
-      nanos % 1_000 == 0 -> "%s%d.%06ds".format(prefix, seconds, nanos / 1_000L)
-      else -> "%s%d.%09ds".format(prefix, seconds, nanos / 1L)
+      nanos == 0 -> "%s%ds".format(Locale.ROOT, prefix, seconds)
+      nanos % 1_000_000 == 0 -> "%s%d.%03ds".format(Locale.ROOT, prefix, seconds, nanos / 1_000_000L)
+      nanos % 1_000 == 0 -> "%s%d.%06ds".format(Locale.ROOT, prefix, seconds, nanos / 1_000L)
+      else -> "%s%d.%09ds".format(Locale.ROOT, prefix, seconds, nanos / 1L)
     }
   }
 
@@ -59,11 +60,14 @@ object DurationJsonFormatter : JsonFormatter<Duration> {
     if (sIndex != value.length - 1) throw NumberFormatException()
 
     val dotIndex = value.indexOf('.')
+    val secondsStart = if (value.startsWith("-") || value.startsWith("+")) 1 else 0
+    checkAsciiDigits(value, secondsStart, if (dotIndex == -1) sIndex else dotIndex)
     if (dotIndex == -1) {
       val seconds = value.substring(0, sIndex).toLong()
       return Duration.ofSeconds(seconds)
     }
 
+    checkAsciiDigits(value, dotIndex + 1, sIndex)
     val seconds = value.substring(0, dotIndex).toLong()
     var nanos = value.substring(dotIndex + 1, sIndex).toLong()
     if (value.startsWith("-")) nanos = -nanos
@@ -71,5 +75,12 @@ object DurationJsonFormatter : JsonFormatter<Duration> {
     for (i in nanosDigits until 9) nanos *= 10
     for (i in 9 until nanosDigits) nanos /= 10
     return Duration.ofSeconds(seconds, nanos)
+  }
+
+  /** Throws a NumberFormatException unless every character in the range is a digit from 0 to 9. */
+  private fun checkAsciiDigits(value: String, start: Int, end: Int) {
+    for (i in start until end) {
+      if (value[i] !in '0'..'9') throw NumberFormatException()
+    }
   }
 }

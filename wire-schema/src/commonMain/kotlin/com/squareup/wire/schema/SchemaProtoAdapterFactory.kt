@@ -256,14 +256,14 @@ internal class SchemaProtoAdapterFactory(
       get() = get(this.field.type!!.valueType ?: this.field.type!!)
 
     @Suppress("UNCHECKED_CAST")
-    override fun value(builder: MutableMap<String, Any>, value: Any) {
+    override fun value(builder: MutableMap<String, Any>, value: Any?) {
       if (isMap) {
         val map = builder.getOrPut(field.name) { mutableMapOf<String, Any>() }
           as MutableMap<String, Any>
         map.putAll(value as Map<String, Any>)
       } else if (field.isRepeated) {
-        val list = builder.getOrPut(field.name) { mutableListOf<Any>() }
-          as MutableList<Any>
+        val list = builder.getOrPut(field.name) { mutableListOf<Any?>() }
+          as MutableList<Any?>
         list += value
       } else {
         set(builder, value)
@@ -272,7 +272,11 @@ internal class SchemaProtoAdapterFactory(
 
     override fun set(builder: MutableMap<String, Any>, value: Any?) {
       oneOf?.fields?.forEach { builder.remove(it.name) }
-      builder[field.name] = value!!
+      if (value != null) {
+        builder[field.name] = value
+      } else {
+        builder.remove(field.name)
+      }
     }
 
     override fun get(message: Map<String, Any>) = message[field.name]
