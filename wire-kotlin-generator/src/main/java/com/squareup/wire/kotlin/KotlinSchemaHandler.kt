@@ -164,7 +164,11 @@ class KotlinSchemaHandler(
 
   private lateinit var kotlinGenerator: KotlinGenerator
 
+  /** Keys are written file paths with case ignored. Values are the path and what it came from. */
+  private val writtenPaths = mutableMapOf<String, Pair<Path, String>>()
+
   override fun handle(schema: Schema, context: Context) {
+    writtenPaths.clear()
     val profileName = if (android) "android" else "java"
     val profile = context.profileLoader!!.loadProfile(profileName, schema)
     kotlinGenerator = KotlinGenerator(
@@ -270,6 +274,7 @@ class KotlinSchemaHandler(
       kotlinFile.packageName.replace(".", "/") /
       "${kotlinFile.name}.kt"
     checkPathInOutDirectory(filePath, modulePath)
+    checkNoCaseOnlyCollision(filePath, "$source at $location")
 
     context.logger.artifactHandled(
       modulePath,
@@ -285,6 +290,19 @@ class KotlinSchemaHandler(
       throw IOException("Error emitting ${kotlinFile.packageName}.$source to $outDirectory", e)
     }
     return filePath
+  }
+
+  /**
+   * Throws if [filePath] differs only by case from a file written earlier. Such files overwrite
+   * each other on a case-insensitive file system.
+   */
+  private fun checkNoCaseOnlyCollision(filePath: Path, description: String) {
+    val previous = writtenPaths.getOrPut(filePath.toString().lowercase()) { filePath to description }
+    check(previous.first == filePath) {
+      "Files $filePath and ${previous.first} differ only by case and would overwrite each other:\n" +
+        "  ${previous.second}\n" +
+        "  $description"
+    }
   }
 
   companion object {

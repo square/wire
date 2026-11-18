@@ -27,6 +27,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import assertk.assertions.message
 import assertk.assertions.prop
 import com.squareup.wire.StringWireLogger
@@ -1513,6 +1514,165 @@ class WireRunTest {
           "  Owner at protos/two/jp.proto:3:1",
       )
     }
+  }
+
+  @Test fun kotlinFilesDifferingOnlyByCaseAreRejected() {
+    fs.add(
+      "protos/case.proto",
+      """
+          |package p;
+          |message Baz {}
+          |message baz {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+
+    assertFailure { wireRun.execute(fs, logger) }
+      .isInstanceOf<IllegalStateException>()
+      .message()
+      .isNotNull()
+      .all {
+        contains("differ only by case")
+        contains("p.Baz at protos/case.proto:2:1")
+        contains("p.baz at protos/case.proto:3:1")
+      }
+  }
+
+  @Test fun swiftFilesDifferingOnlyByCaseAreRejected() {
+    fs.add(
+      "protos/case.proto",
+      """
+          |package p;
+          |message Baz {}
+          |message baz {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(SwiftTarget(outDirectory = "generated/swift")),
+    )
+
+    assertFailure { wireRun.execute(fs, logger) }
+      .isInstanceOf<IllegalStateException>()
+      .message()
+      .isNotNull()
+      .all {
+        contains("differ only by case")
+        contains("p.Baz at protos/case.proto:2:1")
+        contains("p.baz at protos/case.proto:3:1")
+      }
+  }
+
+  @Test fun kotlinTypesDifferingByCaseInDifferentFilesAreWritten() {
+    fs.add(
+      "protos/one.proto",
+      """
+          |package one;
+          |message Baz {}
+          |
+      """.trimMargin(),
+    )
+    fs.add(
+      "protos/two.proto",
+      """
+          |package two;
+          |message baz {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/one/Baz.kt",
+      "generated/kt/two/baz.kt",
+    )
+  }
+
+  @Test fun importWithDotDotSegmentWarnsAndLoads() {
+    fs.add(
+      "sources/a.proto",
+      """
+          |package a;
+          |import "../shared/b.proto";
+          |message A { optional b.B b = 1; }
+          |
+      """.trimMargin(),
+    )
+    fs.add(
+      "shared/b.proto",
+      """
+          |package b;
+          |message B {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("sources")),
+      protoPath = listOf(Location.get("libs")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    fs.createDirectories("libs".toPath())
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).contains(
+      "Warning: Import \"../shared/b.proto\" is an absolute path or has a \"..\" segment.",
+    )
+    assertThat(fs.exists("generated/kt/a/A.kt".toPath())).isTrue()
+  }
+
+  @Test fun importWithAbsolutePathWarnsAndLoads() {
+    fs.add(
+      "sources/a.proto",
+      """
+          |package a;
+          |import "/shared/b.proto";
+          |message A { optional b.B b = 1; }
+          |
+      """.trimMargin(),
+    )
+    fs.add(
+      "/shared/b.proto",
+      """
+          |package b;
+          |message B {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("sources")),
+      protoPath = listOf(Location.get("libs")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    fs.createDirectories("libs".toPath())
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).contains(
+      "Warning: Import \"/shared/b.proto\" is an absolute path or has a \"..\" segment.",
+    )
+    assertThat(fs.exists("generated/kt/a/A.kt".toPath())).isTrue()
+  }
+
+  @Test fun importWithPlainPathDoesNotWarn() {
+    writeBlueProto()
+    writeSquareProto()
+    writeTriangleProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).doesNotContain("Warning:")
   }
 
   @Test fun optionNameIsPreciseToAvoidConflict_java() {

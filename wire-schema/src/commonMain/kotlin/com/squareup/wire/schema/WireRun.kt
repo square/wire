@@ -251,6 +251,7 @@ class WireRun(
     // Validate the schema and resolve references
     eventListeners.forEach(EventListener::loadSchemaStart)
     val fullSchema = schemaLoader.loadSchema()
+    schemaLoader.warnings.forEach(logger::warning)
     eventListeners.forEach { it.loadSchemaSuccess(fullSchema) }
 
     // Refactor the schema.
