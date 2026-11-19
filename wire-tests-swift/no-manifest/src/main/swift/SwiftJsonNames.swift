@@ -117,15 +117,12 @@ extension SwiftJsonNames : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.dollar, forKey: preferCamelCase ? "a$b" : "dollar")
         try container.encodeIfPresent(self.template, forKey: preferCamelCase ? "${x}" : "template")
         try container.encodeIfPresent(self.percent, forKey: preferCamelCase ? "100%" : "percent")
         try container.encodeIfPresent(self.directive, forKey: preferCamelCase ? "%s %S %1S" : "directive")
-        if includeDefaults || !self.required_name.isEmpty {
-            try container.encode(self.required_name, forKey: preferCamelCase ? "$required" : "required_name")
-        }
+        try container.encode(self.required_name, forKey: preferCamelCase ? "$required" : "required_name")
         switch self.choice {
         case .oneof_dollar(let oneof_dollar): try container.encode(oneof_dollar, forKey: preferCamelCase ? "$one" : "oneof_dollar")
         case .oneof_percent(let oneof_percent): try container.encode(oneof_percent, forKey: preferCamelCase ? "%one" : "oneof_percent")
