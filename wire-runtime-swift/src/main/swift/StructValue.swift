@@ -156,18 +156,15 @@ extension StructValue: Codable {
     }
 }
 
-/** Marks the error for a document that is nested too deeply, so that it is not mistaken for a type mismatch. */
-private struct StructNestingDepthError: Error {}
-
 extension SingleValueDecodingContainer {
     /**
      Decodes `type`, or returns nil if the value does not have that shape.
-     An error for a document that is nested too deeply is not a type mismatch, so it is thrown.
+     A `MessageNestingDepthError` for a document that is nested too deeply is not a type mismatch, so it is thrown.
      */
     fileprivate func decodeIfMatching<T: Decodable>(_ type: T.Type) throws -> T? {
         do {
             return try decode(type)
-        } catch let DecodingError.dataCorrupted(context) where context.underlyingError is StructNestingDepthError {
+        } catch let DecodingError.dataCorrupted(context) where context.underlyingError is MessageNestingDepthError {
             throw DecodingError.dataCorrupted(context)
         } catch {
             return nil
@@ -190,7 +187,7 @@ extension Decoder {
                 DecodingError.Context(
                     codingPath: codingPath,
                     debugDescription: "Exceeded the maximum nesting depth of \(ProtoReader.recursionLimit) for google.protobuf.Struct",
-                    underlyingError: StructNestingDepthError()
+                    underlyingError: MessageNestingDepthError()
                 )
             )
         }

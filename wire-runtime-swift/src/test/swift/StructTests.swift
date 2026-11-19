@@ -306,12 +306,12 @@ final class StructTests: XCTestCase {
         onSmallStackThread {
             for (atLimit, beyondLimit) in [(self.nestedArrays(depth: 65), self.nestedArrays(depth: 66)), (self.nestedObjects(depth: 65), self.nestedObjects(depth: 66))] {
                 self.assertDecodes(StructValue.self, json: atLimit)
-                self.assertDecodingFails(StructValue.self, json: beyondLimit, message: "maximum nesting depth of 65")
+                self.assertDecodingFails(StructValue.self, json: beyondLimit)
             }
             self.assertDecodes(ListValue.self, json: self.nestedArrays(depth: 65))
-            self.assertDecodingFails(ListValue.self, json: self.nestedArrays(depth: 66), message: "maximum nesting depth of 65")
+            self.assertDecodingFails(ListValue.self, json: self.nestedArrays(depth: 66))
             self.assertDecodes(StructMessage.self, json: self.nestedObjects(depth: 65))
-            self.assertDecodingFails(StructMessage.self, json: self.nestedObjects(depth: 66), message: "maximum nesting depth of 65")
+            self.assertDecodingFails(StructMessage.self, json: self.nestedObjects(depth: 66))
         }
     }
 
@@ -321,13 +321,12 @@ final class StructTests: XCTestCase {
 
         // Without a depth limit, the stack overflows before Foundation's own limit of 512 applies.
         onSmallStackThread {
-            let message = "maximum nesting depth of 65"
             for json in [arrays, objects] {
-                self.assertDecodingFails(StructValue.self, json: json, message: message)
-                self.assertDecodingFails(MessageContainingStruct.self, json: "{\"someValue\":\(json)}", message: message)
+                self.assertDecodingFails(StructValue.self, json: json)
+                self.assertDecodingFails(MessageContainingStruct.self, json: "{\"someValue\":\(json)}")
             }
-            self.assertDecodingFails(ListValue.self, json: arrays, message: message)
-            self.assertDecodingFails(StructMessage.self, json: objects, message: message)
+            self.assertDecodingFails(ListValue.self, json: arrays)
+            self.assertDecodingFails(StructMessage.self, json: objects)
         }
     }
 
@@ -355,7 +354,6 @@ final class StructTests: XCTestCase {
     private func assertDecodingFails<T: Decodable>(
         _ type: T.Type,
         json: String,
-        message: String,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
@@ -363,7 +361,7 @@ final class StructTests: XCTestCase {
             _ = try JSONDecoder().decode(type, from: json.data(using: .utf8)!)
             XCTFail("Expected \(type) to fail decoding", file: file, line: line)
         } catch let DecodingError.dataCorrupted(context) {
-            XCTAssertTrue(context.debugDescription.contains(message), context.debugDescription, file: file, line: line)
+            XCTAssertTrue(context.underlyingError is MessageNestingDepthError, String(describing: context.underlyingError), file: file, line: line)
         } catch {
             XCTFail("Unexpected error \(error)", file: file, line: line)
         }
