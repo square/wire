@@ -15,6 +15,10 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.`internal`.decodeOneOfOrDefer
+import com.squareup.wire.`internal`.endMerges
+import com.squareup.wire.`internal`.finishOneOfMerge
+import com.squareup.wire.`internal`.hasMerges
 import com.squareup.wire.`internal`.redactOneOf
 import kotlin.Any
 import kotlin.Boolean
@@ -126,13 +130,17 @@ public class BoxedOneOfs(
             else -> {
               for (choiceKey in VALUE__KEYS) {
                 if (tag == choiceKey.tag) {
-                  value_ = choiceKey.decode(reader)
+                  value_ = decodeOneOfOrDefer(choiceKey, reader, value_)
                   return@forEachTag Unit
                 }
               }
               reader.readUnknownField(tag)
             }
           }
+        }
+        if (hasMerges(reader)) {
+          value_ = finishOneOfMerge(reader, value_)
+          endMerges(reader)
         }
         return BoxedOneOfs(
           value_ = value_,

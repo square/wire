@@ -2955,6 +2955,63 @@ class KotlinGeneratorTest {
     assertThat(code).contains("`in` = choiceKey.decode(reader)")
   }
 
+  @Test fun boxedOneofDecodesMessageMembersWithOneCallWhateverTheMemberCount() {
+    fun schemaWithMembers(count: Int) = buildSchema {
+      val members = (1..count).joinToString("\n") { "|    Leaf member$it = $it;" }
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Leaf {
+        |  repeated int32 values = 1;
+        |}
+        |message Choices {
+        |  oneof choice {
+        $members
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val sizes = listOf(3, 300).map { count ->
+      val code = KotlinWithProfilesGenerator(schemaWithMembers(count))
+        .generateKotlin("Choices", oneofMode = OneofMode.BOXED)
+      assertThat(code).contains("choice = decodeOneOfOrDefer(choiceKey, reader, choice)")
+      assertThat(code).contains("choice = finishOneOfMerge(reader, choice)")
+      assertThat(Regex("decodeOneOfOrDefer\\(").findAll(code).count()).isEqualTo(1)
+      assertThat(Regex("finishOneOfMerge\\(").findAll(code).count()).isEqualTo(1)
+      val decode = code.substringAfter("override fun decode(reader: ProtoReader): Choices").substringBefore("override fun redact")
+      decode.lines().size
+    }
+    // The decode function is as long for 300 members as for 3.
+    assertThat(sizes[1]).isEqualTo(sizes[0])
+  }
+
+  @Test fun sealedOneofDecodesMessageMembersByMerging() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Leaf {
+        |  repeated int32 values = 1;
+        |}
+        |message Choices {
+        |  oneof choice {
+        |    Leaf leaf = 1;
+        |    string text = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = OneofMode.SEALED_CLASS)
+    assertThat(code).contains("1 -> choice = Choice.Leaf(decodeMessageOrDefer(Leaf.ADAPTER, reader, 1, (choice as? Choice.Leaf)?.value))")
+    assertThat(code).contains("2 -> choice = Choice.Text(ProtoAdapter.STRING.decode(reader))")
+    assertThat(code).contains("(choice as? Choice.Leaf)?.let { choice = Choice.Leaf(finishMerge(reader, 1, Leaf.ADAPTER, it.value) ?: it.value) }")
+  }
+
   @Test fun flatOneofRequireEscapesKeywordNames() {
     val code = KotlinWithProfilesGenerator(keywordSchema()).generateKotlin(
       "JwtLocation",

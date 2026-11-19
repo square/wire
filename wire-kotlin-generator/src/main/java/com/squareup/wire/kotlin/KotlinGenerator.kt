@@ -2048,11 +2048,17 @@ class KotlinGenerator private constructor(
     // last tag, so that decoding is linear in the size of the input. This adds code to decode(),
     // and the JVM does not compile methods that are too large, so messages with many such fields
     // merge each occurrence as it arrives instead. The runtime limits the work that takes.
-    val mergedFields = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()
+    //
+    // A boxed oneof with a message member counts once, because one runtime call decodes and
+    // another one merges, whatever the number of members. A sealed oneof counts each message member.
+    val mergedFieldCandidates = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()
       .filterIsInstance<Field>()
       .filter { it.isMergedMessage }
-      .takeIf { it.size <= MAX_DEFERRED_MERGE_FIELDS }
-      .orEmpty()
+    val mergedBoxedOneOfs = message.boxOneOfs().filter { oneOf -> oneOf.fields.any { it.type!!.isMessage } }
+    val mergedSealedFields = message.sealedOneOfs().flatMap { oneOf -> oneOf.fields.filter { it.type!!.isMessage } }
+    val mergedCount = mergedFieldCandidates.size + mergedBoxedOneOfs.size + mergedSealedFields.size
+    val deferMerges = mergedCount in 1..MAX_DEFERRED_MERGE_FIELDS
+    val mergedFields = if (deferMerges) mergedFieldCandidates else emptyList()
 
     val declarationBody = buildCodeBlock {
       if (buildersOnly) {
@@ -2201,7 +2207,7 @@ class KotlinGenerator private constructor(
           when {
             field.type!!.isEnum -> {
               beginControlFlow("%L -> try", field.tag)
-              add("%L\n", decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName, mergedFields.isNotEmpty()))
+              add("%L\n", decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName, deferMerges))
               nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
               addStatement(
                 "reader.addUnknownField(%L, %T.VARINT, e.value.toLong())",
@@ -2212,14 +2218,14 @@ class KotlinGenerator private constructor(
             }
             field.isPacked && field.isScalar -> {
               beginControlFlow("%L ->", field.tag)
-              add(decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName, mergedFields.isNotEmpty()))
+              add(decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName, deferMerges))
               endControlFlow()
             }
             else -> {
               add(
                 "%L -> %L\n",
                 field.tag,
-                decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName, mergedFields.isNotEmpty()),
+                decodeAndAssign(protoReaderType, field, fieldName, adapterName, flatOneOf, oneOfTagName, deferMerges),
               )
             }
           }
@@ -2247,6 +2253,21 @@ class KotlinGenerator private constructor(
                 FieldEncoding::class,
               )
               endControlFlow()
+            } else if (field.type!!.isMessage) {
+              // A repeated occurrence of the same member merges. Another member replaces it.
+              val target = if (buildersOnly) "builder.%2N" else "%2N"
+              val decodeMessage = MemberName(
+                "com.squareup.wire.internal",
+                if (deferMerges) "decodeMessageOrDefer" else "decodeMessageOrMerge",
+              )
+              addStatement(
+                "%1L -> $target = %3T(%4M(%5L, reader, ${if (deferMerges) "%1L, " else ""}($target as? %3T)?.value))",
+                field.tag,
+                fieldName,
+                subclassType,
+                decodeMessage,
+                adapterName,
+              )
             } else {
               addStatement(
                 "%L -> ${if (buildersOnly) "builder.%N" else "%N"} = %T(%L.decode(reader))",
@@ -2268,7 +2289,21 @@ class KotlinGenerator private constructor(
             val choiceKeys = boxedOneOfKeysFieldName(fieldName)
             beginControlFlow("for (%L in %L)", choiceKey, choiceKeys)
             beginControlFlow("if (%L == %L.tag)", tag, choiceKey)
-            addStatement("${if (buildersOnly) "builder.%N" else "%N"} = %L.decode(reader)", fieldName, choiceKey)
+            if (boxOneOf in mergedBoxedOneOfs) {
+              // A repeated occurrence of the same message member merges. Another member replaces it.
+              val decodeOneOf = MemberName(
+                "com.squareup.wire.internal",
+                if (deferMerges) "decodeOneOfOrDefer" else "decodeOneOfOrMerge",
+              )
+              addStatement(
+                "${if (buildersOnly) "builder.%1N" else "%1N"} = %2M(%3L, reader, ${if (buildersOnly) "builder.%1N" else "%1N"})",
+                fieldName,
+                decodeOneOf,
+                choiceKey,
+              )
+            } else {
+              addStatement("${if (buildersOnly) "builder.%N" else "%N"} = %L.decode(reader)", fieldName, choiceKey)
+            }
             addStatement("return@forEachTag %T", Unit::class)
             endControlFlow()
             endControlFlow()
@@ -2277,8 +2312,31 @@ class KotlinGenerator private constructor(
           endControlFlow()
         }
         add("⇤}\n⇤}\n") // close the block
-        if (mergedFields.isNotEmpty()) {
+        if (deferMerges) {
           beginControlFlow("if (%M(reader))", HAS_MERGES)
+          for (boxOneOf in mergedBoxedOneOfs) {
+            val fieldName = nameAllocator[boxOneOf]
+            val target = if (buildersOnly) "builder.%1N" else "%1N"
+            addStatement("$target = %2M(reader, $target)", fieldName, FINISH_ONE_OF_MERGE)
+          }
+          for (sealedOneOf in sealedOneOfs) {
+            val fieldName = nameAllocator[sealedOneOf]
+            val sealedClassName = (message.typeName as ClassName)
+              .nestedClass(nameAllocator[boxedOneOfClassName(sealedOneOf.name)])
+            val subclassNameAllocator = sealedSubclassNameAllocator(sealedOneOf)
+            for (field in sealedOneOf.fields.filter { it.type!!.isMessage }) {
+              val subclassType = sealedClassName.nestedClass(subclassNameAllocator[field])
+              val target = if (buildersOnly) "builder.%1N" else "%1N"
+              addStatement(
+                "($target as? %2T)?.let { $target = %2T(%3M(reader, %4L, %5L, it.value) ?: it.value) }",
+                fieldName,
+                subclassType,
+                FINISH_MERGE,
+                field.tag,
+                adapterFor(field),
+              )
+            }
+          }
           for (field in mergedFields) {
             val fieldName = nameAllocator[field]
             val adapterName = field.getAdapterName()
@@ -3834,6 +3892,7 @@ class KotlinGenerator private constructor(
 
     private val HAS_MERGES = MemberName("com.squareup.wire.internal", "hasMerges")
     private val FINISH_MERGE = MemberName("com.squareup.wire.internal", "finishMerge")
+    private val FINISH_ONE_OF_MERGE = MemberName("com.squareup.wire.internal", "finishOneOfMerge")
     private val END_MERGES = MemberName("com.squareup.wire.internal", "endMerges")
     private val PROTO_READER = ProtoReader::class.asClassName()
     private val PROTO_READER_32 = ProtoReader32::class.asClassName()
