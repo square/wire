@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.Syntax
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.escapeQuotedString
 import com.squareup.wire.schema.internal.sourcePathForComment
 import kotlin.jvm.JvmStatic
 
@@ -48,13 +49,13 @@ data class ProtoFileElement(
     if (imports.isNotEmpty() || publicImports.isNotEmpty() || weakImports.isNotEmpty()) {
       append('\n')
       for (file in imports) {
-        append("import \"$file\";\n")
+        append("import \"${file.escapeQuotedString()}\";\n")
       }
       for (file in publicImports) {
-        append("import public \"$file\";\n")
+        append("import public \"${file.escapeQuotedString()}\";\n")
       }
       for (file in weakImports) {
-        append("import weak \"$file\";\n")
+        append("import weak \"${file.escapeQuotedString()}\";\n")
       }
     }
     if (options.isNotEmpty()) {

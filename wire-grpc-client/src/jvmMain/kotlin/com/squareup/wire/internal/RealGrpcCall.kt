@@ -70,15 +70,18 @@ internal class RealGrpcCall<S : Any, R : Any>(
         }
 
         override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-          try {
-            val message = callTimeout.exitAfter {
+          val message = try {
+            callTimeout.exitAfter {
               responseMetadata = response.headers.toMap()
               response.readExactlyOneAndClose()
             }
-            continuation.resume(message)
-          } catch (e: IOException) {
-            continuation.resumeWithException(e)
+          } catch (e: Throwable) {
+            // Complete the call first. Like OkHttp, then rethrow an Error that nothing should handle.
+            continuation.resumeWithException(e.asIOException())
+            if (e is Error) throw e
+            return
           }
+          continuation.resume(message)
         }
       })
     }
@@ -101,22 +104,25 @@ internal class RealGrpcCall<S : Any, R : Any>(
       }
 
       override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-        try {
-          val message = callTimeout.exitAfter {
+        val message = try {
+          callTimeout.exitAfter {
             responseMetadata = response.headers.toMap()
             response.readExactlyOneAndClose()
           }
-          callback.onSuccess(this@RealGrpcCall, message)
-        } catch (e: IOException) {
-          callback.onFailure(this@RealGrpcCall, e)
+        } catch (e: Throwable) {
+          // Complete the call first. Like OkHttp, then rethrow an Error that nothing should handle.
+          callback.onFailure(this@RealGrpcCall, e.asIOException())
+          if (e is Error) throw e
+          return
         }
+        callback.onSuccess(this@RealGrpcCall, message)
       }
     })
   }
 
   private fun okhttp3.Response.readExactlyOneAndClose(): R {
     use {
-      messageSource(method.responseAdapter).use { reader ->
+      messageSource(method.responseAdapter, grpcClient.maxInboundMessageSize).use { reader ->
         val result = try {
           if (reader.isEmptyBody()) {
             // an empty body is valid for error responses. don't throw so we try to parse trailers.

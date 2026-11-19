@@ -36,6 +36,7 @@ internal class BlockingMessageSource<R : Any>(
   val grpcCall: RealGrpcStreamingCall<*, R>,
   val responseAdapter: ProtoAdapter<R>,
   val call: Call,
+  val maxInboundMessageSize: Long,
 ) : MessageSource<R> {
   private val queue = LinkedBlockingDeque<Any>(1)
 
@@ -69,7 +70,7 @@ internal class BlockingMessageSource<R : Any>(
         grpcCall.callTimeout.exitAfter {
           grpcCall.responseMetadata = response.headers.toMap()
           response.use {
-            response.messageSource(responseAdapter).use { reader ->
+            response.messageSource(responseAdapter, maxInboundMessageSize).use { reader ->
               while (true) {
                 val message = reader.read() ?: break
                 queue.put(message)
@@ -81,9 +82,15 @@ internal class BlockingMessageSource<R : Any>(
           }
         }
         queue.put(Complete)
-      } catch (e: IOException) {
+      } catch (e: Throwable) {
         call.cancel() // Break the request stream if the response stream breaks.
-        queue.put(Failure(e))
+        try {
+          queue.put(Failure(e.asIOException()))
+        } catch (interrupted: InterruptedException) {
+          Thread.currentThread().interrupt()
+        }
+        // Like OkHttp, rethrow an Error that nothing should handle after the call completed.
+        if (e is Error) throw e
       }
     }
   }

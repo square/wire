@@ -1921,9 +1921,7 @@ internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String)
       return result
     }
 
-    override fun redact(value: T?): T? {
-      if (value == null) return null
-      return delegate.redact(value)
-    }
+    /** A wrapper holds one scalar and nothing nested, so redacting keeps the value. */
+    override fun redact(value: T?): T? = value
   }
 }

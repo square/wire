@@ -17,6 +17,7 @@ package com.squareup.wire
 
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.doesNotContain
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.messageContains
@@ -47,6 +48,7 @@ import squareup.proto3.BuyOneGetOnePromotion
 import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
 import squareup.proto3.ContainsFieldMask
+import squareup.proto3.Envelope
 import squareup.proto3.FreeDrinkPromotion
 import squareup.proto3.FreeGarlicBreadPromotion
 import squareup.proto3.MapTypes
@@ -431,6 +433,66 @@ class WireJsonTest {
     }
   }
 
+  @Test fun nestedAnyMessagesWithinLimitRoundTrip() {
+    val value = nestedPizzaDeliveries(depth = 253)
+    val json = jsonLibrary.toJson(value, PizzaDelivery::class.java)
+    assertThat(jsonLibrary.fromJson(json, PizzaDelivery::class.java)).isEqualTo(value)
+  }
+
+  @Test fun deeplyNestedAnyMessagesFailToEncode() {
+    val value = nestedPizzaDeliveries(depth = 3_000)
+    try {
+      jsonLibrary.toJson(value, PizzaDelivery::class.java)
+      fail()
+    } catch (expected: JsonDataException) {
+      // Moshi.
+    } catch (expected: JsonIOException) {
+      // Gson.
+    }
+  }
+
+  @Test fun anyMessagesWithDeepNestingWithinLimitRoundTrip() {
+    val value = nestedEnvelopes(anyCount = 2, innerDepth = 90)
+    val json = jsonLibrary.toJson(value, Envelope::class.java)
+    assertThat(jsonLibrary.fromJson(json, Envelope::class.java)).isEqualTo(value)
+  }
+
+  @Test fun anyMessagesWithDeepNestingFailToEncode() {
+    // Each Any is shallow enough alone, but together they are deeper than the limit. With 254 Anys,
+    // the total is deep enough to overflow the stack.
+    for (anyCount in listOf(4, 254)) {
+      val value = nestedEnvelopes(anyCount = anyCount, innerDepth = 90)
+      try {
+        jsonLibrary.toJson(value, Envelope::class.java)
+        fail()
+      } catch (expected: JsonDataException) {
+        // Moshi.
+      } catch (expected: JsonIOException) {
+        // Gson.
+      }
+    }
+  }
+
+  /** Returns envelopes where each Any holds an envelope nested [innerDepth] levels deep. */
+  private fun nestedEnvelopes(anyCount: Int, innerDepth: Int): Envelope {
+    var result = Envelope.Builder().build()
+    repeat(anyCount) {
+      result = Envelope.Builder().payload(AnyMessage.pack(result)).build()
+      repeat(innerDepth) {
+        result = Envelope.Builder().child(result).build()
+      }
+    }
+    return result
+  }
+
+  private fun nestedPizzaDeliveries(depth: Int): PizzaDelivery {
+    var result = PizzaDelivery.Builder().address("507 Cross Street").build()
+    repeat(depth) {
+      result = PizzaDelivery.Builder().promotion(AnyMessage.pack(result)).build()
+    }
+    return result
+  }
+
   @Test fun anyMessageWithoutType() {
     try {
       jsonLibrary.fromJson(PIZZA_DELIVERY_WITHOUT_TYPE_JSON, PizzaDelivery::class.java)
@@ -614,6 +676,173 @@ class WireJsonTest {
       // Gson.
       assertThat(e).hasMessage("decode failed: 9223372036854775808 at path \$.mySint64")
     }
+  }
+
+  @Test fun unsignedLongOutOfRangeIsRejected() {
+    val badValues = listOf(
+      "1e100000000",
+      "1e-100000000",
+      "1e1001",
+      "18446744073709551616",
+      "-9223372036854775809",
+      "9".repeat(1_000_000),
+    )
+    for (bad in badValues) {
+      for (json in listOf("\"$bad\"", bad)) {
+        assertFailsToDecode("""{"myUint64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"myFixed64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"repUint64":[$json]}""", All64::class.java)
+        assertFailsToDecode("""{"uint64Value":$json}""", AllWrappers::class.java)
+        assertFailsToDecode("""{"opt_uint64":$json}""", AllTypesProto2::class.java)
+        assertFailsToDecode("""{"mapUint64Uint64":{"1":$json}}""", MapTypes::class.java)
+      }
+      assertFailsToDecode("""{"mapUint64Uint64":{"$bad":"1"}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapFixed64Fixed64":{"$bad":"1"}}""", MapTypes::class.java)
+    }
+  }
+
+  @Test fun unsignedLongInRangeIsAccepted() {
+    val max = All64.Builder().my_uint64(-1L).my_fixed64(-1L).build()
+    assertThat(
+      jsonLibrary.fromJson(
+        """{"myUint64":"18446744073709551615","myFixed64":18446744073709551615}""",
+        All64::class.java,
+      ),
+    ).isEqualTo(max)
+
+    val negative = All64.Builder().my_uint64(-1L).my_fixed64(Long.MIN_VALUE).build()
+    assertThat(
+      jsonLibrary.fromJson(
+        """{"myUint64":"-1","myFixed64":-9223372036854775808}""",
+        All64::class.java,
+      ),
+    ).isEqualTo(negative)
+
+    val small = All64.Builder().my_uint64(1000L).my_fixed64(5L).build()
+    assertThat(
+      jsonLibrary.fromJson("""{"myUint64":"1e3","myFixed64":5.0}""", All64::class.java),
+    ).isEqualTo(small)
+
+    val keys = MapTypes.Builder().map_uint64_uint64(mapOf(-1L to 1000L)).build()
+    assertThat(
+      jsonLibrary.fromJson(
+        """{"mapUint64Uint64":{"18446744073709551615":"1e3"}}""",
+        MapTypes::class.java,
+      ),
+    ).isEqualTo(keys)
+  }
+
+  @Test(timeout = 10_000)
+  fun signedLongThatIsTooLongOrOutOfRangeIsRejected() {
+    for (bad in listOf("9".repeat(1_000_000), "1e100000000", "1e-100000000", "9223372036854775808")) {
+      for (json in listOf("\"$bad\"", bad)) {
+        assertFailsToDecode("""{"myInt64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"mySint64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"mySfixed64":$json}""", All64::class.java)
+        assertFailsToDecode("""{"repInt64":[$json]}""", All64::class.java)
+        assertFailsToDecode("""{"int64Value":$json}""", AllWrappers::class.java)
+        assertFailsToDecode("""{"mapInt64Int64":{"1":$json}}""", MapTypes::class.java)
+      }
+      assertFailsToDecode("""{"mapInt64Int64":{"$bad":"1"}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapSint64Sint64":{"$bad":"1"}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapSfixed64Sfixed64":{"$bad":"1"}}""", MapTypes::class.java)
+    }
+  }
+
+  @Test fun signedLongLimitsAndExponentFormsAreAccepted() {
+    val min = All64.Builder().my_int64(Long.MIN_VALUE).my_sint64(Long.MIN_VALUE).build()
+    for (json in listOf(
+      """{"myInt64":"-9223372036854775808","mySint64":-9223372036854775808}""",
+      """{"myInt64":"-9.223372036854775808E18","mySint64":-9.223372036854775808e18}""",
+    )) {
+      assertThat(jsonLibrary.fromJson(json, All64::class.java)).isEqualTo(min)
+    }
+
+    val max = All64.Builder().my_int64(Long.MAX_VALUE).build()
+    assertThat(jsonLibrary.fromJson("""{"myInt64":9223372036854775807}""", All64::class.java))
+      .isEqualTo(max)
+
+    val small = All64.Builder().my_int64(1000L).my_sint64(5L).build()
+    assertThat(jsonLibrary.fromJson("""{"myInt64":"1e3","mySint64":5.0}""", All64::class.java))
+      .isEqualTo(small)
+
+    val keys = MapTypes.Builder().map_int64_int64(mapOf(Long.MIN_VALUE to 1000L)).build()
+    assertThat(
+      jsonLibrary.fromJson(
+        """{"mapInt64Int64":{"-9223372036854775808":"1e3"}}""",
+        MapTypes::class.java,
+      ),
+    ).isEqualTo(keys)
+  }
+
+  @Test fun unsignedIntOutOfRangeIsRejected() {
+    for (bad in listOf("4294967296", "-2147483649", "1e30", "1".repeat(1_000_000))) {
+      for (json in listOf("\"$bad\"", bad)) {
+        assertFailsToDecode("""{"myUint32":$json}""", All32::class.java)
+        assertFailsToDecode("""{"myFixed32":$json}""", All32::class.java)
+        assertFailsToDecode("""{"repUint32":[$json]}""", All32::class.java)
+        assertFailsToDecode("""{"mapUint32Uint32":{"1":$json}}""", MapTypes::class.java)
+      }
+      assertFailsToDecode("""{"mapUint32Uint32":{"$bad":1}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapFixed32Fixed32":{"$bad":1}}""", MapTypes::class.java)
+    }
+  }
+
+  @Test fun unsignedIntMaxValueIsAccepted() {
+    val value = All32.Builder().my_uint32(-1).build()
+    assertThat(jsonLibrary.fromJson("""{"myUint32":4294967295}""", All32::class.java))
+      .isEqualTo(value)
+    assertThat(jsonLibrary.fromJson("""{"myUint32":"4294967295"}""", All32::class.java))
+      .isEqualTo(value)
+    val map = MapTypes.Builder().map_uint32_uint32(mapOf(-1 to -1)).build()
+    assertThat(
+      jsonLibrary.fromJson("""{"mapUint32Uint32":{"4294967295":4294967295}}""", MapTypes::class.java),
+    ).isEqualTo(map)
+  }
+
+  @Test fun mapKeyThatIsNotANumberIsRejected() {
+    assertFailsToDecode("""{"mapInt32Int32":{"abc":1}}""", MapTypes::class.java)
+    assertFailsToDecode("""{"mapInt64Int64":{"abc":"1"}}""", MapTypes::class.java)
+    assertFailsToDecode("""{"mapUint64Uint64":{"abc":"1"}}""", MapTypes::class.java)
+    assertFailsToDecode("""{"mapUint32Uint32":{"abc":1}}""", MapTypes::class.java)
+  }
+
+  @Test fun mapValueThatIsNullIsRejected() {
+    assertFailsToDecode("""{"mapStringString":{"a":null}}""", MapTypes::class.java)
+    assertFailsToDecode("""{"mapInt32Int32":{"1":null}}""", MapTypes::class.java)
+  }
+
+  @Test fun anyMessageWithTypeThatIsNotAStringIsRejected() {
+    assertFailsToDecode("""{"promotion":{"@type":null}}""", PizzaDelivery::class.java)
+    assertFailsToDecode("""{"promotion":{"@type":{"a":1}}}""", PizzaDelivery::class.java)
+    assertFailsToDecode("""{"promotion":{"@type":[1,2]}}""", PizzaDelivery::class.java)
+  }
+
+  @Test fun mapDecodeFailureMessageDoesNotIncludeKey() {
+    val key = "secret-key-text"
+    val messages = listOf(
+      assertFailsToDecode("""{"mapInt32Int32":{"$key":1}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapInt64Int64":{"$key":"1"}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapUint64Uint64":{"$key":"1"}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapUint32Uint32":{"$key":1}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapStringString":{"$key":null}}""", MapTypes::class.java),
+    )
+    for (message in messages) {
+      assertThat(message).doesNotContain(key)
+    }
+    assertThat(messages[0]).contains("a signed 32-bit integer")
+    assertThat(messages[3]).contains("an unsigned 32-bit integer")
+  }
+
+  private fun assertFailsToDecode(json: String, type: Class<*>): String {
+    try {
+      jsonLibrary.fromJson(json, type)
+    } catch (expected: JsonDataException) {
+      return expected.message.orEmpty() // Moshi.
+    } catch (expected: JsonSyntaxException) {
+      return expected.message.orEmpty() // Gson.
+    }
+    throw AssertionError("expected a failure for ${json.take(100)}")
   }
 
   @Test fun `int64s are encoded with quotes and decoded with either`() {
@@ -1368,7 +1597,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .build()
 
@@ -1390,7 +1619,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1413,7 +1642,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .build()
 
@@ -1435,7 +1664,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1458,7 +1687,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .build()
 
@@ -1480,7 +1709,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()

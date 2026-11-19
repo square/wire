@@ -38,6 +38,7 @@ wire {
       "recursive_map.proto",
       "redacted_one_of.proto",
       "sealed_redacted_one_of.proto",
+      "boxed_redacted_one_of.proto",
       "repeated.proto",
       "same_name_enum.proto",
       "simple_message.proto",
@@ -51,6 +52,20 @@ wire {
     buildersOnly = true
     javaInterop = true
   }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.boxed_redacted.BoxedRedactedOneOfBuildersOnly")
+    oneofMode = "boxed"
+    buildersOnly = true
+    javaInterop = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.boxed_redacted.*")
+    oneofMode = "boxed"
+    javaInterop = true
+  }
+
   kotlin {
     includes = listOf("squareup.protos.kotlin.sealed_redacted.SealedRedactedOneOfBuildersOnly")
     oneofMode = "sealed_class"

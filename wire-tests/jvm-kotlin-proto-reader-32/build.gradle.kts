@@ -22,6 +22,8 @@ wire {
       "empty_packed.proto",
       "map.proto",
       "one_of.proto",
+      "option_redacted.proto",
+      "redacted_map.proto",
     )
   }
 

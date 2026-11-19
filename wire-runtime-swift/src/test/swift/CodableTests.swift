@@ -379,6 +379,46 @@ extension CodableTests {
         XCTAssertEqual(Wire.Duration(seconds: -1, nanos: -900).toSwiftDuration(), .seconds(-1) + .nanoseconds(-900))
     }
 
+    func testDurationConversionClampsExtremeValues() {
+        guard #available(macOS 13, iOS 16, watchOS 9, tvOS 16, *) else {
+            return
+        }
+
+        // Reading `components` of a `Swift.Duration` with more than `Int64.max` seconds traps.
+        let tooLarge = Swift.Duration.seconds(Int64.max) + Swift.Duration.seconds(1)
+        let fromTooLarge = Wire.Duration(duration: tooLarge)
+        XCTAssertEqual(fromTooLarge.seconds, Int64.max)
+        XCTAssertEqual(fromTooLarge.nanos, 999_999_999)
+
+        let tooSmall = Swift.Duration.seconds(Int64.min) - Swift.Duration.seconds(1)
+        let fromTooSmall = Wire.Duration(duration: tooSmall)
+        XCTAssertEqual(fromTooSmall.seconds, Int64.min)
+        XCTAssertEqual(fromTooSmall.nanos, -999_999_999)
+
+        let converted = Wire.Duration(seconds: Int64.max, nanos: Int32.max).toSwiftDuration()
+        XCTAssertEqual(Wire.Duration(duration: converted).seconds, Int64.max)
+
+        let convertedMin = Wire.Duration(seconds: Int64.min, nanos: Int32.min).toSwiftDuration()
+        XCTAssertEqual(Wire.Duration(duration: convertedMin).seconds, Int64.min)
+    }
+
+    func testDurationConversionRoundtripsLimits() {
+        guard #available(macOS 13, iOS 16, watchOS 9, tvOS 16, *) else {
+            return
+        }
+
+        let values = [
+            Wire.Duration(seconds: Int64.max, nanos: 999_999_999),
+            Wire.Duration(seconds: Int64.max, nanos: 0),
+            Wire.Duration(seconds: Int64.min, nanos: -999_999_999),
+            Wire.Duration(seconds: Int64.min, nanos: 0),
+            Wire.Duration(seconds: 1, nanos: 5),
+        ]
+        for value in values {
+            XCTAssertEqual(Wire.Duration(duration: value.toSwiftDuration()), value)
+        }
+    }
+
     func testLargeDurationRoundtrip() throws {
         let json = """
         {
@@ -423,6 +463,256 @@ extension CodableTests {
 
         try assertDecode(json: json, expected: proto)
         try assertEncode(proto: proto, expected: json)
+    }
+
+    func testMinimumDurationRoundtrip() throws {
+        let json = """
+        {"duration":"-9223372036854775808.500s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: Int64.min, nanos: -500_000_000)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testMinimumSecondsDurationRoundtrip() throws {
+        let json = """
+        {"duration":"-9223372036854775808s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: Int64.min, nanos: 0)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testMaximumSecondsDurationRoundtrip() throws {
+        let json = """
+        {"duration":"9223372036854775807s"}
+        """
+        let proto = DurationAndTimestamp(
+            duration: Duration(seconds: Int64.max, nanos: 0)
+        )
+
+        try assertDecode(json: json, expected: proto)
+        try assertEncode(proto: proto, expected: json)
+    }
+
+    func testDurationWithNegatedSecondsOverflowThrows() throws {
+        let json = """
+        {"duration":"--9223372036854775808s"}
+        """
+
+        XCTAssertThrowsError(try JSONDecoder().decode(DurationAndTimestamp.self, from: json.data(using: .utf8)!)) { error in
+            XCTAssertTrue(error is DecodingError, "\(error)")
+        }
+    }
+
+    func testDurationRejectsRepeatedOrMisplacedSigns() throws {
+        for value in ["--5s", "-+5s", "+-5s", "++5s", "5-s", "-", "-s", "1.-5s", "-0.-5s", "1.+5s", "-1.+5s", "1.5-s", "1.-s", "1.123456789-s"] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationRejectsNonAsciiDigits() throws {
+        // Arabic-indic and fullwidth digits.
+        for value in ["\u{0663}s", "1.\u{0665}s", "\u{0663}.5s", "-\u{0663}s", "1.5\u{0665}s", "\u{FF11}s", "1.\u{FF15}s", "1.123456789\u{0663}s"] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationRejectsLettersAfterNinthFractionDigit() throws {
+        // The decoder keeps only nine fraction digits, so it must check the digits it drops too.
+        for value in ["1.0000000009xs", "1.123456789xs"] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationRejectsEmptyParts() throws {
+        for value in ["s", ".5s", "-.5s", "1.s", "1..5s", "1.5.5s", " 1s", "1 s", "1s "] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationAcceptsLeadingPlusSign() throws {
+        try assertDecode(json: "{\"duration\":\"+1s\"}", expected: DurationAndTimestamp(duration: Duration(seconds: 1, nanos: 0)))
+        try assertDecode(json: "{\"duration\":\"+1.5s\"}", expected: DurationAndTimestamp(duration: Duration(seconds: 1, nanos: 500_000_000)))
+    }
+
+    func testDurationAcceptsValidForms() throws {
+        let expected: [(String, Wire.Duration)] = [
+            ("0s", Duration(seconds: 0, nanos: 0)),
+            ("-0s", Duration(seconds: 0, nanos: 0)),
+            ("1s", Duration(seconds: 1, nanos: 0)),
+            ("1.5s", Duration(seconds: 1, nanos: 500_000_000)),
+            ("-1.5s", Duration(seconds: -1, nanos: -500_000_000)),
+            ("-0.5s", Duration(seconds: 0, nanos: -500_000_000)),
+            ("0.5s", Duration(seconds: 0, nanos: 500_000_000)),
+            ("1.0000000009s", Duration(seconds: 1, nanos: 0)),
+            ("007s", Duration(seconds: 7, nanos: 0)),
+        ]
+        for (value, duration) in expected {
+            try assertDecode(json: "{\"duration\":\"\(value)\"}", expected: DurationAndTimestamp(duration: duration))
+        }
+    }
+
+    private func assertDurationDecodingFails(_ value: String, file: StaticString = #file, line: UInt = #line) throws {
+        let json = try String(data: JSONEncoder().encode(["duration": value]), encoding: .utf8)!
+        XCTAssertThrowsError(try JSONDecoder().decode(DurationAndTimestamp.self, from: json.data(using: .utf8)!), value, file: file, line: line) { error in
+            XCTAssertTrue(error is DecodingError, "\(value): \(error)", file: file, line: line)
+        }
+    }
+
+    func testDurationBeyondInt64Throws() throws {
+        for value in ["9223372036854775808s", "-9223372036854775809s", "-18446744073709551615s"] {
+            let json = "{\"duration\":\"\(value)\"}"
+            XCTAssertThrowsError(try JSONDecoder().decode(DurationAndTimestamp.self, from: json.data(using: .utf8)!), value) { error in
+                XCTAssertTrue(error is DecodingError, "\(error)")
+            }
+        }
+    }
+
+    func testTimestampDateWithMinimumSecondsDoesNotTrap() throws {
+        // Varint encoding of `seconds = Int64.min` in field 1.
+        let bytes = Foundation.Data([0x08, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x01])
+        let timestamp = try ProtoDecoder().decode(Wire.Timestamp.self, from: bytes)
+        XCTAssertEqual(timestamp.seconds, Int64.min)
+
+        XCTAssertLessThan(timestamp.date.timeIntervalSince1970, 0)
+        XCTAssertLessThan(timestamp.timeIntervalSince1970, 0)
+    }
+
+    func testTimestampDateWithSecondsNearMinimumDoesNotTrap() {
+        let offset = Int64(Date.timeIntervalBetween1970AndReferenceDate)
+
+        for seconds in [Int64.min, Int64.min + 1, Int64.min + offset - 1, Int64.min + offset, Int64.min + offset + 1] {
+            XCTAssertLessThan(Wire.Timestamp(seconds: seconds, nanos: 0).date.timeIntervalSince1970, 0, "\(seconds)")
+        }
+    }
+
+    func testTimestampDateWithMaximumSecondsDoesNotTrap() {
+        let timestamp = Wire.Timestamp(seconds: Int64.max, nanos: 999_999_999)
+
+        XCTAssertGreaterThan(timestamp.date.timeIntervalSince1970, 0)
+    }
+
+    func testTimestampFromHugeDateClampsInsteadOfTrapping() {
+        let huge = Date(timeIntervalSinceReferenceDate: 9.223372036e18)
+        XCTAssertEqual(Wire.Timestamp(date: huge).seconds, Int64.max)
+
+        let tiny = Date(timeIntervalSinceReferenceDate: -9.2e18)
+        XCTAssertLessThan(Wire.Timestamp(date: tiny).seconds, -9_000_000_000_000_000_000)
+
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: 1e30)).seconds, Int64.max)
+        XCTAssertLessThan(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: -1e30)).seconds, -9_223_372_035_000_000_000)
+    }
+
+    func testTimestampFromNonFiniteTimeIntervalDoesNotTrap() {
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: .infinity).seconds, Int64.max)
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: -.infinity).seconds, Int64.min)
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: .nan), Wire.Timestamp(seconds: 0, nanos: 0))
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: 1e19).seconds, Int64.max)
+        XCTAssertEqual(Wire.Timestamp(timeIntervalSince1970: -1e19).seconds, Int64.min)
+    }
+
+    func testTimestampFromNonFiniteDateDoesNotTrap() {
+        let epoch = Wire.Timestamp(seconds: 0, nanos: 0)
+
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: .nan)), epoch)
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: .nan)), Wire.Timestamp(timeIntervalSince1970: .nan))
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: .infinity)).seconds, Int64.max)
+        XCTAssertEqual(Wire.Timestamp(date: Date(timeIntervalSinceReferenceDate: -.infinity)).seconds, Int64.min)
+    }
+
+    func testTimestampWithMinimumSecondsEncodesJson() throws {
+        let proto = DurationAndTimestamp(timestamp: Timestamp(seconds: Int64.min, nanos: 0))
+
+        XCTAssertNoThrow(try JSONEncoder().encode(proto))
+    }
+}
+
+// MARK: - Nesting depth
+
+extension CodableTests {
+    func testRecursiveMessageJSONDecodesAtMaximumDepthAndFailsBeyondIt() throws {
+        // The same limit as the binary decoder, for every kind of field that holds a message.
+        let limit = 65
+
+        // Decode on a thread with a small stack. Without a limit, it overflows before
+        // Foundation's own limit of 512 levels applies.
+        let finished = expectation(description: "finished")
+        let thread = Thread {
+            let shapes: [(String, (Int) -> String, (String) -> Void)] = [
+                ("singular", { self.nestedJSON(prefix: "{\"child\":", suffix: "}", messages: $0) }, { self.assertDecodes(RecursiveMessage.self, json: $0) }),
+                ("repeated", { self.nestedJSON(prefix: "{\"repeatedA\":[", suffix: "]}", messages: $0) }, { self.assertDecodes(A.self, json: $0) }),
+                ("map", { self.nestedJSON(prefix: "{\"mapToA\":{\"key\":", suffix: "}}", messages: $0) }, { self.assertDecodes(A.self, json: $0) }),
+                ("oneof", { self.oneofJSON(messages: $0) }, { self.assertDecodes(F.self, json: $0) }),
+            ]
+            for (name, json, assertDecodes) in shapes {
+                assertDecodes(json(limit))
+                self.assertDecodingExceedsDepth(name, json(limit + 1))
+                self.assertDecodingExceedsDepth(name, json(limit * 3))
+            }
+            finished.fulfill()
+        }
+        thread.stackSize = 512 * 1024
+        thread.start()
+        wait(for: [finished], timeout: 60)
+    }
+
+    private func nestedJSON(prefix: String, suffix: String, messages: Int) -> String {
+        // The innermost message is `{}`, and each prefix adds one message around it.
+        return String(repeating: prefix, count: messages - 1) + "{}" + String(repeating: suffix, count: messages - 1)
+    }
+
+    /// Builds `F` and `G` messages that hold each other through a oneof field and an optional field, starting with an `F`.
+    private func oneofJSON(messages: Int) -> String {
+        var isF = messages % 2 == 1
+        var json = "{}"
+        for _ in 1..<messages {
+            json = isF ? "{\"f\":\(json)}" : "{\"g\":\(json)}"
+            isF.toggle()
+        }
+        return json
+    }
+
+    private func assertDecodes<T: Decodable>(
+        _ type: T.Type,
+        json: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        do {
+            _ = try JSONDecoder().decode(type, from: json.data(using: .utf8)!)
+        } catch {
+            XCTFail("Expected \(type) to decode, got \(error)", file: file, line: line)
+        }
+    }
+
+    private func assertDecodingExceedsDepth(
+        _ shape: String,
+        _ json: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        func decode() throws {
+            switch shape {
+            case "singular": _ = try JSONDecoder().decode(RecursiveMessage.self, from: json.data(using: .utf8)!)
+            case "oneof": _ = try JSONDecoder().decode(F.self, from: json.data(using: .utf8)!)
+            default: _ = try JSONDecoder().decode(A.self, from: json.data(using: .utf8)!)
+            }
+        }
+        do {
+            try decode()
+            XCTFail("Expected \(shape) to fail decoding", file: file, line: line)
+        } catch let DecodingError.dataCorrupted(context) {
+            XCTAssertTrue(context.underlyingError is MessageNestingDepthError, "\(shape): \(String(describing: context.underlyingError))", file: file, line: line)
+        } catch {
+            XCTFail("Unexpected error \(error)", file: file, line: line)
+        }
     }
 }
 

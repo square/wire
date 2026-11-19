@@ -428,6 +428,24 @@ class MessageElementTest {
   }
 
   @Test
+  fun reservedNamesAreEscaped() {
+    val element = MessageElement(
+      location = location,
+      name = "Message",
+      reserveds = listOf(
+        ReservedElement(location = location, values = listOf("a\"b\\c")),
+      ),
+    )
+    val expected = """
+        |message Message {
+        |  reserved "a\"b\\c";
+        |}
+        |
+    """.trimMargin()
+    assertThat(element.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
   fun groupToSchema() {
     val element = MessageElement(
       location = location.at(1, 1),

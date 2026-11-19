@@ -15,6 +15,53 @@
  */
 import Foundation
 
+// MARK: - Nesting depth
+
+extension Decoder {
+    /**
+     Returns the keyed container that generated `Codable` initializers decode a message from.
+
+     This overload is more specific than `Decoder.container(keyedBy:)`, so generated code calls it.
+     It throws a `DecodingError.dataCorrupted` when the message is nested `ProtoReader.recursionLimit` levels deep, the same limit as the binary decoder.
+     The `underlyingError` of its context is a `MessageNestingDepthError`.
+     Each level is a field name in the coding path, so singular, oneof, repeated, and map fields all count the same.
+     Array indexes and map keys do not count.
+     The limit reduces the risk of a stack overflow, but it cannot remove it: the stack that a level needs grows with the number of fields in the message.
+     */
+    public func container(
+        keyedBy type: StringLiteralCodingKeys.Type
+    ) throws -> KeyedDecodingContainer<StringLiteralCodingKeys> {
+        // Array indexes have an `intValue`, and `ProtoMap` gives its entry keys one.
+        let depth = codingPath.reduce(0) { $0 + ($1.intValue == nil ? 1 : 0) }
+        if depth >= ProtoReader.recursionLimit {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: codingPath,
+                    debugDescription: "Exceeded the maximum nesting depth of \(ProtoReader.recursionLimit) for a message",
+                    underlyingError: MessageNestingDepthError()
+                )
+            )
+        }
+        return try keyedContainer(of: self, keyedBy: type)
+    }
+}
+
+/**
+ The `underlyingError` of the `DecodingError` that JSON decoding throws for a message that is nested too deeply.
+ Match on it instead of on the description of the error.
+ */
+public struct MessageNestingDepthError: Error {
+    public init() {}
+}
+
+/** Calls the generic `Decoder.container(keyedBy:)`, which the overload above would otherwise hide. */
+internal func keyedContainer<Key: CodingKey>(
+    of decoder: Decoder,
+    keyedBy type: Key.Type
+) throws -> KeyedDecodingContainer<Key> {
+    return try decoder.container(keyedBy: type)
+}
+
 // MARK: decode(_:,firstOfKeys:)
 
 extension KeyedDecodingContainer {

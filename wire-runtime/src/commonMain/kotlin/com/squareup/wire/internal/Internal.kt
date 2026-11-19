@@ -25,6 +25,8 @@ import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldMask
 import com.squareup.wire.Instant
 import com.squareup.wire.MergeContext
+import com.squareup.wire.Message
+import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoReader32
@@ -139,6 +141,40 @@ fun <T> List<T>.redactElements(adapter: ProtoAdapter<T>): List<T> = map(adapter:
 
 @JvmName("-redactElements") // Hide from Java
 fun <K, V> Map<K, V>.redactElements(adapter: ProtoAdapter<V>): Map<K, V> = mapValues { (_, value) -> adapter.redact(value) }
+
+/**
+ * Redacts the value of a boxed oneof. Generated code calls this so that `redact` has the same size
+ * whatever the number of oneof members.
+ *
+ * A null oneof stays null, and so does one with a redacted key. A member redacts through its
+ * adapter when its value is a [Message] or its adapter is a well-known type that redacts, like
+ * `Struct`, `Value`, `ListValue`, `Duration`, `Timestamp`, and `Empty`. If that gives null, the
+ * whole oneof is null. Every other member keeps its value, including scalars, enums, and wrappers.
+ */
+@JvmName("-redactOneOf") // Hide from Java
+fun <O : OneOf<*, *>> O?.redactOneOf(): O? {
+  if (this == null) return null
+  @Suppress("UNCHECKED_CAST") // The key and the value of a OneOf always have the same type.
+  val key = key as OneOf.Key<Any?>
+  if (key.redacted) return null
+  if (value !is Message<*, *> && !key.adapter.isRedactingBuiltIn()) return this
+  val redactedValue = key.adapter.redact(value) ?: return null
+  @Suppress("UNCHECKED_CAST") // The new OneOf has the same key, so it has the same type.
+  return OneOf(key, redactedValue) as O
+}
+
+/** True for the well-known adapters that Wire maps to platform types and that redact their value. */
+private fun ProtoAdapter<*>.isRedactingBuiltIn(): Boolean = when (this) {
+  ProtoAdapter.STRUCT_MAP,
+  ProtoAdapter.STRUCT_LIST,
+  ProtoAdapter.STRUCT_VALUE,
+  ProtoAdapter.DURATION,
+  ProtoAdapter.INSTANT,
+  ProtoAdapter.EMPTY,
+  ProtoAdapter.FIELD_MASK,
+  -> true
+  else -> false
+}
 
 @Suppress("SuspiciousEqualsCombination")
 fun equals(a: Any?, b: Any?): Boolean = a === b || (a != null && a == b)

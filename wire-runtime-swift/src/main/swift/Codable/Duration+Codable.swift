@@ -19,22 +19,29 @@ import Foundation
 
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
 extension Swift.Duration {
-    fileprivate var nanos: Int32 {
-        let nanos = components.attoseconds / 1_000_000_000
-        return Int32(truncatingIfNeeded: nanos)
+    /// The largest and smallest values for which `components` does not trap.
+    /// `components` needs the whole seconds to fit in an `Int64`.
+    fileprivate static let largestRepresentable: Swift.Duration = .seconds(Int64.max) + .nanoseconds(999_999_999)
+    fileprivate static let smallestRepresentable: Swift.Duration = .seconds(Int64.min) - .nanoseconds(999_999_999)
+
+    fileprivate var clampedToRepresentableComponents: Swift.Duration {
+        return Swift.min(Swift.max(self, Swift.Duration.smallestRepresentable), Swift.Duration.largestRepresentable)
     }
 }
 
 @available(macOS 13, iOS 16, watchOS 9, tvOS 16, *)
 extension Wire.Duration {
     public func toSwiftDuration() -> Swift.Duration {
-        return .seconds(seconds) + .nanoseconds(nanos)
+        // The sum can be out of range when `seconds` is near the limits of `Int64`.
+        return (.seconds(seconds) + .nanoseconds(nanos)).clampedToRepresentableComponents
     }
 
     public init(duration: Swift.Duration) {
+        // Reading `components` traps for values with more seconds than an `Int64` can hold.
+        let components = duration.clampedToRepresentableComponents.components
         self.init(
-            seconds: duration.components.seconds,
-            nanos: duration.nanos
+            seconds: components.seconds,
+            nanos: Int32(truncatingIfNeeded: components.attoseconds / 1_000_000_000)
         )
     }
 }
@@ -48,18 +55,19 @@ extension Wire.Duration : Codable {
         var container = encoder.singleValueContainer()
 
         let prefix = seconds < 0 || nanos < 0 ? "-" : ""
-        let seconds = abs(seconds)
-        let nanos = abs(nanos)
+        // `magnitude` does not trap for `Int64.min` and `Int32.min`, unlike `abs`.
+        let seconds = seconds.magnitude
+        let nanos = nanos.magnitude
 
         let encoded: String = {
             if nanos == 0 {
-                return String(format: "%@%llds", prefix, seconds)
+                return String(format: "%@%llus", prefix, seconds)
             } else if nanos % 1_000_000 == 0 {
-                return String(format: "%@%lld.%03ds", prefix, seconds, nanos / 1_000_000)
+                return String(format: "%@%llu.%03us", prefix, seconds, nanos / 1_000_000)
             } else if nanos % 1_000 == 0 {
-                return String(format: "%@%lld.%06ds", prefix, seconds, nanos / 1_000)
+                return String(format: "%@%llu.%06us", prefix, seconds, nanos / 1_000)
             } else {
-                return String(format: "%@%lld.%09ds", prefix, seconds, nanos)
+                return String(format: "%@%llu.%09us", prefix, seconds, nanos)
             }
         }()
 
@@ -75,15 +83,21 @@ extension Wire.Duration : Codable {
         guard let last = string.popLast(), last == "s" else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration format \(string)")
         }
-        if isNegative {
+        // At most one sign is allowed. A leading "+" is accepted, like on the JVM.
+        if string.first == "-" || string.first == "+" {
             string.removeFirst()
         }
 
-        let seconds: Int64?
+        var seconds: Int64?
         let nanos: Int32?
 
-        let components = string.split(separator: ".")
-        switch components.count {
+        // Keep empty parts so that "-.5s", "1.s" and "1..5s" are rejected.
+        // Only the ASCII digits 0 to 9 are valid: this rejects signs in either part and other scripts.
+        let components = string.split(separator: ".", omittingEmptySubsequences: false)
+        let isWellFormed = components.count <= 2 && components.allSatisfy { part in
+            !part.isEmpty && part.utf8.allSatisfy { $0 >= UInt8(ascii: "0") && $0 <= UInt8(ascii: "9") }
+        }
+        switch isWellFormed ? components.count : 0 {
         case 1:
             seconds = Int64(components[0])
             nanos = 0
@@ -97,12 +111,20 @@ extension Wire.Duration : Codable {
             nanos = nil
         }
 
+        // The magnitude of `Int64.min` does not fit in an `Int64`, but `-9223372036854775808s` is valid.
+        var isInt64Min = false
+        if isNegative, seconds == nil, nanos != nil, let magnitude = UInt64(components[0]), magnitude == Int64.min.magnitude {
+            isInt64Min = true
+            seconds = Int64.min
+        }
+
         guard let seconds = seconds, let nanos = nanos else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration \(string)s")
         }
 
-        if rawString.starts(with: "-") {
-            self.init(seconds: -seconds, nanos: -nanos)
+        if isNegative {
+            // `seconds` is never negative here, except for the `Int64.min` case, which is already negated.
+            self.init(seconds: isInt64Min ? seconds : -seconds, nanos: -nanos)
         } else {
             self.init(seconds: seconds, nanos: nanos)
         }

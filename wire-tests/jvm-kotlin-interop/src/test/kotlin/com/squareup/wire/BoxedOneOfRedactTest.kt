@@ -1,0 +1,202 @@
+/*
+ * Copyright (C) 2026 Square, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.wire
+
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
+import com.squareup.wire.protos.kotlin.boxedredacted.BoxedRedactedOneOf
+import com.squareup.wire.protos.kotlin.boxedredacted.BoxedRedactedOneOfBuildersOnly
+import com.squareup.wire.protos.kotlin.boxedredacted.Image
+import com.squareup.wire.protos.kotlin.boxedredacted.Payload
+import com.squareup.wire.protos.kotlin.boxedredacted.State
+import okio.ByteString.Companion.decodeHex
+import org.junit.Test
+
+class BoxedOneOfRedactTest {
+  private val payload = Payload(
+    images = listOf(
+      Image(
+        light_url = "https://example.invalid/light",
+        dark_url = "https://example.invalid/dark",
+        caption = "caption",
+        unknownFields = "a00601".decodeHex(),
+      ),
+    ),
+    label = "label",
+    unknownFields = "a00602".decodeHex(),
+  )
+
+  private val redactedPayload = Payload(images = listOf(Image(caption = "caption")), label = "label")
+
+  @Test fun nestedMessageIsRedactedBeforeEncoding() {
+    val message = BoxedRedactedOneOf(
+      variant = OneOf(BoxedRedactedOneOf.VARIANT_PAYLOAD, payload),
+      sensitive = OneOf(BoxedRedactedOneOf.SENSITIVE_PUBLIC_TEXT, "public"),
+      unknownFields = "a00603".decodeHex(),
+    )
+    val expected = BoxedRedactedOneOf(
+      variant = OneOf(BoxedRedactedOneOf.VARIANT_PAYLOAD, redactedPayload),
+      sensitive = OneOf(BoxedRedactedOneOf.SENSITIVE_PUBLIC_TEXT, "public"),
+    )
+
+    val redacted = BoxedRedactedOneOf.ADAPTER.redact(message)
+    val decoded = BoxedRedactedOneOf.ADAPTER.decode(redacted.encode())
+    val decodedImage = decoded.variant!!.getOrNull(BoxedRedactedOneOf.VARIANT_PAYLOAD)!!.images.single()
+    assertThat(decodedImage.light_url).isNull()
+    assertThat(decodedImage.dark_url).isNull()
+    assertThat(redacted).isEqualTo(expected)
+    assertThat(decoded).isEqualTo(expected)
+    assertThat(message.variant).isEqualTo(OneOf(BoxedRedactedOneOf.VARIANT_PAYLOAD, payload))
+  }
+
+  @Test fun scalarEnumAndAbsentBranchesArePreserved() {
+    val messages = listOf(
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_TEXT, "text")),
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STATE, State.DONE)),
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STRING_VALUE, "wrapped")),
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_INT32_VALUE, 3)),
+      BoxedRedactedOneOf(),
+    )
+    for (message in messages) {
+      assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(message)
+    }
+  }
+
+  @Test fun wrapperBranchesArePreserved_buildersOnly() {
+    val branches = listOf(
+      OneOf(BoxedRedactedOneOfBuildersOnly.VARIANT_STRING_VALUE, "wrapped"),
+      OneOf(BoxedRedactedOneOfBuildersOnly.VARIANT_INT32_VALUE, 3),
+    )
+    for (branch in branches) {
+      val message = BoxedRedactedOneOfBuildersOnly.Builder().variant(branch).build()
+      assertThat(BoxedRedactedOneOfBuildersOnly.ADAPTER.redact(message)).isEqualTo(message)
+    }
+  }
+
+  @Test fun explicitlyRedactedBranchesAreCleared() {
+    val branches = listOf(
+      OneOf(BoxedRedactedOneOf.SENSITIVE_SECRET, "secret"),
+      OneOf(BoxedRedactedOneOf.SENSITIVE_WHOLLY_REDACTED, payload),
+    )
+    for (branch in branches) {
+      val message = BoxedRedactedOneOf(sensitive = branch)
+      val redacted = BoxedRedactedOneOf.ADAPTER.redact(message)
+      assertThat(BoxedRedactedOneOf.ADAPTER.decode(redacted.encode())).isEqualTo(BoxedRedactedOneOf())
+    }
+  }
+
+  @Test fun structMembersRedactStringsAndKeepOtherValues() {
+    val struct = mapOf("name" to "secret", "count" to 3.0, "ok" to true, "none" to null)
+    val redactedStruct = mapOf("name" to null, "count" to 3.0, "ok" to true, "none" to null)
+    val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STRUCT, struct))
+    val expected = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STRUCT, redactedStruct))
+    assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(expected)
+  }
+
+  @Test fun listValueMembersRedactStringsAndKeepOtherValues() {
+    val list = listOf("secret", 3.0, true, null, mapOf("nested" to "secret"))
+    val redactedList = listOf(null, 3.0, true, null, mapOf("nested" to null))
+    val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_LIST_VALUE, list))
+    val expected = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_LIST_VALUE, redactedList))
+    assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(expected)
+  }
+
+  @Test fun valueMembersRedactStringsAndKeepOtherValues() {
+    val cases = listOf(
+      3.0 to 3.0,
+      true to true,
+      mapOf("name" to "secret", "count" to 3.0) to mapOf("name" to null, "count" to 3.0),
+      listOf("secret", false) to listOf(null, false),
+    )
+    for ((value, expectedValue) in cases) {
+      val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, value))
+      val expected = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, expectedValue))
+      assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(expected)
+    }
+  }
+
+  @Test fun valueMembersThatRedactToNullClearTheOneOf() {
+    for (value in listOf("secret", null)) {
+      val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, value))
+      val redacted = BoxedRedactedOneOf.ADAPTER.redact(message)
+      assertThat(redacted.variant).isNull()
+      assertThat(BoxedRedactedOneOf.ADAPTER.decode(redacted.encode())).isEqualTo(redacted)
+    }
+  }
+
+  @Test fun durationAndTimestampMembersAreKept() {
+    val messages = listOf(
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_DURATION, java.time.Duration.ofSeconds(5, 6))),
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_TIMESTAMP, java.time.Instant.ofEpochSecond(5, 6))),
+    )
+    for (message in messages) {
+      assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(message)
+    }
+  }
+
+  @Test fun redactedMembersHaveRedactedKeys() {
+    assertThat(BoxedRedactedOneOf.SENSITIVE_SECRET.redacted).isTrue()
+    assertThat(BoxedRedactedOneOf.SENSITIVE_WHOLLY_REDACTED.redacted).isTrue()
+    assertThat(BoxedRedactedOneOf.SENSITIVE_PUBLIC_TEXT.redacted).isFalse()
+    assertThat(BoxedRedactedOneOf.VARIANT_PAYLOAD.redacted).isFalse()
+  }
+
+  @Test fun redactedMemberPrintsPlaceholderInToString() {
+    assertThat(OneOf(BoxedRedactedOneOf.SENSITIVE_SECRET, "secret").toString())
+      .isEqualTo("secret=\u2588\u2588")
+    assertThat(OneOf(BoxedRedactedOneOf.SENSITIVE_WHOLLY_REDACTED, payload).toString())
+      .isEqualTo("wholly_redacted=\u2588\u2588")
+    assertThat(OneOf(BoxedRedactedOneOf.SENSITIVE_PUBLIC_TEXT, "public").toString())
+      .isEqualTo("public_text=public")
+  }
+
+  @Test fun nestedMessageIsRedactedBeforeEncoding_buildersOnly() {
+    val message = BoxedRedactedOneOfBuildersOnly.Builder()
+      .variant(OneOf(BoxedRedactedOneOfBuildersOnly.VARIANT_PAYLOAD, payload))
+      .sensitive(OneOf(BoxedRedactedOneOfBuildersOnly.SENSITIVE_PUBLIC_TEXT, "public"))
+      .addUnknownFields("a00603".decodeHex())
+      .build()
+    val expected = BoxedRedactedOneOfBuildersOnly.Builder()
+      .variant(OneOf(BoxedRedactedOneOfBuildersOnly.VARIANT_PAYLOAD, redactedPayload))
+      .sensitive(OneOf(BoxedRedactedOneOfBuildersOnly.SENSITIVE_PUBLIC_TEXT, "public"))
+      .build()
+
+    val redacted = BoxedRedactedOneOfBuildersOnly.ADAPTER.redact(message)
+    val decoded = BoxedRedactedOneOfBuildersOnly.ADAPTER.decode(redacted.encode())
+    val decodedImage = decoded.variant!!.getOrNull(BoxedRedactedOneOfBuildersOnly.VARIANT_PAYLOAD)!!.images.single()
+    assertThat(decodedImage.light_url).isNull()
+    assertThat(decodedImage.dark_url).isNull()
+    assertThat(redacted).isEqualTo(expected)
+    assertThat(decoded).isEqualTo(expected)
+    assertThat(message.variant).isEqualTo(OneOf(BoxedRedactedOneOfBuildersOnly.VARIANT_PAYLOAD, payload))
+  }
+
+  @Test fun explicitlyRedactedBranchesAreCleared_buildersOnly() {
+    val branches = listOf(
+      OneOf(BoxedRedactedOneOfBuildersOnly.SENSITIVE_SECRET, "secret"),
+      OneOf(BoxedRedactedOneOfBuildersOnly.SENSITIVE_WHOLLY_REDACTED, payload),
+    )
+    for (branch in branches) {
+      val message = BoxedRedactedOneOfBuildersOnly.Builder().sensitive(branch).build()
+      val redacted = BoxedRedactedOneOfBuildersOnly.ADAPTER.redact(message)
+      assertThat(BoxedRedactedOneOfBuildersOnly.ADAPTER.decode(redacted.encode()))
+        .isEqualTo(BoxedRedactedOneOfBuildersOnly.Builder().build())
+    }
+  }
+}

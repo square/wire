@@ -126,6 +126,11 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     }
   }
 
+  /**
+   * Like generated code, this clears redacted fields, redacts nested messages, and drops unknown
+   * fields. Struct, duration, timestamp, empty, and field mask fields redact like nested
+   * messages. Every other field keeps its value.
+   */
   override fun redact(value: M): M {
     val builder = binding.newBuilder()
     for (field in fields.values) {
@@ -134,23 +139,27 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
           "Field '${field.name}' in $type is required and cannot be redacted.",
         )
       }
-      val isMessage = field.isMessage
-      if (field.redacted || isMessage && !field.label.isRepeated) {
-        val builderValue = field.getFromBuilder(builder)
-        if (builderValue != null) {
-          val redactedValue = field.adapter.redact(builderValue)
-          field.set(builder, redactedValue)
+      if (field.redacted) continue
+      val fieldValue = field[value] ?: continue
+      val redactsValue = field.isMessage || field.singleAdapter in REDACTED_BUILT_IN_ADAPTERS
+      val redactedValue = when {
+        !redactsValue -> when (fieldValue) {
+          is List<*> -> fieldValue.toMutableList()
+          is Map<*, *> -> LinkedHashMap(fieldValue)
+          else -> fieldValue
         }
-      } else if (isMessage && field.label.isRepeated) {
-        @Suppress("UNCHECKED_CAST")
-        val values = field.getFromBuilder(builder) as List<Any>
-
-        @Suppress("UNCHECKED_CAST")
-        val adapter = field.singleAdapter as ProtoAdapter<Any>
-        field.set(builder, values.redactElements(adapter))
+        field.isMap -> {
+          @Suppress("UNCHECKED_CAST")
+          (fieldValue as Map<Any?, Any>).redactElements(field.singleAdapter as ProtoAdapter<Any>)
+        }
+        field.label.isRepeated -> {
+          @Suppress("UNCHECKED_CAST")
+          (fieldValue as List<Any>).redactElements(field.singleAdapter as ProtoAdapter<Any>)
+        }
+        else -> field.adapter.redact(fieldValue)
       }
+      field.set(builder, redactedValue)
     }
-    binding.clearUnknownFields(builder)
     return binding.build(builder)
   }
 
@@ -305,6 +314,22 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       ProtoAdapter.BOOL_VALUE,
       ProtoAdapter.STRING_VALUE,
       ProtoAdapter.BYTES_VALUE,
+    )
+
+    /**
+     * Built-in adapters that generated code redacts like a message. Their Java types are not
+     * [com.squareup.wire.Message] types, so [FieldOrOneOfBinding.isMessage] is false for them.
+     * Wrapper adapters are absent because their `redact` keeps the value, so a copy gives the same
+     * result.
+     */
+    private val REDACTED_BUILT_IN_ADAPTERS: Set<ProtoAdapter<*>> = setOf(
+      ProtoAdapter.STRUCT_MAP,
+      ProtoAdapter.STRUCT_LIST,
+      ProtoAdapter.STRUCT_VALUE,
+      ProtoAdapter.DURATION,
+      ProtoAdapter.INSTANT,
+      ProtoAdapter.EMPTY,
+      ProtoAdapter.FIELD_MASK,
     )
   }
 }
