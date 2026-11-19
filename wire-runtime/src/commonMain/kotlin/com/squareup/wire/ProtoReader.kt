@@ -259,6 +259,9 @@ open class ProtoReader(
    */
   open fun peekFieldEncoding(): FieldEncoding? = nextFieldEncoding
 
+  /** Returns the most recently read tag, or -1 if no tag was read yet. */
+  internal open fun lastTag(): Int = tag
+
   /**
    * Skips the current field's value. This is only safe to call immediately following a call to
    * [nextTag].

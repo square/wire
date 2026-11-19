@@ -25,6 +25,7 @@ import com.squareup.wire.ProtoWriter.Companion.int32Size
 import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
+import com.squareup.wire.internal.ProtocolException
 import com.squareup.wire.internal.protocolExceptionWithCause
 import kotlin.reflect.KClass
 import okio.Buffer
@@ -778,8 +779,11 @@ internal class MapProtoAdapter<K, V> internal constructor(
   }
 
   override fun decode(reader: ProtoReader): Map<K, V> {
+    // Read the parent tag before beginMessage(), which changes the last tag.
+    val parentTag = reader.lastTag()
     var key: K? = entryAdapter.keyAdapter.identity
     var value: V? = entryAdapter.valueAdapter.identity
+    var unknownEnumValue: Int? = null
 
     val token = reader.beginMessage()
     while (true) {
@@ -798,21 +802,35 @@ internal class MapProtoAdapter<K, V> internal constructor(
       }
       when (tag) {
         1 -> key = entryAdapter.keyAdapter.decode(reader)
-        2 -> value = entryAdapter.valueAdapter.decode(reader)
+        2 -> try {
+          value = entryAdapter.valueAdapter.decode(reader)
+          unknownEnumValue = null
+        } catch (e: EnumConstantNotFoundException) {
+          unknownEnumValue = e.value
+        }
         // Ignore unknown tags in map entries.
+        else -> reader.skip()
       }
     }
     reader.endMessageAndGetUnknownFields(token)
 
-    check(key != null) { "Map entry with null key" }
-    check(value != null || acceptsNullValues) { "Map entry with null value" }
-    @Suppress("UNCHECKED_CAST")
-    return mapOf(key to value as V)
+    if (unknownEnumValue != null) {
+      // Like protobuf-java, keep an entry with an unknown enum value as an unknown field of the parent message.
+      if (parentTag <= 0) {
+        throw ProtocolException("Unknown enum value $unknownEnumValue in a map entry without a parent field")
+      }
+      reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
+      return emptyMap()
+    }
+    return singleEntry(key, value)
   }
 
   override fun decode(reader: ProtoReader32): Map<K, V> {
+    // Read the parent tag before beginMessage(), which changes the last tag.
+    val parentTag = (reader as? ByteArrayProtoReader32)?.lastTag() ?: -1
     var key: K? = entryAdapter.keyAdapter.identity
     var value: V? = entryAdapter.valueAdapter.identity
+    var unknownEnumValue: Int? = null
 
     val token = reader.beginMessage()
     while (true) {
@@ -831,16 +849,50 @@ internal class MapProtoAdapter<K, V> internal constructor(
       }
       when (tag) {
         1 -> key = entryAdapter.keyAdapter.decode(reader)
-        2 -> value = entryAdapter.valueAdapter.decode(reader)
+        2 -> try {
+          value = entryAdapter.valueAdapter.decode(reader)
+          unknownEnumValue = null
+        } catch (e: EnumConstantNotFoundException) {
+          unknownEnumValue = e.value
+        }
         // Ignore unknown tags in map entries.
+        else -> reader.skip()
       }
     }
     reader.endMessageAndGetUnknownFields(token)
 
-    check(key != null) { "Map entry with null key" }
-    check(value != null || acceptsNullValues) { "Map entry with null value" }
+    if (unknownEnumValue != null) {
+      // Like protobuf-java, keep an entry with an unknown enum value as an unknown field of the parent message.
+      if (parentTag <= 0) {
+        throw ProtocolException("Unknown enum value $unknownEnumValue in a map entry without a parent field")
+      }
+      reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
+      return emptyMap()
+    }
+    return singleEntry(key, value)
+  }
+
+  /** Returns the encoded form of an entry whose value is the unknown enum number [value]. */
+  private fun unknownEntry(key: K?, value: Int): ByteString {
+    val buffer = Buffer()
+    val writer = ProtoWriter(buffer)
+    if (key != null) entryAdapter.keyAdapter.encodeWithTag(writer, 1, key)
+    INT32.encodeWithTag(writer, 2, value)
+    return buffer.readByteString()
+  }
+
+  private fun singleEntry(key: K?, value: V?): Map<K, V> {
+    if (key == null) throw ProtocolException("Map entry with null key")
+    var resultValue = value
+    if (resultValue == null && !acceptsNullValues) {
+      // An absent value is the default value of its type. Only message-like adapters can decode that.
+      if (entryAdapter.valueAdapter.fieldEncoding != LENGTH_DELIMITED) {
+        throw ProtocolException("Map entry with null value")
+      }
+      resultValue = entryAdapter.valueAdapter.decode(ByteString.EMPTY)
+    }
     @Suppress("UNCHECKED_CAST")
-    return mapOf(key to value as V)
+    return mapOf(key to resultValue as V)
   }
 
   override fun redact(value: Map<K, V>): Map<K, V> = emptyMap()
