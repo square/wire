@@ -17,6 +17,7 @@ package com.squareup.wire
 
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.doesNotContain
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.messageContains
@@ -739,15 +740,31 @@ class WireJsonTest {
     assertFailsToDecode("""{"promotion":{"@type":[1,2]}}""", PizzaDelivery::class.java)
   }
 
-  private fun assertFailsToDecode(json: String, type: Class<*>) {
+  @Test fun mapDecodeFailureMessageDoesNotIncludeKey() {
+    val key = "secret-key-text"
+    val messages = listOf(
+      assertFailsToDecode("""{"mapInt32Int32":{"$key":1}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapInt64Int64":{"$key":"1"}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapUint64Uint64":{"$key":"1"}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapUint32Uint32":{"$key":1}}""", MapTypes::class.java),
+      assertFailsToDecode("""{"mapStringString":{"$key":null}}""", MapTypes::class.java),
+    )
+    for (message in messages) {
+      assertThat(message).doesNotContain(key)
+    }
+    assertThat(messages[0]).contains("a signed 32-bit integer")
+    assertThat(messages[3]).contains("an unsigned 32-bit integer")
+  }
+
+  private fun assertFailsToDecode(json: String, type: Class<*>): String {
     try {
       jsonLibrary.fromJson(json, type)
-      fail("expected a failure for ${json.take(100)}")
     } catch (expected: JsonDataException) {
-      // Moshi.
+      return expected.message.orEmpty() // Moshi.
     } catch (expected: JsonSyntaxException) {
-      // Gson.
+      return expected.message.orEmpty() // Gson.
     }
+    throw AssertionError("expected a failure for ${json.take(100)}")
   }
 
   @Test fun `int64s are encoded with quotes and decoded with either`() {

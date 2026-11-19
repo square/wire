@@ -48,7 +48,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
     valueAdapter: TypeAdapter<Any?>,
   ): TypeAdapter<Any?> {
     @Suppress("UNCHECKED_CAST")
-    return MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as TypeAdapter<Any?>
+    return MapJsonAdapter(keyFormatter, mapKeyTypeName(keyFormatter), valueAdapter).nullSafe() as TypeAdapter<Any?>
   }
 
   fun <T> TypeAdapter<T>.serializeNulls(): TypeAdapter<T> {
@@ -130,6 +130,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class MapJsonAdapter<K : Any, V>(
     private val keyFormatter: JsonFormatter<K>,
+    private val keyTypeName: String,
     private val valueAdapter: TypeAdapter<V>,
   ) : TypeAdapter<Map<K, V>>() {
     override fun read(reader: JsonReader): Map<K, V> {
@@ -140,10 +141,10 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
         val key = try {
           keyFormatter.fromString(name) as K
         } catch (_: RuntimeException) {
-          throw JsonSyntaxException("decode failed: $name at path ${reader.path}")
+          throw JsonSyntaxException("expected a map key that is $keyTypeName")
         }
         val value = valueAdapter.read(reader)
-          ?: throw JsonSyntaxException("expected a value for key $name at path ${reader.path}")
+          ?: throw JsonSyntaxException("expected a map value that is not null")
         result[key] = value
       }
       reader.endObject()

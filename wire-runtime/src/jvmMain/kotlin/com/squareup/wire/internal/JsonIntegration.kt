@@ -152,6 +152,19 @@ abstract class JsonIntegration<F, A> {
     else -> error("Unexpected map key type: ${protoAdapter.type}")
   }
 
+  /**
+   * Describes the map key type that [formatter] reads, for error messages. This never includes the
+   * key text, because that text comes from the JSON input.
+   */
+  protected fun mapKeyTypeName(formatter: JsonFormatter<*>): String = when (formatter) {
+    StringJsonFormatter -> "a string"
+    IntAsStringJsonFormatter -> "a signed 32-bit integer"
+    UnsignedIntAsStringJsonFormatter -> "an unsigned 32-bit integer"
+    LongAsStringJsonFormatter -> "a signed 64-bit integer"
+    UnsignedLongAsStringJsonFormatter -> "an unsigned 64-bit integer"
+    else -> "a supported scalar"
+  }
+
   /** Encodes a unsigned value without quotes, like `123`. */
   private object UnsignedLongAsNumberJsonFormatter : JsonFormatter<Long> {
     // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
