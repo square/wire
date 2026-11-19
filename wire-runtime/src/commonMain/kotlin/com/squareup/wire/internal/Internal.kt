@@ -410,14 +410,14 @@ fun hasMerges(reader: ProtoReader32): Boolean = reader is ByteArrayProtoReader32
  */
 fun <E> finishMerge(reader: ProtoReader, tag: Int, adapter: ProtoAdapter<E>, existing: E?): E? {
   val budget = reader.mergeBudgetOrNull() ?: return existing
-  return budget.finish(reader.mergeDepth(), tag, adapter, existing)
+  return budget.finish(reader.mergeDepth(), tag, adapter, existing, reader.mergeContext().allowance)
 }
 
 /** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
 fun <E> finishMerge(reader: ProtoReader32, tag: Int, adapter: ProtoAdapter<E>, existing: E?): E? {
   if (reader !is ByteArrayProtoReader32) return existing
   val budget = reader.mergeBudgetOrNull() ?: return existing
-  return budget.finish(reader.mergeDepth(), tag, adapter, existing)
+  return budget.finish(reader.mergeDepth(), tag, adapter, existing, reader.mergeContext().allowance)
 }
 
 /** Forgets the occurrences that [finishMerge] did not use, for example those of a replaced oneof member. */

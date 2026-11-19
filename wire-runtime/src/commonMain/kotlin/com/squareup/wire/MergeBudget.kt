@@ -54,7 +54,7 @@ internal class MergeBudget {
     dropFramesDeeperThan(context.recursionDepth)
     var frame = frames.lastOrNull()
     if (frame == null || frame.depth != context.recursionDepth) {
-      frame = MergeFrame(context.recursionDepth, context)
+      frame = MergeFrame(context.recursionDepth, context.recursionLimit)
       frames += frame
     }
     frame.occurrences.getOrPut(tag) { Buffer() }.write(bytes)
@@ -70,18 +70,21 @@ internal class MergeBudget {
   /**
    * Merges the occurrences kept for [tag] by the message that just ended at [depth] into
    * [existing], which is the first occurrence. Returns [existing] if none were kept.
+   *
+   * [allowance] comes from the bytes the outermost reader has consumed now, not from when the first
+   * occurrence was kept. The message has ended, so it is never less than what merging each
+   * occurrence on arrival would have had.
    */
-  fun <E> finish(depth: Int, tag: Int, adapter: ProtoAdapter<E>, existing: E?): E? {
+  fun <E> finish(depth: Int, tag: Int, adapter: ProtoAdapter<E>, existing: E?, allowance: Long): E? {
     val frame = frames.lastOrNull()
     if (frame == null || frame.depth <= depth) return existing
     val pending = frame.occurrences.remove(tag) ?: return existing
     if (existing == null) return null
-    val context = frame.context
     val buffer = Buffer()
     adapter.encode(buffer, existing)
-    charge(buffer.size + pending.size, context.allowance)
+    charge(buffer.size + pending.size, allowance)
     buffer.writeAll(pending)
-    return adapter.decode(ProtoReader(buffer, context))
+    return adapter.decode(ProtoReader(buffer, MergeContext(frame.recursionLimit, frame.depth, this, allowance)))
   }
 
   /** Forgets everything kept for the message that just ended at [depth]. */
@@ -97,7 +100,7 @@ internal class MergeBudget {
   }
 }
 
-private class MergeFrame(val depth: Int, val context: MergeContext) {
+private class MergeFrame(val depth: Int, val recursionLimit: Int) {
   val occurrences = LinkedHashMap<Int, Buffer>()
 }
 
