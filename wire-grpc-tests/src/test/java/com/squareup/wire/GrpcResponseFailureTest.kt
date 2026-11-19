@@ -18,20 +18,25 @@ package com.squareup.wire
 import assertk.Assert
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
+import assertk.assertions.message
 import assertk.assertions.prop
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -85,6 +90,18 @@ class GrpcResponseFailureTest {
   private val uncaught = LinkedBlockingQueue<Throwable>()
   private var previousUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
+  /** The last response that the client received, so a decoder can wait for its trailers. */
+  private val lastResponse = AtomicReference<Response>()
+
+  /** A method that fails to decode only after the server's trailers arrived. */
+  private val undecodableAfterTrailersMethod = methodThatFailsToDecode {
+    val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10)
+    while (lastResponse.get().peekTrailers() == null && System.nanoTime() < deadline) {
+      Thread.sleep(5)
+    }
+    IllegalStateException("Required field not set")
+  }
+
   private val method = GrpcMethod(
     path = "/routeguide.RouteGuide/GetFeature",
     requestAdapter = Point.ADAPTER,
@@ -98,6 +115,7 @@ class GrpcResponseFailureTest {
     mockWebServer.protocols = listOf(Protocol.H2_PRIOR_KNOWLEDGE)
     val okhttpClient = OkHttpClient.Builder()
       .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
+      .addInterceptor { chain -> chain.proceed(chain.request()).also { lastResponse.set(it) } }
       .build()
     grpcClient = GrpcClient.Builder()
       .client(okhttpClient)
@@ -220,6 +238,39 @@ class GrpcResponseFailureTest {
   }
 
   @Test
+  fun undecodableResponseReportsStatusFromTrailersBlocking() {
+    enqueue(grpcStatus = "13")
+    assertFailure {
+      grpcClient.newCall(undecodableAfterTrailersMethod).executeBlocking(Point())
+    }.isDecodeFailureWithStatus("gRPC transport failure (HTTP status=200, grpc-status=13, grpc-message=nope)")
+  }
+
+  @Test
+  fun undecodableResponseReportsStatusFromTrailersStreamingSuspend() {
+    enqueue(grpcStatus = "13")
+    val (requests, responses) = grpcClient.newStreamingCall(undecodableAfterTrailersMethod).executeIn(GlobalScope)
+    requests.close()
+    assertFailure {
+      runBlocking { responses.receive() }
+    }.isDecodeFailureWithStatus("gRPC transport failure (HTTP status=200, grpc-status=13, grpc-message=nope)")
+  }
+
+  @Test
+  fun undecodableResponseDoesNotReportUnknownStatus() {
+    // The trailers follow the message by about a second, so they are usually not here yet.
+    mockWebServer.enqueue(
+      MockResponse()
+        .setHeader("Content-Type", "application/grpc")
+        .setBody(Buffer().writeByte(0).writeInt(0))
+        .throttleBody(5, 1, TimeUnit.SECONDS)
+        .setTrailers(headersOf("grpc-status", "13", "grpc-message", "nope")),
+    )
+    assertFailure {
+      grpcClient.newCall(undecodableMethod).executeBlocking(Point())
+    }.message().isNotNull().doesNotContain("grpc-status=null")
+  }
+
+  @Test
   fun errorWhileDecodingBlockingUnaryIsThrownToTheCaller() {
     enqueue(grpcStatus = "0")
     assertFailure {
@@ -315,6 +366,11 @@ class GrpcResponseFailureTest {
       .prop(GrpcException::grpcStatus)
       .prop(GrpcStatus::code)
       .isEqualTo(code)
+  }
+
+  private fun Assert<Throwable>.isDecodeFailureWithStatus(message: String) {
+    isDecodeFailure()
+    message().isNotNull().contains(message)
   }
 
   private fun Assert<Throwable>.isDecodeFailure() {
