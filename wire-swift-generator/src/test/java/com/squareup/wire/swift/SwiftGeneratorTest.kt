@@ -441,6 +441,63 @@ class SwiftGeneratorTest {
     assertThat(enumCode).contains("""case .DARK_RED: return "DARK-RED"""")
   }
 
+  @Test fun dollarSignInJsonNameStaysPlain() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  optional string a = 1 [json_name = "a${'$'}b"];
+        |  required string b = 2 [json_name = "${'$'}{x}"];
+        |  oneof choice {
+        |    string c = 3 [json_name = "${'$'}c"];
+        |    int32 d = 4;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("""firstOfKeys: "a${'$'}b", "a"""")
+    assertThat(code).contains("""forKey: preferCamelCase ? "a${'$'}b" : "a"""")
+    assertThat(code).contains("""firstOfKeys: "${'$'}{x}", "b"""")
+    assertThat(code).contains("""forKey: "${'$'}c"""")
+    assertThat(code).contains("""forKey: preferCamelCase ? "${'$'}c" : "c"""")
+    assertThat(code).doesNotContain("{'")
+  }
+
+  @Test fun percentSignInJsonNameStaysPlain() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  optional string a = 1 [json_name = "100%"];
+        |  optional string b = 2 [json_name = "%s %S %1S"];
+        |  oneof choice {
+        |    string c = 3 [json_name = "%c"];
+        |    int32 d = 4;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("""firstOfKeys: "100%", "a"""")
+    assertThat(code).contains("""forKey: preferCamelCase ? "100%" : "a"""")
+    assertThat(code).contains("""firstOfKeys: "%s %S %1S", "b"""")
+    assertThat(code).contains("""forKey: "%c"""")
+    assertThat(code).contains("""forKey: preferCamelCase ? "%c" : "c"""")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))

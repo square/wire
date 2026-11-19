@@ -108,3 +108,16 @@ message SwiftDashedNames {
 message Dashed-Message {
   optional string value = 1;
 }
+
+message SwiftJsonNames {
+  optional string dollar = 1 [json_name = "a$b"];
+  optional string template = 2 [json_name = "${x}"];
+  optional string percent = 3 [json_name = "100%"];
+  optional string directive = 4 [json_name = "%s %S %1S"];
+  required string required_name = 5 [json_name = "$required"];
+
+  oneof choice {
+    string oneof_dollar = 6 [json_name = "$one"];
+    int32 oneof_percent = 7 [json_name = "%one"];
+  }
+}
