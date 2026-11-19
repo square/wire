@@ -17,7 +17,9 @@ package com.squareup.wire
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.squareup.wire.protos.kotlin.boxedredacted.BoxedRedactedOneOf
 import com.squareup.wire.protos.kotlin.boxedredacted.BoxedRedactedOneOfBuildersOnly
 import com.squareup.wire.protos.kotlin.boxedredacted.Image
@@ -97,6 +99,54 @@ class BoxedOneOfRedactTest {
       val redacted = BoxedRedactedOneOf.ADAPTER.redact(message)
       assertThat(BoxedRedactedOneOf.ADAPTER.decode(redacted.encode())).isEqualTo(BoxedRedactedOneOf())
     }
+  }
+
+  @Test fun structMembersRedactStringsAndKeepOtherValues() {
+    val struct = mapOf("name" to "secret", "count" to 3.0, "ok" to true, "none" to null)
+    val redactedStruct = mapOf("name" to null, "count" to 3.0, "ok" to true, "none" to null)
+    val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STRUCT, struct))
+    val expected = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_STRUCT, redactedStruct))
+    assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(expected)
+  }
+
+  @Test fun listValueMembersRedactStringsAndKeepOtherValues() {
+    val list = listOf("secret", 3.0, true, null, mapOf("nested" to "secret"))
+    val redactedList = listOf(null, 3.0, true, null, mapOf("nested" to null))
+    val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_LIST_VALUE, list))
+    val expected = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_LIST_VALUE, redactedList))
+    assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(expected)
+  }
+
+  @Test fun valueMembersRedactStringsAndKeepOtherValues() {
+    val cases = listOf(
+      "secret" to null,
+      3.0 to 3.0,
+      true to true,
+      null to null,
+      mapOf("name" to "secret", "count" to 3.0) to mapOf("name" to null, "count" to 3.0),
+      listOf("secret", false) to listOf(null, false),
+    )
+    for ((value, expectedValue) in cases) {
+      val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, value))
+      val expected = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, expectedValue))
+      assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(expected)
+    }
+  }
+
+  @Test fun redactedMembersHaveRedactedKeys() {
+    assertThat(BoxedRedactedOneOf.SENSITIVE_SECRET.redacted).isTrue()
+    assertThat(BoxedRedactedOneOf.SENSITIVE_WHOLLY_REDACTED.redacted).isTrue()
+    assertThat(BoxedRedactedOneOf.SENSITIVE_PUBLIC_TEXT.redacted).isFalse()
+    assertThat(BoxedRedactedOneOf.VARIANT_PAYLOAD.redacted).isFalse()
+  }
+
+  @Test fun redactedMemberPrintsPlaceholderInToString() {
+    assertThat(OneOf(BoxedRedactedOneOf.SENSITIVE_SECRET, "secret").toString())
+      .isEqualTo("secret=\u2588\u2588")
+    assertThat(OneOf(BoxedRedactedOneOf.SENSITIVE_WHOLLY_REDACTED, payload).toString())
+      .isEqualTo("wholly_redacted=\u2588\u2588")
+    assertThat(OneOf(BoxedRedactedOneOf.SENSITIVE_PUBLIC_TEXT, "public").toString())
+      .isEqualTo("public_text=public")
   }
 
   @Test fun nestedMessageIsRedactedBeforeEncoding_buildersOnly() {

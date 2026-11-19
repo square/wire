@@ -17,6 +17,9 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.sanitizeAny
 
+/** The placeholder that generated `toString` functions print for redacted fields. */
+private const val REDACTED = "\u2588\u2588"
+
 /**
  * A oneof's value and the key that identifies which field holds it.
  *
@@ -114,22 +117,26 @@ data class OneOf<out K : OneOf.Key<T>, T>(
   }
 
   override fun toString(): String {
-    // TODO(Benoit) What if the field is redacted?
-    val valueAsString = when (key.adapter) {
-      ProtoAdapter.STRING,
-      ProtoAdapter.STRING_VALUE,
-      ProtoAdapter.STRUCT_MAP,
-      ProtoAdapter.STRUCT_LIST,
-      ProtoAdapter.STRUCT_VALUE,
-      -> {
-        sanitizeAny(value)
-      }
-      else -> {
-        value.toString()
-      }
+    val valueAsString = when {
+      key.redacted -> REDACTED
+      else -> valueToString()
     }
 
     return """${key.declaredName}=$valueAsString"""
+  }
+
+  private fun valueToString(): String = when (key.adapter) {
+    ProtoAdapter.STRING,
+    ProtoAdapter.STRING_VALUE,
+    ProtoAdapter.STRUCT_MAP,
+    ProtoAdapter.STRUCT_LIST,
+    ProtoAdapter.STRUCT_VALUE,
+    -> {
+      sanitizeAny(value)
+    }
+    else -> {
+      value.toString()
+    }
   }
 
   fun encodedSizeWithTag(): Int = key.adapter.encodedSizeWithTag(key.tag, value)

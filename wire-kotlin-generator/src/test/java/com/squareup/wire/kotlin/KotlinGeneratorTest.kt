@@ -2947,9 +2947,7 @@ class KotlinGeneratorTest {
     assertThat(code).contains("builder.`in` = choiceKey.decode(reader)")
     // Redacted keyword-named fields and oneofs in the redact() builder chain.
     assertThat(code).contains(".`as`(null)")
-    assertThat(code).contains(".`for`(value.`for`?.let { `for` ->")
-    assertThat(code).contains("when (`for`.key)")
-    assertThat(code).contains("FOR_VAL -> null")
+    assertThat(code).contains(".`for`(value.`for`.redactOneOf())")
   }
 
   @Test fun boxedOneofRedactionRedactsMessageMembers() {
@@ -2999,15 +2997,48 @@ class KotlinGeneratorTest {
         buildersOnly = buildersOnly,
         javaInterop = buildersOnly,
       )
-      assertThat(code).contains("CHOICE_INNER -> OneOf(CHOICE_INNER, Inner.ADAPTER.redact(choice.value as Inner))")
-      assertThat(code).contains("CHOICE_SECRET -> null")
-      assertThat(code).contains("CHOICE_DURATION -> OneOf(CHOICE_DURATION, ProtoAdapter.DURATION.redact(choice.value as Duration))")
-      assertThat(code).doesNotContain("CHOICE_TEXT ->")
-      assertThat(code).doesNotContain("CHOICE_KIND ->")
-      assertThat(code).doesNotContain("CHOICE_WRAPPED ->")
-      assertThat(code).doesNotContain("CHOICE_COUNTER ->")
-      assertThat(code).contains("else -> choice")
+      assertThat(code).contains("value.choice.redactOneOf()")
+      assertThat(code).doesNotContain("when (choice.key)")
+      // Only the redacted member has a redacted key.
+      assertThat(Regex("redacted = true").findAll(code).count()).isEqualTo(1)
+      assertThat(code).contains("redacted: Boolean = false")
     }
+  }
+
+  @Test fun boxedOneofRedactIsTheSameSizeForAnyNumberOfMembers() {
+    fun redactFunction(memberCount: Int): String {
+      val members = (1..memberCount).joinToString("\n") { "    Inner member_$it = $it;" }
+      val schema = buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+          |syntax = "proto2";
+          |message Choices {
+          |  oneof choice {
+          |$members
+          |  }
+          |}
+          |message Inner {
+          |  optional string text = 1;
+          |}
+          """.trimMargin(),
+        )
+      }
+      val code = KotlinWithProfilesGenerator(schema).generateKotlin(
+        "Choices",
+        oneofMode = OneofMode.BOXED,
+      )
+      val start = code.indexOf("override fun redact(")
+      val end = code.indexOf("unknownFields = ByteString.EMPTY", start)
+      assertThat(start >= 0 && end > start).isEqualTo(true)
+      return code.substring(start, end)
+    }
+
+    val small = redactFunction(3)
+    val large = redactFunction(3_000)
+    assertThat(large).isEqualTo(small)
+    assertThat(large).contains("value.choice.redactOneOf()")
+    assertThat(large).doesNotContain("when (")
   }
 
   @Test fun sealedOneofRedactionEscapesKeywordNames() {

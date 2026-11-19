@@ -15,6 +15,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.`internal`.redactOneOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -140,12 +141,7 @@ public class BoxedOneOfs(
       }
 
       override fun redact(`value`: BoxedOneOfs): BoxedOneOfs = value.copy(
-        value_ = value.value_?.let { value_ ->
-          when (value_.key) {
-            VALUE_INNER -> OneOf(VALUE_INNER, Inner.ADAPTER.redact(value_.value as Inner))
-            else -> value_
-          }
-        },
+        value_ = value.value_.redactOneOf(),
         unknownFields = ByteString.EMPTY
       )
     }

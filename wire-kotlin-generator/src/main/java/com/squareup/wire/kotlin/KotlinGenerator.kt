@@ -2567,31 +2567,13 @@ class KotlinGenerator private constructor(
     if (fieldsToRedact.isEmpty()) return null
 
     if (oneofMode != OneofMode.SEALED_CLASS) {
-      // Boxed oneof. Redacted members become null, and message members redact themselves.
-      val oneOfClassName = com.squareup.wire.OneOf::class.asClassName()
-      return buildCodeBlock {
-        beginControlFlow("value.%1N?.let { %1N ->", fieldName)
-        beginControlFlow("when (%N.key)", fieldName)
-        for (field in fieldsToRedact) {
-          val keyName = nameAllocator[boxedOneOfKeyFieldName(name, field.name)]
-          if (field.isRedacted) {
-            addStatement("%N -> null", keyName)
-          } else {
-            addStatement(
-              "%1N -> %2T(%1N, %3L.redact(%4N.value as %5T))",
-              keyName,
-              oneOfClassName,
-              field.getAdapterName(),
-              fieldName,
-              field.type!!.typeName,
-            )
-          }
-        }
-        addStatement("else -> %N", fieldName)
-        endControlFlow()
-        unindent()
-        add("}")
-      }
+      // Boxed oneof. One runtime call handles every member, so `redact` has the same size however
+      // many members the oneof has. Redacted keys are marked as such, see [oneOfKey].
+      return CodeBlock.of(
+        "value.%N.%M()",
+        fieldName,
+        MemberName("com.squareup.wire.internal", "redactOneOf"),
+      )
     }
 
     val sealedClassName = className.nestedClass(nameAllocator[boxedOneOfClassName(name)])
@@ -3495,6 +3477,16 @@ class KotlinGenerator private constructor(
           .addParameter("tag", Int::class)
           .addParameter("adapter", ProtoAdapter::class.asClassName().parameterizedBy(typeVariable))
           .addParameter("declaredName", String::class)
+          .apply {
+            // Only oneofs with redacted members need it. The others keep the three-parameter shape.
+            if (oneOf.fields.any { it.isRedacted }) {
+              addParameter(
+                ParameterSpec.builder("redacted", Boolean::class)
+                  .defaultValue("false")
+                  .build(),
+              )
+            }
+          }
           .build(),
       )
       .superclass(
@@ -3503,6 +3495,11 @@ class KotlinGenerator private constructor(
       .addSuperclassConstructorParameter("%L", "tag")
       .addSuperclassConstructorParameter("%L", "adapter")
       .addSuperclassConstructorParameter("%L", "declaredName")
+      .apply {
+        if (oneOf.fields.any { it.isRedacted }) {
+          addSuperclassConstructorParameter("%L", "redacted")
+        }
+      }
       .addFunction(
         FunSpec.builder("create")
           .addParameter("value", typeVariable)
@@ -3606,17 +3603,22 @@ class KotlinGenerator private constructor(
         }
       }
       .initializer(
-        CodeBlock.of(
-          "%T<%T>(%L = %L, %L = %L, %L = %S)",
-          boxClassName,
-          field.type!!.typeName,
-          "tag",
-          field.tag,
-          "adapter",
-          field.getAdapterName(),
-          "declaredName",
-          field.name,
-        ),
+        buildCodeBlock {
+          add(
+            "%T<%T>(%L = %L, %L = %L, %L = %S",
+            boxClassName,
+            field.type!!.typeName,
+            "tag",
+            field.tag,
+            "adapter",
+            field.getAdapterName(),
+            "declaredName",
+            field.name,
+          )
+          // Redacted keys let the runtime redact the oneof and print it without the value.
+          if (field.isRedacted) add(", %L = %L", "redacted", "true")
+          add(")")
+        },
       )
       .build()
   }

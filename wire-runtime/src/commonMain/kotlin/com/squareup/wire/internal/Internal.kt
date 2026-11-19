@@ -24,6 +24,7 @@ import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldMask
 import com.squareup.wire.Instant
 import com.squareup.wire.MergeContext
+import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoReader32
@@ -137,6 +138,51 @@ fun <T> List<T>.redactElements(adapter: ProtoAdapter<T>): List<T> = map(adapter:
 
 @JvmName("-redactElements") // Hide from Java
 fun <K, V> Map<K, V>.redactElements(adapter: ProtoAdapter<V>): Map<K, V> = mapValues { (_, value) -> adapter.redact(value) }
+
+/**
+ * Redacts the value of a boxed oneof. Generated code calls this so that `redact` has the same size
+ * whatever the number of oneof members.
+ *
+ * - A null oneof stays null.
+ * - A member whose key is redacted becomes null.
+ * - A message member redacts itself through its adapter. This includes well-known types like
+ *   `Struct`, `Value`, `ListValue`, `Duration`, `Timestamp`, and `Empty`.
+ * - Every other member keeps its value: scalars, enums, strings, bytes, and wrapper types.
+ */
+@JvmName("-redactOneOf") // Hide from Java
+fun <O : OneOf<*, *>> O?.redactOneOf(): O? {
+  if (this == null) return null
+  @Suppress("UNCHECKED_CAST") // The key and the value of a OneOf always have the same type.
+  val key = key as OneOf.Key<Any?>
+  if (key.redacted) return null
+  if (!key.adapter.redactsLikeMessage()) return this
+  @Suppress("UNCHECKED_CAST") // The new OneOf has the same key, so it has the same type.
+  return OneOf(key, key.adapter.redact(value)) as O
+}
+
+/**
+ * True for adapters that redact their value: generated messages and the well-known types that
+ * Wire maps to platform types. Scalars, strings, bytes, and enums cannot redact. Wrapper adapters
+ * cannot redact either, because they hold only a scalar.
+ */
+private fun ProtoAdapter<*>.redactsLikeMessage(): Boolean {
+  if (fieldEncoding != FieldEncoding.LENGTH_DELIMITED) return false
+  return when (this) {
+    ProtoAdapter.STRING,
+    ProtoAdapter.BYTES,
+    ProtoAdapter.DOUBLE_VALUE,
+    ProtoAdapter.FLOAT_VALUE,
+    ProtoAdapter.INT64_VALUE,
+    ProtoAdapter.UINT64_VALUE,
+    ProtoAdapter.INT32_VALUE,
+    ProtoAdapter.UINT32_VALUE,
+    ProtoAdapter.BOOL_VALUE,
+    ProtoAdapter.STRING_VALUE,
+    ProtoAdapter.BYTES_VALUE,
+    -> false
+    else -> true
+  }
+}
 
 @Suppress("SuspiciousEqualsCombination")
 fun equals(a: Any?, b: Any?): Boolean = a === b || (a != null && a == b)
