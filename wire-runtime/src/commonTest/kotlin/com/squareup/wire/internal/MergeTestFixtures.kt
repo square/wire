@@ -109,6 +109,14 @@ internal class NodeAdapter(
  */
 internal class CustomProtoReader32(delegate: ProtoReader32) : ProtoReader32 by delegate
 
+/** A reader that cannot return a [ProtoReader], which generated code does not need to merge. */
+internal class CustomProtoReader32WithoutProtoReader(
+  delegate: ProtoReader32,
+  private val failure: () -> Nothing,
+) : ProtoReader32 by delegate {
+  override fun asProtoReader(): ProtoReader = failure()
+}
+
 /** Adapters that read a [ProtoReader32], so that they reach the merge code with a custom reader. */
 internal val protoReader32NodeAdapters = listOf(
   NodeAdapter(readsProtoReader32 = true),

@@ -83,5 +83,10 @@ class MergeChoiceTest {
     val kept = encode(a to 1) + truncatedOccurrence(a)
     assertFailsWith<IOException> { MergeChoice.ADAPTER.decode(kept) }
     assertFailsWith<IOException> { MergeChoice.ADAPTER.decode(Buffer().write(kept)) }
+
+    assertEquals("a=null b=[2] c=null", describe(MergeChoiceBuildersOnly.ADAPTER.decode(replaced)))
+    assertEquals("a=null b=[2] c=null", describe(MergeChoiceBuildersOnly.ADAPTER.decode(Buffer().write(replaced))))
+    assertFailsWith<IOException> { MergeChoiceBuildersOnly.ADAPTER.decode(kept) }
+    assertFailsWith<IOException> { MergeChoiceBuildersOnly.ADAPTER.decode(Buffer().write(kept)) }
   }
 }

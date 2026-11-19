@@ -122,4 +122,22 @@ class DecodeMessageOrMergeTest {
       )
     }
   }
+
+  @Test fun customReaderThatCannotReturnAProtoReaderStillMerges() {
+    val first = int32(2, 1) + lengthDelimited(1, int32(2, 10))
+    val second = int32(2, 2) + lengthDelimited(1, int32(2, 20))
+    val bytes = lengthDelimited(1, first) + lengthDelimited(1, second)
+    val failures = listOf<() -> Nothing>(
+      { throw UnsupportedOperationException() },
+      { TODO() },
+    )
+    for (adapter in protoReader32NodeAdapters) {
+      for (failure in failures) {
+        val node = adapter.decode(CustomProtoReader32WithoutProtoReader(ProtoReader32(bytes), failure))
+        assertThat(node.toString()).isEqualTo(
+          "Node(child=Node(child=Node(child=null, values=[10, 20]), values=[1, 2]), values=[])",
+        )
+      }
+    }
+  }
 }

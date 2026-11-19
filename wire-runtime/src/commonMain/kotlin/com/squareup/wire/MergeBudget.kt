@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.ProtoReader.Companion.DEFAULT_RECURSION_LIMIT
 import com.squareup.wire.internal.ProtocolException
 import okio.Buffer
 import okio.ByteString
@@ -126,6 +127,20 @@ internal fun allowedMergeBytes(bytesConsumed: Long): Long = MERGE_ALLOWANCE_BYTE
  * Returns the merge context of [this]. A reader that is not a built-in reader has no state of its
  * own, so this asks [ProtoReader32.asProtoReader] for the reader that does. That reader keeps the
  * recursion depth and the budget only if it is the same instance on every call.
+ *
+ * Generated code never needed [ProtoReader32.asProtoReader] to merge, so a reader that cannot
+ * provide one keeps the old behavior: depth 0 and no budget. This catches [Exception] and
+ * [NotImplementedError], which is what `TODO()` throws. It does not catch other errors, such as
+ * [StackOverflowError] and [OutOfMemoryError], because hiding those would be unsafe.
  */
-internal fun ProtoReader32.mergeContext(): MergeContext = (this as? ByteArrayProtoReader32)?.mergeContext()
-  ?: asProtoReader().mergeContext()
+internal fun ProtoReader32.mergeContext(): MergeContext {
+  (this as? ByteArrayProtoReader32)?.let { return it.mergeContext() }
+  val protoReader = try {
+    asProtoReader()
+  } catch (_: Exception) {
+    null
+  } catch (_: NotImplementedError) {
+    null
+  }
+  return protoReader?.mergeContext() ?: MergeContext(DEFAULT_RECURSION_LIMIT, 0, MergeBudget(), Long.MAX_VALUE)
+}
