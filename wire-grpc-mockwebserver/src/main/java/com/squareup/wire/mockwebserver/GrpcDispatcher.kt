@@ -27,6 +27,7 @@ import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Service
+import com.squareup.wire.internal.DEFAULT_MAX_INBOUND_MESSAGE_SIZE
 import com.squareup.wire.internal.GrpcMessageSink
 import com.squareup.wire.internal.GrpcMessageSource
 import java.lang.reflect.Method
@@ -62,11 +63,22 @@ import okio.Timeout
  * ```
  *
  * **WARNING**: This class does not currently support streaming calls.
+ *
+ * @param maxInboundMessageSize the largest request message (in bytes) that this accepts. It is
+ *     64 MiB by default, like [GrpcClient.Builder.maxInboundMessageSize]. Pass [Long.MAX_VALUE] to
+ *     remove the limit.
  */
-class GrpcDispatcher(
+class GrpcDispatcher @JvmOverloads constructor(
   services: List<Service>,
   val delegate: Dispatcher,
+  private val maxInboundMessageSize: Long = DEFAULT_MAX_INBOUND_MESSAGE_SIZE,
 ) : Dispatcher() {
+  init {
+    require(maxInboundMessageSize >= 0) {
+      "maxInboundMessageSize must not be negative: $maxInboundMessageSize"
+    }
+  }
+
   private val endpoints: Map<String, Endpoint<*, *>> = run {
     val map = mutableMapOf<String, Endpoint<*, *>>()
     for (service in services) {
@@ -166,6 +178,7 @@ class GrpcDispatcher(
       source = request.body,
       messageAdapter = protoAdapter,
       grpcEncoding = request.headers["grpc-encoding"],
+      maxMessageSize = maxInboundMessageSize,
     )
     return source.readExactlyOneAndClose()
   }

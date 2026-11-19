@@ -15,9 +15,12 @@
  */
 package com.squareup.wire
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import com.squareup.wire.mockwebserver.GrpcDispatcher
 import java.util.concurrent.TimeUnit
@@ -36,6 +39,7 @@ import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import okio.GzipSink
+import okio.IOException
 import okio.buffer
 import org.junit.Before
 import org.junit.Rule
@@ -100,6 +104,31 @@ class GrpcOnMockWebServerTest {
       assertThat(fakeRouteGuide.recordedGetFeatureCalls)
         .containsExactly(Point(latitude = 5, longitude = 6))
     }
+  }
+
+  @Test
+  fun requestOverMaxInboundMessageSizeIsRejected() {
+    // The request is gzip compressed, so its frame is larger than the 4 bytes of the message.
+    mockWebServer.dispatcher = GrpcDispatcher(
+      services = listOf(fakeRouteGuide),
+      delegate = mockWebServer.dispatcher,
+      maxInboundMessageSize = 3L,
+    )
+    assertFailure {
+      routeGuideService.GetFeature().executeBlocking(Point(latitude = 5, longitude = 6))
+    }.isInstanceOf<IOException>()
+    assertThat(fakeRouteGuide.recordedGetFeatureCalls).isEmpty()
+  }
+
+  @Test
+  fun requestUnderMaxInboundMessageSizeIsAccepted() {
+    mockWebServer.dispatcher = GrpcDispatcher(
+      services = listOf(fakeRouteGuide),
+      delegate = mockWebServer.dispatcher,
+      maxInboundMessageSize = 1024L,
+    )
+    val feature = routeGuideService.GetFeature().executeBlocking(Point(latitude = 5, longitude = 6))
+    assertThat(feature).isEqualTo(Feature(name = "tree"))
   }
 
   @Test

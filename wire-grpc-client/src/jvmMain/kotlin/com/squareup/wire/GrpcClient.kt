@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.DEFAULT_MAX_INBOUND_MESSAGE_SIZE
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
 import com.squareup.wire.internal.asGrpcClientStreamingCall
@@ -70,6 +71,7 @@ actual abstract class GrpcClient actual constructor() {
       .baseUrl(baseUrl)
       .minMessageToCompress(minMessageToCompress)
       .callTimeout(callTimeoutNanos, TimeUnit.NANOSECONDS)
+      .maxInboundMessageSize(maxInboundMessageSize)
   }
 
   internal fun newCall(
@@ -134,6 +136,7 @@ actual abstract class GrpcClient actual constructor() {
     private var baseUrl: GrpcHttpUrl? = null
     private var minMessageToCompress: Long = 0L
     private var callTimeoutNanos: Long = 0L
+    private var maxInboundMessageSize: Long = DEFAULT_MAX_INBOUND_MESSAGE_SIZE
 
     fun client(client: OkHttpClient): Builder {
       require(client.protocols.contains(HTTP_2) || client.protocols.contains(H2_PRIOR_KNOWLEDGE)) {
@@ -192,11 +195,30 @@ actual abstract class GrpcClient actual constructor() {
       this.callTimeoutNanos = unit.toNanos(timeout)
     }
 
+    /**
+     * Sets the largest response message (in bytes) that this client accepts.
+     * A larger message fails the call with a [GrpcException] that has [GrpcStatus.RESOURCE_EXHAUSTED].
+     *
+     * The limit applies to each message, both as it is on the wire and after decompression.
+     * This means that a compressed message is also rejected when its compressed frame is over the limit, like in grpc-java.
+     * It does not limit the number of messages in a stream.
+     *
+     * This is 64 MiB by default.
+     * Use a lower value if the server is not trusted.
+     * Pass [Long.MAX_VALUE] to remove the limit and accept any message, as earlier versions did.
+     * A frame is still at most 4 GiB.
+     */
+    fun maxInboundMessageSize(bytes: Long): Builder = apply {
+      require(bytes >= 0) { "maxInboundMessageSize must not be negative: $bytes" }
+      this.maxInboundMessageSize = bytes
+    }
+
     fun build(): GrpcClient = WireGrpcClient(
       client = client ?: throw IllegalArgumentException("client is not set"),
       baseUrl = baseUrl ?: throw IllegalArgumentException("baseUrl is not set"),
       minMessageToCompress = minMessageToCompress,
       callTimeoutNanos = callTimeoutNanos,
+      maxInboundMessageSize = maxInboundMessageSize,
     )
   }
 }
@@ -206,6 +228,7 @@ internal class WireGrpcClient internal constructor(
   internal val baseUrl: GrpcHttpUrl,
   internal val minMessageToCompress: Long,
   internal val callTimeoutNanos: Long,
+  internal val maxInboundMessageSize: Long,
 ) : GrpcClient() {
   override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = RealGrpcCall(this, method)
 

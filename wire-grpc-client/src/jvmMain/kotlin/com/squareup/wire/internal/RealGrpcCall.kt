@@ -122,7 +122,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
   private fun okhttp3.Response.readExactlyOneAndClose(): R {
     use {
-      messageSource(method.responseAdapter).use { reader ->
+      messageSource(method.responseAdapter, grpcClient.maxInboundMessageSize).use { reader ->
         val result = try {
           if (reader.isEmptyBody()) {
             // an empty body is valid for error responses. don't throw so we try to parse trailers.

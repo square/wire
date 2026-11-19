@@ -15,12 +15,19 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import okio.Buffer
 import okio.BufferedSource
+import okio.ForwardingSource
 import okio.IOException
+import okio.Source
 import okio.buffer
+
+/** The largest inbound message that a client accepts unless it is configured otherwise. */
+internal const val DEFAULT_MAX_INBOUND_MESSAGE_SIZE: Long = 64L * 1024 * 1024
 
 /**
  * Reads an HTTP/2 stream as a sequence of gRPC messages.
@@ -28,11 +35,15 @@ import okio.buffer
  * @param source the HTTP/2 stream body.
  * @param messageAdapter a proto adapter for each message.
  * @param grpcEncoding the "grpc-encoding" header, or null if it is absent.
+ * @param maxMessageSize the largest message to accept, in bytes. This applies to the message as it
+ *     is on the wire, and to the message after decompression. A larger message fails with a
+ *     [GrpcException] that has [GrpcStatus.RESOURCE_EXHAUSTED].
  */
 internal class GrpcMessageSource<T : Any>(
   private val source: BufferedSource,
   private val messageAdapter: ProtoAdapter<T>,
   private val grpcEncoding: String? = null,
+  private val maxMessageSize: Long = DEFAULT_MAX_INBOUND_MESSAGE_SIZE,
 ) : MessageSource<T> {
   override fun read(): T? {
     if (source.exhausted()) return null
@@ -54,10 +65,13 @@ internal class GrpcMessageSource<T : Any>(
     }
 
     val encodedLength = source.readInt().toLong() and 0xffffffffL
+    if (encodedLength > maxMessageSize) {
+      throw messageTooLarge("gRPC message exceeds maximum size $maxMessageSize: $encodedLength")
+    }
 
     val encodedMessage = Buffer().write(source, encodedLength)
 
-    return messageDecoding.decode(encodedMessage).buffer().use(BufferedSource::close) {
+    return messageDecoding.decode(encodedMessage).limited().buffer().use(BufferedSource::close) {
       try {
         messageAdapter.decode(it)
       } catch (e: RuntimeException) {
@@ -67,6 +81,26 @@ internal class GrpcMessageSource<T : Any>(
       }
     }
   }
+
+  /** Returns a source that fails when it yields more than [maxMessageSize] bytes. */
+  private fun Source.limited(): Source = object : ForwardingSource(this) {
+    private var totalBytesRead = 0L
+
+    override fun read(sink: Buffer, byteCount: Long): Long {
+      // Ask for one byte more than we allow, so that we notice a message that is too large.
+      val room = maxMessageSize - totalBytesRead
+      val toRead = if (room < Long.MAX_VALUE) minOf(byteCount, room + 1) else byteCount
+      val result = super.read(sink, toRead)
+      if (result == -1L) return -1L
+      totalBytesRead += result
+      if (totalBytesRead > maxMessageSize) {
+        throw messageTooLarge("Decompressed gRPC message exceeds maximum size $maxMessageSize")
+      }
+      return result
+    }
+  }
+
+  private fun messageTooLarge(message: String) = GrpcException(GrpcStatus.RESOURCE_EXHAUSTED, message)
 
   fun isEmptyBody(): Boolean = source.exhausted()
 
