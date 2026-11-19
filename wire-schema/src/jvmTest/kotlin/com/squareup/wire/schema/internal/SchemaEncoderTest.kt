@@ -515,4 +515,55 @@ class SchemaEncoderTest {
     val options = fileDescriptorProto.getMessageType(0).options.toByteString()
     assertThat(options.toByteArray().toByteString().hex()).isEqualTo("aadf0a0361e9ff")
   }
+
+  @Test fun `encode bytes default above U+00FF as question mark`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message TestMessage {
+        |  optional bytes big = 1 [default = "\400"];
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    // Generated code turns a char above U+00FF into a question mark, and so does the descriptor.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    assertThat(fileDescriptorProto.getMessageType(0).getField(0).defaultValue).isEqualTo("?")
+  }
+
+  @Test fun `encode bytes option above U+00FF as question mark`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MessageOptions {
+        |  optional bytes raw = 22005;
+        |}
+        |
+        |message TestMessage {
+        |  option (raw) = "\400";
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    // The record is tag 22005, length 1, then a question mark.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    val options = fileDescriptorProto.getMessageType(0).options.toByteString()
+    assertThat(options.toByteArray().toByteString().hex()).isEqualTo("aadf0a013f")
+  }
 }
