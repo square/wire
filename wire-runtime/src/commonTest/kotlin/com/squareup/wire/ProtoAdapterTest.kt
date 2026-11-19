@@ -19,6 +19,8 @@ import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
+import com.squareup.wire.internal.ProtocolException
 import kotlin.test.Test
 import okio.Buffer
 import okio.ByteString
@@ -177,6 +179,18 @@ class ProtoAdapterTest {
       assertThat(ProtoAdapter.DURATION.decode(Buffer().write(encoded))).isEqualTo(durationOfSeconds(9, 10))
       assertThat(ProtoAdapter.INSTANT.decode(encoded)).isEqualTo(ofEpochSecond(9, 10))
       assertThat(ProtoAdapter.INSTANT.decode(Buffer().write(encoded))).isEqualTo(ofEpochSecond(9, 10))
+    }
+  }
+
+  @Test fun durationAndTimestampOverflowThrowsProtocolException() {
+    // Seconds and nanos that overflow when the nanos are added to the seconds.
+    for (hex in listOf("08ffffffffffffffff7f1080a8d6b907", "08808080808080808080011080d8a9c6f8ffffffff01")) {
+      val encoded = hex.decodeHex()
+      for (adapter in listOf(ProtoAdapter.DURATION, ProtoAdapter.INSTANT)) {
+        assertFailure { adapter.decode(encoded) }.isInstanceOf<ProtocolException>()
+        assertFailure { adapter.decode(Buffer().write(encoded)) }.isInstanceOf<ProtocolException>()
+        assertFailure { adapter.decode(encoded) }.transform { it.cause }.isNotNull()
+      }
     }
   }
 

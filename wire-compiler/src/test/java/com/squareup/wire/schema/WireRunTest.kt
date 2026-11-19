@@ -27,6 +27,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import assertk.assertions.message
 import assertk.assertions.prop
 import com.squareup.wire.StringWireLogger
@@ -40,11 +41,18 @@ import com.squareup.wire.testing.add
 import com.squareup.wire.testing.containsExactlyInAnyOrderAsRelativePaths
 import com.squareup.wire.testing.findFiles
 import com.squareup.wire.testing.readUtf8
+import okio.FileSystem
+import okio.ForwardingFileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.junit.Assert.fail
 import org.junit.Test
+
+/** A file system that treats paths without regard to case, like the default on macOS and Windows. */
+private class CaseFoldingFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
+  override fun onPathParameter(path: Path, functionName: String, parameterName: String): Path = path.toString().lowercase().toPath()
+}
 
 class WireRunTest {
   private val fs = FakeFileSystem().apply {
@@ -492,6 +500,44 @@ class WireRunTest {
       .contains("message Blue {")
     assertThat(fs.readUtf8("generated/proto/squareup/colors/red.proto"))
       .contains("message Red {")
+  }
+
+  @Test
+  fun protoTargetWritesBytesDefaultAboveAsciiAsOctalEscapes() {
+    fs.add(
+      "polygons/src/main/proto/squareup/polygons/square.proto",
+      """
+          |syntax = "proto2";
+          |package squareup.polygons;
+          |message Square {
+          |  optional bytes data = 1 [default = "a~\177\200\351\377\000z"];
+          |  optional string name = 2 [default = "café"];
+          |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(ProtoTarget(outDirectory = "generated/proto")),
+    )
+    wireRun.execute(fs, logger)
+
+    val output = fs.readUtf8("generated/proto/squareup/polygons/square.proto")
+    assertThat(output).contains("""optional bytes data = 1 [default = "a~\177\200\351\377\000z"];""")
+    assertThat(output).contains("""optional string name = 2 [default = "café"];""")
+
+    fun Schema.defaultOf(fieldName: String) = (getType("squareup.polygons.Square") as MessageType).field(fieldName)!!.default
+
+    val original = SchemaLoader(fs).run {
+      initRoots(listOf(Location.get("polygons/src/main/proto")))
+      loadSchema()
+    }
+    val written = SchemaLoader(fs).run {
+      initRoots(listOf(Location.get("generated/proto")))
+      loadSchema()
+    }
+    assertThat(written.defaultOf("data")).isEqualTo(original.defaultOf("data"))
+    assertThat(written.defaultOf("data")).isEqualTo("a~\u007f\u0080\u00e9\u00ff\u0000z")
   }
 
   @Test
@@ -1515,6 +1561,189 @@ class WireRunTest {
     }
   }
 
+  @Test fun kotlinFilesDifferingOnlyByCaseWarnOnCaseSensitiveFileSystem() {
+    writeCaseProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).all {
+      contains("Warning: Files ")
+      contains("differ only by case")
+      contains("p.Baz at protos/case.proto:2:1")
+      contains("p.baz at protos/case.proto:3:1")
+    }
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/p/Baz.kt",
+      "generated/kt/p/baz.kt",
+    )
+  }
+
+  @Test fun kotlinFilesDifferingOnlyByCaseFailOnCaseFoldingFileSystem() {
+    writeCaseProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+
+    assertFailure { wireRun.execute(CaseFoldingFileSystem(fs), logger) }
+      .isInstanceOf<IllegalStateException>()
+      .message()
+      .isNotNull()
+      .all {
+        contains("differ only by case")
+        contains("p.Baz at protos/case.proto:2:1")
+        contains("p.baz at protos/case.proto:3:1")
+      }
+  }
+
+  @Test fun swiftFilesDifferingOnlyByCaseWarnOnCaseSensitiveFileSystem() {
+    writeCaseProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(SwiftTarget(outDirectory = "generated/swift")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).all {
+      contains("Warning: Files ")
+      contains("differ only by case")
+      contains("p.Baz at protos/case.proto:2:1")
+      contains("p.baz at protos/case.proto:3:1")
+    }
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/swift/Baz.swift",
+      "generated/swift/baz.swift",
+    )
+  }
+
+  @Test fun swiftFilesDifferingOnlyByCaseFailOnCaseFoldingFileSystem() {
+    writeCaseProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(SwiftTarget(outDirectory = "generated/swift")),
+    )
+
+    assertFailure { wireRun.execute(CaseFoldingFileSystem(fs), logger) }
+      .isInstanceOf<IllegalStateException>()
+      .message()
+      .isNotNull()
+      .all {
+        contains("differ only by case")
+        contains("p.Baz at protos/case.proto:2:1")
+        contains("p.baz at protos/case.proto:3:1")
+      }
+  }
+
+  @Test fun kotlinTypesDifferingByCaseInDifferentFilesAreWritten() {
+    fs.add(
+      "protos/one.proto",
+      """
+          |package one;
+          |message Baz {}
+          |
+      """.trimMargin(),
+    )
+    fs.add(
+      "protos/two.proto",
+      """
+          |package two;
+          |message baz {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("protos")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
+      "generated/kt/one/Baz.kt",
+      "generated/kt/two/baz.kt",
+    )
+  }
+
+  @Test fun importWithDotDotSegmentWarnsAndLoads() {
+    fs.add(
+      "sources/a.proto",
+      """
+          |package a;
+          |import "../shared/b.proto";
+          |message A { optional b.B b = 1; }
+          |
+      """.trimMargin(),
+    )
+    fs.add(
+      "shared/b.proto",
+      """
+          |package b;
+          |message B {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("sources")),
+      protoPath = listOf(Location.get("libs")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    fs.createDirectories("libs".toPath())
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).contains(
+      "Warning: Import \"../shared/b.proto\" is an absolute path or has a \"..\" segment.",
+    )
+    assertThat(fs.exists("generated/kt/a/A.kt".toPath())).isTrue()
+  }
+
+  @Test fun importWithAbsolutePathWarnsAndLoads() {
+    fs.add(
+      "sources/a.proto",
+      """
+          |package a;
+          |import "/shared/b.proto";
+          |message A { optional b.B b = 1; }
+          |
+      """.trimMargin(),
+    )
+    fs.add(
+      "/shared/b.proto",
+      """
+          |package b;
+          |message B {}
+          |
+      """.trimMargin(),
+    )
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("sources")),
+      protoPath = listOf(Location.get("libs")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    fs.createDirectories("libs".toPath())
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).contains(
+      "Warning: Import \"/shared/b.proto\" is an absolute path or has a \"..\" segment.",
+    )
+    assertThat(fs.exists("generated/kt/a/A.kt".toPath())).isTrue()
+  }
+
+  @Test fun importWithPlainPathDoesNotWarn() {
+    writeBlueProto()
+    writeSquareProto()
+    writeTriangleProto()
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(logger.log).doesNotContain("Warning:")
+  }
+
   @Test fun optionNameIsPreciseToAvoidConflict_java() {
     fs.add(
       "protos/zero/zero.proto",
@@ -2000,6 +2229,18 @@ class WireRunTest {
           |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
           |  rpc GetUpdatedBlue(squareup.colors.Blue) returns (squareup.colors.Blue) {}
           |}
+      """.trimMargin(),
+    )
+  }
+
+  private fun writeCaseProto() {
+    fs.add(
+      "protos/case.proto",
+      """
+          |package p;
+          |message Baz {}
+          |message baz {}
+          |
       """.trimMargin(),
     )
   }

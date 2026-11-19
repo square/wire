@@ -6,10 +6,15 @@ public abstract interface class com/squareup/wire/WireLogger {
 	public abstract fun unusedIncludesInTarget (Ljava/util/Set;)V
 	public abstract fun unusedPrunes (Ljava/util/Set;)V
 	public abstract fun unusedRoots (Ljava/util/Set;)V
+	public fun warning (Ljava/lang/String;)V
 }
 
 public final class com/squareup/wire/WireLogger$Companion {
 	public final fun getNONE ()Lcom/squareup/wire/WireLogger;
+}
+
+public final class com/squareup/wire/WireLogger$DefaultImpls {
+	public static fun warning (Lcom/squareup/wire/WireLogger;Ljava/lang/String;)V
 }
 
 public abstract interface class com/squareup/wire/WireLogger$Factory : java/io/Serializable {

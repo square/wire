@@ -21,6 +21,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.WireField
+import okio.Buffer
 
 class RuntimeMessageAdapter<M : Any, B : Any>(
   private val binding: MessageBinding<M, B>,
@@ -155,7 +156,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       first = false
       append(field.name)
       append('=')
-      append(if (field.redacted) REDACTED else binding)
+      append(if (field.redacted) REDACTED else sanitizeAny(binding))
     }
     append('}')
   }
@@ -196,7 +197,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
               field.set(builder, value)
             } else {
               val value = singleAdapter.decode(reader)
-              field.value(builder, value!!)
+              field.value(builder, value)
             }
           }
         } else {
@@ -208,7 +209,15 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
         binding.addUnknownField(builder, tag, FieldEncoding.VARINT, e.value.toLong())
       }
     }
-    reader.endMessageAndGetUnknownFields(token) // Ignore return value
+    val unknownFields = reader.endMessageAndGetUnknownFields(token)
+    if (unknownFields.size > 0) {
+      // These are map entries that the map adapter set aside, such as entries with an unknown enum value.
+      val unknownReader = ProtoReader(Buffer().write(unknownFields))
+      unknownReader.forEachTag { unknownTag ->
+        val unknownEncoding = unknownReader.peekFieldEncoding()!!
+        binding.addUnknownField(builder, unknownTag, unknownEncoding, unknownEncoding.rawProtoAdapter().decode(unknownReader))
+      }
+    }
 
     return binding.build(builder)
   }

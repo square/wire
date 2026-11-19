@@ -612,7 +612,7 @@ class GrpcClientTest {
       assertFailure {
         responseChannel.receive()
       }.isInstanceOf<IOException>().all {
-        hasMessage("gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)")
+        hasMessage("gRPC transport failure (HTTP status=200)")
         // Synthetic exception added by coroutines in StackTraceRecovery.kt.
         cause()
           .isNotNull()
@@ -1311,9 +1311,7 @@ class GrpcClientTest {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
     } catch (expected: IOException) {
-      assertThat(expected).hasMessage(
-        "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
-      )
+      assertThat(expected).hasMessage("gRPC transport failure (HTTP status=200)")
       assertThat(expected.cause!!).hasMessage("stream was reset: CANCEL")
     }
   }
@@ -1338,6 +1336,7 @@ class GrpcClientTest {
       assertThat(expected.message).isIn(
         "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
         "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)",
+        "gRPC transport failure (HTTP status=200)",
       )
       assertThat(expected.cause!!).hasMessage("expected 1 message but got multiple")
     }

@@ -27,6 +27,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaLoader
 import java.nio.file.FileSystems
 import okio.Buffer
+import okio.ByteString.Companion.decodeHex
 import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto3.java.alltypes.AllStructs as AllStructsJ
@@ -196,6 +197,61 @@ class StructTest {
       ProtoAdapter.STRUCT_MAP.redact(wireMessage)
       fail()
     } catch (_: IllegalArgumentException) {
+    }
+  }
+
+  @Test fun redactMapRedactsNestedValues() {
+    val value = mapOf(
+      "text" to "secret",
+      "number" to 1.0,
+      "flag" to true,
+      "nothing" to null,
+      "list" to listOf("secret", 2.0, mapOf("inner" to "secret")),
+      "map" to mapOf("inner" to "secret", "number" to 3.0),
+    )
+    assertThat(ProtoAdapter.STRUCT_MAP.redact(value)).isEqualTo(
+      mapOf(
+        "text" to null,
+        "number" to 1.0,
+        "flag" to true,
+        "nothing" to null,
+        "list" to listOf(null, 2.0, mapOf("inner" to null)),
+        "map" to mapOf("inner" to null, "number" to 3.0),
+      ),
+    )
+    assertThat(ProtoAdapter.STRUCT_MAP.redact(null)).isEqualTo(null)
+    assertThat(ProtoAdapter.STRUCT_MAP.redact(mapOf<String, Any?>())).isEqualTo(mapOf<String, Any?>())
+  }
+
+  @Test fun redactValueRedactsNestedValues() {
+    assertThat(ProtoAdapter.STRUCT_VALUE.redact(mapOf("a" to listOf("secret")))).isEqualTo(
+      mapOf("a" to listOf(null)),
+    )
+    assertThat(ProtoAdapter.STRUCT_LIST.redact(listOf(mapOf("a" to "secret")))).isEqualTo(
+      listOf(mapOf("a" to null)),
+    )
+  }
+
+  @Test fun redactErrorsDoNotIncludeData() {
+    val unsupportedValue = mapOf("a" to StringBuilder("android-secret"))
+    val unsupportedList = listOf(StringBuilder("android-secret"))
+
+    @Suppress("UNCHECKED_CAST") // Totally unsafe.
+    val unsupportedKey = mapOf(5 to "android-secret") as Map<String, Any?>
+    for (block in listOf<() -> Unit>(
+      { ProtoAdapter.STRUCT_MAP.redact(unsupportedValue) },
+      { ProtoAdapter.STRUCT_LIST.redact(unsupportedList) },
+      { ProtoAdapter.STRUCT_VALUE.redact(StringBuilder("android-secret")) },
+      { ProtoAdapter.STRUCT_MAP.redact(unsupportedKey) },
+      { ProtoAdapter.STRUCT_MAP.encode(unsupportedValue) },
+      { ProtoAdapter.STRUCT_LIST.encode(unsupportedList) },
+    )) {
+      try {
+        block()
+        fail()
+      } catch (e: IllegalArgumentException) {
+        assertThat(e.message!!.contains("android-secret")).isEqualTo(false)
+      }
     }
   }
 
@@ -639,5 +695,40 @@ class StructTest {
     assertThat(AllStructsJ.ADAPTER.decode(protocAllStruct.toByteArray())).isEqualTo(wireAllStructJava)
     val wireBytes = AllStructsJ.ADAPTER.encode(wireAllStructJava)
     assertThat(AllStructsOuterClass.AllStructs.parseFrom(wireBytes)).isEqualTo(protocAllStruct)
+  }
+
+  @Test fun reflectiveAdapterKeepsNullStructValues() {
+    val adapter = ProtoAdapter.newMessageAdapter(
+      AllStructsJ::class.java,
+      "type.googleapis.com/squareup.proto3.java.alltypes.AllStructs",
+      Syntax.PROTO_3,
+      AllStructsJ::class.java.classLoader,
+    )
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .addRepValueA(null.toValue())
+      .addRepNullValue(NullValue.NULL_VALUE)
+      .build()
+    val wireAllStruct = AllStructsJ.Builder()
+      .rep_value_a(listOf(null))
+      .rep_null_value(listOf(null))
+      .build()
+
+    val protocBytes = protocAllStruct.toByteArray()
+    assertThat(adapter.decode(protocBytes)).isEqualTo(wireAllStruct)
+    assertThat(adapter.decode(Buffer().write(protocBytes))).isEqualTo(wireAllStruct)
+    // A singular NullValue is null in Wire, the same as an absent field.
+    assertThat(adapter.decode("1800".decodeHex())).isEqualTo(AllStructsJ.Builder().build())
+  }
+
+  @Test fun schemaAdapterKeepsNullStructValues() {
+    val schemaAdapter = schema.protoAdapter("squareup.proto3.java.alltypes.AllStructs", false)
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .addRepValueA(null.toValue())
+      .addRepNullValue(NullValue.NULL_VALUE)
+      .build()
+
+    assertThat(schemaAdapter.decode(protocAllStruct.toByteArray()))
+      .isEqualTo(mapOf("rep_value_a" to listOf(null), "rep_null_value" to listOf(null)))
+    assertThat(schemaAdapter.decode("1800".decodeHex())).isEqualTo(mapOf<String, Any>())
   }
 }

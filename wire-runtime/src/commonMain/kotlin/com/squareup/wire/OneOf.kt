@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.internal.sanitizeAny
 
 /**
  * A oneof's value and the key that identifies which field holds it.
@@ -116,8 +116,13 @@ data class OneOf<out K : OneOf.Key<T>, T>(
   override fun toString(): String {
     // TODO(Benoit) What if the field is redacted?
     val valueAsString = when (key.adapter) {
-      ProtoAdapter.STRING, ProtoAdapter.STRING_VALUE -> {
-        sanitize(value.toString())
+      ProtoAdapter.STRING,
+      ProtoAdapter.STRING_VALUE,
+      ProtoAdapter.STRUCT_MAP,
+      ProtoAdapter.STRUCT_LIST,
+      ProtoAdapter.STRUCT_VALUE,
+      -> {
+        sanitizeAny(value)
       }
       else -> {
         value.toString()
