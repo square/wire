@@ -143,4 +143,56 @@ class SealedOneOfRedactTest {
         .isEqualTo(SealedRedactedOneOfBuildersOnly.Builder().build())
     }
   }
+
+  private val reflective = ProtoAdapter.newMessageAdapter(SealedRedactedOneOf::class.java)
+
+  private val meta = mapOf("s" to "secret", "n" to 1.0, "b" to true, "z" to null, "l" to listOf("a", 2.0))
+  private val redactedMeta = mapOf("s" to null, "n" to 1.0, "b" to true, "z" to null, "l" to listOf(null, 2.0))
+
+  @Test fun reflectiveRedactsNestedMessageMember() {
+    val message = SealedRedactedOneOf(
+      variant = SealedRedactedOneOf.Variant.Payload(payload),
+      sensitive = SealedRedactedOneOf.Sensitive.PublicText("public"),
+      unknownFields = "a00603".decodeHex(),
+    )
+    val expected = SealedRedactedOneOf(
+      variant = SealedRedactedOneOf.Variant.Payload(redactedPayload),
+      sensitive = SealedRedactedOneOf.Sensitive.PublicText("public"),
+    )
+    assertThat(reflective.redact(message)).isEqualTo(expected)
+    assertThat(reflective.redact(message)).isEqualTo(SealedRedactedOneOf.ADAPTER.redact(message))
+    assertThat(message.variant).isEqualTo(SealedRedactedOneOf.Variant.Payload(payload))
+  }
+
+  @Test fun reflectiveRedactsStructMember() {
+    val message = SealedRedactedOneOf(variant = SealedRedactedOneOf.Variant.Meta(meta))
+    val expected = SealedRedactedOneOf(variant = SealedRedactedOneOf.Variant.Meta(redactedMeta))
+    assertThat(reflective.redact(message)).isEqualTo(expected)
+    assertThat(reflective.redact(message)).isEqualTo(SealedRedactedOneOf.ADAPTER.redact(message))
+    assertThat(message.variant).isEqualTo(SealedRedactedOneOf.Variant.Meta(meta))
+  }
+
+  @Test fun reflectiveClearsRedactedMembers() {
+    val branches = listOf(
+      SealedRedactedOneOf.Sensitive.Secret("secret"),
+      SealedRedactedOneOf.Sensitive.WhollyRedacted(payload),
+    )
+    for (branch in branches) {
+      val message = SealedRedactedOneOf(sensitive = branch)
+      assertThat(reflective.redact(message)).isEqualTo(SealedRedactedOneOf())
+      assertThat(reflective.redact(message)).isEqualTo(SealedRedactedOneOf.ADAPTER.redact(message))
+    }
+  }
+
+  @Test fun reflectiveKeepsScalarEnumAndAbsentMembers() {
+    val messages = listOf(
+      SealedRedactedOneOf(variant = SealedRedactedOneOf.Variant.Text("text")),
+      SealedRedactedOneOf(variant = SealedRedactedOneOf.Variant.State(State.DONE)),
+      SealedRedactedOneOf(sensitive = SealedRedactedOneOf.Sensitive.PublicText("public")),
+      SealedRedactedOneOf(),
+    )
+    for (message in messages) {
+      assertThat(reflective.redact(message)).isEqualTo(message)
+    }
+  }
 }

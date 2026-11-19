@@ -19,6 +19,7 @@ package squareup.protos.kotlin.sealed_redacted;
 
 option java_package = "com.squareup.wire.protos.kotlin.sealedredacted";
 
+import "google/protobuf/struct.proto";
 import "option_redacted.proto";
 
 message SealedRedactedOneOf {
@@ -26,6 +27,7 @@ message SealedRedactedOneOf {
     Payload payload = 1;
     string text = 2;
     State state = 3;
+    google.protobuf.Struct meta = 7;
   }
   oneof sensitive {
     string secret = 4 [(squareup.protos.kotlin.redacted_option.redacted) = true];

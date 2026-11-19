@@ -115,7 +115,8 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
 
   /**
    * Like generated code, this clears redacted fields, redacts nested messages, and drops unknown
-   * fields. Every other field keeps its value.
+   * fields. Struct, duration, timestamp, and empty fields redact like nested messages. Every other
+   * field keeps its value.
    */
   override fun redact(value: M): M {
     val builder = binding.newBuilder()
@@ -127,8 +128,9 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       }
       if (field.redacted) continue
       val fieldValue = field[value] ?: continue
+      val redactsValue = field.isMessage || field.singleAdapter in REDACTED_BUILT_IN_ADAPTERS
       val redactedValue = when {
-        !field.isMessage -> when (fieldValue) {
+        !redactsValue -> when (fieldValue) {
           is List<*> -> fieldValue.toMutableList()
           is Map<*, *> -> LinkedHashMap(fieldValue)
           else -> fieldValue
@@ -277,6 +279,20 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       ProtoAdapter.BOOL_VALUE,
       ProtoAdapter.STRING_VALUE,
       ProtoAdapter.BYTES_VALUE,
+    )
+
+    /**
+     * Built-in adapters that generated code redacts like a message. Their Java types are not
+     * [com.squareup.wire.Message] types, so [FieldOrOneOfBinding.isMessage] is false for them.
+     * Wrapper adapters are absent because generated code keeps wrapper values.
+     */
+    private val REDACTED_BUILT_IN_ADAPTERS: Set<ProtoAdapter<*>> = setOf(
+      ProtoAdapter.STRUCT_MAP,
+      ProtoAdapter.STRUCT_LIST,
+      ProtoAdapter.STRUCT_VALUE,
+      ProtoAdapter.DURATION,
+      ProtoAdapter.INSTANT,
+      ProtoAdapter.EMPTY,
     )
   }
 }
