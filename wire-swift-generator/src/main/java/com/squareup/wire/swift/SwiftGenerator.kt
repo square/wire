@@ -225,14 +225,6 @@ class SwiftGenerator private constructor(
       defaultFieldInitializer(type!!, it)
     }
 
-  /**
-   * A required field is present in every valid message, so JSON must always carry it. Decoding
-   * fails when a required field is missing, and a field omitted for equalling its default would
-   * be missing.
-   */
-  private val Field.isRequiredWithDefault: Boolean
-    get() = default != null && isRequiredParameter
-
   // see https://protobuf.dev/programming-guides/proto3/#default
   private val Field.proto3InitialValue: String
     get() = when {
@@ -1070,7 +1062,7 @@ class SwiftGenerator private constructor(
               if (type.declaredFieldsAndOneOfFields.any { it.codableName != null }) {
                 addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
               }
-              if (type.declaredFields.any { !it.isOptional && !it.isRequiredWithDefault && (it.isCollection || it.isEnum || it.codableDefaultValue != null) }) {
+              if (type.declaredFields.any { !it.isOptional && !it.isRequired && (it.isCollection || it.isEnum || it.codableDefaultValue != null) }) {
                 addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
               }
               addStatement("")
@@ -1108,11 +1100,12 @@ class SwiftGenerator private constructor(
 
                 val defaultValue = field.codableDefaultValue
 
-                if (field.isOptional || field.isRequiredWithDefault) {
+                if (field.isOptional || field.isRequired) {
                   // A proto3 field that is defined with the optional keyword supports field presence.
                   // Fields that have a value set and that support field presence always include the field value
                   // in the JSON-encoded output, even if it is the default value.
-                  // A proto2 required field is always set, so it is always included too.
+                  // A proto2 required field is always set, and decoding fails when it is missing,
+                  // so it is always included too, whatever its value.
                   addEncode()
                 } else if (field.isCollection) {
                   beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.safeName)
