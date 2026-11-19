@@ -249,6 +249,9 @@ private const val ESCAPED_CHARS = ",[]{}\\"
  *  * The characters `,[]{}` and `\` get a `\` prefix.
  *  * Newline, carriage return, and tab become `\n`, `\r`, and `\t`.
  *  * U+2028 and U+2029 become `\u2028` and `\u2029`.
+ *  * The direction controls U+061C, U+200E, U+200F, U+202A to U+202E, and U+2066 to U+2069, and the
+ *    byte order mark U+FEFF, become `\u` and four lowercase hex digits like `\u202e`. They can
+ *    reorder or hide text when someone reads a log line.
  *  * Every other control character becomes `\u` and four lowercase hex digits, like `\u001b` for
  *    ESC. Control characters are U+0000 to U+001F and U+007F to U+009F.
  *  * All other characters stay as they are.
@@ -263,7 +266,7 @@ fun sanitize(value: String): String = buildString(value.length) {
       char == '\n' -> append("\\n")
       char == '\r' -> append("\\r")
       char == '\t' -> append("\\t")
-      char.isISOControl() || char == '\u2028' || char == '\u2029' -> {
+      char.isISOControl() || char == '\u2028' || char == '\u2029' || char.isDirectionControl() -> {
         append("\\u")
         append(char.code.toString(16).padStart(4, '0'))
       }
@@ -271,6 +274,13 @@ fun sanitize(value: String): String = buildString(value.length) {
     }
   }
 }
+
+private fun Char.isDirectionControl(): Boolean = this == '\u061C' ||
+  this == '\u200E' ||
+  this == '\u200F' ||
+  this in '\u202A'..'\u202E' ||
+  this in '\u2066'..'\u2069' ||
+  this == '\uFEFF'
 
 /** Returns a list of [values], each escaped with [sanitize]. */
 fun sanitize(values: List<String>): String = values.joinToString(prefix = "[", postfix = "]", transform = ::sanitize)

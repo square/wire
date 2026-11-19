@@ -70,6 +70,15 @@ class InternalTest {
     assertThat(sanitize(listOf("a\nb", "c"))).isEqualTo("""[a\nb, c]""")
   }
 
+  @Test fun sanitizeEscapesDirectionControls() {
+    assertThat(sanitize("a\u061C\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069\uFEFFb"))
+      .isEqualTo("""a\u061c\u200e\u200f\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069\ufeffb""")
+    assertThat(sanitize(listOf("\u202e"))).isEqualTo("""[\u202e]""")
+    // Neighbors of the ranges and other non-ASCII text stay as they are.
+    val plain = "\u200D\u202F\u2065\u206A\uFEFE\u05D0é"
+    assertThat(sanitize(plain)).isEqualTo(plain)
+  }
+
   @Test fun sanitizeAnyEscapesNestedStrings() {
     val struct = mapOf("k\n1" to listOf("a\nb", 2.5, mapOf("c" to "d,e")), "n" to null)
     assertThat(sanitizeAny(struct)).isEqualTo("""{k\n1=[a\nb, 2.5, {c=d\,e}], n=null}""")
