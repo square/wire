@@ -351,19 +351,27 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("{'")
   }
 
-  @Test fun requiredFloatingPointDefaultsAreSwiftExpressions() {
+  @Test fun requiredFieldsWithDefaultsAreStoredAsPlainProperties() {
     val schema = buildSchema {
       add(
         "message.proto".toPath(),
         """
         |syntax = "proto2";
         |
+        |enum Color {
+        |  RED = 0;
+        |  GREEN = 1;
+        |}
+        |
         |message Message {
-        |  required double a = 1 [default = inf];
-        |  required double b = 2 [default = -inf];
-        |  required double c = 3 [default = nan];
-        |  required float d = 4 [default = inf];
-        |  required double e = 5 [default = 1.];
+        |  required int32 count = 1 [default = 5];
+        |  required string label = 2 [default = "a${'$'}b"];
+        |  required bytes payload = 3 [default = "abc"];
+        |  required Color color = 4 [default = GREEN];
+        |  required bool flag = 5 [default = true];
+        |  required float ratio = 6 [default = 1.5];
+        |  required double offset = 7 [default = inf];
+        |  optional int32 optional_count = 8 [default = 7];
         |}
         """.trimMargin(),
       )
@@ -371,11 +379,151 @@ class SwiftGeneratorTest {
 
     val code = schema.generateSwift("Message")
 
-    assertThat(code).contains("self.a != Double.infinity")
-    assertThat(code).contains("self.b != -Double.infinity")
-    assertThat(code).contains("self.c != Double.nan")
-    assertThat(code).contains("self.d != Float.infinity")
-    assertThat(code).contains("self.e != 1.0")
+    // The wrapper only accepts optional properties, so required fields must not use it.
+    assertThat(code).contains("    public var count: Int32\n")
+    assertThat(code).contains("    public var label: String\n")
+    assertThat(code).contains("    public var payload: Foundation.Data\n")
+    assertThat(code).contains("    public var color: Color\n")
+    assertThat(code).contains("    public var flag: Bool\n")
+    assertThat(code).contains("    public var ratio: Float\n")
+    assertThat(code).contains("    public var offset: Double\n")
+    assertThat(code).contains("self.count = count")
+    assertThat(code).doesNotContain("self._count")
+    assertThat(code).doesNotContain("self._ratio")
+    assertThat(code).doesNotContain("Double.infinity")
+
+    // Decoding still fails when a required field is missing.
+    assertThat(code).contains("""self.count = try Message.checkIfMissing(count, "count")""")
+    assertThat(code).contains("""self.offset = try Message.checkIfMissing(offset, "offset")""")
+
+    // An optional field keeps its default.
+    assertThat(code).contains("@CustomDefaulted(defaultValue: 7)\n    public var optional_count: Int32?")
+  }
+
+  @Test fun requiredFieldsWithDefaultsAreAlwaysEncodedAsJson() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Color {
+        |  RED = 0;
+        |  GREEN = 1;
+        |}
+        |
+        |message Message {
+        |  required int32 count = 1 [default = 5];
+        |  required string label = 2 [default = "abc"];
+        |  required Color color = 3 [default = GREEN];
+        |  required bool flag = 4 [default = true];
+        |  required float ratio = 5 [default = 1.5];
+        |  required double offset = 6 [default = nan];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    // Decoding rejects a JSON object without a required field, so none may be left out.
+    assertThat(code).doesNotContain("includeDefaults")
+    assertThat(code).doesNotContain("!=")
+    assertThat(code).contains("""try container.encode(self.count, forKey: "count")""")
+    assertThat(code).contains("""try container.encode(self.label, forKey: "label")""")
+    assertThat(code).contains("""try container.encode(self.color, forKey: "color")""")
+    assertThat(code).contains("""try container.encode(self.flag, forKey: "flag")""")
+    assertThat(code).contains("""try container.encode(self.ratio, forKey: "ratio")""")
+    assertThat(code).contains("""try container.encode(self.offset, forKey: "offset")""")
+  }
+
+  @Test fun requiredFieldsWithoutDefaultsAreAlwaysEncodedAsJson() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Color {
+        |  RED = 0;
+        |  GREEN = 1;
+        |}
+        |
+        |message Nested {
+        |}
+        |
+        |message Message {
+        |  required int32 count = 1;
+        |  required bool flag = 2;
+        |  required double ratio = 3;
+        |  required string label = 4;
+        |  required bytes payload = 5;
+        |  required Color color = 6;
+        |  required Nested nested = 7;
+        |  optional int32 optional_count = 8;
+        |  repeated int32 counts = 9;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    // Decoding rejects a JSON object without a required field, so a zero value must be written.
+    assertThat(code).contains("""try container.encode(self.count, forKey: "count")""")
+    assertThat(code).contains("""try container.encode(self.flag, forKey: "flag")""")
+    assertThat(code).contains("""try container.encode(self.ratio, forKey: "ratio")""")
+    assertThat(code).contains("""try container.encode(self.label, forKey: "label")""")
+    assertThat(code).contains("""try container.encode(stringEncoded: self.payload, forKey: "payload")""")
+    assertThat(code).contains("""try container.encode(self.color, forKey: "color")""")
+    assertThat(code).contains("""try container.encode(self.nested, forKey: "nested")""")
+    assertThat(code).doesNotContain("self.count != 0")
+    assertThat(code).doesNotContain("self.flag != false")
+    assertThat(code).doesNotContain("self.label.isEmpty")
+    assertThat(code).doesNotContain("self.payload.isEmpty")
+    assertThat(code).doesNotContain("self.color.rawValue")
+
+    // Repeated fields still skip empty values.
+    assertThat(code).contains("if includeDefaults || !self.counts.isEmpty {")
+  }
+
+  @Test fun proto3FieldsStillSkipJsonDefaults() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |message Message {
+        |  int32 count = 1;
+        |  string label = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("if includeDefaults || self.count != 0 {")
+    assertThat(code).contains("if includeDefaults || !self.label.isEmpty {")
+  }
+
+  @Test fun largeMessagesStoreRequiredFieldsWithDefaultsWithoutWrappers() {
+    val fields = (1..16).joinToString("\n") { "|  required int32 f$it = $it [default = $it];" }
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        "|syntax = \"proto2\";\n|\n|message Message {\n$fields\n|}".trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("public struct Storage {")
+    assertThat(code).contains("        public var f1: Int32\n")
+    assertThat(code).contains("        public var f16: Int32\n")
+    assertThat(code).doesNotContain("@CustomDefaulted")
+    assertThat(code).doesNotContain("wrappedValue")
   }
 
   @Test fun floatDefaultsWithoutLeadingOrTrailingDigitsAreSwiftLiterals() {

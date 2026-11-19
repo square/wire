@@ -1,0 +1,80 @@
+/*
+ * Copyright 2026 Block, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package squareup.protos.kotlin.oneof_merge_sealed;
+
+option java_package = "com.squareup.wire.protos.kotlin.oneofmergesealed";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+
+message Leaf {
+  repeated int32 values = 1;
+  optional string name = 2;
+}
+
+message SealedMerge {
+  oneof choice {
+    Leaf a = 1;
+    Leaf b = 2;
+    string text = 3;
+    google.protobuf.Value value = 4;
+    google.protobuf.StringValue wrapped = 5;
+  }
+}
+
+/** Members and fields named like the locals of the generated decode function. */
+message SealedNames {
+  optional Leaf existing = 5;
+  oneof it {
+    Leaf x = 1;
+    Leaf reader = 2;
+    string text = 3;
+  }
+  oneof reader {
+    Leaf y = 6;
+    string z = 7;
+  }
+}
+
+/** Too many message members to merge, so the last occurrence wins. */
+message SealedCap {
+  oneof choice {
+    Leaf m1 = 1;
+    Leaf m2 = 2;
+    Leaf m3 = 3;
+    Leaf m4 = 4;
+    Leaf m5 = 5;
+    Leaf m6 = 6;
+    Leaf m7 = 7;
+    Leaf m8 = 8;
+    Leaf m9 = 9;
+    Leaf m10 = 10;
+    Leaf m11 = 11;
+    Leaf m12 = 12;
+    Leaf m13 = 13;
+    Leaf m14 = 14;
+    Leaf m15 = 15;
+    Leaf m16 = 16;
+    Leaf m17 = 17;
+    Leaf m18 = 18;
+    Leaf m19 = 19;
+    Leaf m20 = 20;
+    Leaf m21 = 21;
+    Leaf m22 = 22;
+  }
+}

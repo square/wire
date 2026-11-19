@@ -17,6 +17,10 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireOneofField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmSynthetic
+import com.squareup.wire.`internal`.decodeMessageOrDefer
+import com.squareup.wire.`internal`.endMerges
+import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.hasMerges
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
@@ -182,11 +186,18 @@ public class SealedOneOfs private constructor(
             }
           }
           when (tag) {
-            1 -> builder.value_ = Value.FirstValue(SealedMessage.ADAPTER.decode(reader))
+            1 -> builder.value_ = Value.FirstValue(decodeMessageOrDefer(SealedMessage.ADAPTER, reader, 1, (builder.value_ as? Value.FirstValue)?.value))
             2 -> builder.value_ = Value.SecondValue(ProtoAdapter.STRING.decode(reader))
             3 -> builder.value_ = Value.Value(ProtoAdapter.INT32.decode(reader))
             else -> reader.readUnknownField(tag)
           }
+        }
+        if (hasMerges(reader)) {
+          run {
+            val existing = builder.value_
+            if (existing is Value.FirstValue) builder.value_ = Value.FirstValue(finishMerge(reader, 1, SealedMessage.ADAPTER, existing.value)!!)
+          }
+          endMerges(reader)
         }
         return SealedOneOfs(
           builder = builder,

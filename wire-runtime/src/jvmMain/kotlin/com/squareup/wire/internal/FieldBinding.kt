@@ -50,8 +50,12 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
 
   override val keyAdapter: ProtoAdapter<*>
     get() = ProtoAdapter.get(keyAdapterString, classLoader)
-  override val singleAdapter: ProtoAdapter<*>
-    get() = ProtoAdapter.get(adapterString, classLoader)
+
+  // Decoding reads this for every field, and the lookup uses reflection. A failed lookup throws and
+  // is not stored, so the next read tries again. Two threads may both look up the same adapter.
+  override val singleAdapter: ProtoAdapter<*> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+    ProtoAdapter.get(adapterString, classLoader)
+  }
 
   override val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()

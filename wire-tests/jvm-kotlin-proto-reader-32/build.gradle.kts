@@ -22,9 +22,23 @@ wire {
       "empty_packed.proto",
       "map.proto",
       "one_of.proto",
+      "oneof_merge_boxed.proto",
+      "oneof_merge_sealed.proto",
       "option_redacted.proto",
       "redacted_map.proto",
     )
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.oneof_merge_boxed.*")
+    oneofMode = "boxed"
+    emitProtoReader32 = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.oneof_merge_sealed.*")
+    oneofMode = "sealed_class"
+    emitProtoReader32 = true
   }
 
   kotlin {

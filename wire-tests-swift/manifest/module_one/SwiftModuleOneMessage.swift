@@ -99,11 +99,8 @@ extension SwiftModuleOneMessage : Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.name.isEmpty {
-            try container.encode(self.name, forKey: "name")
-        }
+        try container.encode(self.name, forKey: "name")
     }
 
 }

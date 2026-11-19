@@ -103,6 +103,26 @@ internal class NodeAdapter(
   }
 }
 
+/**
+ * A reader that Wire does not create, like one a user writes. It reads through a built-in reader
+ * and returns the same [ProtoReader] on every call to [asProtoReader].
+ */
+internal class CustomProtoReader32(delegate: ProtoReader32) : ProtoReader32 by delegate
+
+/** A reader that cannot return a [ProtoReader], which generated code does not need to merge. */
+internal class CustomProtoReader32WithoutProtoReader(
+  delegate: ProtoReader32,
+  private val failure: () -> Nothing,
+) : ProtoReader32 by delegate {
+  override fun asProtoReader(): ProtoReader = failure()
+}
+
+/** Adapters that read a [ProtoReader32], so that they reach the merge code with a custom reader. */
+internal val protoReader32NodeAdapters = listOf(
+  NodeAdapter(readsProtoReader32 = true),
+  NodeAdapter(readsProtoReader32 = true, defersMerges = true),
+)
+
 internal val nodeAdapters = listOf(
   NodeAdapter(readsProtoReader32 = true),
   NodeAdapter(readsProtoReader32 = false),

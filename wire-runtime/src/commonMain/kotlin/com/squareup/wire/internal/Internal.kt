@@ -249,6 +249,9 @@ private const val ESCAPED_CHARS = ",[]{}\\"
  *  * The characters `,[]{}` and `\` get a `\` prefix.
  *  * Newline, carriage return, and tab become `\n`, `\r`, and `\t`.
  *  * U+2028 and U+2029 become `\u2028` and `\u2029`.
+ *  * The direction controls U+061C, U+200E, U+200F, U+202A to U+202E, and U+2066 to U+2069, and the
+ *    byte order mark U+FEFF, become `\u` and four lowercase hex digits like `\u202e`. They can
+ *    reorder or hide text when someone reads a log line.
  *  * Every other control character becomes `\u` and four lowercase hex digits, like `\u001b` for
  *    ESC. Control characters are U+0000 to U+001F and U+007F to U+009F.
  *  * All other characters stay as they are.
@@ -263,7 +266,7 @@ fun sanitize(value: String): String = buildString(value.length) {
       char == '\n' -> append("\\n")
       char == '\r' -> append("\\r")
       char == '\t' -> append("\\t")
-      char.isISOControl() || char == '\u2028' || char == '\u2029' -> {
+      char.isISOControl() || char == '\u2028' || char == '\u2029' || char.isDirectionControl() -> {
         append("\\u")
         append(char.code.toString(16).padStart(4, '0'))
       }
@@ -271,6 +274,13 @@ fun sanitize(value: String): String = buildString(value.length) {
     }
   }
 }
+
+private fun Char.isDirectionControl(): Boolean = this == '\u061C' ||
+  this == '\u200E' ||
+  this == '\u200F' ||
+  this in '\u202A'..'\u202E' ||
+  this in '\u2066'..'\u2069' ||
+  this == '\uFEFF'
 
 /** Returns a list of [values], each escaped with [sanitize]. */
 fun sanitize(values: List<String>): String = values.joinToString(prefix = "[", postfix = "]", transform = ::sanitize)
@@ -503,6 +513,92 @@ fun endMerges(reader: ProtoReader) {
 fun endMerges(reader: ProtoReader32) {
   if (reader is ByteArrayProtoReader32) reader.mergeBudgetOrNull()?.end(reader.mergeDepth())
 }
+
+/** True for keys whose value is a message, so that repeated occurrences of the member merge. */
+private val OneOf.Key<*>.mergesRepeatedOccurrences: Boolean
+  get() = adapter.fieldEncoding == FieldEncoding.LENGTH_DELIMITED &&
+    adapter !== ProtoAdapter.STRING &&
+    adapter !== ProtoAdapter.BYTES
+
+/**
+ * Decodes an occurrence of the boxed oneof member [key] and returns what to store in the oneof. This
+ * is for generated code use only.
+ *
+ * If [existing] holds the same member and the member is a message, this keeps the bytes of the
+ * occurrence for [finishOneOfMerge] and returns [existing]. In every other case the occurrence
+ * replaces [existing], so the last member on the wire wins.
+ */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrDefer(key: OneOf.Key<*>, reader: ProtoReader, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  val value = decodeMessageOrDefer(key.adapter, reader, key.tag, previous)
+  if (previous != null && value === previous) return existing as O
+  return oneOfOf(key, value)
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrDefer(key: OneOf.Key<*>, reader: ProtoReader32, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  val value = decodeMessageOrDefer(key.adapter, reader, key.tag, previous)
+  if (previous != null && value === previous) return existing as O
+  return oneOfOf(key, value)
+}
+
+/**
+ * Like [decodeOneOfOrDefer], but merges the occurrence into [existing] right away. Generated code
+ * uses this when a message has too many merged fields to defer them.
+ */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrMerge(key: OneOf.Key<*>, reader: ProtoReader, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  return oneOfOf(key, decodeMessageOrMerge(key.adapter, reader, previous))
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrMerge(key: OneOf.Key<*>, reader: ProtoReader32, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  return oneOfOf(key, decodeMessageOrMerge(key.adapter, reader, previous))
+}
+
+/**
+ * Merges the occurrences that [decodeOneOfOrDefer] kept for the member that [existing] holds. Call
+ * this after the last tag of the message, only if [hasMerges], and before [endMerges].
+ */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> finishOneOfMerge(reader: ProtoReader, existing: O?): O? {
+  if (existing == null) return null
+  val key = existing.key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return existing
+  val value = existing.value
+  val merged = finishMerge(reader, key.tag, key.adapter, value)
+  if (merged === value) return existing
+  return oneOfOf(key, merged)
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> finishOneOfMerge(reader: ProtoReader32, existing: O?): O? {
+  if (existing == null) return null
+  val key = existing.key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return existing
+  val value = existing.value
+  val merged = finishMerge(reader, key.tag, key.adapter, value)
+  if (merged === value) return existing
+  return oneOfOf(key, merged)
+}
+
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+private fun <O : OneOf<*, *>> oneOfOf(key: OneOf.Key<Any?>, value: Any?): O = OneOf(key, value) as O
 
 /**
  * Encodes [existing], appends [bytes], and decodes the result. The new reader continues the
