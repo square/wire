@@ -317,6 +317,8 @@ public final class ProtoDecoder {
      *
      * A size of zero decodes as an empty message, and decoding continues with the next element.
      * `ProtoEncoder.encodeSizeDelimited(_:)` does not write empty messages, so encoding and then decoding drops them.
+     * Each zero byte decodes to one empty message, so memory grows with the size of the data.
+     * Limit the size of untrusted data before you decode it.
      *
      * - Parameters:
      *   - type: the type to decode
