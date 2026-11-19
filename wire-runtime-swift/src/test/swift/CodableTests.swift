@@ -512,14 +512,21 @@ extension CodableTests {
     }
 
     func testDurationRejectsRepeatedOrMisplacedSigns() throws {
-        for value in ["--5s", "-+5s", "+-5s", "++5s", "5-s", "-", "-s", "1.-5s", "-0.-5s", "1.+5s", "-1.+5s", "1.5-s", "1.-s"] {
+        for value in ["--5s", "-+5s", "+-5s", "++5s", "5-s", "-", "-s", "1.-5s", "-0.-5s", "1.+5s", "-1.+5s", "1.5-s", "1.-s", "1.123456789-s"] {
             try assertDurationDecodingFails(value)
         }
     }
 
     func testDurationRejectsNonAsciiDigits() throws {
         // Arabic-indic and fullwidth digits.
-        for value in ["\u{0663}s", "1.\u{0665}s", "\u{0663}.5s", "-\u{0663}s", "1.5\u{0665}s", "\u{FF11}s", "1.\u{FF15}s"] {
+        for value in ["\u{0663}s", "1.\u{0665}s", "\u{0663}.5s", "-\u{0663}s", "1.5\u{0665}s", "\u{FF11}s", "1.\u{FF15}s", "1.123456789\u{0663}s"] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationRejectsLettersAfterNinthFractionDigit() throws {
+        // The decoder keeps only nine fraction digits, so it must check the digits it drops too.
+        for value in ["1.0000000009xs", "1.123456789xs"] {
             try assertDurationDecodingFails(value)
         }
     }
