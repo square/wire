@@ -1,6 +1,8 @@
 public final class com/squareup/wire/mockwebserver/GrpcDispatcher : okhttp3/mockwebserver/Dispatcher {
 	public static final field Companion Lcom/squareup/wire/mockwebserver/GrpcDispatcher$Companion;
 	public fun <init> (Ljava/util/List;Lokhttp3/mockwebserver/Dispatcher;)V
+	public fun <init> (Ljava/util/List;Lokhttp3/mockwebserver/Dispatcher;J)V
+	public synthetic fun <init> (Ljava/util/List;Lokhttp3/mockwebserver/Dispatcher;JILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun dispatch (Lokhttp3/mockwebserver/RecordedRequest;)Lokhttp3/mockwebserver/MockResponse;
 	public final fun getDelegate ()Lokhttp3/mockwebserver/Dispatcher;
 }
