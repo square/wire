@@ -36,7 +36,6 @@ import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 import okio.ByteString
-import okio.ByteString.Companion.encodeUtf8
 import okio.ByteString.Companion.toByteString
 
 /**
@@ -288,7 +287,8 @@ class SchemaEncoder(
       if (value.syntax == Syntax.PROTO_2 && value.field.jsonName != value.field.name) {
         STRING.encodeWithTag(writer, 10, value.field.jsonName)
       }
-      STRING.encodeWithTag(writer, 7, value.field.default)
+      val default = value.field.default
+      STRING.encodeWithTag(writer, 7, if (value.type == ProtoType.BYTES) default?.escapeBytes() else default)
       STRING.encodeWithTag(writer, 2, value.extendee)
       if (!value.type.isScalar) {
         STRING.encodeWithTag(writer, 6, value.type.dotName)
@@ -454,7 +454,7 @@ class SchemaEncoder(
     // TODO: use optionValueToInt(value) when that's available in commonMain.
     return when (type) {
       ProtoType.BOOL -> (value as String).toBoolean()
-      ProtoType.BYTES -> (value as String).encodeUtf8()
+      ProtoType.BYTES -> (value as String).toBytes()
       ProtoType.DOUBLE -> (value as String).toDouble()
       ProtoType.FIXED32 -> (value as String).toUInt().toInt()
       ProtoType.FIXED64 -> (value as String).toULong().toLong()
@@ -486,5 +486,33 @@ class SchemaEncoder(
       result[key.simpleName] = toJson(field, value)
     }
     return result
+  }
+}
+
+/**
+ * Wire keeps a `bytes` literal as a string with one char per byte. Generated code reads it the
+ * same way and turns a char above U+00FF into `?`.
+ */
+private fun String.toBytes(): ByteString = ByteArray(length) { index ->
+  val code = this[index].code
+  (if (code <= 0xff) code else '?'.code).toByte()
+}.toByteString()
+
+/**
+ * Returns [this] as the C-escaped text that `descriptor.proto` uses for the default value of a
+ * `bytes` field. The text names the same bytes that [toBytes] returns.
+ */
+private fun String.escapeBytes(): String = buildString {
+  for (byte in toBytes().toByteArray()) {
+    when (val code = byte.toInt() and 0xff) {
+      '\n'.code -> append("\\n")
+      '\r'.code -> append("\\r")
+      '\t'.code -> append("\\t")
+      '"'.code -> append("\\\"")
+      '\''.code -> append("\\'")
+      '\\'.code -> append("\\\\")
+      in 0x20..0x7e -> append(code.toChar())
+      else -> append('\\').append(code.toString(8).padStart(3, '0'))
+    }
   }
 }
