@@ -97,10 +97,13 @@ public final class ProtoReader {
     /** How to interpret the next read call. */
     private var state: State
 
-    // MARK: - Private Properties - Constants
+    // MARK: - Internal Properties - Constants
 
-    /** The standard number of levels of message nesting to allow. */
-    private static let recursionLimit: Int = 65
+    /**
+     The standard number of levels of message nesting to allow.
+     The JSON decoding of `Struct`, `Value`, and `ListValue` uses the same constant to limit its nesting.
+     */
+    static let recursionLimit: Int = 65
 
     // MARK: - Initialization
 

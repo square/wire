@@ -501,7 +501,7 @@ extension CodableTests {
             try decode()
             XCTFail("Expected \(shape) to fail decoding", file: file, line: line)
         } catch let DecodingError.dataCorrupted(context) {
-            XCTAssertTrue(context.debugDescription.contains("maximum nesting depth of 65"), context.debugDescription, file: file, line: line)
+            XCTAssertTrue(context.underlyingError is MessageNestingDepthError, "\(shape): \(String(describing: context.underlyingError))", file: file, line: line)
         } catch {
             XCTFail("Unexpected error \(error)", file: file, line: line)
         }
