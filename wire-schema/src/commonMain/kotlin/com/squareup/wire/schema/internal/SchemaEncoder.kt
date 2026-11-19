@@ -490,17 +490,9 @@ class SchemaEncoder(
 }
 
 /**
- * Wire keeps a `bytes` literal as a string with one char per byte. Generated code reads it the
- * same way and turns a char above U+00FF into `?`.
- */
-private fun String.toBytes(): ByteString = ByteArray(length) { index ->
-  val code = this[index].code
-  (if (code <= 0xff) code else '?'.code).toByte()
-}.toByteString()
-
-/**
  * Returns [this] as the C-escaped text that `descriptor.proto` uses for the default value of a
- * `bytes` field. The text names the same bytes that [toBytes] returns.
+ * `bytes` field. The text names the same bytes that [toBytes] returns. The `.proto` output uses
+ * the same bytes, through `escapeQuotedString(bytes = true)`.
  */
 private fun String.escapeBytes(): String = buildString {
   for (byte in toBytes().toByteArray()) {
