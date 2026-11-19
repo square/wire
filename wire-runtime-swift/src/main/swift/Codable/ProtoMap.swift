@@ -40,12 +40,15 @@ extension ProtoMap : Encodable where Value : Encodable {
 
 extension ProtoMap : Decodable where Value : Decodable {
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        // A map is not a message, so it does not count toward the nesting depth.
+        let container = try keyedContainer(of: decoder, keyedBy: StringLiteralCodingKeys.self)
 
         var results: [Key: Value] = [:]
         results.reserveCapacity(container.allKeys.count)
 
-        for codingKey in container.allKeys {
+        for entry in container.allKeys {
+            // Marks the map key in the coding path, so that it does not count as a message level.
+            let codingKey = StringLiteralCodingKeys(mapEntryKey: entry.stringValue)
             guard let key = Key(codingKey.stringValue) else {
                 throw ProtoDecoder.Error.unparsableString(type: Key.self, value: codingKey.stringValue)
             }

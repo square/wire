@@ -426,6 +426,88 @@ extension CodableTests {
     }
 }
 
+// MARK: - Nesting depth
+
+extension CodableTests {
+    func testRecursiveMessageJSONDecodesAtMaximumDepthAndFailsBeyondIt() throws {
+        // The same limit as the binary decoder, for every kind of field that holds a message.
+        let limit = 65
+
+        // Decode on a thread with a small stack. Without a limit, it overflows before
+        // Foundation's own limit of 512 levels applies.
+        let finished = expectation(description: "finished")
+        let thread = Thread {
+            let shapes: [(String, (Int) -> String, (String) -> Void)] = [
+                ("singular", { self.nestedJSON(prefix: "{\"child\":", suffix: "}", messages: $0) }, { self.assertDecodes(RecursiveMessage.self, json: $0) }),
+                ("repeated", { self.nestedJSON(prefix: "{\"repeatedA\":[", suffix: "]}", messages: $0) }, { self.assertDecodes(A.self, json: $0) }),
+                ("map", { self.nestedJSON(prefix: "{\"mapToA\":{\"key\":", suffix: "}}", messages: $0) }, { self.assertDecodes(A.self, json: $0) }),
+                ("oneof", { self.oneofJSON(messages: $0) }, { self.assertDecodes(F.self, json: $0) }),
+            ]
+            for (name, json, assertDecodes) in shapes {
+                assertDecodes(json(limit))
+                self.assertDecodingExceedsDepth(name, json(limit + 1))
+                self.assertDecodingExceedsDepth(name, json(limit * 3))
+            }
+            finished.fulfill()
+        }
+        thread.stackSize = 512 * 1024
+        thread.start()
+        wait(for: [finished], timeout: 60)
+    }
+
+    private func nestedJSON(prefix: String, suffix: String, messages: Int) -> String {
+        // The innermost message is `{}`, and each prefix adds one message around it.
+        return String(repeating: prefix, count: messages - 1) + "{}" + String(repeating: suffix, count: messages - 1)
+    }
+
+    /// Builds `F` and `G` messages that hold each other through a oneof field and an optional field, starting with an `F`.
+    private func oneofJSON(messages: Int) -> String {
+        var isF = messages % 2 == 1
+        var json = "{}"
+        for _ in 1..<messages {
+            json = isF ? "{\"f\":\(json)}" : "{\"g\":\(json)}"
+            isF.toggle()
+        }
+        return json
+    }
+
+    private func assertDecodes<T: Decodable>(
+        _ type: T.Type,
+        json: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        do {
+            _ = try JSONDecoder().decode(type, from: json.data(using: .utf8)!)
+        } catch {
+            XCTFail("Expected \(type) to decode, got \(error)", file: file, line: line)
+        }
+    }
+
+    private func assertDecodingExceedsDepth(
+        _ shape: String,
+        _ json: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        func decode() throws {
+            switch shape {
+            case "singular": _ = try JSONDecoder().decode(RecursiveMessage.self, from: json.data(using: .utf8)!)
+            case "oneof": _ = try JSONDecoder().decode(F.self, from: json.data(using: .utf8)!)
+            default: _ = try JSONDecoder().decode(A.self, from: json.data(using: .utf8)!)
+            }
+        }
+        do {
+            try decode()
+            XCTFail("Expected \(shape) to fail decoding", file: file, line: line)
+        } catch let DecodingError.dataCorrupted(context) {
+            XCTAssertTrue(context.underlyingError is MessageNestingDepthError, "\(shape): \(String(describing: context.underlyingError))", file: file, line: line)
+        } catch {
+            XCTFail("Unexpected error \(error)", file: file, line: line)
+        }
+    }
+}
+
 // MARK: - Private Methods
 
 extension CodableTests {
