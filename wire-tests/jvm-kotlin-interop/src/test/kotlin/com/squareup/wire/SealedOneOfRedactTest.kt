@@ -195,4 +195,10 @@ class SealedOneOfRedactTest {
       assertThat(reflective.redact(message)).isEqualTo(message)
     }
   }
+
+  @Test fun wrapperMemberKeepsItsValue() {
+    val message = SealedRedactedOneOf(variant = SealedRedactedOneOf.Variant.Wrapped("wrapped"))
+    assertThat(SealedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(message)
+    assertThat(reflective.redact(message)).isEqualTo(message)
+  }
 }

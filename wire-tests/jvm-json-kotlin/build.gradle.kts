@@ -40,6 +40,7 @@ wire {
       "contains_field_mask.proto",
       "map_types.proto",
       "pizza.proto",
+      "well_known_redact.proto",
     )
   }
   kotlin {

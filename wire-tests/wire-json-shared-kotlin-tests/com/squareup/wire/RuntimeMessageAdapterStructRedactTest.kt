@@ -23,7 +23,9 @@ import squareup.proto3.AllStructs
 
 /**
  * Tests meant to be executed against both Java generated and Kotlin generated code. The reflective
- * adapter must redact Struct, ListValue, and Value fields like the generated adapter does.
+ * adapter must redact Struct, ListValue, and Value fields like the generated adapter does. The Java
+ * module uses compact adapters, which are reflective, so there only the expected values check the
+ * result. Only the Kotlin module compares with generated redact code.
  */
 class RuntimeMessageAdapterStructRedactTest {
   private val reflective: ProtoAdapter<AllStructs> = ProtoAdapter.newMessageAdapter(AllStructs::class.java)
@@ -49,7 +51,7 @@ class RuntimeMessageAdapterStructRedactTest {
   private val redactedList: List<Any?> =
     listOf(null, 3.0, true, null, mapOf("k" to null), listOf(null, 4.0))
 
-  /** Redacts [message] reflectively, and checks that the generated adapter agrees. */
+  /** Redacts [message] reflectively, and checks that the generated adapter agrees (Kotlin only). */
   private fun redact(message: AllStructs): AllStructs {
     val redacted = reflective.redact(message)
     assertThat(redacted).isEqualTo(AllStructs.ADAPTER.redact(message))
@@ -93,7 +95,7 @@ class RuntimeMessageAdapterStructRedactTest {
       .rep_value_a(listOf("secret", 1.0, true, struct, list))
       .build()
     val redacted = redact(message)
-    // Builders reject the null that redacting a string produces, so check the fields.
+    // The Kotlin builder rejects the null that redacting a string produces, so check the fields.
     assertThat(redacted.rep_struct).isEqualTo(listOf(redactedStruct, emptyMap<String, Any?>()))
     assertThat(redacted.rep_list).isEqualTo(listOf(redactedList, emptyList<Any?>()))
     assertThat(redacted.rep_value_a).isEqualTo(listOf(null, 1.0, true, redactedStruct, redactedList))
@@ -116,7 +118,7 @@ class RuntimeMessageAdapterStructRedactTest {
     assertThat(message.map_int32_value_a[1]).isEqualTo("secret")
   }
 
-  /** Builders reject null elements, so this message comes from the wire. */
+  /** The Kotlin builder rejects null elements, so this message comes from the wire. */
   @Test fun nullValueElementsStayNull() {
     // rep_value_a = [null_value], map_int32_value_a = {1: null_value}.
     val bytes = "ba06020800fa1206080112020800".decodeHex()
