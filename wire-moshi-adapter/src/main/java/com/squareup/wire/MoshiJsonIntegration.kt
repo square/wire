@@ -44,7 +44,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     valueAdapter: JsonAdapter<Any?>,
   ): JsonAdapter<Any?> {
     @Suppress("UNCHECKED_CAST")
-    return MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as JsonAdapter<Any?>
+    return MapJsonAdapter(keyFormatter, mapKeyTypeName(keyFormatter), valueAdapter).nullSafe() as JsonAdapter<Any?>
   }
 
   override fun structAdapter(framework: Moshi): JsonAdapter<Any?> = framework.adapter<Any?>(Object::class.java).serializeNulls().nullSafe()
@@ -111,6 +111,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
   /** Adapt a list of values by delegating to an adapter for a single value. */
   private class MapJsonAdapter<K : Any, V>(
     private val keyFormatter: JsonFormatter<K>,
+    private val keyTypeName: String,
     private val valueAdapter: JsonAdapter<V>,
   ) : JsonAdapter<Map<K, V>>() {
     override fun fromJson(reader: JsonReader): Map<K, V> {
@@ -118,8 +119,13 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
       reader.beginObject()
       while (reader.hasNext()) {
         val name = reader.nextName()
-        val key = keyFormatter.fromString(name) as K
-        val value = valueAdapter.fromJson(reader)!!
+        val key = try {
+          keyFormatter.fromString(name) as K
+        } catch (_: RuntimeException) {
+          throw JsonDataException("expected a map key that is $keyTypeName")
+        }
+        val value = valueAdapter.fromJson(reader)
+          ?: throw JsonDataException("expected a map value that is not null")
         result[key] = value
       }
       reader.endObject()

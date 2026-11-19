@@ -71,7 +71,11 @@ class AnyMessageTypeAdapter(
     val jsonElement = elementAdapter.read(reader)
     val typeUrlEntry = jsonElement.asJsonObject.get("@type")
       ?: throw IOException("expected @type in ${reader.path}")
-    val typeUrl = typeUrlEntry.asString
+    val typeUrl = try {
+      typeUrlEntry.asString
+    } catch (_: RuntimeException) {
+      throw IOException("expected @type to be a string in ${reader.path}")
+    }
 
     val protoAdapter = typeUrlToAdapter[typeUrl]
       ?: throw IOException("Cannot resolve type: $typeUrl in ${reader.path}")
