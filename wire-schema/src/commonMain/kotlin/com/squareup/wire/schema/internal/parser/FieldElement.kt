@@ -19,7 +19,8 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.internal.appendDocumentation
-import com.squareup.wire.schema.internal.appendOptions
+import com.squareup.wire.schema.internal.appendRenderedOptions
+import com.squareup.wire.schema.internal.escapeQuotedString
 import com.squareup.wire.schema.internal.toEnglishLowerCase
 
 data class FieldElement(
@@ -44,7 +45,7 @@ data class FieldElement(
     val optionsWithDefault = optionsWithSpecialValues()
     if (optionsWithDefault.isNotEmpty()) {
       append(' ')
-      appendOptions(optionsWithDefault)
+      appendRenderedOptions(optionsWithDefault)
     }
 
     append(";\n")
@@ -54,23 +55,23 @@ data class FieldElement(
    * Both `default` and `json_name` are defined in the schema like options but they are actually
    * not options themselves as they're missing from `google.protobuf.FieldOptions`.
    */
-  private fun optionsWithSpecialValues(): List<OptionElement> {
-    var options =
-      if (defaultValue == null) {
-        options
-      } else {
-        val protoType = ProtoType.get(type)
-        options + OptionElement.create("default", protoType.toKind(), defaultValue)
-      }
+  private fun optionsWithSpecialValues(): List<String> {
+    val result = options.mapTo(mutableListOf()) { it.toSchema() }
 
-    options =
-      if (jsonName == null) {
-        options
-      } else {
-        options + OptionElement.create("json_name", OptionElement.Kind.STRING, jsonName)
+    if (defaultValue != null) {
+      val protoType = ProtoType.get(type)
+      result += when (protoType) {
+        // A bytes default has one char per byte, so chars above 0x7E must be written as octal.
+        ProtoType.BYTES -> """default = "${defaultValue.escapeQuotedString(bytes = true)}""""
+        else -> OptionElement.create("default", protoType.toKind(), defaultValue).toSchema()
       }
+    }
 
-    return options
+    if (jsonName != null) {
+      result += OptionElement.create("json_name", OptionElement.Kind.STRING, jsonName).toSchema()
+    }
+
+    return result
   }
 
   // Only non-repeated scalar types and Enums support default values.

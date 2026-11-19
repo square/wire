@@ -40,8 +40,14 @@ internal fun Location.sourcePathForComment(): String = buildString {
   }
 }
 
-/** Escapes [this] so it can sit between double quotes in `.proto` source. */
-internal fun String.escapeQuotedString(): String = buildString {
+/**
+ * Escapes [this] so it can sit between double quotes in `.proto` source.
+ *
+ * Wire models a `bytes` default as a string with one char per byte, so with [bytes] true every
+ * char from U+007F to U+00FF is written as a three digit octal escape. Protoc reads a raw char
+ * above U+007F as several UTF-8 bytes.
+ */
+internal fun String.escapeQuotedString(bytes: Boolean = false): String = buildString {
   for (ch in this@escapeQuotedString) {
     append(
       when (ch) {
@@ -57,6 +63,7 @@ internal fun String.escapeQuotedString(): String = buildString {
         '\u000b' -> "\\v"
         // Other control characters get three octal digits, like protoc, so a digit after them is safe.
         in '\u0000'..'\u001f', '\u007f' -> "\\" + ch.code.toString(8).padStart(3, '0')
+        in '\u0080'..'\u00ff' -> if (bytes) "\\" + ch.code.toString(8) else ch
         else -> ch
       },
     )
@@ -84,17 +91,23 @@ fun StringBuilder.appendDocumentation(
 internal fun StringBuilder.appendOptions(
   options: List<OptionElement>,
 ) {
+  appendRenderedOptions(options.map { it.toSchema() })
+}
+
+internal fun StringBuilder.appendRenderedOptions(
+  options: List<String>,
+) {
   val count = options.size
   if (count == 1) {
     append('[')
-      .append(options[0].toSchema())
+      .append(options[0])
       .append(']')
     return
   }
   append("[\n")
   for (i in 0 until count) {
     val endl = if (i < count - 1) "," else ""
-    appendIndented(options[i].toSchema() + endl)
+    appendIndented(options[i] + endl)
   }
   append(']')
 }
