@@ -503,6 +503,44 @@ class WireRunTest {
   }
 
   @Test
+  fun protoTargetWritesBytesDefaultAboveAsciiAsOctalEscapes() {
+    fs.add(
+      "polygons/src/main/proto/squareup/polygons/square.proto",
+      """
+          |syntax = "proto2";
+          |package squareup.polygons;
+          |message Square {
+          |  optional bytes data = 1 [default = "a~\177\200\351\377\000z"];
+          |  optional string name = 2 [default = "café"];
+          |}
+      """.trimMargin(),
+    )
+
+    val wireRun = WireRun(
+      sourcePath = listOf(Location.get("polygons/src/main/proto")),
+      targets = listOf(ProtoTarget(outDirectory = "generated/proto")),
+    )
+    wireRun.execute(fs, logger)
+
+    val output = fs.readUtf8("generated/proto/squareup/polygons/square.proto")
+    assertThat(output).contains("""optional bytes data = 1 [default = "a~\177\200\351\377\000z"];""")
+    assertThat(output).contains("""optional string name = 2 [default = "café"];""")
+
+    fun Schema.defaultOf(fieldName: String) = (getType("squareup.polygons.Square") as MessageType).field(fieldName)!!.default
+
+    val original = SchemaLoader(fs).run {
+      initRoots(listOf(Location.get("polygons/src/main/proto")))
+      loadSchema()
+    }
+    val written = SchemaLoader(fs).run {
+      initRoots(listOf(Location.get("generated/proto")))
+      loadSchema()
+    }
+    assertThat(written.defaultOf("data")).isEqualTo(original.defaultOf("data"))
+    assertThat(written.defaultOf("data")).isEqualTo("a~\u007f\u0080\u00e9\u00ff\u0000z")
+  }
+
+  @Test
   fun protoTargetNeverEmitsGoogleProtobufDescriptor() {
     writeSquareProto()
     writeMinimalGoogleProtobufProtos()

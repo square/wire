@@ -18,6 +18,7 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.escapeQuotedString
 
 data class ReservedElement(
   val location: Location,
@@ -33,7 +34,7 @@ data class ReservedElement(
       if (index > 0) append(", ")
 
       when (value) {
-        is String -> append("\"$value\"")
+        is String -> append("\"${value.escapeQuotedString()}\"")
         is Int -> append(value)
         is IntRange -> {
           append("${value.first} to ")
