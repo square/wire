@@ -1973,8 +1973,6 @@ class SwiftGenerator private constructor(
      * Returns this string as a Swift string literal. SwiftPoet's `%S` writes `$` as `${'$'}`, which
      * is Kotlin syntax and wrong in Swift.
      */
-    private fun String.toSwiftStringLiteralBlock(): CodeBlock = CodeBlock.of("%L", toSwiftStringLiteral())
-
     private fun String.toSwiftStringLiteral(): String = buildString {
       append('"')
       for (c in this@toSwiftStringLiteral) {
@@ -1991,6 +1989,9 @@ class SwiftGenerator private constructor(
       }
       append('"')
     }
+
+    /** Returns this string as a Swift string literal code block that SwiftPoet writes as is. */
+    private fun String.toSwiftStringLiteralBlock(): CodeBlock = CodeBlock.of("%L", toSwiftStringLiteral())
 
     /** Proto names can hold `-` and `.`, which Swift identifiers cannot. */
     private fun String.toSwiftIdentifier(): String = replace('-', '_').replace('.', '_')
