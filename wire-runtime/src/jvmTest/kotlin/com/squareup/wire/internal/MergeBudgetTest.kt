@@ -23,6 +23,7 @@ import assertk.assertions.isTrue
 import com.squareup.wire.ByteArrayProtoReader32
 import com.squareup.wire.MERGE_ALLOWANCE_BYTES
 import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoReader32
 import com.squareup.wire.forEachTag
 import com.squareup.wire.mergeContext
 import kotlin.test.Test
@@ -38,6 +39,17 @@ class MergeBudgetTest {
     val bytes = buffer.readByteString()
     val adapter = nodeAdapters.first { !it.defersMerges }
     assertFailure { adapter.decode(bytes.toByteArray()) }.isInstanceOf<ProtocolException>()
+  }
+
+  @Test fun manyOccurrencesOfOneFieldAreRejectedForACustomReader() {
+    val buffer = Buffer()
+    val occurrence = lengthDelimited(1, int32(2, 1) + int32(2, 1))
+    repeat(20_000) { buffer.write(occurrence) }
+    val bytes = buffer.readByteString()
+    for (adapter in protoReader32NodeAdapters) {
+      assertFailure { adapter.decode(CustomProtoReader32(ProtoReader32(bytes))) }
+        .isInstanceOf<ProtocolException>()
+    }
   }
 
   @Test fun manyOccurrencesOfOneFieldAreMergedOnce() {

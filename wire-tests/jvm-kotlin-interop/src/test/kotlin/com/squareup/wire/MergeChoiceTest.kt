@@ -20,7 +20,9 @@ import com.squareup.wire.protos.kotlin.edgecases.MergeChoiceBuildersOnly
 import com.squareup.wire.protos.kotlin.edgecases.MergeLeaf
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import okio.Buffer
+import okio.IOException
 
 /** Repeated message fields are merged, and a oneof keeps only its last member. */
 class MergeChoiceTest {
@@ -61,4 +63,25 @@ class MergeChoiceTest {
   @Test fun repeatedMemberAmongOtherFields() = assertDecodes("a=[1, 3] b=null c=[2, 4]", a to 1, c to 2, a to 3, c to 4)
 
   @Test fun lastMemberWins() = assertDecodes("a=null b=[5] c=null", b to 1, b to 2, a to 3, a to 4, b to 5)
+
+  /** An occurrence of member [tag] with a truncated varint, which fails when it is decoded. */
+  private fun truncatedOccurrence(tag: Int): ByteArray = Buffer()
+    .writeByte((tag shl 3) or 2)
+    .writeByte(1)
+    .writeByte(0x80)
+    .readByteArray()
+
+  /**
+   * Later occurrences of a member are decoded after the last tag. A member that another member
+   * replaced is not decoded, so it costs nothing and cannot fail.
+   */
+  @Test fun replacedMemberIsNotDecodedAtTheEnd() {
+    val replaced = encode(a to 1) + truncatedOccurrence(a) + encode(b to 2)
+    assertEquals("a=null b=[2] c=null", describe(MergeChoice.ADAPTER.decode(replaced)))
+    assertEquals("a=null b=[2] c=null", describe(MergeChoice.ADAPTER.decode(Buffer().write(replaced))))
+
+    val kept = encode(a to 1) + truncatedOccurrence(a)
+    assertFailsWith<IOException> { MergeChoice.ADAPTER.decode(kept) }
+    assertFailsWith<IOException> { MergeChoice.ADAPTER.decode(Buffer().write(kept)) }
+  }
 }

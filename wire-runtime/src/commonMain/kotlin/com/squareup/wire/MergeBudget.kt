@@ -15,7 +15,6 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.ProtoReader.Companion.DEFAULT_RECURSION_LIMIT
 import com.squareup.wire.internal.ProtocolException
 import okio.Buffer
 import okio.ByteString
@@ -123,6 +122,10 @@ internal const val MERGE_ALLOWANCE_PER_INPUT_BYTE = 64L
 
 internal fun allowedMergeBytes(bytesConsumed: Long): Long = MERGE_ALLOWANCE_BYTES + MERGE_ALLOWANCE_PER_INPUT_BYTE * bytesConsumed
 
-/** Returns the merge context of [this], or one without limits if it is not a built-in reader. */
+/**
+ * Returns the merge context of [this]. A reader that is not a built-in reader has no state of its
+ * own, so this asks [ProtoReader32.asProtoReader] for the reader that does. That reader keeps the
+ * recursion depth and the budget only if it is the same instance on every call.
+ */
 internal fun ProtoReader32.mergeContext(): MergeContext = (this as? ByteArrayProtoReader32)?.mergeContext()
-  ?: MergeContext(DEFAULT_RECURSION_LIMIT, 0, MergeBudget(), Long.MAX_VALUE)
+  ?: asProtoReader().mergeContext()

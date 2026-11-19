@@ -100,4 +100,26 @@ class DecodeMessageOrMergeTest {
       adapter.decode(ProtoReader(Buffer().write(bytes), 30))
     }
   }
+
+  @Test fun customReaderMergesShareTheRecursionLimit() {
+    for (adapter in protoReader32NodeAdapters) {
+      assertFailure { adapter.decode(CustomProtoReader32(ProtoReader32(nestedMerges(150)))) }
+        .isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
+      assertFailure { adapter.decode(CustomProtoReader32(ProtoReader32(nestedMerges(20), recursionLimit = 10))) }
+        .isInstanceOf<IOException>().hasMessage("Wire recursion limit exceeded")
+      adapter.decode(CustomProtoReader32(ProtoReader32(nestedMerges(20), recursionLimit = 30)))
+    }
+  }
+
+  @Test fun customReaderMergesOccurrences() {
+    val first = int32(2, 1) + lengthDelimited(1, int32(2, 10))
+    val second = int32(2, 2) + lengthDelimited(1, int32(2, 20))
+    val bytes = lengthDelimited(1, first) + lengthDelimited(1, second)
+    for (adapter in protoReader32NodeAdapters) {
+      val node = adapter.decode(CustomProtoReader32(ProtoReader32(bytes)))
+      assertThat(node.toString()).isEqualTo(
+        "Node(child=Node(child=Node(child=null, values=[10, 20]), values=[1, 2]), values=[])",
+      )
+    }
+  }
 }
