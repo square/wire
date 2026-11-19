@@ -36,6 +36,12 @@ internal class StringWireLogger : WireLogger {
     buffer.append("Skipped $type (target=$targetName)\n")
   }
 
+  @Synchronized override fun warning(message: String) {
+    if (quiet) return
+
+    buffer.append("Warning: $message\n")
+  }
+
   @Synchronized override fun unusedRoots(unusedRoots: Set<String>) {
     if (quiet) return
 

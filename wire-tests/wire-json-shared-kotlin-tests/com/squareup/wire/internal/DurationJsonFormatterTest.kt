@@ -17,6 +17,8 @@ package com.squareup.wire.internal
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import java.util.Locale
+import kotlin.test.assertFailsWith
 import com.squareup.wire.durationOfSeconds
 import com.squareup.wire.internal.DurationJsonFormatter.fromString
 import com.squareup.wire.internal.DurationJsonFormatter.toStringOrNumber
@@ -62,5 +64,41 @@ class DurationJsonFormatterTest {
     assertThat(toStringOrNumber(durationOfSeconds(Long.MIN_VALUE, 0L))).isEqualTo("-9223372036854775808s")
     assertThat(toStringOrNumber(durationOfSeconds(Long.MIN_VALUE, 1L)))
       .isEqualTo("-9223372036854775807.999999999s")
+  }
+
+  @Test
+  fun `duration to string ignores the default locale`() {
+    val oldLocale = Locale.getDefault()
+    try {
+      Locale.setDefault(Locale.forLanguageTag("ar-EG"))
+      assertThat(toStringOrNumber(durationOfSeconds(5L, 0L))).isEqualTo("5s")
+      assertThat(toStringOrNumber(durationOfSeconds(5L, 500_000_000L))).isEqualTo("5.500s")
+      assertThat(toStringOrNumber(durationOfSeconds(-5L, -500_000L))).isEqualTo("-5.000500s")
+      assertThat(toStringOrNumber(durationOfSeconds(5L, 1L))).isEqualTo("5.000000001s")
+      Locale.setDefault(Locale.forLanguageTag("th-TH-u-nu-thai"))
+      assertThat(toStringOrNumber(durationOfSeconds(5L, 500_000_000L))).isEqualTo("5.500s")
+    } finally {
+      Locale.setDefault(oldLocale)
+    }
+  }
+
+  @Test
+  fun `string to duration rejects signs in the fraction`() {
+    for (value in listOf("1.-5s", "-0.-5s", "-1.+5s", "1.+5s", "1.5-s", "1.-s", "--1s", "-+1s", "1-s")) {
+      assertFailsWith<NumberFormatException>(value) { fromString(value) }
+    }
+  }
+
+  @Test
+  fun `string to duration rejects digits that are not ascii`() {
+    for (value in listOf("\u0663s", "1.\u0665s", "\u0663.5s", "-\u0663s", "1.5\u0665s")) {
+      assertFailsWith<NumberFormatException>(value) { fromString(value) }
+    }
+  }
+
+  @Test
+  fun `string to duration accepts a plus sign on the seconds`() {
+    assertThat(fromString("+1s")).isEqualTo(durationOfSeconds(1L, 0L))
+    assertThat(fromString("+1.5s")).isEqualTo(durationOfSeconds(1L, 500_000_000L))
   }
 }

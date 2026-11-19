@@ -75,6 +75,17 @@ class WirePluginTest {
   }
 
   @Test
+  fun importWithDotDotSegmentLogsWarning() {
+    val fixtureRoot = File("src/test/projects/import-outside-proto-path")
+
+    val result = fixtureGradleRunner(fixtureRoot).buildAndFail()
+
+    assertThat(result.output).contains(
+      "Import \"../shared/shared.proto\" is an absolute path or has a \"..\" segment.",
+    )
+  }
+
+  @Test
   fun sourcePathDirDoesNotExistButProtoPathDoes() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-srcdir-with-protopath")
 

@@ -9,7 +9,7 @@ plugins {
   id("com.google.protobuf")
   id("com.squareup.wire")
   id("com.gradleup.shadow")
-  id("me.champeau.jmh").version("0.7.3")
+  id("me.champeau.jmh").version("0.7.4")
 }
 
 sourceSets {

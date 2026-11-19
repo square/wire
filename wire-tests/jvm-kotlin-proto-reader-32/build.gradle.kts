@@ -19,6 +19,7 @@ wire {
     include(
       "all_types.proto",
       "empty_packed.proto",
+      "map.proto",
       "one_of.proto",
     )
   }

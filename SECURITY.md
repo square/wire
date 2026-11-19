@@ -2,19 +2,18 @@
 
 ## Supported Versions
 
+Only the latest minor version gets security fixes.
+
 | Version | Supported |
 |---------|-----------|
-| 7.0.x   | ✅        |
-| 6.4.x   | ✅        |
-| 5.x     |           |
-| 4.x     |           |
-| 3.x     |           |
+| 7.2.x   | ✅        |
+| < 7.2   |           |
 
 ## Reporting a Vulnerability
 
 Square recognizes the important contributions the security research community can make. We therefore encourage reporting security issues with the code contained in this repository.
 
-If you believe you have discovered a security vulnerability, please follow the guidelines at https://bugcrowd.com/squareopensource.
+If you believe you have discovered a security vulnerability, please follow the guidelines at https://bugcrowd.com/engagements/blockopensource.
 
 ## Threat Model
 

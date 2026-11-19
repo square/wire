@@ -17,6 +17,8 @@ syntax = "proto2";
 
 package squareup.protos.kotlin.swift_modules;
 
+import "option_redacted.proto";
+
 message SwiftEdgeCases {
   enum Error {
     UNKNOWN = 0;
@@ -69,4 +71,40 @@ message Screen {
 enum Error {
   UNKNOWN = 0;
   BAD_VALUE = 1;
+}
+
+message SwiftDefaults {
+  optional string dollar = 1 [default = "a$b \"c\" \\d\n"];
+  optional double double_inf = 2 [default = inf];
+  optional double double_neg_inf = 3 [default = -inf];
+  optional double double_nan = 4 [default = nan];
+  optional float float_inf = 5 [default = inf];
+  optional float float_neg_inf = 6 [default = -inf];
+  optional float float_nan = 7 [default = nan];
+  optional double double_trailing_dot = 8 [default = 1.];
+  optional float float_leading_dot = 9 [default = .5];
+  optional string optional_dollar = 10 [default = "$"];
+}
+
+enum SwiftDashedEnum {
+  DASHED-ZERO = 0;
+  DOTTED.ONE = 1;
+}
+
+message SwiftDashedNames {
+  optional string dashed-field = 1;
+  optional string dotted.field = 2;
+  optional SwiftDashedEnum dashed-enum = 3 [default = DASHED-ZERO];
+  optional string secret-field = 4 [(squareup.protos.kotlin.redacted_option.redacted) = true];
+  repeated string dashed-list = 5;
+  map<string, string> dashed-map = 6;
+
+  oneof dashed-oneof {
+    string dashed-oneof-string = 7;
+    int32 dotted.oneof.int = 8 [(squareup.protos.kotlin.redacted_option.redacted) = true];
+  }
+}
+
+message Dashed-Message {
+  optional string value = 1;
 }

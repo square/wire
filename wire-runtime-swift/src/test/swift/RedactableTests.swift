@@ -92,4 +92,117 @@ final class RedactableTests: XCTestCase {
             "Action(description: <redacted>)"
         )
     }
+
+    func testRedactedFieldsWithUnderscoreNames() {
+        let redacted = RedactedUnderscores(
+            req_under: "secret-req-under",
+            _req_lead: "secret-req-lead",
+            req_trail_: "secret-req-trail",
+            __req_double__: "secret-req-double",
+            req_visible_: "visible-req"
+        ) {
+            $0._opt_lead = "secret-opt-lead"
+            $0.opt_trail_ = "secret-opt-trail"
+            $0.__opt_double__ = "secret-opt-double"
+            $0.opt_visible_ = "visible-opt"
+            $0.description_ = "secret-description"
+        }
+        assertOnlyVisible(redacted.description, secrets: [
+            "secret-req-under", "secret-req-lead", "secret-req-trail", "secret-req-double",
+            "secret-opt-lead", "secret-opt-trail", "secret-opt-double", "secret-description",
+        ], visible: ["visible-req", "visible-opt"])
+    }
+
+    func testRedactedOneOfFieldsWithUnderscoreNames() {
+        let leading = RedactedUnderscores.Choice._choice_lead("secret-choice-lead")
+        let trailing = RedactedUnderscores.Choice.choice_trail_("secret-choice-trail")
+        let double = RedactedUnderscores.Choice.__choice_double__("secret-choice-double")
+        let visible = RedactedUnderscores.Choice.choice_visible_("visible-choice")
+        for choice in [leading, trailing, double] {
+            assertOnlyVisible(choice.description, secrets: [
+                "secret-choice-lead", "secret-choice-trail", "secret-choice-double",
+            ], visible: [])
+        }
+        assertOnlyVisible(visible.description, secrets: [], visible: ["visible-choice"])
+    }
+
+    func testRedactedFieldsWithUnderscoreNamesInHeapStorage() {
+        let redacted = RedactedLargeUnderscores(
+            req_under: "secret-req-under",
+            _req_lead: "secret-req-lead",
+            req_trail_: "secret-req-trail",
+            __req_double__: "secret-req-double",
+            req_visible_: "visible-req"
+        ) {
+            $0._opt_lead = "secret-opt-lead"
+            $0.opt_trail_ = "secret-opt-trail"
+            $0.__opt_double__ = "secret-opt-double"
+            $0.opt_visible_ = "visible-opt"
+        }
+        assertOnlyVisible(redacted.description, secrets: [
+            "secret-req-under", "secret-req-lead", "secret-req-trail", "secret-req-double",
+            "secret-opt-lead", "secret-opt-trail", "secret-opt-double",
+        ], visible: ["visible-req", "visible-opt"])
+    }
+
+    func testStringFieldsAreEscaped() {
+        let redacted = RedactedUnderscores(
+            req_under: "secret",
+            _req_lead: "secret",
+            req_trail_: "secret",
+            __req_double__: "secret",
+            req_visible_: "a\"b\\c\nINFO forged\r\n\tx\u{1B}[31m\u{0}\u{7F}\u{85}\u{2028}é"
+        )
+        let description = redacted.description
+        XCTAssertTrue(
+            description.contains(#"req_visible: "a\"b\\c\nINFO forged\r\n\tx\u{1B}[31m\0\u{7F}\u{85}\u{2028}é""#),
+            description
+        )
+        let controls = description.unicodeScalars.filter {
+            $0.value < 0x20 || (0x7F...0x9F).contains($0.value) || $0.value == 0x2028
+        }
+        XCTAssertTrue(controls.isEmpty, description)
+    }
+
+    func testOneOfStringsAreEscaped() {
+        let choice = RedactedUnderscores.Choice.choice_visible_("v\", forged: 1)\nINFO forged")
+        XCTAssertEqual(choice.description, #"Choice(choice_visible: "v\", forged: 1)\nINFO forged")"#)
+    }
+
+    func testLineBreakingScalarsAreEscapedInOptionalRepeatedAndMapFields() {
+        let breaks = "a\u{85}b\u{2028}c\u{2029}d"
+        let escaped = #"a\u{85}b\u{2028}c\u{2029}d"#
+        let redacted = RedactedCollections(secret: "secret-value") {
+            $0.opt = breaks
+            $0.list = [breaks]
+            $0.entries = [breaks: breaks]
+            $0.child = RedactedCollections(secret: "secret-value") {
+                $0.opt = breaks
+                $0.list = [breaks]
+                $0.entries = [breaks: breaks]
+            }
+        }
+        let description = redacted.description
+        XCTAssertFalse(description.contains("secret-value"), description)
+        XCTAssertEqual(description.components(separatedBy: escaped).count - 1, 8, description)
+        let controls = description.unicodeScalars.filter {
+            $0.value < 0x20 || (0x7F...0x9F).contains($0.value) || $0.value == 0x2028 || $0.value == 0x2029
+        }
+        XCTAssertTrue(controls.isEmpty, description)
+    }
+
+    private func assertOnlyVisible(
+        _ description: String,
+        secrets: [String],
+        visible: [String],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for secret in secrets {
+            XCTAssertFalse(description.contains(secret), "\(secret) leaked in \(description)", file: file, line: line)
+        }
+        for value in visible {
+            XCTAssertTrue(description.contains(value), "\(value) missing in \(description)", file: file, line: line)
+        }
+    }
 }
