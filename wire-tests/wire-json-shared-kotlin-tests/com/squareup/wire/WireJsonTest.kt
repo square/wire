@@ -372,6 +372,8 @@ class WireJsonTest {
     assertThat(parsed).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
   }
 
+  // This decodes binary, not JSON. It lives here because jvm-json-java sets compact = true, so only the
+  // reflective adapter runs. Moving it to another suite would stop it from covering that adapter.
   @Test fun lastMemberOfOneOfWinsOnDecoding() {
     val string = AllTypesProto3.ADAPTER.encodeByteString(AllTypesProto3.Builder().oneof_string("a").build())
     val int32 = AllTypesProto3.ADAPTER.encodeByteString(AllTypesProto3.Builder().oneof_int32(1).build())
