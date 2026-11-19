@@ -34,6 +34,7 @@ import kotlin.jvm.JvmField
 import kotlin.test.Test
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
+import okio.ByteString.Companion.encodeUtf8
 
 class AnyMessageTest {
   @Test fun happyPath() {
@@ -90,10 +91,15 @@ class AnyMessageTest {
     assertThat(UsesAny.ADAPTER.decode(hex.decodeHex())).isEqualTo(usesAny)
   }
 
+  @Test fun toStringPrintsTypeUrlAndSizeOnly() {
+    val any = AnyMessage("type.googleapis.com/example.Secret", "hunter2".encodeUtf8())
+    assertThat(any.toString()).isEqualTo("Any{type_url=type.googleapis.com/example.Secret, size=7}")
+  }
+
   @Test fun toStringEscapesTypeUrl() {
     val any = AnyMessage("type.googleapis.com/x, forged=1\nINFO forged log line", ByteString.EMPTY)
     assertThat(any.toString()).isEqualTo(
-      """Any{type_url=type.googleapis.com/x\, forged=1\nINFO forged log line, value=[size=0]}""",
+      """Any{type_url=type.googleapis.com/x\, forged=1\nINFO forged log line, size=0}""",
     )
   }
 

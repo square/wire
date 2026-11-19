@@ -1564,7 +1564,17 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
     return result
   }
 
-  override fun redact(value: Map<String, *>?) = value?.mapValues { STRUCT_VALUE.redact(it) }
+  /** Redacts every value like [STRUCT_VALUE]: strings become null, and numbers, booleans, and null stay. */
+  override fun redact(value: Map<String, *>?): Map<String, *>? {
+    if (value == null) return null
+    val result = LinkedHashMap<String, Any?>(value.size)
+    // Unchecked casts can put other key types here. The error never includes the key.
+    for ((key, element) in (value as Map<*, *>)) {
+      require(key is String) { "unexpected struct key type: ${key?.let { it::class.simpleName }}" }
+      result[key] = STRUCT_VALUE.redact(element)
+    }
+    return result
+  }
 }
 
 internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<List<*>?>(
@@ -1679,7 +1689,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> BOOL.encodedSizeWithTag(4, value)
       is Map<*, *> -> STRUCT_MAP.encodedSizeWithTag(5, value as Map<String, *>)
       is List<*> -> STRUCT_LIST.encodedSizeWithTag(6, value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 
@@ -1701,7 +1711,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> BOOL.encodeWithTag(writer, 4, value)
       is Map<*, *> -> STRUCT_MAP.encodeWithTag(writer, 5, value as Map<String, *>)
       is List<*> -> STRUCT_LIST.encodeWithTag(writer, 6, value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 
@@ -1714,7 +1724,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> BOOL.encodeWithTag(writer, 4, value)
       is Map<*, *> -> STRUCT_MAP.encodeWithTag(writer, 5, value as Map<String, *>)
       is List<*> -> STRUCT_LIST.encodeWithTag(writer, 6, value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 
@@ -1788,7 +1798,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> value
       is Map<*, *> -> STRUCT_MAP.redact(value as Map<String, *>)
       is List<*> -> STRUCT_LIST.redact(value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 }

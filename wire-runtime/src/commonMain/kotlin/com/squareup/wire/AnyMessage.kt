@@ -71,7 +71,7 @@ class AnyMessage(
     return result
   }
 
-  override fun toString() = "Any{type_url=${sanitize(typeUrl)}, value=$value}"
+  override fun toString() = "Any{type_url=${sanitize(typeUrl)}, size=${value.size}}"
 
   fun copy(
     typeUrl: String = this.typeUrl,
