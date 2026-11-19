@@ -38,6 +38,7 @@ wire {
       "all_wrappers.proto",
       "camel_case.proto",
       "contains_field_mask.proto",
+      "envelope.proto",
       "map_types.proto",
       "pizza.proto",
     )

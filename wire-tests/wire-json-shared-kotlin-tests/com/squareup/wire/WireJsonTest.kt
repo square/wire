@@ -47,6 +47,7 @@ import squareup.proto3.BuyOneGetOnePromotion
 import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
 import squareup.proto3.ContainsFieldMask
+import squareup.proto3.Envelope
 import squareup.proto3.FreeDrinkPromotion
 import squareup.proto3.FreeGarlicBreadPromotion
 import squareup.proto3.MapTypes
@@ -430,6 +431,40 @@ class WireJsonTest {
     } catch (expected: JsonIOException) {
       // Gson.
     }
+  }
+
+  @Test fun anyMessagesWithDeepNestingWithinLimitRoundTrip() {
+    val value = nestedEnvelopes(anyCount = 2, innerDepth = 90)
+    val json = jsonLibrary.toJson(value, Envelope::class.java)
+    assertThat(jsonLibrary.fromJson(json, Envelope::class.java)).isEqualTo(value)
+  }
+
+  @Test fun anyMessagesWithDeepNestingFailToEncode() {
+    // Each Any is shallow enough alone, but together they are deeper than the limit. With 254 Anys,
+    // the total is deep enough to overflow the stack.
+    for (anyCount in listOf(4, 254)) {
+      val value = nestedEnvelopes(anyCount = anyCount, innerDepth = 90)
+      try {
+        jsonLibrary.toJson(value, Envelope::class.java)
+        fail()
+      } catch (expected: JsonDataException) {
+        // Moshi.
+      } catch (expected: JsonIOException) {
+        // Gson.
+      }
+    }
+  }
+
+  /** Returns envelopes where each Any holds an envelope nested [innerDepth] levels deep. */
+  private fun nestedEnvelopes(anyCount: Int, innerDepth: Int): Envelope {
+    var result = Envelope.Builder().build()
+    repeat(anyCount) {
+      result = Envelope.Builder().payload(AnyMessage.pack(result)).build()
+      repeat(innerDepth) {
+        result = Envelope.Builder().child(result).build()
+      }
+    }
+    return result
   }
 
   private fun nestedPizzaDeliveries(depth: Int): PizzaDelivery {
@@ -1377,7 +1412,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .build()
 
@@ -1399,7 +1434,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1422,7 +1457,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .build()
 
@@ -1444,7 +1479,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
@@ -1467,7 +1502,7 @@ class WireJsonTest {
       private val moshi = Moshi.Builder()
         .add(
           WireJsonAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .build()
 
@@ -1489,7 +1524,7 @@ class WireJsonTest {
       private val gson = GsonBuilder()
         .registerTypeAdapterFactory(
           WireTypeAdapterFactory(writeIdentityValues = writeIdentityValues, preservingProtoFieldNames = preservingProtoFieldNames)
-            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER)),
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, PizzaDelivery.ADAPTER, Envelope.ADAPTER)),
         )
         .disableHtmlEscaping()
         .create()
