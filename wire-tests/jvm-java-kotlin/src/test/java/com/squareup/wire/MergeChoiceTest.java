@@ -63,8 +63,8 @@ public final class MergeChoiceTest {
   }
 
   /**
-   * Decodes with the adapter that reflects on the generated class. It cannot decode a oneof whose
-   * member is replaced by another member, because it writes the builder fields directly.
+   * Decodes with the adapter that reflects on the generated class, which compact code uses. It sets
+   * a oneof member with the builder method, so the last member on the wire wins.
    */
   private void assertDecodesCompact(String expected, int[]... occurrences) throws Exception {
     byte[] bytes = encode(occurrences);
@@ -93,20 +93,25 @@ public final class MergeChoiceTest {
   @Test
   public void memberRepeatedThenReplaced() throws Exception {
     assertDecodes("a=null b=[3] c=null", of(A, 1), of(A, 2), of(B, 3));
+    assertDecodesCompact("a=null b=[3] c=null", of(A, 1), of(A, 2), of(B, 3));
   }
 
   @Test
   public void memberReplacedThenSetAgain() throws Exception {
     assertDecodes("a=[3] b=null c=null", of(A, 1), of(B, 2), of(A, 3));
+    assertDecodesCompact("a=[3] b=null c=null", of(A, 1), of(B, 2), of(A, 3));
   }
 
   @Test
   public void repeatedMembersAreMergedAfterBeingSetAgain() throws Exception {
     assertDecodes("a=[4, 5] b=null c=null", of(A, 1), of(A, 2), of(B, 3), of(A, 4), of(A, 5));
+    assertDecodesCompact(
+        "a=[4, 5] b=null c=null", of(A, 1), of(A, 2), of(B, 3), of(A, 4), of(A, 5));
   }
 
   @Test
   public void lastMemberWins() throws Exception {
     assertDecodes("a=null b=[5] c=null", of(B, 1), of(B, 2), of(A, 3), of(A, 4), of(B, 5));
+    assertDecodesCompact("a=null b=[5] c=null", of(B, 1), of(B, 2), of(A, 3), of(A, 4), of(B, 5));
   }
 }

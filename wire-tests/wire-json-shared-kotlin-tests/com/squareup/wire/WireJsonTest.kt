@@ -31,6 +31,7 @@ import com.squareup.wire.proto2.alltypes.AllTypes as AllTypesProto2
 import com.squareup.wire.proto3.alltypes.AllTypes as AllTypesProto3
 import java.io.File
 import java.util.Collections
+import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import okio.buffer
@@ -369,6 +370,21 @@ class WireJsonTest {
       AllTypesProto3::class.java,
     )
     assertThat(parsed).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
+  }
+
+  @Test fun lastMemberOfOneOfWinsOnDecoding() {
+    val string = AllTypesProto3.ADAPTER.encodeByteString(AllTypesProto3.Builder().oneof_string("a").build())
+    val int32 = AllTypesProto3.ADAPTER.encodeByteString(AllTypesProto3.Builder().oneof_int32(1).build())
+
+    fun decode(vararg members: ByteString): AllTypesProto3 {
+      val buffer = Buffer()
+      members.forEach { buffer.write(it) }
+      return AllTypesProto3.ADAPTER.decode(buffer.readByteString())
+    }
+
+    assertThat(decode(string, int32)).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
+    assertThat(decode(int32, string, int32)).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
+    assertThat(decode(int32, string)).isEqualTo(AllTypesProto3.Builder().oneof_string("a").build())
   }
 
   @Test fun unknownEnumValueIsKeptAsUnknownField() {
