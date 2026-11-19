@@ -83,8 +83,9 @@ class MergeBudgetTest {
 
   /**
    * A deferred merge is charged against the bytes consumed when it finishes, not when its first
-   * occurrence was kept. Here the budget has 1 MiB left of the fixed allowance when the first
-   * occurrence arrives, and the 100 KB that follow add 6 MB to the allowance.
+   * occurrence was kept. Here the budget has already spent 1 MiB more than the fixed allowance
+   * before the merge. The allowance from the first occurrence is too small for that. The 100 KB
+   * that follow add 6 MB to the allowance, so the merge fits.
    */
   @Test fun deferredMergeUsesTheBytesConsumedWhenItFinishes() {
     val bytes = twoOccurrencesFollowedBy(padding = 100_000)
@@ -105,7 +106,7 @@ class MergeBudgetTest {
     return first + second + unknown
   }
 
-  /** Decodes like generated code, and spends all but 1 MiB of the fixed allowance before the merge. */
+  /** Decodes like generated code, and spends 1 MiB more than the fixed allowance before the merge. */
   private fun mergeAfterSpending(bytes: ByteString, readsByteArray: Boolean): List<Int> {
     val adapter = NodeAdapter(readsProtoReader32 = readsByteArray, defersMerges = true)
     val spent = MERGE_ALLOWANCE_BYTES + 1024 * 1024
