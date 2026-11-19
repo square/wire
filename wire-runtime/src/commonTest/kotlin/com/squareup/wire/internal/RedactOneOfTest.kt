@@ -18,11 +18,17 @@ package com.squareup.wire.internal
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import com.squareup.wire.AnyMessage
+import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldMask
 import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
 import com.squareup.wire.durationOfSeconds
 import com.squareup.wire.ofEpochSecond
+import kotlin.reflect.KClass
 import kotlin.test.Test
 import okio.ByteString.Companion.encodeUtf8
 
@@ -99,11 +105,48 @@ class RedactOneOfTest {
 
   @Test fun valueMemberRedactsStrings() {
     val key = Key(1, ProtoAdapter.STRUCT_VALUE, "value")
-    assertThat(OneOf(key, "secret").redactOneOf()).isEqualTo(OneOf(key, null))
     assertThat(OneOf(key, 3.0).redactOneOf()).isEqualTo(OneOf(key, 3.0))
     assertThat(OneOf(key, false).redactOneOf()).isEqualTo(OneOf(key, false))
-    assertThat(OneOf(key, null).redactOneOf()).isEqualTo(OneOf(key, null))
     assertThat(OneOf(key, listOf("secret")).redactOneOf()).isEqualTo(OneOf(key, listOf(null)))
+  }
+
+  @Test fun valueMemberThatRedactsToNullClearsTheOneOf() {
+    val key = Key(1, ProtoAdapter.STRUCT_VALUE, "value")
+    assertThat(OneOf(key, "secret").redactOneOf()).isNull()
+    assertThat(OneOf(key, null).redactOneOf()).isNull()
+  }
+
+  /** A custom adapter, like one from a profile, with an encoding that looks like a message. */
+  private class CustomAdapter<T : Any>(
+    type: KClass<T>,
+    private val redacted: (T) -> T,
+  ) : ProtoAdapter<T>(FieldEncoding.LENGTH_DELIMITED, type, null, Syntax.PROTO_2) {
+    override fun encodedSize(value: T): Int = 0
+
+    override fun encode(writer: ProtoWriter, value: T) = Unit
+
+    override fun decode(reader: ProtoReader): T = throw UnsupportedOperationException()
+
+    override fun redact(value: T): T = redacted(value)
+  }
+
+  @Test fun customAdapterOfNonMessageIsKeptEvenIfItCannotRedact() {
+    val adapter = CustomAdapter(String::class) { throw UnsupportedOperationException() }
+    val oneOf = OneOf(Key(1, adapter, "custom"), "value")
+    assertThat(oneOf.redactOneOf()).isEqualTo(oneOf)
+  }
+
+  @Test fun customAdapterOfMessageRedactsThroughTheAdapter() {
+    val adapter = CustomAdapter(AnyMessage::class) { AnyMessage("redacted") }
+    val key = Key(1, adapter, "custom")
+    val oneOf = OneOf(key, AnyMessage("secret", "bytes".encodeUtf8()))
+    assertThat(oneOf.redactOneOf()).isEqualTo(OneOf(key, AnyMessage("redacted")))
+  }
+
+  @Test fun anyMessageRedactsThroughItsAdapter() {
+    val key = Key(1, AnyMessage.ADAPTER, "any")
+    val any = AnyMessage("type.googleapis.com/google.protobuf.Empty")
+    assertThat(OneOf(key, any).redactOneOf()).isEqualTo(OneOf(key, AnyMessage.ADAPTER.redact(any)))
   }
 
   @Test fun timeAndEmptyAndFieldMaskMembersAreKept() {

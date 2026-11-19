@@ -119,10 +119,8 @@ class BoxedOneOfRedactTest {
 
   @Test fun valueMembersRedactStringsAndKeepOtherValues() {
     val cases = listOf(
-      "secret" to null,
       3.0 to 3.0,
       true to true,
-      null to null,
       mapOf("name" to "secret", "count" to 3.0) to mapOf("name" to null, "count" to 3.0),
       listOf("secret", false) to listOf(null, false),
     )
@@ -130,6 +128,25 @@ class BoxedOneOfRedactTest {
       val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, value))
       val expected = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, expectedValue))
       assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(expected)
+    }
+  }
+
+  @Test fun valueMembersThatRedactToNullClearTheOneOf() {
+    for (value in listOf("secret", null)) {
+      val message = BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_VALUE, value))
+      val redacted = BoxedRedactedOneOf.ADAPTER.redact(message)
+      assertThat(redacted.variant).isNull()
+      assertThat(BoxedRedactedOneOf.ADAPTER.decode(redacted.encode())).isEqualTo(redacted)
+    }
+  }
+
+  @Test fun durationAndTimestampMembersAreKept() {
+    val messages = listOf(
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_DURATION, java.time.Duration.ofSeconds(5, 6))),
+      BoxedRedactedOneOf(variant = OneOf(BoxedRedactedOneOf.VARIANT_TIMESTAMP, java.time.Instant.ofEpochSecond(5, 6))),
+    )
+    for (message in messages) {
+      assertThat(BoxedRedactedOneOf.ADAPTER.redact(message)).isEqualTo(message)
     }
   }
 

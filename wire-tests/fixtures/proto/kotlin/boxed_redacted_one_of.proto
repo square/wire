@@ -19,7 +19,9 @@ package squareup.protos.kotlin.boxed_redacted;
 
 option java_package = "com.squareup.wire.protos.kotlin.boxedredacted";
 
+import "google/protobuf/duration.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "option_redacted.proto";
 
@@ -33,6 +35,8 @@ message BoxedRedactedOneOf {
     google.protobuf.Int32Value int32_value = 9;
     google.protobuf.Struct struct = 10;
     google.protobuf.ListValue list_value = 11;
+    google.protobuf.Duration duration = 12;
+    google.protobuf.Timestamp timestamp = 13;
   }
   oneof sensitive {
     string secret = 4 [(squareup.protos.kotlin.redacted_option.redacted) = true];
