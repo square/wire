@@ -1097,6 +1097,20 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testMergingIntoAcceptsAppendedRecordsWithinDefaultAllowance() throws {
+        // 100 appended records of 1 KB for the same field is valid input and must decode.
+        let path = [UInt8](repeating: 0x61, count: 1_024)
+        let mask = [0x0A, 0x80, 0x08] + path
+        var data = Foundation.Data()
+        for _ in 0..<100 {
+            data.append(contentsOf: [0x0A, 0x83, 0x08] + mask)
+        }
+        try test(data: data) { reader in
+            let message = try LegacyMergingMessage(from: reader)
+            XCTAssertEqual(message.mask?.paths.count, 100)
+        }
+    }
+
     /// Field 1 holds a `FieldMask` with one path, `count` times.
     private func legacyMergeData(occurrenceCount count: Int) -> Foundation.Data {
         var data = Foundation.Data()

@@ -279,7 +279,7 @@ public final class ProtoDecoder {
         from data: Data,
         emptyValue: @autoclosure () throws -> T?,
         recursionDepthOffset: Int = 0,
-        mergeBudget: ProtoReader.MergeBudget = ProtoReader.MergeBudget(),
+        mergeBudget: ProtoReader.MergeBudget? = nil,
         mergeAllowance: Int64? = nil,
         decoder: (ProtoReader) throws -> T
     ) throws -> T {
