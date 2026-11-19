@@ -1111,6 +1111,19 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testDefaultMergeAllowanceGrowsWithConsumedInput() throws {
+        // The allowance is a constant plus a share for each byte of input that the reader consumed.
+        let data = legacyMergeData(occurrenceCount: 3)
+        try test(data: data) { reader in
+            XCTAssertEqual(reader.mergeAllowance, ProtoReader.mergeAllowanceBytes)
+            _ = try LegacyMergingMessage(from: reader)
+            XCTAssertEqual(
+                reader.mergeAllowance,
+                ProtoReader.mergeAllowanceBytes + ProtoReader.mergeAllowanceBytesPerInputByte * Int64(data.count)
+            )
+        }
+    }
+
     func testNestedMergesShareOneMergeBudget() throws {
         // Field 1 holds a message that merges 20 `FieldMask` occurrences, and it appears twice.
         // Decoding the inner message charges 627 bytes, and it is decoded twice.

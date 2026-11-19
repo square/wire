@@ -140,15 +140,13 @@ public final class ProtoDecoder {
         _ type: T.Type,
         from data: Data,
         recursionDepthOffset: Int,
-        mergeBudget: ProtoReader.MergeBudget,
-        mergeAllowance: Int64
+        mergeParent: ProtoReader
     ) throws -> T {
         try decodeWithReader(
             from: data,
             emptyValue: try T(from: .empty),
             recursionDepthOffset: recursionDepthOffset,
-            mergeBudget: mergeBudget,
-            mergeAllowance: mergeAllowance
+            mergeParent: mergeParent
         ) { reader in
             try reader.decode(type)
         }
@@ -279,8 +277,7 @@ public final class ProtoDecoder {
         from data: Data,
         emptyValue: @autoclosure () throws -> T?,
         recursionDepthOffset: Int = 0,
-        mergeBudget: ProtoReader.MergeBudget? = nil,
-        mergeAllowance: Int64? = nil,
+        mergeParent: ProtoReader? = nil,
         decoder: (ProtoReader) throws -> T
     ) throws -> T {
         var value: T?
@@ -299,8 +296,7 @@ public final class ProtoDecoder {
                 buffer: readBuffer,
                 enumDecodingStrategy: enumDecodingStrategy,
                 recursionDepthOffset: recursionDepthOffset,
-                mergeBudget: mergeBudget,
-                mergeAllowance: mergeAllowance
+                mergeParent: mergeParent
             )
             value = try decoder(reader)
         }
