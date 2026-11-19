@@ -16,7 +16,10 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.decodeMessageOrMerge
+import com.squareup.wire.`internal`.decodeMessageOrDefer
+import com.squareup.wire.`internal`.endMerges
+import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.hasMerges
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -110,10 +113,14 @@ public class MutablePacket(
         val payload = mutableListOf<MutablePayload>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> header_ = decodeMessageOrMerge(MutableHeader.ADAPTER, reader, header_)
+            1 -> header_ = decodeMessageOrDefer(MutableHeader.ADAPTER, reader, 1, header_)
             2 -> payload.add(MutablePayload.ADAPTER.decode(reader))
             else -> reader.readUnknownField(tag)
           }
+        }
+        if (hasMerges(reader)) {
+          header_ = finishMerge(reader, 1, MutableHeader.ADAPTER, header_)
+          endMerges(reader)
         }
         return MutablePacket(
           header_ = header_,

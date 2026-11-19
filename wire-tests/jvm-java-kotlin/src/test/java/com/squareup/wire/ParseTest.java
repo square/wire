@@ -24,6 +24,7 @@ import com.squareup.wire.protos.edgecases.Recursive;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.ProtocolException;
+import okio.Buffer;
 import okio.ByteString;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -131,6 +132,49 @@ public final class ParseTest {
                 + "12121210120e120c120a1208120612041202120008c803");
     try {
       Recursive.ADAPTER.decode(data.toByteArray());
+      fail();
+    } catch (IOException expected) {
+      assertThat(expected).hasMessageThat().contains("Wire recursion limit exceeded");
+    }
+  }
+
+  @Test
+  public void repeatedMessageFieldsAreMerged() throws Exception {
+    Recursive first =
+        new Recursive.Builder()
+            .value(1)
+            .recursive(new Recursive.Builder().value(10).build())
+            .build();
+    Recursive second =
+        new Recursive.Builder().recursive(new Recursive.Builder().value(20).build()).build();
+    Buffer buffer = new Buffer();
+    Recursive.ADAPTER.encodeWithTag(new ProtoWriter(buffer), 2, first);
+    Recursive.ADAPTER.encodeWithTag(new ProtoWriter(buffer), 2, second);
+
+    Recursive recursive = Recursive.ADAPTER.decode(buffer.readByteArray());
+    assertThat(recursive.recursive.value).isEqualTo(1);
+    assertThat(recursive.recursive.recursive.value).isEqualTo(20);
+  }
+
+  @Test
+  public void repeatedMessageFieldsShareTheRecursionLimit() throws Exception {
+    // Each level is an empty message followed by a message with the next level.
+    Buffer current = new Buffer();
+    for (int i = 0; i < 5_000; i++) {
+      Buffer next = new Buffer();
+      ProtoAdapter.BYTES.encodeWithTag(new ProtoWriter(next), 2, ByteString.EMPTY);
+      ProtoAdapter.BYTES.encodeWithTag(new ProtoWriter(next), 2, current.readByteString());
+      current = next;
+    }
+    byte[] data = current.readByteArray();
+    try {
+      Recursive.ADAPTER.decode(data);
+      fail();
+    } catch (IOException expected) {
+      assertThat(expected).hasMessageThat().contains("Wire recursion limit exceeded");
+    }
+    try {
+      Recursive.ADAPTER.decode(new Buffer().write(data));
       fail();
     } catch (IOException expected) {
       assertThat(expected).hasMessageThat().contains("Wire recursion limit exceeded");

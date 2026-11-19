@@ -96,6 +96,10 @@ internal class ByteArrayProtoReader32(
   /** Shared by all readers that decode merged messages for this reader. */
   private var mergeBudget: MergeBudget? = null
 
+  fun mergeBudgetOrNull(): MergeBudget? = mergeBudget
+
+  fun mergeDepth(): Int = recursionDepth
+
   /** Returns what a decode of a merged message needs to continue where this reader is. */
   fun mergeContext(): MergeContext {
     val budget = mergeBudget ?: MergeBudget().also { mergeBudget = it }

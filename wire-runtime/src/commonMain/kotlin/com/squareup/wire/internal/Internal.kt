@@ -19,6 +19,7 @@
 
 package com.squareup.wire.internal
 
+import com.squareup.wire.ByteArrayProtoReader32
 import com.squareup.wire.Duration
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldMask
@@ -29,6 +30,7 @@ import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoReader32
+import com.squareup.wire.ProtoReader32AsProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.mergeContext
@@ -427,6 +429,79 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, ex
   }
   val bytes = reader.readBytes()
   return decodeMerged(adapter, existing, bytes, reader.mergeContext())
+}
+
+/**
+ * Decodes an occurrence of a singular message field and returns what to store in the field. This
+ * is for generated code use only.
+ *
+ * Returns the decoded message if [existing] is null. Otherwise it keeps the bytes of this
+ * occurrence and returns [existing]. The occurrences are merged once, after the last tag of the
+ * enclosing message, by [finishMerge]. Merging each occurrence when it arrives takes time that
+ * grows with the square of the number of occurrences.
+ */
+fun <E> decodeMessageOrDefer(adapter: ProtoAdapter<E>, reader: ProtoReader, tag: Int, existing: E?): E {
+  if (reader is ProtoReader32AsProtoReader && reader.delegate !is ByteArrayProtoReader32) {
+    return decodeMessageOrMerge(adapter, reader, existing)
+  }
+  if (existing == null) {
+    reader.mergeBudgetOrNull()?.discard(reader.mergeDepth(), tag)
+    return adapter.decode(reader)
+  }
+  if (adapter === ProtoAdapter.FIELD_MASK) return decodeMessageOrMerge(adapter, reader, existing)
+  val context = reader.mergeContext()
+  context.budget.defer(context, tag, reader.readBytes())
+  return existing
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+fun <E> decodeMessageOrDefer(adapter: ProtoAdapter<E>, reader: ProtoReader32, tag: Int, existing: E?): E {
+  if (reader !is ByteArrayProtoReader32) return decodeMessageOrMerge(adapter, reader, existing)
+  if (existing == null) {
+    reader.mergeBudgetOrNull()?.discard(reader.mergeDepth(), tag)
+    return adapter.decode(reader)
+  }
+  if (adapter === ProtoAdapter.FIELD_MASK) return decodeMessageOrMerge(adapter, reader, existing)
+  val context = reader.mergeContext()
+  context.budget.defer(context, tag, reader.readBytes())
+  return existing
+}
+
+/**
+ * Returns true if the message that [reader] just finished decoding kept occurrences for
+ * [finishMerge]. This is for generated code use only.
+ */
+fun hasMerges(reader: ProtoReader): Boolean = reader.mergeBudgetOrNull()?.hasFrameAbove(reader.mergeDepth()) == true
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+fun hasMerges(reader: ProtoReader32): Boolean = reader is ByteArrayProtoReader32 &&
+  reader.mergeBudgetOrNull()?.hasFrameAbove(reader.mergeDepth()) == true
+
+/**
+ * Merges the occurrences that [decodeMessageOrDefer] kept for [tag] into [existing], which is the
+ * first occurrence. Returns [existing] if none were kept, and null if [existing] is null. Call this
+ * after the last tag of the message, only if [hasMerges], and before [endMerges].
+ */
+fun <E> finishMerge(reader: ProtoReader, tag: Int, adapter: ProtoAdapter<E>, existing: E?): E? {
+  val budget = reader.mergeBudgetOrNull() ?: return existing
+  return budget.finish(reader.mergeDepth(), tag, adapter, existing, reader.mergeContext().allowance)
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+fun <E> finishMerge(reader: ProtoReader32, tag: Int, adapter: ProtoAdapter<E>, existing: E?): E? {
+  if (reader !is ByteArrayProtoReader32) return existing
+  val budget = reader.mergeBudgetOrNull() ?: return existing
+  return budget.finish(reader.mergeDepth(), tag, adapter, existing, reader.mergeContext().allowance)
+}
+
+/** Forgets the occurrences that [finishMerge] did not use, for example those of a replaced oneof member. */
+fun endMerges(reader: ProtoReader) {
+  reader.mergeBudgetOrNull()?.end(reader.mergeDepth())
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+fun endMerges(reader: ProtoReader32) {
+  if (reader is ByteArrayProtoReader32) reader.mergeBudgetOrNull()?.end(reader.mergeDepth())
 }
 
 /**

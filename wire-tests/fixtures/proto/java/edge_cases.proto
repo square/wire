@@ -32,3 +32,16 @@ message Recursive {
   optional int32 value = 1;
   optional Recursive recursive = 2;
 }
+
+// Repeated occurrences of a message field are merged. Only the last member of a oneof is kept.
+message MergeLeaf {
+  repeated int32 values = 1;
+}
+
+message MergeChoice {
+  oneof choice {
+    MergeLeaf a = 1;
+    MergeLeaf b = 2;
+  }
+  optional MergeLeaf c = 3;
+}

@@ -1647,8 +1647,32 @@ class KotlinGeneratorTest {
     assertThat(code).contains("ProtoAdapter.FIELD_MASK.asRepeated()")
     assertThat(code).contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)")
     assertThat(code).contains(
-      "oneof_mask = decodeMessageOrMerge(ProtoAdapter.FIELD_MASK, reader, oneof_mask)",
+      "oneof_mask = decodeMessageOrDefer(ProtoAdapter.FIELD_MASK, reader, 4, oneof_mask)",
     )
+  }
+
+  @Test fun messagesWithManyMessageFieldsMergeOccurrencesEagerly() {
+    // Deferring merges adds code to decode(), and the JVM does not compile methods that are too
+    // large, so only messages with a few message fields defer.
+    for (count in listOf(2, 64, 65)) {
+      val fields = (1..count).joinToString("\n") { "|  optional Leaf field$it = $it;" }
+      val schema = buildSchema {
+        add(
+          "a.proto".toPath(),
+          "|package common.proto;\n|message Leaf {}\n|message Parent {\n$fields\n|}\n".trimMargin(),
+        )
+      }
+      val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Parent")
+      if (count <= 64) {
+        assertThat(code).contains("decodeMessageOrDefer(Leaf.ADAPTER, reader, 1, field1)")
+        assertThat(code).contains("hasMerges(reader)")
+        assertThat(code).doesNotContain("decodeMessageOrMerge")
+      } else {
+        assertThat(code).contains("decodeMessageOrMerge(Leaf.ADAPTER, reader, field1)")
+        assertThat(code).doesNotContain("decodeMessageOrDefer")
+        assertThat(code).doesNotContain("hasMerges")
+      }
+    }
   }
 
   @Test fun flatOneOfDecodingIsConstantSizePerField() {
@@ -1675,7 +1699,8 @@ class KotlinGeneratorTest {
     // in the number of fields and can exceed the JVM method size limit on large oneofs.
     assertThat(code).contains("var choice_tag: Int = 0")
     assertThat(code).contains("if (choice_tag != 1)")
-    assertThat(code).contains("shipping = decodeMessageOrMerge(ShippingAddress.ADAPTER, reader, shipping)")
+    assertThat(code).contains("shipping = decodeMessageOrDefer(ShippingAddress.ADAPTER, reader, 1, shipping)")
+    assertThat(code).contains("if (choice_tag == 1) shipping = finishMerge(reader, 1, ShippingAddress.ADAPTER, shipping)")
     assertThat(code).contains("choice_tag = 1")
     assertThat(code).contains("shipping = if (choice_tag == 1) shipping else null,")
     assertThat(code).contains("billing = if (choice_tag == 2) billing else null,")
@@ -2158,9 +2183,13 @@ class KotlinGeneratorTest {
         |        val unknownFields = reader.forEachTag { tag ->
         |          when (tag) {
         |            1 -> name = ProtoAdapter.STRING.decode(reader)
-        |            2 -> location = decodeMessageOrMerge(StringPointAdapter.INSTANCE, reader, location)
+        |            2 -> location = decodeMessageOrDefer(StringPointAdapter.INSTANCE, reader, 2, location)
         |            else -> reader.readUnknownField(tag)
         |          }
+        |        }
+        |        if (hasMerges(reader)) {
+        |          location = finishMerge(reader, 2, StringPointAdapter.INSTANCE, location)
+        |          endMerges(reader)
         |        }
         |        return Feature(
         |          name = name,

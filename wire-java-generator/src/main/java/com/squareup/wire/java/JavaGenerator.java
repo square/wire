@@ -202,6 +202,9 @@ public final class JavaGenerator {
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final int MAX_PARAMS_IN_CONSTRUCTOR = 16;
 
+  /** Messages with more singular message fields than this merge repeated occurrences eagerly. */
+  private static final int MAX_DEFERRED_MERGE_FIELDS = 64;
+
   private static final String DOUBLE_FULL_BLOCK = "\u2588\u2588";
 
   /**
@@ -1369,6 +1372,17 @@ public final class JavaGenerator {
       }
     }
 
+    // Later occurrences of a singular message field are kept as bytes and merged once after the
+    // last tag, so that decoding is linear in the size of the input. This adds code to decode(),
+    // and the JVM does not compile methods that are too large, so messages with many such fields
+    // merge each occurrence as it arrives instead. The runtime limits the work that takes.
+    List<Field> mergedFields = new ArrayList<>();
+    for (Field field : fields) {
+      if (isMergedMessage(field)) mergedFields.add(field);
+    }
+    if (mergedFields.size() > MAX_DEFERRED_MERGE_FIELDS) mergedFields.clear();
+    boolean deferMerges = !mergedFields.isEmpty();
+
     result.addStatement("long token = reader.beginMessage()");
     result.beginControlFlow("for (int tag; (tag = reader.nextTag()) != -1;)");
     List<Field> singularPackableFields = new ArrayList<>();
@@ -1405,7 +1419,7 @@ public final class JavaGenerator {
       if (isEnum(field.getType()) && !field.getType().equals(ProtoType.STRUCT_NULL)) {
         result.beginControlFlow("case $L:", fieldTag);
         result.beginControlFlow("try");
-        result.addCode(decodeAndAssign(type, field, nameAllocator, useBuilder));
+        result.addCode(decodeAndAssign(type, field, nameAllocator, useBuilder, deferMerges));
         result.addCode(";\n");
         if (useBuilder) {
           result.nextControlFlow("catch ($T e)", EnumConstantNotFoundException.class);
@@ -1422,7 +1436,7 @@ public final class JavaGenerator {
         result.addCode(
             "case $L: $L; break;\n",
             fieldTag,
-            decodeAndAssign(type, field, nameAllocator, useBuilder));
+            decodeAndAssign(type, field, nameAllocator, useBuilder, deferMerges));
       }
     }
 
@@ -1442,6 +1456,38 @@ public final class JavaGenerator {
       result.addStatement("reader.endMessageAndGetUnknownFields(token)");
     }
 
+    // Later occurrences of a singular message field were kept as bytes. Merge each field once, so
+    // that decoding is linear in the size of the input.
+    if (!mergedFields.isEmpty()) {
+      result.beginControlFlow("if ($T.hasMerges(reader))", Internal.class);
+      for (Field field : mergedFields) {
+        String fieldName = nameAllocator.get(field);
+        CodeBlock adapter = singleAdapterFor(field, nameAllocator);
+        CodeBlock current =
+            useBuilder ? CodeBlock.of("builder.$L", fieldName) : CodeBlock.of("$L", fieldName);
+        CodeBlock merge =
+            CodeBlock.of(
+                "$T.finishMerge(reader, $L, $L, $L)",
+                Internal.class,
+                field.getTag(),
+                adapter,
+                current);
+        CodeBlock assignment =
+            useBuilder
+                ? CodeBlock.of("builder.$L($L)", fieldName, merge)
+                : CodeBlock.of("$L = $L", fieldName, merge);
+        if (field.isOneOf()) {
+          // A oneof member that another member replaced is null, and its setter would clear the
+          // other members.
+          result.addStatement("if ($L != null) $L", current, assignment);
+        } else {
+          result.addStatement("$L", assignment);
+        }
+      }
+      result.addStatement("$T.endMerges(reader)", Internal.class);
+      result.endControlFlow();
+    }
+
     if (useBuilder) {
       result.addStatement("return builder.build()");
     } else {
@@ -1458,8 +1504,18 @@ public final class JavaGenerator {
     return result.build();
   }
 
+  private boolean isMergedMessage(Field field) {
+    return !field.isRepeated()
+        && !field.getType().isMap()
+        && schema.getType(field.getType()) instanceof MessageType;
+  }
+
   private CodeBlock decodeAndAssign(
-      MessageType message, Field field, NameAllocator nameAllocator, boolean useBuilder) {
+      MessageType message,
+      Field field,
+      NameAllocator nameAllocator,
+      boolean useBuilder,
+      boolean deferMerges) {
     String fieldName = nameAllocator.get(field);
     CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field, nameAllocator));
     CodeBlock assignment;
@@ -1487,20 +1543,35 @@ public final class JavaGenerator {
               : CodeBlock.of("$L.putAll($L)", fieldName, decode);
     } else if (schema.getType(field.getType()) instanceof MessageType) {
       CodeBlock adapter = singleAdapterFor(field, nameAllocator);
-      assignment =
-          useBuilder
-              ? CodeBlock.of(
-                  "builder.$L($T.decodeMessageOrMerge($L, reader, builder.$L))",
-                  fieldName,
-                  Internal.class,
-                  adapter,
-                  fieldName)
-              : CodeBlock.of(
-                  "$L = $T.decodeMessageOrMerge($L, reader, $L)",
-                  fieldName,
-                  Internal.class,
-                  adapter,
-                  fieldName);
+      if (deferMerges) {
+        assignment =
+            useBuilder
+                ? CodeBlock.of(
+                    "builder.$1L($2T.decodeMessageOrDefer($3L, reader, $4L, builder.$1L))",
+                    fieldName,
+                    Internal.class,
+                    adapter,
+                    field.getTag())
+                : CodeBlock.of(
+                    "$1L = $2T.decodeMessageOrDefer($3L, reader, $4L, $1L)",
+                    fieldName,
+                    Internal.class,
+                    adapter,
+                    field.getTag());
+      } else {
+        assignment =
+            useBuilder
+                ? CodeBlock.of(
+                    "builder.$1L($2T.decodeMessageOrMerge($3L, reader, builder.$1L))",
+                    fieldName,
+                    Internal.class,
+                    adapter)
+                : CodeBlock.of(
+                    "$1L = $2T.decodeMessageOrMerge($3L, reader, $1L)",
+                    fieldName,
+                    Internal.class,
+                    adapter);
+      }
     } else {
       assignment =
           useBuilder

@@ -457,7 +457,7 @@ public final class JavaGeneratorTest {
                 + "        }\n"
                 + "      }\n"
                 + "      switch (tag) {\n"
-                + "        case 1: field = Internal.decodeMessageOrMerge(Foo.ADAPTER, reader, field); break;\n"
+                + "        case 1: field = Internal.decodeMessageOrDefer(Foo.ADAPTER, reader, 1, field); break;\n"
                 + "        case 2: bars.putAll(barsAdapter().decode(reader)); break;\n"
                 + "        case 3: ProtoAdapter.INT32.tryDecode(reader, numbers); break;\n"
                 + "        case 4: {\n"
@@ -473,6 +473,10 @@ public final class JavaGeneratorTest {
                 + "      }\n"
                 + "    }\n"
                 + "    reader.endMessageAndGetUnknownFields(token);\n"
+                + "    if (Internal.hasMerges(reader)) {\n"
+                + "      field = Internal.finishMerge(reader, 1, Foo.ADAPTER, field);\n"
+                + "      Internal.endMerges(reader);\n"
+                + "    }\n"
                 + "    return fromProto(field, numbers, coin_flip, bars);\n"
                 + "  }\n"
                 + "\n"
@@ -1065,7 +1069,62 @@ public final class JavaGeneratorTest {
         .contains("ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.FIELD_MASK)");
     assertThat(code)
         .contains(
-            "builder.oneof_mask(Internal.decodeMessageOrMerge(ProtoAdapter.FIELD_MASK, reader, builder.oneof_mask))");
+            "builder.oneof_mask(Internal.decodeMessageOrDefer(ProtoAdapter.FIELD_MASK, reader, 4, builder.oneof_mask))");
+  }
+
+  @Test
+  public void messagesWithManyMessageFieldsMergeOccurrencesEagerly() throws Exception {
+    // Deferring merges adds code to decode(), and the JVM does not compile methods that are too
+    // large, so only messages with a few message fields defer.
+    for (int count : new int[] {2, 64, 65}) {
+      StringBuilder proto =
+          new StringBuilder("package common.proto;\nmessage Leaf {}\nmessage Parent {\n");
+      for (int i = 1; i <= count; i++) {
+        proto.append("  optional Leaf field").append(i).append(" = ").append(i).append(";\n");
+      }
+      proto.append("}\n");
+      Schema schema = new SchemaBuilder().add(Path.get("a.proto"), proto.toString()).build();
+      String code = new JavaWithProfilesGenerator(schema).generateJava("common.proto.Parent");
+      if (count <= 64) {
+        assertThat(code).contains("Internal.decodeMessageOrDefer(Leaf.ADAPTER, reader, 1, ");
+        assertThat(code).contains("Internal.hasMerges(reader)");
+        assertThat(code).doesNotContain("Internal.decodeMessageOrMerge");
+      } else {
+        assertThat(code).contains("Internal.decodeMessageOrMerge(Leaf.ADAPTER, reader, ");
+        assertThat(code).doesNotContain("Internal.decodeMessageOrDefer");
+        assertThat(code).doesNotContain("Internal.hasMerges");
+      }
+    }
+  }
+
+  @Test
+  public void messageOneOfMembersAreMergedOnlyWhileTheyAreSet() throws Exception {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("a.proto"),
+                ""
+                    + "package common.proto;\n"
+                    + "message Leaf {}\n"
+                    + "message Parent {\n"
+                    + "  oneof choice {\n"
+                    + "    Leaf a = 1;\n"
+                    + "    Leaf b = 2;\n"
+                    + "  }\n"
+                    + "  optional Leaf c = 3;\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("common.proto.Parent");
+    // The setter of a oneof member clears the other members, so it is only called for the member
+    // that is set.
+    assertThat(code)
+        .contains(
+            "if (builder.a != null) builder.a(Internal.finishMerge(reader, 1, Leaf.ADAPTER, builder.a));");
+    assertThat(code)
+        .contains(
+            "if (builder.b != null) builder.b(Internal.finishMerge(reader, 2, Leaf.ADAPTER, builder.b));");
+    assertThat(code)
+        .contains("builder.c(Internal.finishMerge(reader, 3, Leaf.ADAPTER, builder.c));");
   }
 
   @Test

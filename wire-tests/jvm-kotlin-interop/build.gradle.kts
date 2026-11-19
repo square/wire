@@ -19,6 +19,7 @@ wire {
     srcDir("../fixtures/proto/kotlin")
     include(
       "all_types.proto",
+      "edge_cases.proto",
       "empty_packed.proto",
       "deprecated.proto",
       "custom_options.proto",
@@ -44,6 +45,12 @@ wire {
       "unknown_fields.proto",
       "uses_any.proto",
     )
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.edgecases.MergeChoiceBuildersOnly")
+    buildersOnly = true
+    javaInterop = true
   }
 
   kotlin {

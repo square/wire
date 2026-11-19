@@ -16,7 +16,10 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.decodeMessageOrMerge
+import com.squareup.wire.`internal`.decodeMessageOrDefer
+import com.squareup.wire.`internal`.endMerges
+import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.hasMerges
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.AssertionError
@@ -119,9 +122,13 @@ public class OuterOpaqueType(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> inner_opaque_type_1 = ProtoAdapter.BYTES.decode(reader)
-            2 -> inner_opaque_type_2 = decodeMessageOrMerge(InnerOpaqueType2.ADAPTER, reader, inner_opaque_type_2)
+            2 -> inner_opaque_type_2 = decodeMessageOrDefer(InnerOpaqueType2.ADAPTER, reader, 2, inner_opaque_type_2)
             else -> reader.readUnknownField(tag)
           }
+        }
+        if (hasMerges(reader)) {
+          inner_opaque_type_2 = finishMerge(reader, 2, InnerOpaqueType2.ADAPTER, inner_opaque_type_2)
+          endMerges(reader)
         }
         return OuterOpaqueType(
           inner_opaque_type_1 = inner_opaque_type_1,

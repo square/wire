@@ -564,6 +564,12 @@ open class ProtoReader(
     }
   }
 
+  /** Returns the merge state shared with this reader's nested decodes, if any merge needed it. */
+  internal open fun mergeBudgetOrNull(): MergeBudget? = mergeBudget
+
+  /** Returns the current number of levels of message nesting, counting those of the caller. */
+  internal open fun mergeDepth(): Int = recursionDepth
+
   /** Returns what a decode of a merged message needs to continue where this reader is. */
   internal open fun mergeContext(): MergeContext {
     val budget = mergeBudget ?: MergeBudget().also { mergeBudget = it }
