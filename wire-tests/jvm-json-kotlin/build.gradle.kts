@@ -41,6 +41,7 @@ wire {
       "envelope.proto",
       "map_types.proto",
       "pizza.proto",
+      "well_known_redact.proto",
     )
   }
   kotlin {

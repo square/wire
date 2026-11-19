@@ -20,11 +20,13 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.squareup.wire.internal.ProtocolException
 import kotlin.test.Test
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
+import okio.ByteString.Companion.encodeUtf8
 import okio.ForwardingSource
 import okio.buffer
 
@@ -281,5 +283,13 @@ class ProtoAdapterTest {
     assertFailure {
       ProtoAdapter.INSTANT.encodedSize(instant)
     }.isInstanceOf<IllegalArgumentException>()
+  }
+
+  @Test fun wrapperRedactKeepsValue() {
+    assertThat(ProtoAdapter.STRING_VALUE.redact("secret")).isEqualTo("secret")
+    assertThat(ProtoAdapter.INT32_VALUE.redact(3)).isEqualTo(3)
+    assertThat(ProtoAdapter.BOOL_VALUE.redact(true)).isEqualTo(true)
+    assertThat(ProtoAdapter.BYTES_VALUE.redact("ab".encodeUtf8())).isEqualTo("ab".encodeUtf8())
+    assertThat(ProtoAdapter.STRING_VALUE.redact(null)).isNull()
   }
 }

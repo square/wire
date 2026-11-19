@@ -243,7 +243,7 @@ internal class SchemaProtoAdapterFactory(
 
     override val redacted: Boolean = field.isRedacted
     override val isMap: Boolean = field.type!!.isMap
-    override val isMessage: Boolean = schema.getType(field.type!!) is MessageType
+    override val isMessage: Boolean = schema.getType(field.type!!.valueType ?: field.type!!) is MessageType
     override val name: String = field.name
     override val declaredName: String = field.name
     override val wireFieldJsonName: String = field.jsonName!!
