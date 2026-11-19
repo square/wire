@@ -708,7 +708,9 @@ public final class ProtoReader {
         try decode(
             into: &dictionary,
             decodeKey: { try decode(String.self) },
-            decodeValue: { try decode(V.self) }
+            decodeValue: { try decode(V.self) },
+            defaultKey: { "" },
+            defaultValue: { try ProtoReader.defaultValue(V.self) }
         )
     }
 
@@ -719,6 +721,7 @@ public final class ProtoReader {
         try decode(
             into: &dictionary,
             decodeKey: { try String(from: self) },
+            defaultKey: { "" },
             addUnknownPair: { (tag, key, rawValue) in
                 try addUnknownField(tag: tag) { protoWriter in
                     try protoWriter.encode(tag: tag, value: [key: rawValue])
@@ -735,7 +738,9 @@ public final class ProtoReader {
         try decode(
             into: &dictionary,
             decodeKey: { try decode(K.self, encoding: keyEncoding) },
-            decodeValue: { try decode(V.self) }
+            decodeValue: { try decode(V.self) },
+            defaultKey: { ProtoReader.zero(K.self) },
+            defaultValue: { try ProtoReader.defaultValue(V.self) }
         )
     }
 
@@ -748,7 +753,9 @@ public final class ProtoReader {
         try decode(
             into: &dictionary,
             decodeKey: { try decode(String.self) },
-            decodeValue: { try decode(V.self, encoding: valueEncoding) }
+            decodeValue: { try decode(V.self, encoding: valueEncoding) },
+            defaultKey: { "" },
+            defaultValue: { ProtoReader.zero(V.self) }
         )
     }
 
@@ -759,7 +766,9 @@ public final class ProtoReader {
         try decode(
             into: &dictionary,
             decodeKey: { try decode(K.self, encoding: keyEncoding) },
-            decodeValue: { try decode(V.self, encoding: valueEncoding) }
+            decodeValue: { try decode(V.self, encoding: valueEncoding) },
+            defaultKey: { ProtoReader.zero(K.self) },
+            defaultValue: { ProtoReader.zero(V.self) }
         )
     }
 
@@ -1005,10 +1014,18 @@ public final class ProtoReader {
         }
     }
 
+    /**
+     Decode one map entry.
+
+     Like protobuf-java, this skips unknown tags in the entry.
+     A missing key or value decodes as the default value of its type.
+     */
     private func decode<K, V>(
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
-        decodeValue: () throws -> V
+        decodeValue: () throws -> V,
+        defaultKey: () -> K?,
+        defaultValue: () throws -> V?
     ) throws {
         var key: K?
         var value: V?
@@ -1018,16 +1035,15 @@ public final class ProtoReader {
             switch tag {
             case 1: key = try decodeKey()
             case 2: value = try decodeValue()
-            default:
-                throw ProtoDecoder.Error.unexpectedFieldNumberInMap(tag)
+            default: try skipCurrentValue()
             }
         }
         _ = try endMessage(token: token)
 
-        guard let unwrappedKey = key else {
+        guard let unwrappedKey = key ?? defaultKey() else {
             throw ProtoDecoder.Error.mapEntryWithoutKey(value: value)
         }
-        guard let unwrappedValue = value else {
+        guard let unwrappedValue = try value ?? defaultValue() else {
             throw ProtoDecoder.Error.mapEntryWithoutValue(key: unwrappedKey)
         }
 
@@ -1043,10 +1059,12 @@ public final class ProtoReader {
     /// - Parameters:
     ///   - dictionary: The dictionary in which to add key-value pair if the decoded value is a known case in V.
     ///   - decodeKey: A closure that decodes the key for each pair
+    ///   - defaultKey: A closure that returns the key to use when the entry has none.
     ///   - addUnknownPair: A closure that adds the key-value pair to unknown fields in the event a given raw value is not a known case in V.
     private func decode<K, V: ProtoEnum>(
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
+        defaultKey: () -> K?,
         addUnknownPair: (UInt32, K, V.RawValue) throws -> ()
     ) throws where V: RawRepresentable<Int32> {
         var key: K?
@@ -1054,7 +1072,9 @@ public final class ProtoReader {
         var rawValue: Int32?
 
         guard let startTag = currentTag else {
-            fatalError("Decoding enum map but current tag is not set.")
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Decoding an enum map entry when the current tag is not set."
+            )
         }
 
         let token = try beginMessage()
@@ -1071,23 +1091,34 @@ public final class ProtoReader {
                 }
                 value = enumValue
                 rawValue = intValue
-            default:
-                throw ProtoDecoder.Error.unexpectedFieldNumberInMap(tag)
+            default: try skipCurrentValue()
             }
         }
         _ = try endMessage(token: token)
 
-        guard let unwrappedKey = key else {
+        guard let unwrappedKey = key ?? defaultKey() else {
             throw ProtoDecoder.Error.mapEntryWithoutKey(value: value)
         }
-        guard let unwrappedRawValue = rawValue else {
-            throw ProtoDecoder.Error.mapEntryWithoutValue(key: unwrappedKey)
-        }
 
-        guard let unwrappedValue = value else {
+        let unwrappedValue: V
+        if let decodedValue = value {
+            unwrappedValue = decodedValue
+        } else if let unwrappedRawValue = rawValue {
             // We found a value but weren't able to decode it, so we have an unknown enum case.
+            // The unknown pair belongs to the message that holds the map field.
+            guard messageStackIndex >= 0 else {
+                throw ProtoDecoder.Error.invalidStructure(
+                    message: "Unknown enum value \(unwrappedRawValue) in a map entry without a parent message."
+                )
+            }
             try addUnknownPair(startTag, unwrappedKey, unwrappedRawValue)
             return
+        } else {
+            // An entry without a value has the default value of the enum.
+            guard let defaultEnumValue = V(rawValue: 0) else {
+                throw ProtoDecoder.Error.mapEntryWithoutValue(key: unwrappedKey)
+            }
+            unwrappedValue = defaultEnumValue
         }
 
         // Preallocate a few empty slots to avoid reallocations.
@@ -1096,6 +1127,38 @@ public final class ProtoReader {
         }
 
         dictionary[unwrappedKey] = unwrappedValue
+    }
+
+    /// Skip the value of the field whose tag `nextTag` just returned, without keeping it.
+    private func skipCurrentValue() throws {
+        switch state {
+        case .varint: _ = try readVarint()
+        case .fixed32: _ = try readFixed32()
+        case .fixed64: _ = try readFixed64()
+        case .lengthDelimited: _ = try readBuffer()
+        case .tag, .packedValue:
+            throw ProtoDecoder.Error.invalidStructure(message: "Skipping a field when there is no field to skip.")
+        }
+    }
+
+    /// The default value of a map entry value that is a message, string, bytes, bool, double, or float.
+    private static func defaultValue<V: ProtoDecodable>(_ type: V.Type) throws -> V {
+        if let defaulted = type as? any ProtoDefaultedValue.Type, let value = defaulted.defaultedValue as? V {
+            return value
+        }
+        // A message decodes to its default value from an empty reader.
+        return try V(from: .empty)
+    }
+
+    /// The zero value of a map key or value that is an integer. Returns nil for other types.
+    private static func zero<T>(_ type: T.Type) -> T? {
+        switch type {
+        case is Int32.Type: return Int32(0) as? T
+        case is Int64.Type: return Int64(0) as? T
+        case is UInt32.Type: return UInt32(0) as? T
+        case is UInt64.Type: return UInt64(0) as? T
+        default: return nil
+        }
     }
 
     // MARK: - Private Methods - Message Stack
