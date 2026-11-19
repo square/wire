@@ -23,14 +23,17 @@ import com.squareup.wire.Duration
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldMask
 import com.squareup.wire.Instant
+import com.squareup.wire.MergeContext
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoReader32
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
+import com.squareup.wire.mergeContext
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import okio.Buffer
+import okio.ByteString
 
 // Methods for generated code use only. Not subject to public API rules.
 
@@ -201,16 +204,54 @@ fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
 
 private const val ESCAPED_CHARS = ",[]{}\\"
 
-/** Return a string where `,[]{}\` are escaped with a `\`. */
+/**
+ * Returns [value] in a form that has no control characters, so printing it cannot start a new line
+ * in a log. Rules:
+ *
+ *  * The characters `,[]{}` and `\` get a `\` prefix.
+ *  * Newline, carriage return, and tab become `\n`, `\r`, and `\t`.
+ *  * U+2028 and U+2029 become `\u2028` and `\u2029`.
+ *  * Every other control character becomes `\u` and four lowercase hex digits, like `\u001b` for
+ *    ESC. Control characters are U+0000 to U+001F and U+007F to U+009F.
+ *  * All other characters stay as they are.
+ */
 fun sanitize(value: String): String = buildString(value.length) {
   value.forEach { char ->
-    if (char in ESCAPED_CHARS) append('\\')
-    append(char)
+    when {
+      char in ESCAPED_CHARS -> {
+        append('\\')
+        append(char)
+      }
+      char == '\n' -> append("\\n")
+      char == '\r' -> append("\\r")
+      char == '\t' -> append("\\t")
+      char.isISOControl() || char == '\u2028' || char == '\u2029' -> {
+        append("\\u")
+        append(char.code.toString(16).padStart(4, '0'))
+      }
+      else -> append(char)
+    }
   }
 }
 
-/** Return a string where `,[]{}\` are escaped with a `\`. */
+/** Returns a list of [values], each escaped with [sanitize]. */
 fun sanitize(values: List<String>): String = values.joinToString(prefix = "[", postfix = "]", transform = ::sanitize)
+
+/** Returns [values] like [Map.toString], with each string key and value escaped by [sanitize]. */
+fun sanitize(values: Map<*, *>): String = values.entries.joinToString(prefix = "{", postfix = "}") { (key, value) ->
+  "${sanitizeAny(key)}=${sanitizeAny(value)}"
+}
+
+/**
+ * Returns [value] like `toString()`, with strings inside it escaped by [sanitize]. This covers
+ * strings in lists and maps, such as the values of `google.protobuf.Struct`.
+ */
+fun sanitizeAny(value: Any?): String = when (value) {
+  is String -> sanitize(value)
+  is List<*> -> value.joinToString(prefix = "[", postfix = "]", transform = ::sanitizeAny)
+  is Map<*, *> -> sanitize(value)
+  else -> value.toString()
+}
 
 fun boxedOneOfClassName(oneOfName: String): String = oneOfName.replaceFirstChar(Char::titlecase)
 
@@ -339,10 +380,7 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader, exis
     return (existing as FieldMask).append(ProtoAdapter.FIELD_MASK.decode(reader).paths) as E
   }
   val bytes = reader.readBytes()
-  val buffer = Buffer()
-  adapter.encode(buffer, existing)
-  buffer.write(bytes)
-  return adapter.decode(buffer)
+  return decodeMerged(adapter, existing, bytes, reader.mergeContext())
 }
 
 fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, existing: E?): E {
@@ -352,10 +390,24 @@ fun <E> decodeMessageOrMerge(adapter: ProtoAdapter<E>, reader: ProtoReader32, ex
     return (existing as FieldMask).append(ProtoAdapter.FIELD_MASK.decode(reader).paths) as E
   }
   val bytes = reader.readBytes()
+  return decodeMerged(adapter, existing, bytes, reader.mergeContext())
+}
+
+/**
+ * Encodes [existing], appends [bytes], and decodes the result. The new reader continues the
+ * recursion depth of the caller, and the work counts against the budget of the outermost reader.
+ */
+private fun <E> decodeMerged(
+  adapter: ProtoAdapter<E>,
+  existing: E,
+  bytes: ByteString,
+  context: MergeContext,
+): E {
   val buffer = Buffer()
   adapter.encode(buffer, existing)
+  context.budget.charge(buffer.size + bytes.size, context.allowance)
   buffer.write(bytes)
-  return adapter.decode(buffer)
+  return adapter.decode(ProtoReader(buffer, context))
 }
 
 /** Prepares generated primitive-array decoding and skips empty packed records. */

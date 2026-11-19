@@ -17,6 +17,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireOneofField
 import com.squareup.wire.`internal`.JvmField
 import com.squareup.wire.`internal`.JvmSynthetic
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -110,7 +111,9 @@ public class SealedOneOfs private constructor(
     @Deprecated(message = "second_value is deprecated")
     public data class SecondValue(
       public val `value`: String,
-    ) : SealedOneOfs.Value()
+    ) : SealedOneOfs.Value() {
+      override fun toString(): String = """SecondValue(value=${sanitize(value)})"""
+    }
 
     /**
      * This one is a good candidate.

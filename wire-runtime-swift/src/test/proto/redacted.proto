@@ -96,3 +96,62 @@ message RedactedLargeMessage {
     }
   }
 }
+
+// Field names that start or end with an underscore.
+message RedactedUnderscores {
+  required string req_under = 1 [(squareup.protos.redacted_option.redacted) = true];
+  required string _req_lead = 2 [(squareup.protos.redacted_option.redacted) = true];
+  required string req_trail_ = 3 [(squareup.protos.redacted_option.redacted) = true];
+  required string __req_double__ = 4 [(squareup.protos.redacted_option.redacted) = true];
+  required string req_visible_ = 5;
+  optional string _opt_lead = 6 [(squareup.protos.redacted_option.redacted) = true];
+  optional string opt_trail_ = 7 [(squareup.protos.redacted_option.redacted) = true];
+  optional string __opt_double__ = 8 [(squareup.protos.redacted_option.redacted) = true];
+  optional string opt_visible_ = 9;
+  optional string description_ = 10 [(squareup.protos.redacted_option.redacted) = true];
+
+  oneof choice {
+    string _choice_lead = 11 [(squareup.protos.redacted_option.redacted) = true];
+    string choice_trail_ = 12 [(squareup.protos.redacted_option.redacted) = true];
+    string __choice_double__ = 13 [(squareup.protos.redacted_option.redacted) = true];
+    string choice_visible_ = 14;
+  }
+}
+
+// Like RedactedUnderscores, but with enough fields to be stored on the heap.
+message RedactedLargeUnderscores {
+  optional string a = 1;
+  optional string b = 2;
+  optional string c = 3;
+  optional string d = 4;
+  optional string e = 5;
+  optional string f = 6;
+  optional string g = 7;
+  optional string h = 8;
+  optional string i = 9;
+  optional string j = 10;
+  optional string k = 11;
+  optional string l = 12;
+  optional string m = 13;
+  optional string n = 14;
+  optional string o = 15;
+  optional string p = 16;
+  required string req_under = 17 [(squareup.protos.redacted_option.redacted) = true];
+  required string _req_lead = 18 [(squareup.protos.redacted_option.redacted) = true];
+  required string req_trail_ = 19 [(squareup.protos.redacted_option.redacted) = true];
+  required string __req_double__ = 20 [(squareup.protos.redacted_option.redacted) = true];
+  required string req_visible_ = 21;
+  optional string _opt_lead = 22 [(squareup.protos.redacted_option.redacted) = true];
+  optional string opt_trail_ = 23 [(squareup.protos.redacted_option.redacted) = true];
+  optional string __opt_double__ = 24 [(squareup.protos.redacted_option.redacted) = true];
+  optional string opt_visible_ = 25;
+}
+
+// A redacted message with optional, repeated, and map fields.
+message RedactedCollections {
+  required string secret = 1 [(squareup.protos.redacted_option.redacted) = true];
+  optional string opt = 2;
+  repeated string list = 3;
+  map<string, string> entries = 4;
+  optional RedactedCollections child = 5;
+}

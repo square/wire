@@ -64,6 +64,9 @@ actual class SchemaLoader :
   actual val sourcePathFiles: List<ProtoFile>
     get() = delegate.sourcePathFiles
 
+  internal actual val warnings: List<String>
+    get() = delegate.warnings
+
   /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
   actual fun initRoots(
     sourcePath: List<Location>,

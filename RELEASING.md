@@ -16,14 +16,16 @@ Cutting a JVM Release
    entry. Include the new key ID and the new fingerprint. Also update `docs/signing_keys.md` to
    list the new key.
 
-2. Set versions:
+2. For a new minor version (X.Y.0), update the supported version in `SECURITY.md`.
+
+3. Set versions:
 
     ```
     export RELEASE_VERSION=X.Y.Z
     export NEXT_VERSION=X.Y.Z-SNAPSHOT
     ```
 
-3. Update versions:
+4. Update versions:
 
     ```
     sed -i "" \
@@ -31,7 +33,7 @@ Cutting a JVM Release
       `find . -name "gradle.properties"`
     ```
 
-4. Tag the release and push to GitHub.
+5. Tag the release and push to GitHub.
 
     ```
     git commit -am "Prepare for release $RELEASE_VERSION."
@@ -39,9 +41,9 @@ Cutting a JVM Release
     git push && git push --tags
     ```
 
-5. Wait for [GitHub Actions][github_actions] to start building the release.
+6. Wait for [GitHub Actions][github_actions] to start building the release.
 
-6. Prepare for ongoing development and push to GitHub.
+7. Prepare for ongoing development and push to GitHub.
 
     ```
     sed -i "" \
@@ -51,7 +53,7 @@ Cutting a JVM Release
     git push
     ```
 
-7. CI will release the artifacts and publish the website.
+8. CI will release the artifacts and publish the website.
 
  [sonatype_issues]: https://issues.sonatype.org/
  [sonatype_nexus]: https://s01.oss.sonatype.org/

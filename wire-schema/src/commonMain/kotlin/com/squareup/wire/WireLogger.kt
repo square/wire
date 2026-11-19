@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.JvmDefaultWithCompatibility
 import com.squareup.wire.internal.Serializable
 import com.squareup.wire.schema.ProtoType
 import okio.Path
@@ -24,6 +25,7 @@ import okio.Path
  * [SchemaHandlers][com.squareup.wire.schema.Target.SchemaHandler] to log information related to
  * processing the protobuf [Schema][com.squareup.wire.schema.Schema].
  */
+@JvmDefaultWithCompatibility
 interface WireLogger {
   /**
    * This is called when an artifact is handled by a
@@ -94,6 +96,12 @@ interface WireLogger {
    */
   // TODO(Benoit) We could pass the target name or something which makes it identifiable.
   fun unusedExcludesInTarget(unusedExcludes: Set<String>)
+
+  /**
+   * This is called when Wire finds something questionable in its inputs but keeps going, such as
+   * an import path that can point outside the proto path. The default implementation ignores it.
+   */
+  fun warning(message: String) {}
 
   /** Implementations of this interface must have a no-arguments public constructor. */
   fun interface Factory : Serializable {

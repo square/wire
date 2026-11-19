@@ -21,8 +21,10 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import com.google.protobuf.DescriptorProtos
+import com.squareup.wire.GrpcStatus
 import com.squareup.wire.buildSchema
 import com.squareup.wire.schema.addLocal
+import grpc.reflection.v1alpha.ErrorResponse
 import grpc.reflection.v1alpha.ListServiceResponse
 import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
@@ -247,5 +249,43 @@ internal class SchemaReflectorTest {
         DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
       }.map { it.name },
     ).containsExactly("a.proto", "b.proto", "b-new.proto", "c.proto")
+  }
+
+  @Test
+  fun `unknown filename is not found`() {
+    val schema = buildSchema {
+      addLocal("src/test/proto/RouteGuideProto.proto".toPath())
+    }
+
+    val request = ServerReflectionRequest(file_by_filename = "missing.proto")
+    assertThat(SchemaReflector(schema).process(request)).isEqualTo(
+      ServerReflectionResponse(
+        original_request = request,
+        error_response = ErrorResponse(
+          error_code = GrpcStatus.NOT_FOUND.code,
+          error_message = "unknown file: missing.proto",
+        ),
+      ),
+    )
+  }
+
+  @Test
+  fun `unknown or malformed symbols are not found`() {
+    val schema = buildSchema {
+      addLocal("src/test/proto/RouteGuideProto.proto".toPath())
+    }
+
+    for (symbol in listOf("Missing", "routeguide.Missing", "", ".", "..", "routeguide.", ".routeguide.", "a..b")) {
+      val request = ServerReflectionRequest(file_containing_symbol = symbol)
+      assertThat(SchemaReflector(schema).process(request)).isEqualTo(
+        ServerReflectionResponse(
+          original_request = request,
+          error_response = ErrorResponse(
+            error_code = GrpcStatus.NOT_FOUND.code,
+            error_message = "unknown symbol: $symbol",
+          ),
+        ),
+      )
+    }
   }
 }

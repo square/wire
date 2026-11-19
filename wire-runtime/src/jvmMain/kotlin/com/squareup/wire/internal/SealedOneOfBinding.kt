@@ -108,5 +108,5 @@ internal class SealedOneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
     }
   }
 
-  override fun value(builder: B, value: Any) = set(builder, value)
+  override fun value(builder: B, value: Any?) = set(builder, value)
 }

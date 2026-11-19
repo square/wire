@@ -61,6 +61,12 @@ internal class ConsoleWireLogger : WireLogger {
     )
   }
 
+  override fun warning(message: String) {
+    if (quiet) return
+
+    println("Warning: $message")
+  }
+
   override fun artifactHandled(outputPath: Path, qualifiedName: String, targetName: String) {
     if (quiet) return
 
