@@ -22,10 +22,6 @@ class GrpcStatus private constructor(
   val name: String,
   val code: Int,
 ) : Serializable {
-  init {
-    require(code >= 0)
-  }
-
   override fun equals(other: Any?): Boolean = other is GrpcStatus && other.code == code
 
   override fun hashCode(): Int = code
@@ -91,7 +87,8 @@ class GrpcStatus private constructor(
 
     /**
      * Returns an instance with a well-known name (like "OK"), or a string like "STATUS_99" if the
-     * code was not known when this was built.
+     * code was not known when this was built. This accepts any [status], including a value outside
+     * of the range that gRPC defines, because a server can send any value.
      */
     fun get(status: Int): GrpcStatus = INSTANCES.getOrNull(status) ?: GrpcStatus("STATUS_$status", status)
   }

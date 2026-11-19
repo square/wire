@@ -27,6 +27,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Headers
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -110,6 +111,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
 
           messageSource.use { reader ->
             var exception: Exception? = null
+            var fatal: Error? = null
             try {
               while (true) {
                 val message = reader.read() ?: break
@@ -120,6 +122,9 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
               exception = response.grpcResponseToException(e)
             } catch (e: Exception) {
               exception = e
+            } catch (e: Error) {
+              exception = e.asIOException()
+              fatal = e
             } finally {
               if (exception is IOException) {
                 exception = grpcCall.callTimeout.exit(exception)
@@ -132,6 +137,8 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
                 // If it's already canceled, there's nothing more to do.
               }
             }
+            // Like OkHttp, rethrow an Error that nothing should handle after the call completed.
+            fatal?.let { throw it }
           }
         }
       }
@@ -204,6 +211,16 @@ private fun Response.checkGrpcResponse() {
   }
 }
 
+/** Returns this if it is an [IOException], or an [IOException] that wraps it. */
+internal fun Throwable.asIOException(): IOException = this as? IOException ?: IOException(message, this)
+
+/** Returns the trailers if they are already here, or null if they are not or cannot be read. */
+private fun Response.peekTrailersOrNull(): Headers? = try {
+  peekTrailers()
+} catch (_: IOException) {
+  null
+}
+
 /** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
 internal fun Response.grpcResponseToException(suppressed: IOException? = null): IOException? {
   var trailers = headersOf()
@@ -238,9 +255,22 @@ internal fun Response.grpcResponseToException(suppressed: IOException? = null): 
   }
 
   if (transportException != null || grpcStatus?.toIntOrNull() == null) {
+    // After a failure to read the body, report trailers only if they are already here.
+    val reported = when {
+      suppressed != null -> peekTrailersOrNull()
+      transportException != null -> null
+      else -> trailers
+    }
+    val statusUnknown = reported == null && grpcStatus == null && grpcMessage == null
+    val reportedStatus = reported?.get("grpc-status") ?: grpcStatus
+    val reportedMessage = reported?.get("grpc-message") ?: grpcMessage
     return IOException(
       "gRPC transport failure" +
-        " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
+        if (statusUnknown) {
+          " (HTTP status=$code)"
+        } else {
+          " (HTTP status=$code, grpc-status=$reportedStatus, grpc-message=$reportedMessage)"
+        },
       transportException,
     )
   }

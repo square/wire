@@ -81,9 +81,15 @@ internal class BlockingMessageSource<R : Any>(
           }
         }
         queue.put(Complete)
-      } catch (e: IOException) {
+      } catch (e: Throwable) {
         call.cancel() // Break the request stream if the response stream breaks.
-        queue.put(Failure(e))
+        try {
+          queue.put(Failure(e.asIOException()))
+        } catch (interrupted: InterruptedException) {
+          Thread.currentThread().interrupt()
+        }
+        // Like OkHttp, rethrow an Error that nothing should handle after the call completed.
+        if (e is Error) throw e
       }
     }
   }
