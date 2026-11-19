@@ -511,6 +511,54 @@ extension CodableTests {
         }
     }
 
+    func testDurationRejectsRepeatedOrMisplacedSigns() throws {
+        for value in ["--5s", "-+5s", "+-5s", "++5s", "5-s", "-", "-s", "1.-5s", "-0.-5s", "1.+5s", "-1.+5s", "1.5-s", "1.-s"] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationRejectsNonAsciiDigits() throws {
+        // Arabic-indic and fullwidth digits.
+        for value in ["\u{0663}s", "1.\u{0665}s", "\u{0663}.5s", "-\u{0663}s", "1.5\u{0665}s", "\u{FF11}s", "1.\u{FF15}s"] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationRejectsEmptyParts() throws {
+        for value in ["s", ".5s", "-.5s", "1.s", "1..5s", "1.5.5s", " 1s", "1 s", "1s "] {
+            try assertDurationDecodingFails(value)
+        }
+    }
+
+    func testDurationAcceptsLeadingPlusSign() throws {
+        try assertDecode(json: "{\"duration\":\"+1s\"}", expected: DurationAndTimestamp(duration: Duration(seconds: 1, nanos: 0)))
+        try assertDecode(json: "{\"duration\":\"+1.5s\"}", expected: DurationAndTimestamp(duration: Duration(seconds: 1, nanos: 500_000_000)))
+    }
+
+    func testDurationAcceptsValidForms() throws {
+        let expected: [(String, Wire.Duration)] = [
+            ("0s", Duration(seconds: 0, nanos: 0)),
+            ("-0s", Duration(seconds: 0, nanos: 0)),
+            ("1s", Duration(seconds: 1, nanos: 0)),
+            ("1.5s", Duration(seconds: 1, nanos: 500_000_000)),
+            ("-1.5s", Duration(seconds: -1, nanos: -500_000_000)),
+            ("-0.5s", Duration(seconds: 0, nanos: -500_000_000)),
+            ("0.5s", Duration(seconds: 0, nanos: 500_000_000)),
+            ("1.0000000009s", Duration(seconds: 1, nanos: 0)),
+            ("007s", Duration(seconds: 7, nanos: 0)),
+        ]
+        for (value, duration) in expected {
+            try assertDecode(json: "{\"duration\":\"\(value)\"}", expected: DurationAndTimestamp(duration: duration))
+        }
+    }
+
+    private func assertDurationDecodingFails(_ value: String, file: StaticString = #file, line: UInt = #line) throws {
+        let json = try String(data: JSONEncoder().encode(["duration": value]), encoding: .utf8)!
+        XCTAssertThrowsError(try JSONDecoder().decode(DurationAndTimestamp.self, from: json.data(using: .utf8)!), value, file: file, line: line) { error in
+            XCTAssertTrue(error is DecodingError, "\(value): \(error)", file: file, line: line)
+        }
+    }
+
     func testDurationBeyondInt64Throws() throws {
         for value in ["9223372036854775808s", "-9223372036854775809s", "-18446744073709551615s"] {
             let json = "{\"duration\":\"\(value)\"}"

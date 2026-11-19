@@ -83,15 +83,21 @@ extension Wire.Duration : Codable {
         guard let last = string.popLast(), last == "s" else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid duration format \(string)")
         }
-        if isNegative {
+        // At most one sign is allowed. A leading "+" is accepted, like on the JVM.
+        if string.first == "-" || string.first == "+" {
             string.removeFirst()
         }
 
         var seconds: Int64?
         let nanos: Int32?
 
-        let components = string.split(separator: ".")
-        switch components.count {
+        // Keep empty parts so that "-.5s", "1.s" and "1..5s" are rejected.
+        // Only the ASCII digits 0 to 9 are valid: this rejects signs in either part and other scripts.
+        let components = string.split(separator: ".", omittingEmptySubsequences: false)
+        let isWellFormed = components.count <= 2 && components.allSatisfy { part in
+            !part.isEmpty && part.utf8.allSatisfy { $0 >= UInt8(ascii: "0") && $0 <= UInt8(ascii: "9") }
+        }
+        switch isWellFormed ? components.count : 0 {
         case 1:
             seconds = Int64(components[0])
             nanos = 0
@@ -117,12 +123,8 @@ extension Wire.Duration : Codable {
         }
 
         if isNegative {
-            // Negating `Int64.min` overflows. This happens for `--9223372036854775808s`.
-            let negated = isInt64Min ? (partialValue: seconds, overflow: false) : (0 as Int64).subtractingReportingOverflow(seconds)
-            guard !negated.overflow else {
-                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Duration out of range \(rawString)")
-            }
-            self.init(seconds: negated.partialValue, nanos: -nanos)
+            // `seconds` is never negative here, except for the `Int64.min` case, which is already negated.
+            self.init(seconds: isInt64Min ? seconds : -seconds, nanos: -nanos)
         } else {
             self.init(seconds: seconds, nanos: nanos)
         }
