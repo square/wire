@@ -224,12 +224,15 @@ abstract class JsonIntegration<F, A> {
 
     override fun fromString(value: String): Int {
       checkNumberSize(value)
-      // BigDecimal accepts forms like 5.0 and 1e2, but not NaN, Infinity, or suffixes like 5f.
-      val bigInteger = BigDecimal(value).toBigInteger()
-      if (bigInteger.bitLength() > 63) {
-        throw NumberFormatException("value is out of range for an unsigned 32-bit integer")
+      // A plain integer needs no BigDecimal. Other forms like 5.0 and 1e2 take the slower path,
+      // which does not accept NaN, Infinity, or suffixes like 5f.
+      val longValue = value.toLongOrNull() ?: run {
+        val bigInteger = BigDecimal(value).toBigInteger()
+        if (bigInteger.bitLength() > 63) {
+          throw NumberFormatException("value is out of range for an unsigned 32-bit integer")
+        }
+        bigInteger.toLong()
       }
-      val longValue = bigInteger.toLong()
       checkUnsignedIntRange(longValue)
       return when {
         longValue >= maxInt -> (longValue - power32).toInt()

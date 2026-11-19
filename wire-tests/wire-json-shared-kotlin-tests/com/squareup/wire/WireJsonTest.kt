@@ -818,6 +818,37 @@ class WireJsonTest {
       .isEqualTo(wrapper)
   }
 
+  @Test fun unsignedIntWithSurroundingWhitespaceIsRejected() {
+    for (bad in listOf(" 5", "5 ", "\t5", "5\n")) {
+      val json = "\"${bad.replace("\t", "\\t").replace("\n", "\\n")}\""
+      assertFailsToDecode("""{"myUint32":$json}""", All32::class.java)
+      assertFailsToDecode("""{"myFixed32":$json}""", All32::class.java)
+      assertFailsToDecode("""{"uint32Value":$json}""", AllWrappers::class.java)
+    }
+  }
+
+  @Test fun unsignedIntWithUnicodeDigitsIsAccepted() {
+    val five = All32.Builder().my_uint32(5).my_fixed32(5).build()
+    // Arabic-Indic and fullwidth digits, like the 64-bit types accept.
+    assertThat(
+      jsonLibrary.fromJson("""{"myUint32":"\u0665","myFixed32":"\uFF15"}""", All32::class.java),
+    ).isEqualTo(five)
+  }
+
+  /** Fractions are cut off like uint64 and fixed64 do. A later change to this should be deliberate. */
+  @Test fun unsignedIntWithAFractionIsCutOff() {
+    val one = All32.Builder().my_uint32(1).my_fixed32(1).build()
+    for (json in listOf(
+      """{"myUint32":"1.9","myFixed32":1.9}""",
+      """{"myUint32":1.0,"myFixed32":"1.0"}""",
+    )) {
+      assertThat(jsonLibrary.fromJson(json, All32::class.java)).isEqualTo(one)
+    }
+    val hundred = All32.Builder().my_uint32(100).my_fixed32(100).build()
+    assertThat(jsonLibrary.fromJson("""{"myUint32":"1e2","myFixed32":1e2}""", All32::class.java))
+      .isEqualTo(hundred)
+  }
+
   @Test fun unsignedIntMaxValueIsAccepted() {
     val value = All32.Builder().my_uint32(-1).build()
     assertThat(jsonLibrary.fromJson("""{"myUint32":4294967295}""", All32::class.java))
