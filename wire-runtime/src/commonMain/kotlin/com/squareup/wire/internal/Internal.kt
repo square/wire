@@ -514,6 +514,92 @@ fun endMerges(reader: ProtoReader32) {
   if (reader is ByteArrayProtoReader32) reader.mergeBudgetOrNull()?.end(reader.mergeDepth())
 }
 
+/** True for keys whose value is a message, so that repeated occurrences of the member merge. */
+private val OneOf.Key<*>.mergesRepeatedOccurrences: Boolean
+  get() = adapter.fieldEncoding == FieldEncoding.LENGTH_DELIMITED &&
+    adapter !== ProtoAdapter.STRING &&
+    adapter !== ProtoAdapter.BYTES
+
+/**
+ * Decodes an occurrence of the boxed oneof member [key] and returns what to store in the oneof. This
+ * is for generated code use only.
+ *
+ * If [existing] holds the same member and the member is a message, this keeps the bytes of the
+ * occurrence for [finishOneOfMerge] and returns [existing]. In every other case the occurrence
+ * replaces [existing], so the last member on the wire wins.
+ */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrDefer(key: OneOf.Key<*>, reader: ProtoReader, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  val value = decodeMessageOrDefer(key.adapter, reader, key.tag, previous)
+  if (previous != null && value === previous) return existing as O
+  return oneOfOf(key, value)
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrDefer(key: OneOf.Key<*>, reader: ProtoReader32, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  val value = decodeMessageOrDefer(key.adapter, reader, key.tag, previous)
+  if (previous != null && value === previous) return existing as O
+  return oneOfOf(key, value)
+}
+
+/**
+ * Like [decodeOneOfOrDefer], but merges the occurrence into [existing] right away. Generated code
+ * uses this when a message has too many merged fields to defer them.
+ */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrMerge(key: OneOf.Key<*>, reader: ProtoReader, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  return oneOfOf(key, decodeMessageOrMerge(key.adapter, reader, previous))
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> decodeOneOfOrMerge(key: OneOf.Key<*>, reader: ProtoReader32, existing: O?): O {
+  key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return oneOfOf(key, key.adapter.decode(reader))
+  val previous = if (existing != null && existing.key == key) existing.value else null
+  return oneOfOf(key, decodeMessageOrMerge(key.adapter, reader, previous))
+}
+
+/**
+ * Merges the occurrences that [decodeOneOfOrDefer] kept for the member that [existing] holds. Call
+ * this after the last tag of the message, only if [hasMerges], and before [endMerges].
+ */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> finishOneOfMerge(reader: ProtoReader, existing: O?): O? {
+  if (existing == null) return null
+  val key = existing.key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return existing
+  val value = existing.value
+  val merged = finishMerge(reader, key.tag, key.adapter, value)
+  if (merged === value) return existing
+  return oneOfOf(key, merged)
+}
+
+/** Like the [ProtoReader] overload, for generated code that reads a [ProtoReader32]. */
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+fun <O : OneOf<*, *>> finishOneOfMerge(reader: ProtoReader32, existing: O?): O? {
+  if (existing == null) return null
+  val key = existing.key as OneOf.Key<Any?>
+  if (!key.mergesRepeatedOccurrences) return existing
+  val value = existing.value
+  val merged = finishMerge(reader, key.tag, key.adapter, value)
+  if (merged === value) return existing
+  return oneOfOf(key, merged)
+}
+
+@Suppress("UNCHECKED_CAST") // The key and the value come from the same oneof member.
+private fun <O : OneOf<*, *>> oneOfOf(key: OneOf.Key<Any?>, value: Any?): O = OneOf(key, value) as O
+
 /**
  * Encodes [existing], appends [bytes], and decodes the result. The new reader continues the
  * recursion depth of the caller, and the work counts against the budget of the outermost reader.
