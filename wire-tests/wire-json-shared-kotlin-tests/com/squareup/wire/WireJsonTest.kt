@@ -788,6 +788,36 @@ class WireJsonTest {
     }
   }
 
+  @Test fun unsignedIntThatIsNotADecimalNumberIsRejected() {
+    for (bad in listOf("NaN", "Infinity", "-Infinity", "5f", "5F", "5d", "5D", "0x10", "0x1p3", "")) {
+      val json = "\"$bad\""
+      assertFailsToDecode("""{"myUint32":$json}""", All32::class.java)
+      assertFailsToDecode("""{"myFixed32":$json}""", All32::class.java)
+      assertFailsToDecode("""{"repUint32":[$json]}""", All32::class.java)
+      assertFailsToDecode("""{"uint32Value":$json}""", AllWrappers::class.java)
+      assertFailsToDecode("""{"mapUint32Uint32":{"1":$json}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapUint32Uint32":{"$bad":1}}""", MapTypes::class.java)
+      assertFailsToDecode("""{"mapFixed32Fixed32":{"$bad":1}}""", MapTypes::class.java)
+    }
+  }
+
+  @Test fun unsignedIntInDecimalAndExponentFormsIsAccepted() {
+    val small = All32.Builder().my_uint32(100).my_fixed32(5).build()
+    assertThat(jsonLibrary.fromJson("""{"myUint32":"1e2","myFixed32":5.0}""", All32::class.java))
+      .isEqualTo(small)
+    assertThat(jsonLibrary.fromJson("""{"myUint32":1E2,"myFixed32":"5"}""", All32::class.java))
+      .isEqualTo(small)
+
+    val negative = All32.Builder().my_uint32(-1).my_fixed32(Int.MIN_VALUE).build()
+    assertThat(
+      jsonLibrary.fromJson("""{"myUint32":"-1","myFixed32":-2147483648}""", All32::class.java),
+    ).isEqualTo(negative)
+
+    val wrapper = AllWrappers.Builder().uint32_value(1000).build()
+    assertThat(jsonLibrary.fromJson("""{"uint32Value":"1e3"}""", AllWrappers::class.java))
+      .isEqualTo(wrapper)
+  }
+
   @Test fun unsignedIntMaxValueIsAccepted() {
     val value = All32.Builder().my_uint32(-1).build()
     assertThat(jsonLibrary.fromJson("""{"myUint32":4294967295}""", All32::class.java))

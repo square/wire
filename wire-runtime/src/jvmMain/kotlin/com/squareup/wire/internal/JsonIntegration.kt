@@ -223,7 +223,13 @@ abstract class JsonIntegration<F, A> {
     private const val maxInt = Int.MAX_VALUE.toLong()
 
     override fun fromString(value: String): Int {
-      val longValue = value.toDouble().toLong() // Handle extra trailing values like 5.0.
+      checkNumberSize(value)
+      // BigDecimal accepts forms like 5.0 and 1e2, but not NaN, Infinity, or suffixes like 5f.
+      val bigInteger = BigDecimal(value).toBigInteger()
+      if (bigInteger.bitLength() > 63) {
+        throw NumberFormatException("value is out of range for an unsigned 32-bit integer")
+      }
+      val longValue = bigInteger.toLong()
       checkUnsignedIntRange(longValue)
       return when {
         longValue >= maxInt -> (longValue - power32).toInt()
