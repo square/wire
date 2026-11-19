@@ -307,6 +307,9 @@ public final class ProtoDecoder {
      * A size-delimited collection of messages is a sequence of varint + message pairs
      * where the varint indicates the size of the subsequent message.
      *
+     * A size of zero decodes as an empty message, and decoding continues with the next element.
+     * `ProtoEncoder.encodeSizeDelimited(_:)` does not write empty messages, so encoding and then decoding drops them.
+     *
      * - Parameters:
      *   - type: the type to decode
      *   - data: the serialized size-delimited data for the messages
@@ -328,9 +331,13 @@ public final class ProtoDecoder {
 
             while fullBuffer.isDataRemaining {
                 let size = try fullBuffer.readVarint()
-                if size == 0 { break }
                 guard let size = Int(exactly: size) else {
                     throw ProtoDecoder.Error.unexpectedEndOfData
+                }
+                if size == 0 {
+                    // A zero-length element is an empty message. Keep reading the stream.
+                    values.append(try T(from: .empty))
+                    continue
                 }
                 try fullBuffer.verifyAdditional(count: size)
 
