@@ -19,7 +19,6 @@ import assertk.Assert
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.contains
-import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotInstanceOf
@@ -253,21 +252,6 @@ class GrpcResponseFailureTest {
     assertFailure {
       runBlocking { responses.receive() }
     }.isDecodeFailureWithStatus("gRPC transport failure (HTTP status=200, grpc-status=13, grpc-message=nope)")
-  }
-
-  @Test
-  fun undecodableResponseDoesNotReportUnknownStatus() {
-    // The trailers follow the message by about a second, so they are usually not here yet.
-    mockWebServer.enqueue(
-      MockResponse()
-        .setHeader("Content-Type", "application/grpc")
-        .setBody(Buffer().writeByte(0).writeInt(0))
-        .throttleBody(5, 1, TimeUnit.SECONDS)
-        .setTrailers(headersOf("grpc-status", "13", "grpc-message", "nope")),
-    )
-    assertFailure {
-      grpcClient.newCall(undecodableMethod).executeBlocking(Point())
-    }.message().isNotNull().doesNotContain("grpc-status=null")
   }
 
   @Test

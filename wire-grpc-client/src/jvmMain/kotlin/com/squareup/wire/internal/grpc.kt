@@ -221,6 +221,9 @@ private fun Response.peekTrailersOrNull(): Headers? = try {
   peekTrailers()
 } catch (_: IOException) {
   null
+} catch (_: RuntimeException) {
+  // OkHttp throws IllegalStateException on HTTP/1.1 when the body is in the wrong state.
+  null
 }
 
 /** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
