@@ -50,6 +50,57 @@ final class MapEntryDecodingTests: XCTestCase {
         XCTAssertEqual(decoded.unknownFields, [:])
     }
 
+    // MARK: - Scalar keys and values with the wrong wire type
+
+    func testMapEntryWithLengthDelimitedScalarValueIsSkipped() throws {
+        let decoder = ProtoDecoder()
+
+        // Each entry has the key "k" and a length-delimited value, which is skipped.
+        let ints = Foundation.Data(hexEncoded: "0a07" + "0a016b" + "1202" + "0102")!
+        XCTAssertEqual(try decoder.decode(MappyScalars.self, from: ints).string_ints, ["k": 0])
+
+        let bools = Foundation.Data(hexEncoded: "1207" + "0a016b" + "1202" + "0102")!
+        XCTAssertEqual(try decoder.decode(MappyScalars.self, from: bools).string_bools, ["k": false])
+
+        let doubles = Foundation.Data(hexEncoded: "1a07" + "0a016b" + "1202" + "0102")!
+        XCTAssertEqual(try decoder.decode(MappyScalars.self, from: doubles).string_doubles, ["k": 0.0])
+
+        // A valid value before or after the skipped value is kept.
+        let validThenSkipped = Foundation.Data(hexEncoded: "0a09" + "0a016b" + "1006" + "1202" + "0102")!
+        XCTAssertEqual(try decoder.decode(MappyScalars.self, from: validThenSkipped).string_ints, ["k": 3])
+        let skippedThenValid = Foundation.Data(hexEncoded: "0a09" + "0a016b" + "1202" + "0102" + "1006")!
+        XCTAssertEqual(try decoder.decode(MappyScalars.self, from: skippedThenValid).string_ints, ["k": 3])
+    }
+
+    func testMapEntryWithLengthDelimitedScalarKeyIsSkipped() throws {
+        let decoder = ProtoDecoder()
+
+        // The sint32 key is length-delimited, so it is skipped and the key is the default.
+        let scalars = Foundation.Data(hexEncoded: "2a07" + "0a020102" + "12016e")!
+        XCTAssertEqual(try decoder.decode(MappyScalars.self, from: scalars).int_strings, [0: "n"])
+
+        let things = Foundation.Data(hexEncoded: "1209" + "0a020102" + "12030a016e")!
+        XCTAssertEqual(try decoder.decode(MappyThings.self, from: things).int_things, [0: MappyThing { $0.name = "n" }])
+    }
+
+    func testMapEntryWithLengthDelimitedEnumValueIsSkipped() throws {
+        // Entry "k" with a length-delimited value, which is skipped, so the value is the default.
+        let data = Foundation.Data(hexEncoded: "0a07" + "0a016b" + "1202" + "0102")!
+        for decoder in [ProtoDecoder(), ProtoDecoder(enumDecodingStrategy: .returnNil)] {
+            let decoded = try decoder.decode(MappyEnums.self, from: data)
+            XCTAssertEqual(decoded.string_enums, ["k": .DEFAULT])
+            XCTAssertEqual(decoded.unknownFields, [:])
+        }
+    }
+
+    func testMapEntryWithLengthDelimitedScalarPastEntryThrows() throws {
+        // The skipped value claims 9 bytes, but the entry ends after 5.
+        let data = Foundation.Data(hexEncoded: "0a05" + "0a016b" + "1209")!
+        XCTAssertThrowsError(try ProtoDecoder().decode(MappyScalars.self, from: data)) { error in
+            XCTAssertTrue(error is ProtoDecoder.Error, "unexpected error \(error)")
+        }
+    }
+
     // MARK: - Missing keys and values
 
     func testMapEntryWithoutValueHasDefaultValue() throws {
@@ -184,8 +235,8 @@ final class MapEntryDecodingTests: XCTestCase {
             "tag zero": "0a05" + "0a016b" + "0000",
             // The entry is longer than the data.
             "entry past end": "0a20" + "0a016b",
-            // The key has the wrong wire type.
-            "key with wrong wire type": "0a02" + "0802",
+            // The string key is a varint, which protobuf-java does not skip.
+            "string key with varint wire type": "0a02" + "0802",
             // The key is not valid UTF-8.
             "invalid utf8 key": "0a04" + "0a02ff" + "fe",
         ]

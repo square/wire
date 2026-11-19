@@ -709,6 +709,8 @@ public final class ProtoReader {
             into: &dictionary,
             decodeKey: { try decode(String.self) },
             decodeValue: { try decode(V.self) },
+            keyIsLengthDelimited: true,
+            valueIsLengthDelimited: ProtoReader.isLengthDelimited(V.self),
             defaultKey: { "" },
             defaultValue: { try ProtoReader.defaultValue(V.self) }
         )
@@ -721,6 +723,7 @@ public final class ProtoReader {
         try decode(
             into: &dictionary,
             decodeKey: { try String(from: self) },
+            keyIsLengthDelimited: true,
             defaultKey: { "" },
             addUnknownPair: { (tag, key, rawValue) in
                 try addUnknownField(tag: tag) { protoWriter in
@@ -739,6 +742,8 @@ public final class ProtoReader {
             into: &dictionary,
             decodeKey: { try decode(K.self, encoding: keyEncoding) },
             decodeValue: { try decode(V.self) },
+            keyIsLengthDelimited: false,
+            valueIsLengthDelimited: ProtoReader.isLengthDelimited(V.self),
             defaultKey: { ProtoReader.zero(K.self) },
             defaultValue: { try ProtoReader.defaultValue(V.self) }
         )
@@ -754,6 +759,8 @@ public final class ProtoReader {
             into: &dictionary,
             decodeKey: { try decode(String.self) },
             decodeValue: { try decode(V.self, encoding: valueEncoding) },
+            keyIsLengthDelimited: true,
+            valueIsLengthDelimited: false,
             defaultKey: { "" },
             defaultValue: { ProtoReader.zero(V.self) }
         )
@@ -767,6 +774,8 @@ public final class ProtoReader {
             into: &dictionary,
             decodeKey: { try decode(K.self, encoding: keyEncoding) },
             decodeValue: { try decode(V.self, encoding: valueEncoding) },
+            keyIsLengthDelimited: false,
+            valueIsLengthDelimited: false,
             defaultKey: { ProtoReader.zero(K.self) },
             defaultValue: { ProtoReader.zero(V.self) }
         )
@@ -1018,12 +1027,15 @@ public final class ProtoReader {
      Decode one map entry.
 
      Like protobuf-java, this skips unknown tags in the entry.
+     It also skips a key or value that is length-delimited when its type is a scalar.
      A missing key or value decodes as the default value of its type.
      */
     private func decode<K, V>(
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
         decodeValue: () throws -> V,
+        keyIsLengthDelimited: Bool,
+        valueIsLengthDelimited: Bool,
         defaultKey: () -> K?,
         defaultValue: () throws -> V?
     ) throws {
@@ -1032,6 +1044,10 @@ public final class ProtoReader {
 
         let token = try beginMessage()
         while let tag = try nextTag(token: token) {
+            if skipsLengthDelimitedScalar(tag: tag, keyIsLengthDelimited: keyIsLengthDelimited, valueIsLengthDelimited: valueIsLengthDelimited) {
+                try skipCurrentValue()
+                continue
+            }
             switch tag {
             case 1: key = try decodeKey()
             case 2: value = try decodeValue()
@@ -1064,6 +1080,7 @@ public final class ProtoReader {
     private func decode<K, V: ProtoEnum>(
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
+        keyIsLengthDelimited: Bool,
         defaultKey: () -> K?,
         addUnknownPair: (UInt32, K, V.RawValue) throws -> ()
     ) throws where V: RawRepresentable<Int32> {
@@ -1079,6 +1096,10 @@ public final class ProtoReader {
 
         let token = try beginMessage()
         while let tag = try nextTag(token: token) {
+            if skipsLengthDelimitedScalar(tag: tag, keyIsLengthDelimited: keyIsLengthDelimited, valueIsLengthDelimited: false) {
+                try skipCurrentValue()
+                continue
+            }
             switch tag {
             case 1: key = try decodeKey()
             case 2:
@@ -1127,6 +1148,23 @@ public final class ProtoReader {
         }
 
         dictionary[unwrappedKey] = unwrappedValue
+    }
+
+    /// Whether the field `nextTag` just returned is a map entry key or value that is length-delimited but has a scalar type.
+    /// Like protobuf-java, such a field is skipped as if it were unknown.
+    private func skipsLengthDelimitedScalar(tag: UInt32, keyIsLengthDelimited: Bool, valueIsLengthDelimited: Bool) -> Bool {
+        guard case .lengthDelimited = state else { return false }
+        return (tag == 1 && !keyIsLengthDelimited) || (tag == 2 && !valueIsLengthDelimited)
+    }
+
+    /// Whether a map entry key or value of the given type is encoded as length-delimited, as opposed to a scalar.
+    private static func isLengthDelimited<T>(_ type: T.Type) -> Bool {
+        switch type {
+        case is Bool.Type, is Double.Type, is Float.Type, is Int32.Type, is Int64.Type, is UInt32.Type, is UInt64.Type:
+            return false
+        default:
+            return true
+        }
     }
 
     /// Skip the value of the field whose tag `nextTag` just returned, without keeping it.
