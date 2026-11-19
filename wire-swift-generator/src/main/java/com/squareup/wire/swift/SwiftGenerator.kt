@@ -163,9 +163,7 @@ class SwiftGenerator private constructor(
     }
 
   private val Field.codableDefaultValue: CodeBlock?
-    get() = default?.let {
-      return defaultFieldInitializer(type!!, it)
-    } ?: when (typeName.makeNonOptional()) {
+    get() = when (typeName.makeNonOptional()) {
       BOOL -> CodeBlock.of("false")
       DOUBLE, FLOAT -> CodeBlock.of("0")
       INT32, UINT32, INT64, UINT64 -> CodeBlock.of("0")
@@ -218,10 +216,22 @@ class SwiftGenerator private constructor(
       return true
     }
 
+  /**
+   * A required field is always set, so it is stored as a plain property and needs no wrapper to
+   * fall back on its default. Only optional fields get a [defaultedValue].
+   */
   private val Field.defaultedValue: CodeBlock?
-    get() = default?.let {
+    get() = default?.takeUnless { isRequiredParameter }?.let {
       defaultFieldInitializer(type!!, it)
     }
+
+  /**
+   * A required field is present in every valid message, so JSON must always carry it. Decoding
+   * fails when a required field is missing, and a field omitted for equalling its default would
+   * be missing.
+   */
+  private val Field.isRequiredWithDefault: Boolean
+    get() = default != null && isRequiredParameter
 
   // see https://protobuf.dev/programming-guides/proto3/#default
   private val Field.proto3InitialValue: String
@@ -1060,7 +1070,7 @@ class SwiftGenerator private constructor(
               if (type.declaredFieldsAndOneOfFields.any { it.codableName != null }) {
                 addStatement("let preferCamelCase = encoder.protoKeyNameEncodingStrategy == .camelCase")
               }
-              if (type.declaredFields.any { !it.isOptional && (it.isCollection || it.isEnum || it.codableDefaultValue != null) }) {
+              if (type.declaredFields.any { !it.isOptional && !it.isRequiredWithDefault && (it.isCollection || it.isEnum || it.codableDefaultValue != null) }) {
                 addStatement("let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include")
               }
               addStatement("")
@@ -1098,10 +1108,11 @@ class SwiftGenerator private constructor(
 
                 val defaultValue = field.codableDefaultValue
 
-                if (field.isOptional) {
+                if (field.isOptional || field.isRequiredWithDefault) {
                   // A proto3 field that is defined with the optional keyword supports field presence.
                   // Fields that have a value set and that support field presence always include the field value
                   // in the JSON-encoded output, even if it is the default value.
+                  // A proto2 required field is always set, so it is always included too.
                   addEncode()
                 } else if (field.isCollection) {
                   beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.safeName)

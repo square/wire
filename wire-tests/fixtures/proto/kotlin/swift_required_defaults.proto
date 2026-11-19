@@ -1,0 +1,66 @@
+/*
+ * Copyright 2026 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package squareup.protos.kotlin.swift_required_defaults;
+
+import "option_redacted.proto";
+
+message SwiftRequiredDefaults {
+  enum Color {
+    RED = 0;
+    GREEN = 1;
+    BLUE = 2;
+  }
+
+  required int32 count = 1 [default = 5];
+  required string label = 2 [default = "a$b \"c\" \\d\n"];
+  required bytes payload = 3 [default = "abc"];
+  required Color color = 4 [default = GREEN];
+  required bool flag = 5 [default = true];
+  required float ratio = 6 [default = 1.5];
+  required double offset = 7 [default = -2.25];
+  required int64 big = 8 [default = -9000000000];
+  required uint32 unsigned_count = 9 [default = 4294967295];
+  required string secret = 10 [
+    default = "hunter2",
+    (squareup.protos.kotlin.redacted_option.redacted) = true
+  ];
+  optional int32 optional_count = 11 [default = 7];
+}
+
+// Has enough fields to be stored on the heap.
+message SwiftRequiredDefaultsLarge {
+  required int32 f1 = 1 [default = 1];
+  required int64 f2 = 2 [default = 2];
+  required uint32 f3 = 3 [default = 3];
+  required uint64 f4 = 4 [default = 4];
+  required sint32 f5 = 5 [default = -5];
+  required fixed32 f6 = 6 [default = 6];
+  required double f7 = 7 [default = 7.5];
+  required float f8 = 8 [default = 8.5];
+  required bool f9 = 9 [default = true];
+  required string f10 = 10 [default = "ten"];
+  required bytes f11 = 11 [default = "\001\002"];
+  required SwiftRequiredDefaults.Color f12 = 12 [default = BLUE];
+  required sfixed64 f13 = 13 [default = -13];
+  required string f14 = 14 [default = "$"];
+  required string f15 = 15 [
+    default = "secret",
+    (squareup.protos.kotlin.redacted_option.redacted) = true
+  ];
+  optional int32 f16 = 16 [default = 16];
+}
