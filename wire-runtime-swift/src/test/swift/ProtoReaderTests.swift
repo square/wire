@@ -1111,6 +1111,36 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testNestedMergesShareOneMergeBudget() throws {
+        // Field 1 holds a message that merges 20 `FieldMask` occurrences, and it appears twice.
+        // Decoding the inner message charges 627 bytes, and it is decoded twice.
+        // The outer merge charges 100 bytes.
+        // Each charge fits an allowance of 700, but the total of 1,354 bytes does not.
+        let inner = Foundation.Data(Array(repeating: [UInt8]([0x0A, 0x03, 0x0A, 0x01, 0x61]), count: 20).joined())
+        var occurrence = Foundation.Data([0x0A, UInt8(inner.count)])
+        occurrence.append(inner)
+
+        XCTAssertNoThrow(try decodeNestedLegacyMerge(occurrence, mergeAllowance: 700))
+
+        XCTAssertThrowsError(try decodeNestedLegacyMerge(occurrence + occurrence, mergeAllowance: 700)) { error in
+            assertInvalidStructureError(error, message: "Too much work merging repeated message fields.")
+        }
+        XCTAssertNoThrow(try decodeNestedLegacyMerge(occurrence + occurrence, mergeAllowance: 1_500))
+    }
+
+    private func decodeNestedLegacyMerge(_ data: Foundation.Data, mergeAllowance: Int64) throws {
+        try data.withUnsafeBytes { buffer in
+            let reader = ProtoReader(
+                buffer: ReadBuffer(
+                    storage: buffer.baseAddress!.bindMemory(to: UInt8.self, capacity: buffer.count),
+                    count: buffer.count
+                ),
+                mergeAllowance: mergeAllowance
+            )
+            _ = try LegacyMergingOuterMessage(from: reader)
+        }
+    }
+
     /// Field 1 holds a `FieldMask` with one path, `count` times.
     private func legacyMergeData(occurrenceCount count: Int) -> Foundation.Data {
         var data = Foundation.Data()
@@ -1795,6 +1825,29 @@ private struct LegacyMergingMessage: Proto2Codable {
         while let tag = try reader.nextTag(token: token) {
             switch tag {
             case 1: mask = try reader.decode(FieldMask.self, mergingInto: mask)
+            default: try reader.readUnknownField(tag: tag)
+            }
+        }
+        _ = try reader.endMessage(token: token) as UnknownFields
+    }
+
+    func encode(to writer: ProtoWriter) throws {
+    }
+
+}
+
+// MARK: -
+
+/// Decodes a singular message field that holds `LegacyMergingMessage` the way older generated code does.
+private struct LegacyMergingOuterMessage: Proto2Codable {
+
+    var inner: LegacyMergingMessage?
+
+    init(from reader: ProtoReader) throws {
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
+            switch tag {
+            case 1: inner = try reader.decode(LegacyMergingMessage.self, mergingInto: inner)
             default: try reader.readUnknownField(tag: tag)
             }
         }
