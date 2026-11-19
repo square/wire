@@ -93,6 +93,15 @@ internal class ByteArrayProtoReader32(
   /** Pooled buffers for unknown fields, indexed by [recursionDepth]. */
   private val bufferStack = mutableListOf<Buffer>()
 
+  /** Shared by all readers that decode merged messages for this reader. */
+  private var mergeBudget: MergeBudget? = null
+
+  /** Returns what a decode of a merged message needs to continue where this reader is. */
+  fun mergeContext(): MergeContext {
+    val budget = mergeBudget ?: MergeBudget().also { mergeBudget = it }
+    return MergeContext(recursionLimit, recursionDepth, budget, allowedMergeBytes(pos.toLong()))
+  }
+
   /** Lazily-initialized. */
   private var protoReader: ProtoReader32AsProtoReader? = null
 

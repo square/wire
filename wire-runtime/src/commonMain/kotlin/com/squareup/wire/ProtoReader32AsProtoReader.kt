@@ -64,5 +64,7 @@ internal class ProtoReader32AsProtoReader(
     delegate.addUnknownField(tag, fieldEncoding, value)
   }
 
+  override fun mergeContext() = delegate.mergeContext()
+
   override fun nextFieldMinLengthInBytes() = delegate.nextFieldMinLengthInBytes().toLong()
 }
