@@ -31,6 +31,9 @@ wire {
       "person.proto",
       "no_fields.proto",
       "one_of.proto",
+      "oneof_merge_boxed.proto",
+      "oneof_merge_sealed.proto",
+      "oneof_merge_sealed_builders.proto",
       "option_redacted.proto",
       "packed_encoding.proto",
       "percents_in_kdoc.proto",
@@ -76,6 +79,25 @@ wire {
   kotlin {
     includes = listOf("squareup.protos.kotlin.sealed_redacted.*")
     oneofMode = "sealed_class"
+    javaInterop = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.oneof_merge_boxed.*")
+    oneofMode = "boxed"
+    javaInterop = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.oneof_merge_sealed.*")
+    oneofMode = "sealed_class"
+    javaInterop = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.oneof_merge_sealed_builders.*")
+    oneofMode = "sealed_class"
+    buildersOnly = true
     javaInterop = true
   }
 

@@ -1,0 +1,126 @@
+/*
+ * Copyright 2026 Block, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package squareup.protos.kotlin.oneof_merge_boxed;
+
+option java_package = "com.squareup.wire.protos.kotlin.oneofmergeboxed";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+
+message Leaf {
+  repeated int32 values = 1;
+  optional string name = 2;
+}
+
+message BoxedMerge {
+  oneof choice {
+    Leaf a = 1;
+    Leaf b = 2;
+    string text = 3;
+    google.protobuf.Value value = 4;
+    google.protobuf.StringValue wrapped = 5;
+  }
+}
+
+/** Members and fields named like the locals of the generated decode function. */
+message BoxedNames {
+  optional Leaf existing = 5;
+  oneof it {
+    Leaf x = 1;
+    Leaf reader = 2;
+    string text = 3;
+  }
+  oneof reader {
+    Leaf y = 6;
+    string z = 7;
+  }
+}
+
+/** More merged fields than one decode function takes, so message members decode eagerly. */
+message BoxedCap {
+  optional Leaf f1 = 1;
+  optional Leaf f2 = 2;
+  optional Leaf f3 = 3;
+  optional Leaf f4 = 4;
+  optional Leaf f5 = 5;
+  optional Leaf f6 = 6;
+  optional Leaf f7 = 7;
+  optional Leaf f8 = 8;
+  optional Leaf f9 = 9;
+  optional Leaf f10 = 10;
+  optional Leaf f11 = 11;
+  optional Leaf f12 = 12;
+  optional Leaf f13 = 13;
+  optional Leaf f14 = 14;
+  optional Leaf f15 = 15;
+  optional Leaf f16 = 16;
+  optional Leaf f17 = 17;
+  optional Leaf f18 = 18;
+  optional Leaf f19 = 19;
+  optional Leaf f20 = 20;
+  optional Leaf f21 = 21;
+  optional Leaf f22 = 22;
+  optional Leaf f23 = 23;
+  optional Leaf f24 = 24;
+  optional Leaf f25 = 25;
+  optional Leaf f26 = 26;
+  optional Leaf f27 = 27;
+  optional Leaf f28 = 28;
+  optional Leaf f29 = 29;
+  optional Leaf f30 = 30;
+  optional Leaf f31 = 31;
+  optional Leaf f32 = 32;
+  optional Leaf f33 = 33;
+  optional Leaf f34 = 34;
+  optional Leaf f35 = 35;
+  optional Leaf f36 = 36;
+  optional Leaf f37 = 37;
+  optional Leaf f38 = 38;
+  optional Leaf f39 = 39;
+  optional Leaf f40 = 40;
+  optional Leaf f41 = 41;
+  optional Leaf f42 = 42;
+  optional Leaf f43 = 43;
+  optional Leaf f44 = 44;
+  optional Leaf f45 = 45;
+  optional Leaf f46 = 46;
+  optional Leaf f47 = 47;
+  optional Leaf f48 = 48;
+  optional Leaf f49 = 49;
+  optional Leaf f50 = 50;
+  optional Leaf f51 = 51;
+  optional Leaf f52 = 52;
+  optional Leaf f53 = 53;
+  optional Leaf f54 = 54;
+  optional Leaf f55 = 55;
+  optional Leaf f56 = 56;
+  optional Leaf f57 = 57;
+  optional Leaf f58 = 58;
+  optional Leaf f59 = 59;
+  optional Leaf f60 = 60;
+  optional Leaf f61 = 61;
+  optional Leaf f62 = 62;
+  optional Leaf f63 = 63;
+  optional Leaf f64 = 64;
+  optional Leaf f65 = 65;
+  oneof choice {
+    Leaf a = 100;
+    Leaf b = 101;
+    string text = 102;
+  }
+}

@@ -193,7 +193,10 @@ public class SealedOneOfs private constructor(
           }
         }
         if (hasMerges(reader)) {
-          (builder.value_ as? Value.FirstValue)?.let { builder.value_ = Value.FirstValue(finishMerge(reader, 1, SealedMessage.ADAPTER, it.value) ?: it.value) }
+          run {
+            val existing = builder.value_
+            if (existing is Value.FirstValue) builder.value_ = Value.FirstValue(finishMerge(reader, 1, SealedMessage.ADAPTER, existing.value)!!)
+          }
           endMerges(reader)
         }
         return SealedOneOfs(

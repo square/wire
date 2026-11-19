@@ -3009,7 +3009,105 @@ class KotlinGeneratorTest {
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = OneofMode.SEALED_CLASS)
     assertThat(code).contains("1 -> choice = Choice.Leaf(decodeMessageOrDefer(Leaf.ADAPTER, reader, 1, (choice as? Choice.Leaf)?.value))")
     assertThat(code).contains("2 -> choice = Choice.Text(ProtoAdapter.STRING.decode(reader))")
-    assertThat(code).contains("(choice as? Choice.Leaf)?.let { choice = Choice.Leaf(finishMerge(reader, 1, Leaf.ADAPTER, it.value) ?: it.value) }")
+    assertThat(code).contains("val existing = choice")
+    assertThat(code).contains("if (existing is Choice.Leaf) choice = Choice.Leaf(finishMerge(reader, 1, Leaf.ADAPTER, existing.value)!!)")
+    // Nothing falls back to the previous value when the merge gives null.
+    assertThat(code).doesNotContain("?: it.value")
+  }
+
+  @Test fun sealedOneofKeepsNullableMemberTypesNullable() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |import "google/protobuf/struct.proto";
+        |message Choices {
+        |  oneof choice {
+        |    google.protobuf.Value value = 1;
+        |    string text = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = OneofMode.SEALED_CLASS)
+    // A null Value must stay null, so the merge result is not forced non-null and has no fallback.
+    assertThat(code).contains("choice = Choice.Value(finishMerge(reader, 1, ProtoAdapter.STRUCT_VALUE, existing.value))")
+    val decode = code.substringAfter("override fun decode(reader: ProtoReader): Choices").substringBefore("override fun redact")
+    assertThat(decode).doesNotContain("?: ")
+  }
+
+  @Test fun sealedOneofMergesOnlyBelowTheCodeSizeThreshold() {
+    fun decodeLength(count: Int): Pair<String, Int> {
+      val schema = buildSchema {
+        val members = (1..count).joinToString("\n") { "|    Leaf member$it = $it;" }
+        add(
+          "message.proto".toPath(),
+          """
+          |syntax = "proto2";
+          |message Leaf {
+          |  repeated int32 values = 1;
+          |}
+          |message Choices {
+          |  oneof choice {
+          $members
+          |  }
+          |}
+          """.trimMargin(),
+        )
+      }
+      val code = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = OneofMode.SEALED_CLASS)
+      return code to code.substringAfter("override fun decode(reader: ProtoReader): Choices").substringBefore("override fun redact").lines().size
+    }
+
+    val (small, _) = decodeLength(21)
+    assertThat(small).contains("decodeMessageOrDefer(")
+    assertThat(small).contains("finishMerge(")
+
+    // Above the threshold the code is the same as before merging: one line per member and last one wins.
+    val (large, largeLines) = decodeLength(22)
+    assertThat(large).doesNotContain("decodeMessageOrDefer(")
+    assertThat(large).doesNotContain("finishMerge(")
+    assertThat(large).contains("1 -> choice = Choice.Member1(Leaf.ADAPTER.decode(reader))")
+
+    // The decode body grows by one line per member and nothing else.
+    val (larger, largerLines) = decodeLength(220)
+    assertThat(larger).doesNotContain("finishMerge(")
+    assertThat(largerLines - largeLines).isEqualTo(220 - 22)
+  }
+
+  @Test fun sealedAndBoxedOneofsCompileWithMembersNamedLikeGeneratedLocals() {
+    // `it`, `x`, `reader` and `existing` are names the decode code uses for its own locals.
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message Leaf {
+        |  repeated int32 values = 1;
+        |}
+        |message Choices {
+        |  optional Leaf existing = 5;
+        |  oneof it {
+        |    Leaf x = 1;
+        |    Leaf reader = 2;
+        |    string text = 3;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+    for (mode in listOf(OneofMode.SEALED_CLASS, OneofMode.BOXED)) {
+      val code = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = mode)
+      // No lambda relies on the implicit `it` parameter in the merge code.
+      val decode = code.substringAfter("override fun decode(reader: ProtoReader): Choices").substringBefore("override fun redact")
+      assertThat(decode).doesNotContain(".let {")
+      assertThat(decode).doesNotContain("it.value")
+    }
+    val sealed = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", oneofMode = OneofMode.SEALED_CLASS)
+    // The local that holds the current member does not clash with the field named `existing`.
+    assertThat(sealed).contains("val existing_ = it")
   }
 
   @Test fun flatOneofRequireEscapesKeywordNames() {
