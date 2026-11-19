@@ -27,6 +27,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaLoader
 import java.nio.file.FileSystems
 import okio.Buffer
+import okio.ByteString.Companion.decodeHex
 import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto3.java.alltypes.AllStructs as AllStructsJ
@@ -639,5 +640,40 @@ class StructTest {
     assertThat(AllStructsJ.ADAPTER.decode(protocAllStruct.toByteArray())).isEqualTo(wireAllStructJava)
     val wireBytes = AllStructsJ.ADAPTER.encode(wireAllStructJava)
     assertThat(AllStructsOuterClass.AllStructs.parseFrom(wireBytes)).isEqualTo(protocAllStruct)
+  }
+
+  @Test fun reflectiveAdapterKeepsNullStructValues() {
+    val adapter = ProtoAdapter.newMessageAdapter(
+      AllStructsJ::class.java,
+      "type.googleapis.com/squareup.proto3.java.alltypes.AllStructs",
+      Syntax.PROTO_3,
+      AllStructsJ::class.java.classLoader,
+    )
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .addRepValueA(null.toValue())
+      .addRepNullValue(NullValue.NULL_VALUE)
+      .build()
+    val wireAllStruct = AllStructsJ.Builder()
+      .rep_value_a(listOf(null))
+      .rep_null_value(listOf(null))
+      .build()
+
+    val protocBytes = protocAllStruct.toByteArray()
+    assertThat(adapter.decode(protocBytes)).isEqualTo(wireAllStruct)
+    assertThat(adapter.decode(Buffer().write(protocBytes))).isEqualTo(wireAllStruct)
+    // A singular NullValue is null in Wire, the same as an absent field.
+    assertThat(adapter.decode("1800".decodeHex())).isEqualTo(AllStructsJ.Builder().build())
+  }
+
+  @Test fun schemaAdapterKeepsNullStructValues() {
+    val schemaAdapter = schema.protoAdapter("squareup.proto3.java.alltypes.AllStructs", false)
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+      .addRepValueA(null.toValue())
+      .addRepNullValue(NullValue.NULL_VALUE)
+      .build()
+
+    assertThat(schemaAdapter.decode(protocAllStruct.toByteArray()))
+      .isEqualTo(mapOf("rep_value_a" to listOf(null), "rep_null_value" to listOf(null)))
+    assertThat(schemaAdapter.decode("1800".decodeHex())).isEqualTo(mapOf<String, Any>())
   }
 }

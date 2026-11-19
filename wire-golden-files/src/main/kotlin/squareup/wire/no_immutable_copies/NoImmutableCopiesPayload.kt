@@ -77,7 +77,7 @@ public class NoImmutableCopiesPayload(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (headers.isNotEmpty()) result += """headers=$headers"""
+    if (headers.isNotEmpty()) result += """headers=${sanitize(headers)}"""
     if (footers.isNotEmpty()) result += """footers=${sanitize(footers)}"""
     return result.joinToString(prefix = "NoImmutableCopiesPayload{", separator = ", ", postfix = "}")
   }

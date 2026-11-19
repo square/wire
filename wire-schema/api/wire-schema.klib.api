@@ -46,6 +46,7 @@ abstract interface com.squareup.wire/WireLogger { // com.squareup.wire/WireLogge
     abstract fun unusedIncludesInTarget(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireLogger.unusedIncludesInTarget|unusedIncludesInTarget(kotlin.collections.Set<kotlin.String>){}[0]
     abstract fun unusedPrunes(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireLogger.unusedPrunes|unusedPrunes(kotlin.collections.Set<kotlin.String>){}[0]
     abstract fun unusedRoots(kotlin.collections/Set<kotlin/String>) // com.squareup.wire/WireLogger.unusedRoots|unusedRoots(kotlin.collections.Set<kotlin.String>){}[0]
+    open fun warning(kotlin/String) // com.squareup.wire/WireLogger.warning|warning(kotlin.String){}[0]
 
     abstract fun interface Factory : com.squareup.wire.internal/Serializable { // com.squareup.wire/WireLogger.Factory|null[0]
         abstract fun create(): com.squareup.wire/WireLogger // com.squareup.wire/WireLogger.Factory.create|create(){}[0]
