@@ -15,6 +15,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.`internal`.redactOneOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -140,6 +141,7 @@ public class BoxedOneOfs(
       }
 
       override fun redact(`value`: BoxedOneOfs): BoxedOneOfs = value.copy(
+        value_ = value.value_.redactOneOf(),
         unknownFields = ByteString.EMPTY
       )
     }
@@ -154,9 +156,15 @@ public class BoxedOneOfs(
     public val VALUE_VALUE: Value<String> =
         Value<String>(tag = 3, adapter = ProtoAdapter.STRING, declaredName = "value")
 
+    public val VALUE_INNER: Value<Inner> =
+        Value<Inner>(tag = 4, adapter = Inner.ADAPTER, declaredName = "inner")
+
+    public val VALUE_WRAPPED: Value<String?> =
+        Value<String?>(tag = 5, adapter = ProtoAdapter.STRING_VALUE, declaredName = "wrapped")
+
     @JvmStatic
     public val VALUE__KEYS: Set<Value<*>> =
-        setOf(VALUE_FIRST_VALUE, VALUE_SECOND_VALUE, VALUE_VALUE)
+        setOf(VALUE_FIRST_VALUE, VALUE_SECOND_VALUE, VALUE_VALUE, VALUE_INNER, VALUE_WRAPPED)
 
     private const val serialVersionUID: Long = 0L
 

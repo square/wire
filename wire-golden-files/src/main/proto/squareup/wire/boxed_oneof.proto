@@ -16,6 +16,7 @@
 syntax = "proto2";
 package squareup.wire.boxedoneof;
 
+import "google/protobuf/wrappers.proto";
 import "squareup/wire/options.proto";
 
 message BoxedOneOfs {
@@ -23,5 +24,11 @@ message BoxedOneOfs {
     string first_value = 1;
     string second_value = 2;
     string value = 3 [(squareup.proto3.options.field_option) = 806];
+    Inner inner = 4;
+    google.protobuf.StringValue wrapped = 5;
   }
+}
+
+message Inner {
+  optional string text = 1;
 }
