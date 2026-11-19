@@ -224,6 +224,13 @@ public final class ProtoEncoder {
         return Data(writer.buffer, copyBytes: false)
     }
 
+    /**
+     * Encodes the provided values as a size-delimited collection of messages.
+     *
+     * Each message is written as a varint size followed by the message.
+     * A message that encodes to zero bytes is skipped, because older readers stop at a size of zero.
+     * `ProtoDecoder.decodeSizeDelimited(_:from:)` reads a size of zero as an empty message, so a round trip drops empty messages.
+     */
     public func encodeSizeDelimited<T: ProtoEncodable>(_ values: [T]) throws -> Data {
         // Use the size of the struct as an initial estimate for the space needed.
         let structSize = MemoryLayout.size(ofValue: T.self)

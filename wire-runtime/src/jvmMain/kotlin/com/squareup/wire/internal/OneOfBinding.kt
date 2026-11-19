@@ -60,13 +60,13 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
   override val singleAdapter
     get() = key.adapter as ProtoAdapter<Any>
 
-  override fun value(builder: B, value: Any) {
+  override fun value(builder: B, value: Any?) {
     set(builder, value)
   }
 
   override fun set(builder: B, value: Any?) {
     @Suppress("UNCHECKED_CAST")
-    builderField.set(builder, OneOf(key as OneOf.Key<Any>, value!!))
+    builderField.set(builder, if (value != null) OneOf(key as OneOf.Key<Any>, value) else null)
   }
 
   override fun get(message: M): Any? {

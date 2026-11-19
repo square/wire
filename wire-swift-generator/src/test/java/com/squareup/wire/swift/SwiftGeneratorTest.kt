@@ -331,6 +331,116 @@ class SwiftGeneratorTest {
     }
   }
 
+  @Test fun dollarSignInStringDefaultStaysPlain() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  optional string text = 1 [default = "a${'$'}b \"c\" \\d\n"];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "a${'$'}b \"c\" \\d\n")""")
+    assertThat(code).doesNotContain("{'")
+  }
+
+  @Test fun requiredFloatingPointDefaultsAreSwiftExpressions() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  required double a = 1 [default = inf];
+        |  required double b = 2 [default = -inf];
+        |  required double c = 3 [default = nan];
+        |  required float d = 4 [default = inf];
+        |  required double e = 5 [default = 1.];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("self.a != Double.infinity")
+    assertThat(code).contains("self.b != -Double.infinity")
+    assertThat(code).contains("self.c != Double.nan")
+    assertThat(code).contains("self.d != Float.infinity")
+    assertThat(code).contains("self.e != 1.0")
+  }
+
+  @Test fun floatDefaultsWithoutLeadingOrTrailingDigitsAreSwiftLiterals() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  optional float a = 1 [default = .5];
+        |  optional float b = 2 [default = 2.];
+        |  optional float c = 3 [default = 1.5e3];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("@CustomDefaulted(defaultValue: 0.5)")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: 2.0)")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: 1.5e3)")
+  }
+
+  @Test fun dashesAndDotsInNamesBecomeUnderscores() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |enum Color-Kind {
+        |  DARK-RED = 0;
+        |  LIGHT.BLUE = 1;
+        |}
+        |
+        |message Message-Type {
+        |  string field-name = 1;
+        |  string dotted.name = 2 [json_name = "dotted.name"];
+        |  Color-Kind color-kind = 3;
+        |  oneof one-of {
+        |    string text-value = 4;
+        |    int32 number.value = 5;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val messageCode = schema.generateSwift("Message-Type")
+    assertThat(messageCode).contains("public struct Message_Type {")
+    assertThat(messageCode).contains("public var field_name: String")
+    assertThat(messageCode).contains("public var dotted_name: String")
+    assertThat(messageCode).contains("public var color_kind: Color_Kind")
+    assertThat(messageCode).contains("public var one_of: Message_Type.One_of?")
+    assertThat(messageCode).contains("case text_value(String)")
+    assertThat(messageCode).contains("""forKey: "field-name"""")
+
+    val enumCode = schema.generateSwift("Color-Kind")
+    assertThat(enumCode).contains("case DARK_RED = 0")
+    assertThat(enumCode).contains("case LIGHT_BLUE = 1")
+    assertThat(enumCode).contains("""case .DARK_RED: return "DARK-RED"""")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))

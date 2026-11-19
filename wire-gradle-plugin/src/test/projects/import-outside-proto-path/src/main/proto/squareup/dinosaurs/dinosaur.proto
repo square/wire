@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package squareup.dinosaurs;
+
+import "../shared/shared.proto";
+
+message Dinosaur {
+  optional string name = 1;
+}

@@ -1519,6 +1519,12 @@ class KotlinGenerator private constructor(
                       } else {
                         add("=\${%M(%N)}", sanitizeMember, fieldName)
                       }
+                    } else if (fieldOrOneOf.isMap &&
+                      (fieldOrOneOf.type!!.keyType!!.printsStrings || fieldOrOneOf.type!!.valueType!!.printsStrings)
+                    ) {
+                      add("=\${%M(%N)}", sanitizeMember, fieldName)
+                    } else if (fieldOrOneOf.type!!.printsNestedStrings) {
+                      add("=\${%M(%N)}", MemberName("com.squareup.wire.internal", "sanitizeAny"), fieldName)
                     } else if (fieldOrOneOf.useArray) {
                       add("=\${")
                       add("%N", fieldName)
@@ -3462,6 +3468,20 @@ class KotlinGenerator private constructor(
             .build(),
         )
         .apply {
+          if (field.type == ProtoType.STRING || field.type!!.printsNestedStrings) {
+            // The data class `toString` would print the string without escaping it.
+            val sanitizeName = if (field.type == ProtoType.STRING) "sanitize" else "sanitizeAny"
+            addFunction(
+              FunSpec.builder("toString")
+                .addModifiers(KModifier.OVERRIDE)
+                .returns(String::class)
+                .addStatement(
+                  "return %P",
+                  CodeBlock.of("%L(value=\${%M(value)})", subclassName, MemberName("com.squareup.wire.internal", sanitizeName)),
+                )
+                .build(),
+            )
+          }
           addAnnotation(wireOneofFieldAnnotation(field))
           if (field.isDeprecated) {
             addAnnotation(
@@ -3652,6 +3672,20 @@ class KotlinGenerator private constructor(
     }
     .addMember("declaredName = %S", field.name)
     .build()
+
+  /** True for types whose string content is escaped by `sanitize`, like `string` itself. */
+  private val ProtoType.printsStrings: Boolean
+    get() = this == ProtoType.STRING || printsNestedStrings
+
+  /**
+   * True for types that print strings the generated code cannot reach directly: wrapped strings and
+   * the `google.protobuf.Struct` family. These go through `sanitizeAny`.
+   */
+  private val ProtoType.printsNestedStrings: Boolean
+    get() = this == ProtoType.STRING_VALUE ||
+      this == ProtoType.STRUCT_MAP ||
+      this == ProtoType.STRUCT_LIST ||
+      this == ProtoType.STRUCT_VALUE
 
   private fun MessageType.fieldsAndFlatOneOfFieldsAndBoxedOneOfs(): List<Any> {
     val fieldsAndFlatOneOfFields: List<Field> =

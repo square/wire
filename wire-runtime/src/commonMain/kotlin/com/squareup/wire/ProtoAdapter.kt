@@ -25,6 +25,8 @@ import com.squareup.wire.ProtoWriter.Companion.int32Size
 import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
+import com.squareup.wire.internal.ProtocolException
+import com.squareup.wire.internal.protocolExceptionWithCause
 import kotlin.reflect.KClass
 import okio.Buffer
 import okio.BufferedSink
@@ -777,8 +779,11 @@ internal class MapProtoAdapter<K, V> internal constructor(
   }
 
   override fun decode(reader: ProtoReader): Map<K, V> {
+    // Read the parent tag before beginMessage(), which changes the last tag.
+    val parentTag = reader.lastTag()
     var key: K? = entryAdapter.keyAdapter.identity
     var value: V? = entryAdapter.valueAdapter.identity
+    var unknownEnumValue: Int? = null
 
     val token = reader.beginMessage()
     while (true) {
@@ -797,21 +802,35 @@ internal class MapProtoAdapter<K, V> internal constructor(
       }
       when (tag) {
         1 -> key = entryAdapter.keyAdapter.decode(reader)
-        2 -> value = entryAdapter.valueAdapter.decode(reader)
+        2 -> try {
+          value = entryAdapter.valueAdapter.decode(reader)
+          unknownEnumValue = null
+        } catch (e: EnumConstantNotFoundException) {
+          unknownEnumValue = e.value
+        }
         // Ignore unknown tags in map entries.
+        else -> reader.skip()
       }
     }
     reader.endMessageAndGetUnknownFields(token)
 
-    check(key != null) { "Map entry with null key" }
-    check(value != null || acceptsNullValues) { "Map entry with null value" }
-    @Suppress("UNCHECKED_CAST")
-    return mapOf(key to value as V)
+    if (unknownEnumValue != null) {
+      // Like protobuf-java, keep an entry with an unknown enum value as an unknown field of the parent message.
+      if (parentTag <= 0) {
+        throw ProtocolException("Unknown enum value $unknownEnumValue in a map entry without a parent field")
+      }
+      reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
+      return emptyMap()
+    }
+    return singleEntry(key, value)
   }
 
   override fun decode(reader: ProtoReader32): Map<K, V> {
+    // Read the parent tag before beginMessage(), which changes the last tag.
+    val parentTag = (reader as? ByteArrayProtoReader32)?.lastTag() ?: -1
     var key: K? = entryAdapter.keyAdapter.identity
     var value: V? = entryAdapter.valueAdapter.identity
+    var unknownEnumValue: Int? = null
 
     val token = reader.beginMessage()
     while (true) {
@@ -830,16 +849,50 @@ internal class MapProtoAdapter<K, V> internal constructor(
       }
       when (tag) {
         1 -> key = entryAdapter.keyAdapter.decode(reader)
-        2 -> value = entryAdapter.valueAdapter.decode(reader)
+        2 -> try {
+          value = entryAdapter.valueAdapter.decode(reader)
+          unknownEnumValue = null
+        } catch (e: EnumConstantNotFoundException) {
+          unknownEnumValue = e.value
+        }
         // Ignore unknown tags in map entries.
+        else -> reader.skip()
       }
     }
     reader.endMessageAndGetUnknownFields(token)
 
-    check(key != null) { "Map entry with null key" }
-    check(value != null || acceptsNullValues) { "Map entry with null value" }
+    if (unknownEnumValue != null) {
+      // Like protobuf-java, keep an entry with an unknown enum value as an unknown field of the parent message.
+      if (parentTag <= 0) {
+        throw ProtocolException("Unknown enum value $unknownEnumValue in a map entry without a parent field")
+      }
+      reader.addUnknownField(parentTag, LENGTH_DELIMITED, unknownEntry(key, unknownEnumValue))
+      return emptyMap()
+    }
+    return singleEntry(key, value)
+  }
+
+  /** Returns the encoded form of an entry whose value is the unknown enum number [value]. */
+  private fun unknownEntry(key: K?, value: Int): ByteString {
+    val buffer = Buffer()
+    val writer = ProtoWriter(buffer)
+    if (key != null) entryAdapter.keyAdapter.encodeWithTag(writer, 1, key)
+    INT32.encodeWithTag(writer, 2, value)
+    return buffer.readByteString()
+  }
+
+  private fun singleEntry(key: K?, value: V?): Map<K, V> {
+    if (key == null) throw ProtocolException("Map entry with null key")
+    var resultValue = value
+    if (resultValue == null && !acceptsNullValues) {
+      // An absent value is the default value of its type. Only message-like adapters can decode that.
+      if (entryAdapter.valueAdapter.fieldEncoding != LENGTH_DELIMITED) {
+        throw ProtocolException("Map entry with null value")
+      }
+      resultValue = entryAdapter.valueAdapter.decode(ByteString.EMPTY)
+    }
     @Suppress("UNCHECKED_CAST")
-    return mapOf(key to value as V)
+    return mapOf(key to resultValue as V)
   }
 
   override fun redact(value: Map<K, V>): Map<K, V> = emptyMap()
@@ -1259,7 +1312,7 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> reader.readUnknownField(tag)
       }
     }
-    return durationOfSeconds(seconds, nanos.toLong())
+    return durationOfSecondsOrThrow(seconds, nanos)
   }
 
   override fun decode(reader: ProtoReader32): Duration {
@@ -1276,7 +1329,7 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> reader.readUnknownField(tag)
       }
     }
-    return durationOfSeconds(seconds, nanos.toLong())
+    return durationOfSecondsOrThrow(seconds, nanos)
   }
 
   override fun redact(value: Duration): Duration = value
@@ -1304,6 +1357,24 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> getNano()
       }
     }
+}
+
+/** Throws a [ProtocolException] if the seconds and nanos are too large for a [Duration]. */
+private fun durationOfSecondsOrThrow(seconds: Long, nanos: Int): Duration {
+  try {
+    return durationOfSeconds(seconds, nanos.toLong())
+  } catch (e: RuntimeException) {
+    throw protocolExceptionWithCause("Duration out of range: seconds=$seconds nanos=$nanos", e)
+  }
+}
+
+/** Throws a [ProtocolException] if the seconds and nanos are too large for an [Instant]. */
+private fun ofEpochSecondOrThrow(seconds: Long, nanos: Int): Instant {
+  try {
+    return ofEpochSecond(seconds, nanos.toLong())
+  } catch (e: RuntimeException) {
+    throw protocolExceptionWithCause("Timestamp out of range: seconds=$seconds nanos=$nanos", e)
+  }
 }
 
 // Protobuf Timestamp valid range: 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z inclusive.
@@ -1366,7 +1437,7 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
         else -> reader.readUnknownField(tag)
       }
     }
-    return ofEpochSecond(seconds, nanos.toLong())
+    return ofEpochSecondOrThrow(seconds, nanos)
   }
 
   override fun decode(reader: ProtoReader32): Instant {
@@ -1383,7 +1454,7 @@ internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Inst
         else -> reader.readUnknownField(tag)
       }
     }
-    return ofEpochSecond(seconds, nanos.toLong())
+    return ofEpochSecondOrThrow(seconds, nanos)
   }
 
   override fun redact(value: Instant): Instant = value
@@ -1545,7 +1616,17 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
     return result
   }
 
-  override fun redact(value: Map<String, *>?) = value?.mapValues { STRUCT_VALUE.redact(it) }
+  /** Redacts every value like [STRUCT_VALUE]: strings become null, and numbers, booleans, and null stay. */
+  override fun redact(value: Map<String, *>?): Map<String, *>? {
+    if (value == null) return null
+    val result = LinkedHashMap<String, Any?>(value.size)
+    // Unchecked casts can put other key types here. The error never includes the key.
+    for ((key, element) in (value as Map<*, *>)) {
+      require(key is String) { "unexpected struct key type: ${key?.let { it::class.simpleName }}" }
+      result[key] = STRUCT_VALUE.redact(element)
+    }
+    return result
+  }
 }
 
 internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<List<*>?>(
@@ -1660,7 +1741,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> BOOL.encodedSizeWithTag(4, value)
       is Map<*, *> -> STRUCT_MAP.encodedSizeWithTag(5, value as Map<String, *>)
       is List<*> -> STRUCT_LIST.encodedSizeWithTag(6, value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 
@@ -1682,7 +1763,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> BOOL.encodeWithTag(writer, 4, value)
       is Map<*, *> -> STRUCT_MAP.encodeWithTag(writer, 5, value as Map<String, *>)
       is List<*> -> STRUCT_LIST.encodeWithTag(writer, 6, value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 
@@ -1695,7 +1776,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> BOOL.encodeWithTag(writer, 4, value)
       is Map<*, *> -> STRUCT_MAP.encodeWithTag(writer, 5, value as Map<String, *>)
       is List<*> -> STRUCT_LIST.encodeWithTag(writer, 6, value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 
@@ -1769,7 +1850,7 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Boolean -> value
       is Map<*, *> -> STRUCT_MAP.redact(value as Map<String, *>)
       is List<*> -> STRUCT_LIST.redact(value)
-      else -> throw IllegalArgumentException("unexpected struct value: $value")
+      else -> throw IllegalArgumentException("unexpected struct value type: ${value::class.simpleName}")
     }
   }
 }

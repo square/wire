@@ -38,6 +38,8 @@ internal class ProtoReader32AsProtoReader(
 
   override fun peekFieldEncoding() = delegate.peekFieldEncoding()
 
+  override fun lastTag() = (delegate as? ByteArrayProtoReader32)?.lastTag() ?: -1
+
   override fun skip() {
     delegate.skip()
   }

@@ -32,7 +32,14 @@ expect annotation class JsName(val name: String)
 
 actual abstract class ObjectStreamException : IOException()
 
-actual class ProtocolException actual constructor(host: String) : IOException(host)
+actual class ProtocolException internal constructor(
+  host: String,
+  cause: Throwable?,
+) : IOException(host, cause) {
+  actual constructor(host: String) : this(host, null)
+}
+
+internal actual fun protocolExceptionWithCause(message: String, cause: Throwable): ProtocolException = ProtocolException(message, cause)
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> = this

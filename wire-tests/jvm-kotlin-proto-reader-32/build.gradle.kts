@@ -20,6 +20,7 @@ wire {
       "all_types.proto",
       "edge_cases.proto",
       "empty_packed.proto",
+      "map.proto",
       "one_of.proto",
     )
   }

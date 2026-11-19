@@ -218,6 +218,9 @@ internal class ByteArrayProtoReader32(
 
   override fun peekFieldEncoding(): FieldEncoding? = nextFieldEncoding
 
+  /** Returns the most recently read tag, or -1 if no tag was read yet. */
+  internal fun lastTag(): Int = tag
+
   override fun skip() {
     when (state) {
       STATE_LENGTH_DELIMITED -> {

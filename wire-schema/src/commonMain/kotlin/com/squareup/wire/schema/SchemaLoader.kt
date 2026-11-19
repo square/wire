@@ -51,6 +51,9 @@ expect class SchemaLoader(fileSystem: FileSystem) :
   /** Subset of the schema that was loaded from the source path. */
   val sourcePathFiles: List<ProtoFile>
 
+  /** Warnings for questionable inputs that did not stop the load, in the order found. */
+  internal val warnings: List<String>
+
   /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
   fun initRoots(
     sourcePath: List<Location>,
