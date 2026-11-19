@@ -75,7 +75,7 @@ extension Redactable {
     }
 
     /**
-     Returns the escaped form of a control or line-breaking character, or nil for any other character.
+     Returns the escaped form of a control, line-breaking, or direction control character, or nil for any other character.
      */
     private func escapedControl(_ scalar: Unicode.Scalar) -> String? {
         switch scalar {
@@ -83,7 +83,9 @@ extension Redactable {
         case "\r": return "\\r"
         case "\t": return "\\t"
         case "\0": return "\\0"
-        case "\u{0}"..."\u{1F}", "\u{7F}"..."\u{9F}", "\u{2028}", "\u{2029}":
+        case "\u{0}"..."\u{1F}", "\u{7F}"..."\u{9F}", "\u{2028}", "\u{2029}",
+             // Direction controls and the byte order mark can reorder or hide text in a viewer.
+             "\u{61C}", "\u{200E}", "\u{200F}", "\u{202A}"..."\u{202E}", "\u{2066}"..."\u{2069}", "\u{FEFF}":
             let hex = String(scalar.value, radix: 16, uppercase: true)
             return "\\u{" + (hex.count < 2 ? "0" : "") + hex + "}"
         default:
@@ -92,7 +94,7 @@ extension Redactable {
     }
 
     /**
-     Escapes control and line-breaking characters that remain in a description.
+     Escapes control, line-breaking, and direction control characters that remain in a description.
 
      Values inside wrappers, collections, and nested messages print through Swift's own formatting, which leaves some of them raw.
      This does not touch quotes or backslashes, so it never escapes the same character twice.

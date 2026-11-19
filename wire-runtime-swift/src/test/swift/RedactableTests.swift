@@ -191,6 +191,55 @@ final class RedactableTests: XCTestCase {
         XCTAssertTrue(controls.isEmpty, description)
     }
 
+    func testDirectionControlScalarsAreEscaped() {
+        // Direction controls and the byte order mark can reorder or hide text in a viewer.
+        let scalars: [(raw: String, escaped: String)] = [
+            ("\u{61C}", #"\u{61C}"#),
+            ("\u{200E}", #"\u{200E}"#),
+            ("\u{200F}", #"\u{200F}"#),
+            ("\u{202A}", #"\u{202A}"#),
+            ("\u{202B}", #"\u{202B}"#),
+            ("\u{202C}", #"\u{202C}"#),
+            ("\u{202D}", #"\u{202D}"#),
+            ("\u{202E}", #"\u{202E}"#),
+            ("\u{2066}", #"\u{2066}"#),
+            ("\u{2067}", #"\u{2067}"#),
+            ("\u{2068}", #"\u{2068}"#),
+            ("\u{2069}", #"\u{2069}"#),
+            ("\u{FEFF}", #"\u{FEFF}"#),
+        ]
+        let raw = "a" + scalars.map(\.raw).joined() + "b"
+        let escaped = "a" + scalars.map(\.escaped).joined() + "b"
+
+        let redacted = RedactedCollections(secret: "secret-value") {
+            $0.opt = raw
+            $0.list = [raw]
+            $0.entries = [raw: raw]
+        }
+        let description = redacted.description
+        XCTAssertFalse(description.contains("secret-value"), description)
+        XCTAssertEqual(description.components(separatedBy: escaped).count - 1, 4, description)
+        let rawScalars = Set(scalars.flatMap(\.raw.unicodeScalars))
+        XCTAssertTrue(description.unicodeScalars.filter(rawScalars.contains).isEmpty, description)
+
+        let underscores = RedactedUnderscores(
+            req_under: "secret",
+            _req_lead: "secret",
+            req_trail_: "secret",
+            __req_double__: "secret",
+            req_visible_: raw
+        )
+        XCTAssertTrue(underscores.description.contains("req_visible: \"\(escaped)\""), underscores.description)
+    }
+
+    func testOrdinaryNonAsciiScalarsStayRaw() {
+        let text = "é日本語😀א"
+        let redacted = RedactedCollections(secret: "secret-value") {
+            $0.opt = text
+        }
+        XCTAssertTrue(redacted.description.contains(text), redacted.description)
+    }
+
     private func assertOnlyVisible(
         _ description: String,
         secrets: [String],
