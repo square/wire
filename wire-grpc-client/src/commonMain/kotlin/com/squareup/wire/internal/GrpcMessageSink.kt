@@ -27,6 +27,8 @@ import okio.BufferedSink
  * @param messageAdapter a proto adapter for each message.
  * @param callForCancel the HTTP call that can be canceled to signal abnormal termination.
  * @param grpcEncoding the content coding for the stream body.
+ * @param flushAfterWrite true to flush the sink after every message; false to flush only on
+ * close, so the transport can set END_STREAM on the final message's DATA frame.
  */
 internal class GrpcMessageSink<T : Any>(
   private val sink: BufferedSink,
@@ -34,6 +36,7 @@ internal class GrpcMessageSink<T : Any>(
   private val messageAdapter: ProtoAdapter<T>,
   private val callForCancel: Call?,
   private val grpcEncoding: String,
+  private val flushAfterWrite: Boolean = true,
 ) : MessageSink<T> {
   private var closed = false
   override fun write(message: T) {
@@ -57,7 +60,7 @@ internal class GrpcMessageSink<T : Any>(
     }
 
     // TODO: fail if the message size is more than MAX_INT
-    sink.flush()
+    if (flushAfterWrite) sink.flush()
   }
 
   override fun cancel() {

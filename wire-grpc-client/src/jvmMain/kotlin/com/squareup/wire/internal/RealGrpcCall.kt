@@ -156,6 +156,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
       minMessageToCompress = grpcClient.minMessageToCompress,
       requestAdapter = method.requestAdapter,
       onlyMessage = request,
+      flushAfterWrite = !grpcClient.endStreamOnLastUnaryMessage,
     )
     val result = grpcClient.newCall(method, requestMetadata, requestBody, timeout)
     this.call = result

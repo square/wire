@@ -72,6 +72,7 @@ actual abstract class GrpcClient actual constructor() {
       .minMessageToCompress(minMessageToCompress)
       .callTimeout(callTimeoutNanos, TimeUnit.NANOSECONDS)
       .maxInboundMessageSize(maxInboundMessageSize)
+      .endStreamOnLastUnaryMessage(endStreamOnLastUnaryMessage)
   }
 
   internal fun newCall(
@@ -137,6 +138,7 @@ actual abstract class GrpcClient actual constructor() {
     private var minMessageToCompress: Long = 0L
     private var callTimeoutNanos: Long = 0L
     private var maxInboundMessageSize: Long = DEFAULT_MAX_INBOUND_MESSAGE_SIZE
+    private var endStreamOnLastUnaryMessage: Boolean = false
 
     fun client(client: OkHttpClient): Builder {
       require(client.protocols.contains(HTTP_2) || client.protocols.contains(H2_PRIOR_KNOWLEDGE)) {
@@ -213,12 +215,25 @@ actual abstract class GrpcClient actual constructor() {
       this.maxInboundMessageSize = bytes
     }
 
+    /**
+     * When set, unary request bodies are not flushed after the single message, so the transport
+     * sets END_STREAM on the message's own DATA frame instead of sending it in a separate write.
+     * This saves a round trip against servers that run the unary handler only after the client's
+     * half-close. Streaming calls are not affected.
+     *
+     * This is false by default.
+     */
+    fun endStreamOnLastUnaryMessage(enabled: Boolean) = apply {
+      this.endStreamOnLastUnaryMessage = enabled
+    }
+
     fun build(): GrpcClient = WireGrpcClient(
       client = client ?: throw IllegalArgumentException("client is not set"),
       baseUrl = baseUrl ?: throw IllegalArgumentException("baseUrl is not set"),
       minMessageToCompress = minMessageToCompress,
       callTimeoutNanos = callTimeoutNanos,
       maxInboundMessageSize = maxInboundMessageSize,
+      endStreamOnLastUnaryMessage = endStreamOnLastUnaryMessage,
     )
   }
 }
@@ -229,6 +244,7 @@ internal class WireGrpcClient internal constructor(
   internal val minMessageToCompress: Long,
   internal val callTimeoutNanos: Long,
   internal val maxInboundMessageSize: Long,
+  internal val endStreamOnLastUnaryMessage: Boolean,
 ) : GrpcClient() {
   override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = RealGrpcCall(this, method)
 
