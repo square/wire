@@ -46,6 +46,9 @@ import okio.ByteString.Companion.toByteString
  * pick field numbers and wire types, and sometimes breaks them on purpose. For other adapters, pass
  * [Config.tags] and the generator falls back to a random wire grammar. [Config.seeds] holds valid
  * encoded messages. The fuzzer mutates them, which reaches messages with required fields.
+ *
+ * Some inputs nest a message field 150 levels or more, and repeat the field at each level. Decoding
+ * them must fail, because merged messages share the recursion limit with their parents.
  */
 object DecodeFuzzer {
   class Config(
@@ -66,12 +69,6 @@ object DecodeFuzzer {
     val missingRequiredFieldsAllowed: Boolean = false,
     /** The base seed. `WIRE_FUZZ_SEED` overrides it. */
     val seed: Long = 1L,
-  )
-
-  class Result(
-    val inputs: Int,
-    val decoded: Int,
-    val elapsedMillis: Long,
   )
 
   /** The required fields of `AllTypes` in the shared fixtures, with the tags 101 to 117. */
@@ -101,7 +98,7 @@ object DecodeFuzzer {
   }
 
   /** Fuzzes [adapter], fails with an [AssertionError] on the first contract violation per kind. */
-  fun fuzz(name: String, adapter: ProtoAdapter<*>, config: Config = Config()): Result {
+  private fun fuzz(name: String, adapter: ProtoAdapter<*>, config: Config) {
     val scale = System.getenv("WIRE_FUZZ_SCALE")?.toDoubleOrNull()?.takeIf { it > 0 } ?: 1.0
     val baseSeed = System.getenv("WIRE_FUZZ_SEED")?.toLongOrNull() ?: config.seed
     val inputs = (config.inputs * scale).toInt()
@@ -113,7 +110,8 @@ object DecodeFuzzer {
 
     for (index in 0 until inputs) {
       val random = Random(baseSeed * 1_000_003L + index)
-      val bytes = generator.next(random, index)
+      val input = generator.next(random, index)
+      val bytes = input.bytes
       for (path in DecodePath.values()) {
         val value = try {
           path.decode(adapter, bytes)
@@ -122,6 +120,10 @@ object DecodeFuzzer {
             failures.record(Failure("decode ${path.label}", e, name, baseSeed, index, bytes))
           }
           continue
+        }
+        if (input.deeperThanRecursionLimit) {
+          val error = AssertionError("decode succeeded, but the message is nested deeper than the recursion limit")
+          failures.record(Failure("decode ${path.label}", error, name, baseSeed, index, bytes))
         }
         if (path == DecodePath.Reader32) decoded++
         if (value == null) continue
@@ -146,7 +148,6 @@ object DecodeFuzzer {
     if (inputs > 0 && decoded == 0) {
       throw AssertionError("$name: no generated input decoded, so the fuzzer proves nothing")
     }
-    return Result(inputs, decoded, elapsedMillis)
   }
 
   private fun isDocumented(e: Throwable, config: Config): Boolean = when {
@@ -215,18 +216,28 @@ object DecodeFuzzer {
    */
   private class Field(val wireType: Int, val message: Shape?, val packed: Boolean, val elementWireType: Int)
 
+  /**
+   * The bytes of one input. [deeperThanRecursionLimit] is true if the bytes nest messages deeper
+   * than the recursion limit, through fields that the adapter reads as messages. Decoding such an
+   * input must fail.
+   */
+  private class Input(val bytes: ByteArray, val deeperThanRecursionLimit: Boolean = false)
+
   private class Generator(adapter: ProtoAdapter<*>, val config: Config) {
     private val shape: Shape? = adapter.type?.java?.let { shapeOf(it, mutableMapOf()) }?.takeIf { it.fields.isNotEmpty() }
     private val tags: List<Int> = (shape?.fields?.keys?.toList() ?: listOf()) + config.tags
 
-    fun next(random: Random, index: Int): ByteArray {
+    fun next(random: Random, index: Int): Input {
       // Valid seeds come first, unchanged, so the encode path always runs.
-      if (index < config.seeds.size) return config.seeds[index].toByteArray()
-      return when (random.nextInt(10)) {
-        0 -> deepNesting(random)
-        in 1..3 -> if (config.seeds.isEmpty()) message(random, shape, 0) else mutate(random, config.seeds[random.nextInt(config.seeds.size)].toByteArray())
-        else -> message(random, shape, 0)
-      }
+      if (index < config.seeds.size) return Input(config.seeds[index].toByteArray())
+      if (shape != null && random.nextInt(40) == 0) return mergeNesting(random, shape)
+      return Input(
+        when (random.nextInt(10)) {
+          0 -> deepNesting(random)
+          in 1..3 -> if (config.seeds.isEmpty()) message(random, shape, 0) else mutate(random, config.seeds[random.nextInt(config.seeds.size)].toByteArray())
+          else -> message(random, shape, 0)
+        },
+      )
     }
 
     private fun message(random: Random, shape: Shape?, depth: Int): ByteArray {
@@ -352,6 +363,40 @@ object DecodeFuzzer {
       return buffer.readByteArray()
     }
 
+    /**
+     * Nests messages through message fields of [root], 150 levels or more. Every level holds the
+     * same field twice: an empty message, then the message for the next level. Generated code keeps
+     * the second occurrence as bytes and merges it into the first one after the last tag. The
+     * merged messages must share the recursion limit with their parents. A type that has no
+     * message field to follow stops early, and then the input has no expected failure.
+     *
+     * The merge budget is not tested here. It limits time and memory on much larger inputs than
+     * a fuzzer can afford, and unit tests cover it.
+     */
+    private fun mergeNesting(random: Random, root: Shape): Input {
+      val wanted = MERGE_NESTING_LEVELS + random.nextInt(50)
+      val tags = ArrayList<Int>()
+      var current = root
+      while (tags.size < wanted) {
+        val choices = current.entries.filter { it.value.message != null }
+        if (choices.isEmpty()) break
+        val choice = choices[random.nextInt(choices.size)]
+        tags += choice.key
+        current = choice.value.message!!
+      }
+      var bytes = ByteArray(0)
+      for (tag in tags.asReversed()) {
+        val buffer = Buffer()
+        varint(buffer, (tag.toLong() shl 3) or 2L)
+        varint(buffer, 0L)
+        varint(buffer, (tag.toLong() shl 3) or 2L)
+        varint(buffer, bytes.size.toLong())
+        buffer.write(bytes)
+        bytes = buffer.readByteArray()
+      }
+      return Input(bytes, deeperThanRecursionLimit = tags.size >= MERGE_NESTING_LEVELS)
+    }
+
     private fun mutate(random: Random, seed: ByteArray): ByteArray {
       var bytes = seed
       repeat(1 + random.nextInt(4)) {
@@ -370,6 +415,9 @@ object DecodeFuzzer {
 
     private companion object {
       const val MAX_DEPTH = 6
+
+      /** More than the default recursion limit of 100. */
+      const val MERGE_NESTING_LEVELS = 150
 
       fun varint(buffer: Buffer, value: Long) {
         var v = value
@@ -395,8 +443,9 @@ object DecodeFuzzer {
         cache[type]?.let { return it }
         val shape = Shape()
         cache[type] = shape
-        for (javaField in type.declaredFields) {
-          val annotation = javaField.getAnnotation(WireField::class.java) ?: continue
+        // The JVM does not fix the order of declared fields. Sort by tag so that a seed generates the same inputs on every JDK.
+        val annotations = type.declaredFields.mapNotNull { it.getAnnotation(WireField::class.java) }
+        for (annotation in annotations.sortedBy { it.tag }) {
           if (annotation.keyAdapter.isNotEmpty()) {
             val entry = Shape()
             entry.fields[1] = fieldOf(annotation.keyAdapter, false, cache)

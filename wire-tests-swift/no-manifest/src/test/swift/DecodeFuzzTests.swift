@@ -276,22 +276,31 @@ private struct FuzzSpec {
         }
     }
 
-    /// Nests a message or a group thousands of levels deep, to find recursion limits.
+    /// Nests a message or a group up to 200,000 levels deep, to find recursion limits.
+    /// A decoder without a limit overflows its stack at that depth, and the test process crashes.
+    /// A stack overflow prints no input, because the signal handler has no stack left to run on.
+    /// Only 1 in 50 nests goes that deep, so that the default run stays short.
     private func deepNesting(_ random: inout FuzzRandom) -> [UInt8] {
         let tag = UInt64(tags[random.below(tags.count)])
-        let levels = [10, 100, 1_000, 5_000][random.below(4)]
+        let levels = random.below(50) == 0 ? 200_000 : [10, 100, 1_000, 5_000][random.below(4)]
+        var out: [UInt8] = []
         if random.below(2) == 0 {
-            return (0..<levels).flatMap { _ in varint(tag << 3 | 3) }
-                + (0..<levels).flatMap { _ in varint(tag << 3 | 4) }
+            let start = varint(tag << 3 | 3)
+            let end = varint(tag << 3 | 4)
+            out.reserveCapacity(levels * (start.count + end.count))
+            for _ in 0..<levels { out.append(contentsOf: start) }
+            for _ in 0..<levels { out.append(contentsOf: end) }
+            return out
         }
+        let key = varint(tag << 3 | 2)
         var sizes = [Int](repeating: 0, count: levels + 1)
         for level in 1...levels {
-            sizes[level] = varint(tag << 3 | 2).count + varint(UInt64(sizes[level - 1])).count + sizes[level - 1]
+            sizes[level] = key.count + varintSize(sizes[level - 1]) + sizes[level - 1]
         }
-        var out: [UInt8] = []
+        out.reserveCapacity(sizes[levels] - sizes[0])
         for level in stride(from: levels, through: 1, by: -1) {
-            out += varint(tag << 3 | 2)
-            out += varint(UInt64(sizes[level - 1]))
+            out.append(contentsOf: key)
+            appendVarint(UInt64(sizes[level - 1]), to: &out)
         }
         return out
     }
@@ -308,6 +317,25 @@ private struct FuzzSpec {
             }
         }
         return bytes
+    }
+
+    private func appendVarint(_ value: UInt64, to out: inout [UInt8]) {
+        var value = value
+        while value > 0x7f {
+            out.append(UInt8(value & 0x7f) | 0x80)
+            value >>= 7
+        }
+        out.append(UInt8(value))
+    }
+
+    private func varintSize(_ value: Int) -> Int {
+        var value = value
+        var size = 1
+        while value > 0x7f {
+            size += 1
+            value >>= 7
+        }
+        return size
     }
 
     private func varint(_ value: UInt64) -> [UInt8] {
