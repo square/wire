@@ -30,6 +30,10 @@ class MergeChoiceTest {
   private val b = 2
   private val c = 3
 
+  private val reflectiveAdapter = ProtoAdapter.newMessageAdapter(MergeChoice::class.java)
+  private val reflectiveBuildersOnlyAdapter =
+    ProtoAdapter.newMessageAdapter(MergeChoiceBuildersOnly::class.java)
+
   private fun encode(vararg occurrences: Pair<Int, Int>): ByteArray {
     val buffer = Buffer()
     for ((tag, value) in occurrences) {
@@ -44,6 +48,10 @@ class MergeChoiceTest {
     assertEquals(expected, describe(MergeChoice.ADAPTER.decode(Buffer().write(bytes))))
     assertEquals(expected, describe(MergeChoiceBuildersOnly.ADAPTER.decode(bytes)))
     assertEquals(expected, describe(MergeChoiceBuildersOnly.ADAPTER.decode(Buffer().write(bytes))))
+    assertEquals(expected, describe(reflectiveAdapter.decode(bytes)))
+    assertEquals(expected, describe(reflectiveAdapter.decode(Buffer().write(bytes))))
+    assertEquals(expected, describe(reflectiveBuildersOnlyAdapter.decode(bytes)))
+    assertEquals(expected, describe(reflectiveBuildersOnlyAdapter.decode(Buffer().write(bytes))))
   }
 
   private fun describe(message: MergeChoice) = "a=${message.a?.values} b=${message.b?.values} c=${message.c?.values}"
