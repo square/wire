@@ -121,3 +121,19 @@ message SwiftJsonNames {
     int32 oneof_percent = 7 [json_name = "%one"];
   }
 }
+
+enum SwiftReservedEnum {
+  self = 0;
+  init = 1;
+  Type = 2;
+  Protocol = 3;
+}
+
+message SwiftReservedEnumNames {
+  optional SwiftReservedEnum default_self = 1 [default = self];
+  optional SwiftReservedEnum default_init = 2 [default = init];
+  optional SwiftReservedEnum default_type = 3 [default = Type];
+  optional SwiftReservedEnum default_protocol = 4 [default = Protocol];
+  optional SwiftReservedEnum plain = 5;
+  repeated SwiftReservedEnum list = 6;
+}

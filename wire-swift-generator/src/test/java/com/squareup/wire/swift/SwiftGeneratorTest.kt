@@ -646,6 +646,117 @@ class SwiftGeneratorTest {
     assertThat(code).contains("""forKey: preferCamelCase ? "%c" : "c"""")
   }
 
+  @Test fun enumConstantsWithSpecialSwiftMeaningKeepTheirNames() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  self = 0;
+        |  init = 1;
+        |  Type = 2;
+        |  Protocol = 3;
+        |  PLAIN = 4;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Special")
+
+    assertThat(code).contains("case `self` = 0")
+    assertThat(code).contains("case `init` = 1")
+    assertThat(code).contains("case `Type` = 2")
+    assertThat(code).contains("case `Protocol` = 3")
+    assertThat(code).contains("case PLAIN = 4")
+    assertThat(code).contains("""case .`self`: return "self"""")
+    assertThat(code).contains("""case .`init`: return "init"""")
+    assertThat(code).contains("""case .`Type`: return "Type"""")
+    assertThat(code).contains("""case .`Protocol`: return "Protocol"""")
+    assertThat(code).contains("""case .PLAIN: return "PLAIN"""")
+    assertThat(code).doesNotContain("``")
+  }
+
+  @Test fun deprecatedEnumConstantsWithSpecialSwiftMeaningAreEscapedInAllCases() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  self = 0 [deprecated = true];
+        |  Type = 1;
+        |  Protocol = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Special")
+
+    assertThat(code).contains("return [.`self`, .`Type`, .`Protocol`]")
+  }
+
+  @Test fun enumDefaultsWithSpecialSwiftMeaningUseImplicitMembers() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  self = 0;
+        |  init = 1;
+        |  Type = 2;
+        |  Protocol = 3;
+        |  PLAIN = 4;
+        |}
+        |
+        |message Message {
+        |  optional Special a = 1 [default = self];
+        |  optional Special b = 2 [default = init];
+        |  optional Special c = 3 [default = Type];
+        |  optional Special d = 4 [default = Protocol];
+        |  optional Special e = 5 [default = PLAIN];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`self` as Special))")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`init` as Special))")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`Type` as Special))")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`Protocol` as Special))")
+    // Constants without a special meaning keep the same output.
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Special.PLAIN)")
+  }
+
+  @Test fun proto3EnumWithSpecialZeroConstantHasDefaultedValue() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |enum Special {
+        |  Type = 0;
+        |  OTHER = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Special")
+
+    assertThat(code).contains("case `Type` = 0")
+    assertThat(code).contains("(.`Type` as Special)\n")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))

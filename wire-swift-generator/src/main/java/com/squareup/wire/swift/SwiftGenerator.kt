@@ -186,7 +186,7 @@ class SwiftGenerator private constructor(
       // Proto2 allows for non-zero default values
       // We can only handle them if the enum has no pruned values
       syntax == PROTO_3
-    }?.firstOrNull { it.tag == 0 }?.name?.toSwiftIdentifier()
+    }?.firstOrNull { it.tag == 0 }?.name
 
   private val Field.isProtoDefaulted: Boolean
     get() {
@@ -1553,7 +1553,7 @@ class SwiftGenerator private constructor(
         FOUNDATION_DATA,
         defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
       )
-      protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue.toString().toSwiftIdentifier())
+      protoType.isEnum -> enumConstantReference(typeName, defaultValue.toString())
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
   }
@@ -1852,7 +1852,7 @@ class SwiftGenerator private constructor(
           addProperty(
             PropertySpec.varBuilder("defaultedValue", enumName, PUBLIC, STATIC).getter(
               FunctionSpec.getterBuilder().addCode(
-                CodeBlock.of("%T.%L\n", type.typeName.makeNonOptional(), protoDefaultedName),
+                CodeBlock.of("%L\n", enumConstantReference(type.typeName.makeNonOptional(), protoDefaultedName)),
               ).build(),
             ).build(),
           )
@@ -1870,7 +1870,7 @@ class SwiftGenerator private constructor(
         }
         type.constants.forEach { constant ->
           addEnumCase(
-            EnumerationCaseSpec.builder(constant.name.toSwiftIdentifier(), constant.tag)
+            EnumerationCaseSpec.builder(constant.name.toSwiftEnumCaseDeclaration(), constant.tag)
               .apply {
                 if (constant.documentation.isNotBlank()) {
                   addDoc("%L\n", constant.documentation.sanitizeDoc())
@@ -1891,7 +1891,7 @@ class SwiftGenerator private constructor(
                 .beginControlFlow("switch", "self")
                 .apply {
                   type.constants.forEach { constant ->
-                    addStatement("case .%N: return %S", constant.name.toSwiftIdentifier(), constant.name)
+                    addStatement("case .%L: return %S", constant.name.toSwiftEnumCaseName(), constant.name)
                   }
                 }
                 .endControlFlow("switch")
@@ -1910,7 +1910,7 @@ class SwiftGenerator private constructor(
                 FunctionSpec.getterBuilder()
                   .addStatement(
                     "return [%L]",
-                    type.constants.map { CodeBlock.of(".%N", it.name.toSwiftIdentifier()) }
+                    type.constants.map { CodeBlock.of(".%L", it.name.toSwiftEnumCaseName()) }
                       .joinToCode(",%W"),
                   )
                   .build(),
@@ -1999,6 +1999,39 @@ class SwiftGenerator private constructor(
 
     /** Proto names can hold `-` and `.`, which Swift identifiers cannot. */
     private fun String.toSwiftIdentifier(): String = replace('-', '_').replace('.', '_')
+
+    /**
+     * Enum constants that Swift reads as something else when they follow a type name. `Foo.self`
+     * is the metatype, `Foo.init` is the initializer, and `Foo.Type` and `Foo.Protocol` are
+     * metatypes too. Backticks fix the declaration, but not a reference that names the enum, so
+     * those references use an implicit member expression instead.
+     */
+    private val SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING = setOf("self", "init", "Type", "Protocol")
+
+    /**
+     * Returns the name to declare an enum case with. SwiftPoet escapes `self`, `init` and `Type`
+     * on its own, but not `Protocol`.
+     */
+    private fun String.toSwiftEnumCaseDeclaration(): String {
+      val name = toSwiftIdentifier()
+      return if (name == "Protocol") "`$name`" else name
+    }
+
+    /** Returns the enum case name to write after a dot, escaped when Swift needs it. */
+    private fun String.toSwiftEnumCaseName(): CodeBlock {
+      val name = toSwiftIdentifier()
+      return if (name == "Protocol") CodeBlock.of("`$name`") else CodeBlock.of("%N", name)
+    }
+
+    /** Returns an expression for [constantName] of the enum [enumName]. */
+    private fun enumConstantReference(enumName: TypeName, constantName: String): CodeBlock {
+      val name = constantName.toSwiftIdentifier()
+      return if (name in SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING) {
+        CodeBlock.of("(.`%L` as %T)", name, enumName)
+      } else {
+        CodeBlock.of("%T.%L", enumName, name)
+      }
+    }
 
     val MessageType.isExtensible: Boolean
       get() = extensionsList.isNotEmpty()
