@@ -127,7 +127,6 @@ final class UnknownFieldsTests: XCTestCase {
     #endif
 
     func testOutOfOrderFieldsAreOrderedByTagForEveryShape() throws {
-        var generator = SystemRandomNumberGenerator()
         var seed: UInt64 = 0x2545F4914F6CDD1D
         func random(_ bound: Int) -> Int {
             seed ^= seed << 13
@@ -135,7 +134,6 @@ final class UnknownFieldsTests: XCTestCase {
             seed ^= seed << 17
             return Int(seed % UInt64(bound))
         }
-        _ = generator
 
         let shapes: [String: [(tag: UInt32, bytes: [UInt8])]] = [
             "one tag after a larger one": [(1015, varintField(1015, 1))]
@@ -509,6 +507,16 @@ final class UnknownFieldsTests: XCTestCase {
         message.unknownFields = decoded
         XCTAssertEqual(message.ext_int32, 42)
         XCTAssertEqual(message.ext_string, "text")
+    }
+
+    func testCodableDropsBytesThatAreNotCompleteFields() throws {
+        let good = varintField(10, 1)
+        let invalid = UnknownFields(rawData: Foundation.Data(good + [0x08, 0x80]))
+
+        let decoded = try JSONDecoder().decode(UnknownFields.self, from: try JSONEncoder().encode(invalid))
+
+        XCTAssertEqual(decoded.rawData, Foundation.Data(good))
+        XCTAssertEqual(invalid.rawData, Foundation.Data(good + [0x08, 0x80]))
     }
 
     // MARK: - Tests - Malformed Data

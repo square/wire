@@ -118,6 +118,11 @@ final class WriteBuffer {
         storage[index] = value
     }
 
+    /// Calls `body` with the bytes in the buffer.
+    func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+        try body(UnsafeRawBufferPointer(start: storage, count: count))
+    }
+
     /// Releases the spare capacity.
     func shrinkToFit() {
         guard count > 0, capacity > count else { return }

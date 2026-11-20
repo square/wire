@@ -298,8 +298,11 @@ public final class ProtoReader {
         guard let buffer = frame.unknownFields else {
             return UnknownFields()
         }
-        let data = Data(buffer, shrinkingToFit: true)
-        return frame.unknownFieldsAreOrdered ? UnknownFields(orderedRawData: data) : UnknownFields(rawData: data)
+        if frame.unknownFieldsAreOrdered {
+            return UnknownFields(orderedRawData: Data(buffer, shrinkingToFit: true))
+        }
+        // Sort straight from the buffer, so the bytes are not held twice.
+        return buffer.withUnsafeBytes { UnknownFields(unorderedBytes: $0) }
     }
 
     // MARK: - Public Methods - Decoding - Single Fields

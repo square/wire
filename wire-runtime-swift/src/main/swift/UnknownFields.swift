@@ -292,12 +292,24 @@ public struct UnknownFields: Sendable {
     }
 
     /// Orders the fields by tag. Fields with the same tag keep their order.
+    private mutating func canonicalize() {
+        if let ordered = rawData.withUnsafeBytes({ Self.orderedCopy(of: $0) }) {
+            rawData = ordered
+        }
+    }
+
+    /// Creates unknown fields from bytes that may be out of order, without first copying them to a `Data`.
+    internal init(unorderedBytes bytes: UnsafeRawBufferPointer) {
+        self.rawData = Self.orderedCopy(of: bytes) ?? Data(bytes)
+    }
+
+    /// Returns the fields ordered by tag, or nil if they already are. Fields with the same tag keep their order.
     ///
     /// The extra memory used depends on the number of distinct tags, not on the number of fields.
-    private mutating func canonicalize() {
+    private static func orderedCopy(of source: UnsafeRawBufferPointer) -> Data? {
         var isOrdered = true
         var lastTag: UInt32 = 0
-        scanFields { tag, _, _ in
+        scan(source) { tag, _, _ in
             if tag < lastTag {
                 isOrdered = false
                 return false
@@ -305,24 +317,24 @@ public struct UnknownFields: Sendable {
             lastTag = tag
             return true
         }
-        if isOrdered { return }
+        if isOrdered { return nil }
 
         // First pass: add up the bytes of each tag.
         var table: [TagOffset] = []
         var limit = 4096
-        let parsedEnd = scanFields { tag, start, end in
+        let parsedEnd = scan(source) { tag, start, end in
             if table.last?.tag == tag {
                 table[table.count - 1].offset += end - start
             } else {
                 table.append(TagOffset(tag: tag, offset: end - start))
                 if table.count >= limit {
-                    Self.mergeEntries(&table)
+                    mergeEntries(&table)
                     limit = Swift.max(limit, table.count * 2)
                 }
             }
             return true
         }
-        Self.mergeEntries(&table)
+        mergeEntries(&table)
         // Turn the sizes into the offset where the bytes of each tag start.
         var offset = 0
         for index in table.indices {
@@ -332,31 +344,29 @@ public struct UnknownFields: Sendable {
         }
 
         // Second pass: copy the fields to their place.
-        var result = Data(count: rawData.count)
-        rawData.withUnsafeBytes { source in
-            result.withUnsafeMutableBytes { target in
-                guard let sourceBase = source.baseAddress, let targetBase = target.baseAddress else { return }
-                var currentTag: UInt32?
-                var index = 0
-                _ = Self.scan(source) { tag, start, end in
-                    if tag != currentTag {
-                        currentTag = tag
-                        var low = 0
-                        var high = table.count
-                        while low < high {
-                            let middle = (low + high) / 2
-                            if table[middle].tag < tag { low = middle + 1 } else { high = middle }
-                        }
-                        index = low
+        var result = Data(count: source.count)
+        result.withUnsafeMutableBytes { target in
+            guard let sourceBase = source.baseAddress, let targetBase = target.baseAddress else { return }
+            var currentTag: UInt32?
+            var index = 0
+            _ = scan(source) { tag, start, end in
+                if tag != currentTag {
+                    currentTag = tag
+                    var low = 0
+                    var high = table.count
+                    while low < high {
+                        let middle = (low + high) / 2
+                        if table[middle].tag < tag { low = middle + 1 } else { high = middle }
                     }
-                    memcpy(targetBase + table[index].offset, sourceBase + start, end - start)
-                    table[index].offset += end - start
-                    return true
+                    index = low
                 }
-                memcpy(targetBase + parsedEnd, sourceBase + parsedEnd, source.count - parsedEnd)
+                memcpy(targetBase + table[index].offset, sourceBase + start, end - start)
+                table[index].offset += end - start
+                return true
             }
+            memcpy(targetBase + parsedEnd, sourceBase + parsedEnd, source.count - parsedEnd)
         }
-        rawData = result
+        return result
     }
 
     /// Sorts entries by tag and adds up the sizes of entries with the same tag.
@@ -392,6 +402,12 @@ extension UnknownFields: Equatable, Hashable {
 }
 
 /// The coded form is a dictionary of tag to wire bytes, as it was before unknown fields were stored as one value.
+/// Earlier versions use the same format.
+///
+/// It holds only what `fieldsByTag` returns, so bytes that are not complete wire fields are not coded.
+/// This applies only to values that were built from invalid bytes, such as `init(rawData:)` with a truncated field.
+/// Unknown fields that come from decoding or from the accessors of this type are coded without loss.
+/// Fields are coded by tag, so after decoding the fields of different tags are in ascending tag order, as they always are.
 extension UnknownFields: Codable {
     public init(from decoder: any Decoder) throws {
         self.init(uncheckedFieldsByTag: try [UInt32: Data](from: decoder))

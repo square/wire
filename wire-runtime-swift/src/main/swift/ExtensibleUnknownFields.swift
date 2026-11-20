@@ -155,6 +155,8 @@ public struct ExtensibleUnknownFields {
     }
 }
 
+/// The coded form is the one of `UnknownFields`: a dictionary of tag to wire bytes.
+/// Bytes that are not complete wire fields are not coded, and memoized values are not coded.
 extension ExtensibleUnknownFields: Codable, Equatable, Hashable, Sendable {
     public init(from decoder: any Decoder) throws {
         self.init(UnknownFields(uncheckedFieldsByTag: try [UInt32: Data](from: decoder)))
