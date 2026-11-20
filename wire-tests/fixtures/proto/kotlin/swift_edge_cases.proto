@@ -150,3 +150,33 @@ message SwiftReservedTypeNames {
   optional Protocol default_protocol = 2 [default = PROTOCOL_ONE];
   repeated Protocol protocols = 3;
 }
+
+message SwiftOneofProtocol {
+  oneof protocol {
+    string a = 1;
+    int32 b = 2;
+  }
+}
+
+message SwiftOneofType {
+  oneof type {
+    string c = 1;
+    int32 d = 2;
+  }
+}
+
+// A constant with the name of its enum is fine in a default outside the enum.
+enum SwiftSameNameEnum {
+  SwiftSameNameEnum = 0;
+  SWIFT_SAME_NAME_OTHER = 1;
+}
+
+message SwiftSameNameOuter {
+  enum Inner {
+    SwiftSameNameOuter = 0;
+    SWIFT_SAME_NAME_INNER_OTHER = 1;
+  }
+
+  optional SwiftSameNameEnum top = 1 [default = SwiftSameNameEnum];
+  optional Inner inner = 2 [default = SwiftSameNameOuter];
+}

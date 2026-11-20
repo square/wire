@@ -312,7 +312,7 @@ class SwiftGenerator private constructor(
   ): List<TypeSpec> {
     val structType = type.typeName
     val oneOfEnumNames = type.oneOfs.associateWith {
-      structType.nestedType(it.safeName.replaceFirstChar(Char::uppercase))
+      structType.nestedType(it.safeName.replaceFirstChar(Char::uppercase).toNestedSafeName())
     }
 
     // TODO use a NameAllocator
@@ -1852,7 +1852,7 @@ class SwiftGenerator private constructor(
           addProperty(
             PropertySpec.varBuilder("defaultedValue", enumName, PUBLIC, STATIC).getter(
               FunctionSpec.getterBuilder().addCode(
-                CodeBlock.of("%L\n", enumConstantReference(type, type.typeName.makeNonOptional(), protoDefaultedName)),
+                CodeBlock.of("%L\n", enumConstantReference(type, type.typeName.makeNonOptional(), protoDefaultedName, insideEnum = true)),
               ).build(),
             ).build(),
           )
@@ -1967,6 +1967,9 @@ class SwiftGenerator private constructor(
     private val ProtoType.nestedSafeName: String
       get() = if (simpleName == "Protocol") "Protocol_" else safeName
 
+    /** Same as [nestedSafeName], for the enum of a oneof, which is nested in its message. */
+    private fun String.toNestedSafeName(): String = if (this == "Protocol") "Protocol_" else this
+
     // TODO use a NameAllocator
     val Field.safeName: String
       get() = when (name) {
@@ -2041,18 +2044,23 @@ class SwiftGenerator private constructor(
 
     /**
      * Returns an expression for [constantName] of the enum [enumName]. Swift cannot read a case
-     * after its type name when the case is named `self`, `init`, `Type` or `Protocol`, or when it
-     * has the same name as its enum.
+     * after its type name when the case is named `self`, `init`, `Type` or `Protocol`.
+     *
+     * Inside the enum, [insideEnum], a case that has the name of the first segment of the type name
+     * hides that segment, so `Status.Kind.Status` fails there. Outside the enum it compiles, so the
+     * output stays the same.
      */
     private fun enumConstantReference(
       enumType: EnumType,
       enumName: TypeName,
       constantName: String,
+      insideEnum: Boolean = false,
     ): CodeBlock {
       val name = enumType.swiftCaseName(constantName)
       return when {
         name in SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING -> CodeBlock.of("(.`%L` as %T)", name, enumName)
-        name == (enumName as? DeclaredTypeName)?.simpleName -> CodeBlock.of("(.%L as %T)", name, enumName)
+        insideEnum && name == (enumName as? DeclaredTypeName)?.simpleNames?.first() ->
+          CodeBlock.of("(.%L as %T)", name, enumName)
         else -> CodeBlock.of("%T.%L", enumName, name)
       }
     }

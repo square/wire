@@ -886,7 +886,7 @@ class SwiftGeneratorTest {
     assertThat(messageCode).contains("@CustomDefaulted(defaultValue: WithDeprecated.allCases_)")
   }
 
-  @Test fun enumDefaultWithTheNameOfItsEnumUsesImplicitMember() {
+  @Test fun proto2DefaultNamedLikeItsEnumKeepsTheQualifiedForm() {
     val schema = buildSchema {
       add(
         "message.proto".toPath(),
@@ -898,33 +898,93 @@ class SwiftGeneratorTest {
         |  OTHER = 1;
         |}
         |
-        |message Message {
+        |message Outer {
+        |  enum Inner {
+        |    Outer = 0;
+        |    OTHER_INNER = 1;
+        |  }
+        |
         |  optional Status a = 1 [default = Status];
         |  optional Status b = 2 [default = OTHER];
-        |}
-        """.trimMargin(),
-      )
-      add(
-        "proto3.proto".toPath(),
-        """
-        |syntax = "proto3";
-        |
-        |package three;
-        |
-        |enum Level {
-        |  Level = 0;
-        |  HIGH = 1;
+        |  optional Inner c = 3 [default = Outer];
         |}
         """.trimMargin(),
       )
     }
 
-    val messageCode = schema.generateSwift("Message")
-    val proto3Code = schema.generateSwift("three.Level")
+    val code = schema.generateSwift("Outer")
 
-    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: (.Status as Status))")
-    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: Status.OTHER)")
-    assertThat(proto3Code).contains("(.Level as Level)\n")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Status.Status)")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Status.OTHER)")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Outer.Inner.Outer)")
+    assertThat(code).doesNotContain(" as ")
+  }
+
+  @Test fun proto3ZeroConstantNamedLikeTheFirstTypeSegmentUsesImplicitMember() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |enum Level {
+        |  Level = 0;
+        |  HIGH = 1;
+        |}
+        |
+        |message Status {
+        |  enum Kind {
+        |    Status = 0;
+        |    OK = 1;
+        |  }
+        |  enum Other {
+        |    Kind = 0;
+        |    FINE = 1;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    assertThat(schema.generateSwift("Level")).contains("(.Level as Level)\n")
+    assertThat(schema.generateSwift("Status.Kind")).contains("(.Status as Status.Kind)\n")
+    // `Status.Other.Kind` still compiles, since `Status` is the first segment.
+    assertThat(schema.generateSwift("Status.Other")).contains("Status.Other.Kind\n")
+  }
+
+  @Test fun oneofNamedProtocolGetsASuffix() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message OneofProtocol {
+        |  oneof protocol {
+        |    string a = 1;
+        |    int32 b = 2;
+        |  }
+        |}
+        |
+        |message OneofType {
+        |  oneof type {
+        |    string c = 1;
+        |    int32 d = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val protocolCode = schema.generateSwift("OneofProtocol")
+    val typeCode = schema.generateSwift("OneofType")
+
+    assertThat(protocolCode).contains("public var `protocol`: OneofProtocol.Protocol_?")
+    assertThat(protocolCode).contains("public enum Protocol_")
+    assertThat(protocolCode).doesNotContain("enum Protocol ")
+    // A oneof named `type` already compiles, so its output does not change.
+    assertThat(typeCode).contains("public var type: OneofType.`Type`?")
+    assertThat(typeCode).doesNotContain("Type_")
   }
 
   private fun Schema.generateSwift(typeName: String): String {

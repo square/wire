@@ -63,3 +63,13 @@ message SwiftProto3ReservedEnumNames {
   optional SwiftProto3AllCasesZero all_cases_zero = 6;
   optional SwiftProto3SameNameZero same_name_zero = 7;
 }
+
+// The first segment of the type name is also the name of a constant.
+message SwiftProto3Outer {
+  enum Kind {
+    SwiftProto3Outer = 0;
+    KIND_OK = 1;
+  }
+
+  optional Kind kind = 1;
+}

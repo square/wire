@@ -163,4 +163,40 @@ final class ReservedEnumNamesTests : XCTestCase {
         XCTAssertEqual(decoded.type_zero, .`Type`)
         XCTAssertEqual(decoded.same_name_zero, .SwiftProto3SameNameZero)
     }
+
+    func testOneofNamedProtocolIsSuffixed() throws {
+        let message = SwiftOneofProtocol { $0.protocol = SwiftOneofProtocol.Protocol_.b(7) }
+
+        let data = try ProtoEncoder().encode(message)
+        let decoded = try ProtoDecoder().decode(SwiftOneofProtocol.self, from: data)
+
+        XCTAssertEqual(decoded, message)
+        XCTAssertEqual(decoded.protocol, .b(7))
+        XCTAssertEqual(try JSONDecoder().decode(SwiftOneofProtocol.self, from: JSONEncoder().encode(message)), message)
+    }
+
+    func testOneofNamedTypeKeepsItsEnumName() throws {
+        let message = SwiftOneofType { $0.type = .c("x") }
+
+        let data = try ProtoEncoder().encode(message)
+
+        XCTAssertEqual(try ProtoDecoder().decode(SwiftOneofType.self, from: data), message)
+    }
+
+    func testDefaultNamedLikeItsEnumInProto2() {
+        let message = SwiftSameNameOuter()
+
+        XCTAssertNil(message.top)
+        XCTAssertEqual(message.$top, .SwiftSameNameEnum)
+        XCTAssertEqual(message.$inner, .SwiftSameNameOuter)
+    }
+
+    func testProto3ZeroConstantNamedLikeTheOuterType() throws {
+        XCTAssertEqual(SwiftProto3Outer.Kind.defaultedValue, .SwiftProto3Outer)
+        XCTAssertEqual(SwiftProto3Outer().$kind, .SwiftProto3Outer)
+
+        let message = SwiftProto3Outer { $0.kind = .KIND_OK }
+        let data = try ProtoEncoder().encode(message)
+        XCTAssertEqual(try ProtoDecoder().decode(SwiftProto3Outer.self, from: data), message)
+    }
 }
