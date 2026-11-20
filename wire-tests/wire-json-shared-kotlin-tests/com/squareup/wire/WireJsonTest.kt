@@ -524,6 +524,40 @@ class WireJsonTest {
     }
   }
 
+  @Test fun timestampAtRangeBoundariesDeserializes() {
+    val min = jsonLibrary.fromJson("""{"orderedAt":"0001-01-01T00:00:00Z"}""", PizzaDelivery::class.java)
+    assertThat(min.ordered_at).isEqualTo(ofEpochSecond(-62135596800L, 0L))
+    val max = jsonLibrary.fromJson(
+      """{"orderedAt":"9999-12-31T23:59:59.999999999Z"}""",
+      PizzaDelivery::class.java,
+    )
+    assertThat(max.ordered_at).isEqualTo(ofEpochSecond(253402300799L, 999_999_999L))
+    assertThat(PizzaDelivery.ADAPTER.decode(PizzaDelivery.ADAPTER.encode(max))).isEqualTo(max)
+  }
+
+  @Test fun timestampOutsideRangeOnReading() {
+    val timestamps = listOf(
+      // One second before 0001-01-01T00:00:00Z.
+      "-0001-12-31T23:59:59Z",
+      // One second after 9999-12-31T23:59:59Z.
+      "+10000-01-01T00:00:00Z",
+      // An offset that moves the instant one hour before the minimum.
+      "0001-01-01T00:00:00+01:00",
+    )
+    for (timestamp in timestamps) {
+      try {
+        jsonLibrary.fromJson("""{"orderedAt":"$timestamp"}""", PizzaDelivery::class.java)
+        fail("expected a failure for $timestamp")
+      } catch (expected: JsonDataException) {
+        // Moshi.
+        assertThat(expected).hasMessage("decode failed: $timestamp at path \$.orderedAt")
+      } catch (expected: JsonSyntaxException) {
+        // Gson.
+        assertThat(expected).messageContains("decode failed: $timestamp at path \$.orderedAt")
+      }
+    }
+  }
+
   @Test fun literalNullsReplacedWithIdentityInProto3() {
     val expected = PizzaDelivery.Builder()
       .pizzas(listOf(Pizza.Builder().build()))
