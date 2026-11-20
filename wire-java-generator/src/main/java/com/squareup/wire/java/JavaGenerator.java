@@ -157,6 +157,7 @@ public final class JavaGenerator {
           .put(ProtoType.TIMESTAMP, ClassName.get("java.time", "Instant"))
           .put(ProtoType.EMPTY, ClassName.get("kotlin", "Unit"))
           .put(ProtoType.FIELD_MASK, ClassName.get("com.squareup.wire", "FieldMask"))
+          .put(ProtoType.RPC_STATUS, ClassName.get("com.squareup.wire", "RpcStatus"))
           .put(
               ProtoType.STRUCT_MAP,
               ParameterizedTypeName.get(
