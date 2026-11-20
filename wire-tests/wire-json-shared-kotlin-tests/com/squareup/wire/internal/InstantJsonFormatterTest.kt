@@ -61,4 +61,12 @@ class InstantJsonFormatterTest {
       assertFailure { fromString(value) }.isInstanceOf<DateTimeException>()
     }
   }
+
+  @Test fun `instant outside the timestamp range to string`() {
+    assertThat(toStringOrNumber(ofEpochSecond(-62_135_596_800L, 0L))).isEqualTo("0001-01-01T00:00:00Z")
+    assertThat(toStringOrNumber(ofEpochSecond(253_402_300_799L, 0L))).isEqualTo("9999-12-31T23:59:59Z")
+    for (seconds in listOf(-62_135_596_801L, 253_402_300_800L)) {
+      assertFailure { toStringOrNumber(ofEpochSecond(seconds, 0L)) }.isInstanceOf<IllegalArgumentException>()
+    }
+  }
 }

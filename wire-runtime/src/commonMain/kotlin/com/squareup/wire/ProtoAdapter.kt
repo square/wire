@@ -1385,11 +1385,11 @@ private fun ofEpochSecondOrThrow(seconds: Long, nanos: Int): Instant {
 }
 
 // Protobuf Timestamp valid range: 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z inclusive.
-private const val TIMESTAMP_SECONDS_MIN = -62135596800L
-private const val TIMESTAMP_SECONDS_MAX = 253402300799L
+internal const val TIMESTAMP_SECONDS_MIN = -62135596800L
+internal const val TIMESTAMP_SECONDS_MAX = 253402300799L
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun checkTimestampRange(seconds: Long, nanos: Int) {
+internal inline fun checkTimestampRange(seconds: Long, nanos: Int) {
   require(seconds in TIMESTAMP_SECONDS_MIN..TIMESTAMP_SECONDS_MAX) {
     "Timestamp seconds ($seconds) must be in range [$TIMESTAMP_SECONDS_MIN, $TIMESTAMP_SECONDS_MAX]"
   }
