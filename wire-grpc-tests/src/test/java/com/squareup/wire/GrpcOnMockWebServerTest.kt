@@ -22,8 +22,10 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
+import assertk.assertions.isZero
 import com.squareup.wire.mockwebserver.GrpcDispatcher
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -33,11 +35,14 @@ import okhttp3.Headers.Companion.headersOf
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.RequestBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
+import okio.BufferedSink
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
+import okio.ForwardingSink
 import okio.GzipSink
 import okio.IOException
 import okio.buffer
@@ -103,6 +108,47 @@ class GrpcOnMockWebServerTest {
       assertThat(feature).isEqualTo(Feature(name = "tree"))
       assertThat(fakeRouteGuide.recordedGetFeatureCalls)
         .containsExactly(Point(latitude = 5, longitude = 6))
+    }
+  }
+
+  @Test
+  fun unaryRequestBodyIsNotFlushed() {
+    mockWebServer.dispatcher = GrpcDispatcher(
+      services = listOf(fakeRouteGuide),
+      delegate = mockWebServer.dispatcher,
+    )
+    val flushes = AtomicInteger()
+    interceptor = Interceptor { chain ->
+      val request = chain.request()
+      val body = request.body!!
+      chain.proceed(
+        request.newBuilder()
+          .method(request.method, countingFlushRequestBody(body, flushes))
+          .build(),
+      )
+    }
+
+    runBlocking {
+      val feature = routeGuideService.GetFeature().execute(Point(latitude = 5, longitude = 6))
+      assertThat(feature).isEqualTo(Feature(name = "tree"))
+    }
+
+    assertThat(flushes.get()).isZero()
+  }
+
+  private fun countingFlushRequestBody(body: RequestBody, flushes: AtomicInteger): RequestBody = object : RequestBody() {
+    override fun contentType() = body.contentType()
+
+    override fun contentLength() = body.contentLength()
+
+    override fun writeTo(sink: BufferedSink) {
+      val countingSink = object : ForwardingSink(sink) {
+        override fun flush() {
+          flushes.incrementAndGet()
+          super.flush()
+        }
+      }
+      body.writeTo(countingSink.buffer())
     }
   }
 

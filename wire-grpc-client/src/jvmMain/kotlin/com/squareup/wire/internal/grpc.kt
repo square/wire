@@ -57,6 +57,7 @@ internal fun <S : Any> newRequestBody(
       messageAdapter = requestAdapter,
       callForCancel = null,
       grpcEncoding = "gzip",
+      flushAfterWrite = false,
     )
     grpcMessageSink.use {
       it.write(onlyMessage)
