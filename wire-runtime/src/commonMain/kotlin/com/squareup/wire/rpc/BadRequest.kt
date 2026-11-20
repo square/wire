@@ -16,7 +16,10 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.decodeMessageOrMerge
+import com.squareup.wire.`internal`.decodeMessageOrDefer
+import com.squareup.wire.`internal`.endMerges
+import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.hasMerges
 import com.squareup.wire.`internal`.immutableCopyOf
 import com.squareup.wire.`internal`.redactElements
 import com.squareup.wire.`internal`.sanitize
@@ -341,9 +344,13 @@ public class BadRequest(
               1 -> field_ = ProtoAdapter.STRING.decode(reader)
               2 -> description = ProtoAdapter.STRING.decode(reader)
               3 -> reason = ProtoAdapter.STRING.decode(reader)
-              4 -> localized_message = decodeMessageOrMerge(LocalizedMessage.ADAPTER, reader, localized_message)
+              4 -> localized_message = decodeMessageOrDefer(LocalizedMessage.ADAPTER, reader, 4, localized_message)
               else -> reader.readUnknownField(tag)
             }
+          }
+          if (hasMerges(reader)) {
+            localized_message = finishMerge(reader, 4, LocalizedMessage.ADAPTER, localized_message)
+            endMerges(reader)
           }
           return FieldViolation(
             field_ = field_,
