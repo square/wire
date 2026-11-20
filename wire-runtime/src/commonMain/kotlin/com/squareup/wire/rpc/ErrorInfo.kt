@@ -142,7 +142,7 @@ public class ErrorInfo(
     val result = mutableListOf<String>()
     result += """reason=${sanitize(reason)}"""
     result += """domain=${sanitize(domain)}"""
-    if (metadata.isNotEmpty()) result += """metadata=$metadata"""
+    if (metadata.isNotEmpty()) result += """metadata=${sanitize(metadata)}"""
     return result.joinToString(prefix = "ErrorInfo{", separator = ", ", postfix = "}")
   }
 

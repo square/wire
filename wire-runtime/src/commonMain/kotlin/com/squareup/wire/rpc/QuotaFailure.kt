@@ -339,7 +339,7 @@ public class QuotaFailure(
       result += """api_service=${sanitize(api_service)}"""
       result += """quota_metric=${sanitize(quota_metric)}"""
       result += """quota_id=${sanitize(quota_id)}"""
-      if (quota_dimensions.isNotEmpty()) result += """quota_dimensions=$quota_dimensions"""
+      if (quota_dimensions.isNotEmpty()) result += """quota_dimensions=${sanitize(quota_dimensions)}"""
       result += """quota_value=$quota_value"""
       if (future_quota_value != null) result += """future_quota_value=$future_quota_value"""
       return result.joinToString(prefix = "Violation{", separator = ", ", postfix = "}")

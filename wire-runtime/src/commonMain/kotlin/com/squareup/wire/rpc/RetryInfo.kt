@@ -17,7 +17,10 @@ import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.JvmField
-import com.squareup.wire.`internal`.decodeMessageOrMerge
+import com.squareup.wire.`internal`.decodeMessageOrDefer
+import com.squareup.wire.`internal`.endMerges
+import com.squareup.wire.`internal`.finishMerge
+import com.squareup.wire.`internal`.hasMerges
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -127,9 +130,13 @@ public class RetryInfo(
         var retry_delay: Duration? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> retry_delay = decodeMessageOrMerge(ProtoAdapter.DURATION, reader, retry_delay)
+            1 -> retry_delay = decodeMessageOrDefer(ProtoAdapter.DURATION, reader, 1, retry_delay)
             else -> reader.readUnknownField(tag)
           }
+        }
+        if (hasMerges(reader)) {
+          retry_delay = finishMerge(reader, 1, ProtoAdapter.DURATION, retry_delay)
+          endMerges(reader)
         }
         return RetryInfo(
           retry_delay = retry_delay,
