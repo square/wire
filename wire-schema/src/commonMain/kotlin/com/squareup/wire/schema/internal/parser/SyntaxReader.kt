@@ -202,8 +202,10 @@ class SyntaxReader(
    * names. [escape] is the `u` or `U` that [pos] just moved past. This follows protoc:
    *
    *  * A head surrogate followed by a `\u` trail surrogate makes one code point. The head may come
-   *    from a `\u` or a `\U` escape. A trail from a `\U` escape does not combine.
+   *    from a `\u` or a `\U` escape.
    *  * A surrogate that has no partner stays a lone surrogate.
+   *  * Protoc does not combine a head surrogate with a `\U` trail. A Kotlin string cannot tell a
+   *    lone head followed by a lone trail from a pair, so this reads as a pair here.
    *  * A `\U` value above 0x10FFFF and up to 0x1FFFFF is kept as the text `\U` plus eight digits.
    *  * A `\U` value above 0x1FFFFF, and too few hex digits, are errors.
    */

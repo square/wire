@@ -2417,6 +2417,36 @@ public final class JavaGenerator {
     return result.build();
   }
 
+  /**
+   * Returns a string literal for {@code value}. A surrogate that has no partner is written as a
+   * Unicode escape, as {@code $S} would write it as is and a source file in UTF-8 cannot hold it.
+   */
+  private static CodeBlock stringLiteral(String value) {
+    List<CodeBlock> parts = new ArrayList<>();
+    StringBuilder text = new StringBuilder();
+    int i = 0;
+    while (i < value.length()) {
+      char c = value.charAt(i);
+      if (Character.isHighSurrogate(c)
+          && i + 1 < value.length()
+          && Character.isLowSurrogate(value.charAt(i + 1))) {
+        text.append(c).append(value.charAt(i + 1));
+        i += 2;
+      } else if (Character.isSurrogate(c)) {
+        if (text.length() > 0) parts.add(CodeBlock.of("$S", text.toString()));
+        text.setLength(0);
+        parts.add(CodeBlock.of("$L", String.format("\"\\u%04x\"", (int) c)));
+        i++;
+      } else {
+        text.append(c);
+        i++;
+      }
+    }
+    if (parts.isEmpty()) return CodeBlock.of("$S", value);
+    if (text.length() > 0) parts.add(CodeBlock.of("$S", text.toString()));
+    return CodeBlock.join(parts, " + ");
+  }
+
   private CodeBlock defaultValue(Field field) {
     Object defaultValue = field.getDefault();
 
@@ -2499,7 +2529,7 @@ public final class JavaGenerator {
       }
 
     } else if (javaType.equals(STRING)) {
-      return CodeBlock.of("$S", value != null ? value : "");
+      return stringLiteral(value != null ? String.valueOf(value) : "");
 
     } else if (javaType.equals(BYTE_STRING)) {
       if (value == null) {

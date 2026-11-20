@@ -422,6 +422,26 @@ class KotlinGeneratorTest {
       .contains("\"w6k=\".decodeBase64()")
   }
 
+  @Test fun stringDefaultWithLoneSurrogateIsWrittenAsEscape() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |message Message {
+        |  optional string head = 1 [default = "\ud83d"];
+        |  optional string trail = 2 [default = "a\ude00b"];
+        |  optional string pair = 3 [default = "\ud83d\ude00"];
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
+    assertThat(code).contains("DEFAULT_HEAD: String = \"\\ud83d\"")
+    assertThat(code).contains("DEFAULT_TRAIL: String = \"a\" + \"\\ude00\" + \"b\"")
+    // A pair is written as is.
+    assertThat(code).contains("DEFAULT_PAIR: String = \"\uD83D\uDE00\"")
+  }
+
   @Test fun nameAllocatorIsUsed() {
     val schema = buildSchema {
       add(

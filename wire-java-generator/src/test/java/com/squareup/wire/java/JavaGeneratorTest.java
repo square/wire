@@ -775,6 +775,26 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void stringDefaultWithLoneSurrogateIsWrittenAsEscape() throws IOException {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "message Message {\n"
+                    + "  optional string head = 1 [default = \"\\ud83d\"];\n"
+                    + "  optional string trail = 2 [default = \"a\\ude00b\"];\n"
+                    + "  optional string pair = 3 [default = \"\\ud83d\\ude00\"];\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("Message");
+    assertThat(code).contains("DEFAULT_HEAD = \"\\ud83d\";");
+    assertThat(code).contains("DEFAULT_TRAIL = \"a\" + \"\\ude00\" + \"b\";");
+    // A pair is written as is.
+    assertThat(code).contains("DEFAULT_PAIR = \"\uD83D\uDE00\";");
+  }
+
+  @Test
   public void defaultValuesMustNotBeOctal() throws IOException {
     try {
       new SchemaBuilder()
