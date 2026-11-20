@@ -76,10 +76,12 @@ abstract class JsonIntegration<F, A> {
       return structAdapter(framework)
     }
 
-    val jsonStringAdapter = jsonFormatter(syntax, field.singleAdapter)
+    // A field that uses a primitive array encodes the same JSON as a list of its elements.
+    val elementAdapter = field.singleAdapter.primitiveArrayElementAdapter() ?: field.singleAdapter
+    val jsonStringAdapter = jsonFormatter(syntax, elementAdapter)
     val singleAdapter = when {
       jsonStringAdapter != null -> formatterAdapter(jsonStringAdapter)
-      else -> frameworkAdapter(framework, field.singleAdapter.type?.javaObjectType as Type)
+      else -> frameworkAdapter(framework, elementAdapter.type?.javaObjectType as Type)
     }
 
     return when {

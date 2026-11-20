@@ -16,6 +16,8 @@ dependencies {
 wire {
   sourcePath {
     srcDir("../fixtures/proto/kotlin")
+    srcDir("../fixtures/shared/proto/proto2")
+    srcDir("../fixtures/shared/proto/proto3")
     include(
       "all_types.proto",
       "edge_cases.proto",
@@ -26,6 +28,9 @@ wire {
       "oneof_merge_sealed.proto",
       "option_redacted.proto",
       "redacted_map.proto",
+      "use_array.proto",
+      "use_array_redacted.proto",
+      "use_array_proto2.proto",
     )
   }
 
