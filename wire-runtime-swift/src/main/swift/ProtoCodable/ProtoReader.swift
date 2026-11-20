@@ -45,7 +45,12 @@ public final class ProtoReader {
     private struct MessageFrame {
         let isProto3: Bool
         let messageEnd: UnsafePointer<UInt8>
-        var unknownFields: [UInt32: WriteBuffer] = [:]
+        /// The wire bytes of every unknown field, in the order they were read. Created when the first one is read.
+        var unknownFields: WriteBuffer?
+        /// The tag of the last unknown field read.
+        var lastUnknownFieldTag: UInt32 = 0
+        /// Whether unknown fields were read in ascending tag order.
+        var unknownFieldsAreOrdered = true
     }
 
     // MARK: - Public Properties
@@ -153,7 +158,7 @@ public final class ProtoReader {
          //clean up that were not caught by the defer block in endMessage
         if messageStackIndex >= 0 {
             for index in 0...messageStackIndex {
-                messageStack[index].unknownFields.removeAll()
+                messageStack[index].unknownFields = nil
             }
         }
         messageStack.deallocate()
@@ -258,7 +263,8 @@ public final class ProtoReader {
 
     @_disfavoredOverload
     public func endMessage(token: Int) throws -> ExtensibleUnknownFields {
-        try ExtensibleUnknownFields(rawData: endMessage(token: token))
+        let unknownFields: UnknownFields = try endMessage(token: token)
+        return ExtensibleUnknownFields(unknownFields)
     }
 
     public func endMessage(token: Int) throws -> UnknownFields {
@@ -268,7 +274,7 @@ public final class ProtoReader {
             if self !== ProtoReader.empty {
                 state = .tag
             }
-            return [:]
+            return UnknownFields()
         }
 
         let frame = messageStack[token]
@@ -278,7 +284,7 @@ public final class ProtoReader {
         // This is caused by unknownFields type, WriteBuffer, being a class/reference type.
         // Register the cleanup before validation: `deinit` skips this frame once it is popped.
         defer {
-            messageStack[token].unknownFields.removeAll()
+            messageStack[token].unknownFields = nil
         }
 
         messageStackIndex -= 1
@@ -289,7 +295,14 @@ public final class ProtoReader {
             )
         }
 
-        return frame.unknownFields.mapValues { Data($0, copyBytes: false) }
+        guard let buffer = frame.unknownFields else {
+            return UnknownFields()
+        }
+        if frame.unknownFieldsAreOrdered {
+            return UnknownFields(orderedRawData: Data(buffer, shrinkingToFit: true))
+        }
+        // Sort straight from the buffer, so the bytes are not held twice.
+        return buffer.withUnsafeBytes { UnknownFields(unorderedBytes: $0) }
     }
 
     // MARK: - Public Methods - Decoding - Single Fields
@@ -1282,10 +1295,14 @@ public final class ProtoReader {
     }
 
     private func addUnknownField(tag: UInt32, _ block: (ProtoWriter) throws -> Void) rethrows {
-        let buffer = messageStack[messageStackIndex].unknownFields[tag] ?? WriteBuffer()
-        let unknownFieldsWriter = ProtoWriter(data: buffer)
-        try block(unknownFieldsWriter)
-        messageStack[messageStackIndex].unknownFields[tag] = buffer
+        if tag < messageStack[messageStackIndex].lastUnknownFieldTag {
+            messageStack[messageStackIndex].unknownFieldsAreOrdered = false
+        }
+        messageStack[messageStackIndex].lastUnknownFieldTag = tag
+
+        let buffer = messageStack[messageStackIndex].unknownFields ?? WriteBuffer()
+        messageStack[messageStackIndex].unknownFields = buffer
+        try block(ProtoWriter(data: buffer))
     }
 
 }

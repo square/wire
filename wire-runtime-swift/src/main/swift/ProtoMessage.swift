@@ -15,9 +15,6 @@
  */
 import Foundation
 
-/// This Data value should be a valid proto data blob with the tagged field number.
-public typealias UnknownFields = [UInt32: Data]
-
 /// Interface that every Protobuf `message` conforms to.
 public protocol ProtoMessage {
     /// - returns: The type URL for this message.

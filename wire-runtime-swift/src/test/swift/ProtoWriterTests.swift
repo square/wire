@@ -869,7 +869,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testWriteUnknownFields() throws {
         let writer = ProtoWriter()
-        let data = Foundation.Data(hexEncoded: "001122334455")!
+        let data = Foundation.Data(hexEncoded: "08_96_01_08_02")!
         try writer.writeUnknownFields([1: data])
 
         XCTAssertEqual(Foundation.Data(writer.buffer, copyBytes: true), data)
@@ -887,16 +887,24 @@ final class ProtoWriterTests: XCTestCase {
             fields.append((tag, data))
         }
 
-        // Dictionaries with other capacities and insertion orders iterate in other orders.
-        for capacity in 0..<100 {
-            var unknownFields = UnknownFields(minimumCapacity: capacity)
-            for (tag, data) in fields.shuffled() {
-                unknownFields[tag] = data
-            }
+        for _ in 0..<100 {
+            let shuffled = fields.shuffled()
 
-            let writer = ProtoWriter()
-            try writer.writeUnknownFields(unknownFields)
-            XCTAssertEqual(Foundation.Data(writer.buffer, copyBytes: true), expected)
+            var fromRawData = Foundation.Data()
+            for (_, data) in shuffled {
+                fromRawData.append(data)
+            }
+            var fromSubscript = UnknownFields()
+            for (tag, data) in shuffled {
+                fromSubscript[tag] = data
+            }
+            let fromDictionary = UnknownFields(fieldsByTag: Dictionary(uniqueKeysWithValues: shuffled))
+
+            for unknownFields in [UnknownFields(rawData: fromRawData), fromSubscript, fromDictionary] {
+                let writer = ProtoWriter()
+                try writer.writeUnknownFields(unknownFields)
+                XCTAssertEqual(Foundation.Data(writer.buffer, copyBytes: true), expected)
+            }
         }
     }
 

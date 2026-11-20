@@ -118,6 +118,17 @@ final class WriteBuffer {
         storage[index] = value
     }
 
+    /// Calls `body` with the bytes in the buffer.
+    func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+        try body(UnsafeRawBufferPointer(start: storage, count: count))
+    }
+
+    /// Releases the spare capacity.
+    func shrinkToFit() {
+        guard count > 0, capacity > count else { return }
+        expand(to: count)
+    }
+
     // MARK: - Private Methods
 
     private func expandIfNeeded(adding: Int) {
@@ -152,6 +163,18 @@ final class WriteBuffer {
 // MARK: -
 
 extension Data {
+
+    /// Makes a `Data` value from the buffer, which must not be used after.
+    ///
+    /// Small values are copied, and large values reuse the memory of the buffer after dropping its spare capacity.
+    init(_ buffer: WriteBuffer, shrinkingToFit: Bool) {
+        if buffer.count <= 1024 {
+            self = Data(buffer, copyBytes: true)
+        } else {
+            buffer.shrinkToFit()
+            self = Data(buffer, copyBytes: false)
+        }
+    }
 
     init(_ buffer: WriteBuffer, copyBytes: Bool) {
         if buffer.count == 0 {
