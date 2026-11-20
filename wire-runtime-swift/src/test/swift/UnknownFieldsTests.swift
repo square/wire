@@ -289,6 +289,48 @@ final class UnknownFieldsTests: XCTestCase {
         XCTAssertEqual(copy, original)
     }
 
+    func testClearingAnExtensionOnACopyBeforeAnyReadKeepsTheOriginal() throws {
+        let input = Foundation.Data(varintField(1001, 42) + varintField(500, 1))
+        let original = try ProtoDecoder().decode(Extensible.self, from: input)
+        var copy = original
+
+        copy.ext_int32 = nil
+
+        XCTAssertNil(copy.ext_int32)
+        XCTAssertEqual(original.ext_int32, 42)
+    }
+
+    func testClearingATagThroughTheRawSubscriptOnACopyBeforeAnyReadKeepsTheOriginal() throws {
+        let input = Foundation.Data(varintField(1001, 42))
+        let original = try ProtoDecoder().decode(Extensible.self, from: input)
+        var copy = original
+
+        copy.unknownFields[1001] = nil
+
+        XCTAssertNil(copy.ext_int32)
+        XCTAssertEqual(original.ext_int32, 42)
+    }
+
+    func testSettingAnAbsentTagOnACopyBeforeAnyReadDoesNotChangeTheOriginal() throws {
+        let original = try ProtoDecoder().decode(Extensible.self, from: Foundation.Data(varintField(500, 1)))
+        var copy = original
+
+        copy.unknownFields[1001] = Foundation.Data(varintField(1001, 7))
+
+        XCTAssertEqual(copy.ext_int32, 7)
+        XCTAssertNil(original.ext_int32)
+    }
+
+    func testReadingAnAbsentTagOnTheOriginalDoesNotHideAValueSetOnACopy() throws {
+        let original = try ProtoDecoder().decode(Extensible.self, from: Foundation.Data(varintField(500, 1)))
+        var copy = original
+
+        copy.unknownFields[1001] = Foundation.Data(varintField(1001, 7))
+
+        XCTAssertNil(original.ext_int32)
+        XCTAssertEqual(copy.ext_int32, 7)
+    }
+
     func testClearingAnAbsentTagChangesNothing() throws {
         let input = Foundation.Data(varintField(1001, 42) + varintField(5000, 1))
         var message = try ProtoDecoder().decode(Extensible.self, from: input)

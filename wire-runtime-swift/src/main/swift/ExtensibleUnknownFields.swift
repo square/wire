@@ -76,6 +76,8 @@ public struct ExtensibleUnknownFields {
             fields[key]
         }
         set {
+            // Clearing a tag that is not there changes nothing, so skip the copy.
+            if newValue == nil, fields[key] == nil { return }
             fields[key] = newValue
             updateMemoizedValues(for: key, to: nil)
         }
@@ -129,6 +131,7 @@ public struct ExtensibleUnknownFields {
     /// This will set both a memoized value and its backing data.
     mutating func setParsedField<T>(fieldNumber: Key, value: T?, compute: (T) throws -> Value) rethrows {
         guard let value else {
+            if fields[fieldNumber] == nil { return }
             fields[fieldNumber] = nil
             updateMemoizedValues(for: fieldNumber, to: nil)
             return
@@ -140,10 +143,6 @@ public struct ExtensibleUnknownFields {
     private mutating func updateMemoizedValues(for key: Key, to value: Any?) {
         if fields.isEmpty {
             memoizedValues = nil
-            return
-        }
-        // Clearing a tag that has no memoized value changes nothing.
-        if value == nil, memoizedValues?.entry(for: key) == nil {
             return
         }
         // Copies share the memoized values, so write to them only when this is the only copy.
