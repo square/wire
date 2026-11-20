@@ -64,6 +64,9 @@ abstract class FieldOrOneOfBinding<M, B> {
         keyAdapter as ProtoAdapter<Any>,
         singleAdapter as ProtoAdapter<Any>,
       ) as ProtoAdapter<Any>
+    } else if (singleAdapter.primitiveArrayElementAdapter() != null) {
+      // Adapters for primitive arrays are already packed.
+      singleAdapter as ProtoAdapter<Any>
     } else {
       singleAdapter.withLabel(label) as ProtoAdapter<Any>
     }
@@ -80,7 +83,7 @@ abstract class FieldOrOneOfBinding<M, B> {
 
   fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
     if (value == null) return true
-    return omitIdentity(syntax) && value == adapter.identity
+    return omitIdentity(syntax) && (value == adapter.identity || value.isEmptyPrimitiveArray())
   }
 
   private fun omitIdentity(syntax: Syntax): Boolean {
@@ -90,4 +93,12 @@ abstract class FieldOrOneOfBinding<M, B> {
     if (isMap && syntax == Syntax.PROTO_3) return true
     return false
   }
+}
+
+private fun Any.isEmptyPrimitiveArray(): Boolean = when (this) {
+  is IntArray -> isEmpty()
+  is LongArray -> isEmpty()
+  is FloatArray -> isEmpty()
+  is DoubleArray -> isEmpty()
+  else -> false
 }

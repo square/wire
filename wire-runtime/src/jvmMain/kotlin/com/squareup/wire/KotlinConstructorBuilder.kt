@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.listAsPrimitiveArray
 import kotlin.collections.set
 import okio.ByteString
 
@@ -91,7 +92,8 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     val params = messageType.declaredFields.mapNotNull { field ->
       val wireField = field.getAnnotation(WireField::class.java)
       if (wireField != null) {
-        return@mapNotNull ConstructorParam(field.type, wireField.schemaIndex) { get(wireField) }
+        // A field that uses a primitive array may hold the list that a JSON library read.
+        return@mapNotNull ConstructorParam(field.type, wireField.schemaIndex) { listAsPrimitiveArray(field.type, get(wireField)) }
       }
       val sealedOneof = field.getAnnotation(WireSealedOneof::class.java)
       if (sealedOneof != null) {

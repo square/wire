@@ -12,6 +12,7 @@ wire {
       "keyword_kotlin.proto",
       "period_java_interop_kotlin.proto",
       "person_java_interop_kotlin.proto",
+      "use_array_interop.proto",
     )
   }
   kotlin {

@@ -14,6 +14,7 @@ wire {
       "period_kotlin.proto",
       "person_kotlin.proto",
       "pizza.proto",
+      "use_array.proto",
     )
   }
   kotlin {

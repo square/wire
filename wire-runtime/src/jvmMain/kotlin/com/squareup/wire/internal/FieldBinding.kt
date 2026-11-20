@@ -92,8 +92,10 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
         } catch (_: NoSuchFieldException) {
           throw AssertionError("No builder field ${builderType.name}.$name")
         }
+        // A field that uses a primitive array takes the list that a JSON library reads.
+        val fieldType = field.type
         { builder, value ->
-          field.set(builder, value)
+          field.set(builder, listAsPrimitiveArray(fieldType, value))
         }
       }
     }

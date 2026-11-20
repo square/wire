@@ -280,7 +280,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
         redactedFields.add(jsonNames[index])
         continue
       }
-      encodeValue(jsonNames[index], value, jsonAdapters[index])
+      encodeValue(jsonNames[index], value.primitiveArrayAsList(), jsonAdapters[index])
     }
     if (redactedFields?.isNotEmpty() == true) {
       encodeValue("__redacted_fields", redactedFields, redactedFieldsAdapter!!)
