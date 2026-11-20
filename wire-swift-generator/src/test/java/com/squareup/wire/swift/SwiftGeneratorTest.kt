@@ -757,6 +757,176 @@ class SwiftGeneratorTest {
     assertThat(code).contains("(.`Type` as Special)\n")
   }
 
+  @Test fun nestedTypeNamedProtocolGetsASuffix() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Outer {
+        |  enum Protocol {
+        |    A = 0;
+        |    B = 1;
+        |  }
+        |  message Nested {
+        |    optional Protocol protocol = 1;
+        |  }
+        |
+        |  optional Protocol p = 1;
+        |  optional Protocol q = 2 [default = B];
+        |  optional Nested nested = 3;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Outer")
+
+    assertThat(code).contains("public enum Protocol_ : Int32")
+    assertThat(code).contains("public var p: Outer.Protocol_?")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Outer.Protocol_.B)")
+    assertThat(code).doesNotContain("Outer.Protocol?")
+    assertThat(schema.generateSwift("Outer.Nested")).contains("public var `protocol`: Outer.Protocol_?")
+    assertThat(code).doesNotContain("enum Protocol ")
+  }
+
+  @Test fun topLevelTypeNamedProtocolKeepsItsName() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Protocol {
+        |  A = 0;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Protocol")
+
+    assertThat(code).contains("public enum Protocol : Int32")
+    assertThat(code).doesNotContain("Protocol_")
+  }
+
+  @Test fun enumConstantsNamedAnyAreEscaped() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  Any = 0;
+        |  OTHER = 1;
+        |}
+        |
+        |message Message {
+        |  optional Special a = 1 [default = Any];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val enumCode = schema.generateSwift("Special")
+    val messageCode = schema.generateSwift("Message")
+
+    assertThat(enumCode).contains("case `Any` = 0")
+    assertThat(enumCode).contains("""case .`Any`: return "Any"""")
+    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: Special.Any)")
+  }
+
+  @Test fun enumConstantNamedAllCasesIsRenamedOnlyWhenTheGeneratorWritesAllCases() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Plain {
+        |  allCases = 0;
+        |  OTHER = 1;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "deprecated.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package other;
+        |
+        |enum WithDeprecated {
+        |  allCases = 0;
+        |  OLD = 1 [deprecated = true];
+        |}
+        |
+        |message Message {
+        |  optional WithDeprecated a = 1 [default = allCases];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val plainCode = schema.generateSwift("Plain")
+    val deprecatedCode = schema.generateSwift("other.WithDeprecated")
+    val messageCode = schema.generateSwift("other.Message")
+
+    // Without a deprecated constant, Swift synthesizes `allCases` and nothing changes.
+    assertThat(plainCode).contains("case allCases = 0")
+    assertThat(plainCode).doesNotContain("allCases_")
+    assertThat(plainCode).doesNotContain("public static var allCases")
+
+    // With one, the generator writes `allCases` itself, so the case needs another name.
+    assertThat(deprecatedCode).contains("case allCases_ = 0")
+    assertThat(deprecatedCode).contains("""case .allCases_: return "allCases"""")
+    assertThat(deprecatedCode).contains("return [.allCases_, .OLD]")
+    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: WithDeprecated.allCases_)")
+  }
+
+  @Test fun enumDefaultWithTheNameOfItsEnumUsesImplicitMember() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Status {
+        |  Status = 0;
+        |  OTHER = 1;
+        |}
+        |
+        |message Message {
+        |  optional Status a = 1 [default = Status];
+        |  optional Status b = 2 [default = OTHER];
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "proto3.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package three;
+        |
+        |enum Level {
+        |  Level = 0;
+        |  HIGH = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val messageCode = schema.generateSwift("Message")
+    val proto3Code = schema.generateSwift("three.Level")
+
+    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: (.Status as Status))")
+    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: Status.OTHER)")
+    assertThat(proto3Code).contains("(.Level as Level)\n")
+  }
+
   private fun Schema.generateSwift(typeName: String): String {
     val swiftGenerator = SwiftGenerator(this)
     val type = requireNotNull(getType(typeName))

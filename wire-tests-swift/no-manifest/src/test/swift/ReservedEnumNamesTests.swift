@@ -18,12 +18,14 @@ import Wire
 import XCTest
 @testable import WireTests
 
-/// Covers enum constants named `self`, `init`, `Type` and `Protocol`.
+/// Covers enum constants named `self`, `init`, `Type`, `Protocol`, `Any` and `allCases`, and an enum named `Protocol`.
 final class ReservedEnumNamesTests : XCTestCase {
     func testConstantsKeepTheirRawValuesAndProtoNames() {
-        XCTAssertEqual(SwiftReservedEnum.allCases, [.`self`, .`init`, .`Type`, .`Protocol`])
-        XCTAssertEqual(SwiftReservedEnum.allCases.map { $0.rawValue }, [0, 1, 2, 3])
-        XCTAssertEqual(SwiftReservedEnum.allCases.map { $0.description }, ["self", "init", "Type", "Protocol"])
+        // The case named `allCases` makes `SwiftReservedEnum.allCases` ambiguous without a type.
+        let all: [SwiftReservedEnum] = SwiftReservedEnum.allCases
+        XCTAssertEqual(all, [.`self`, .`init`, .`Type`, .`Protocol`, .`Any`, .allCases])
+        XCTAssertEqual(all.map { $0.rawValue }, [0, 1, 2, 3, 4, 5])
+        XCTAssertEqual(all.map { $0.description }, ["self", "init", "Type", "Protocol", "Any", "allCases"])
     }
 
     func testUnsetFieldsFallBackOnTheirDeclaredDefaults() {
@@ -92,5 +94,73 @@ final class ReservedEnumNamesTests : XCTestCase {
         let decoded = try JSONDecoder().decode(SwiftReservedEnumNames.self, from: json)
 
         XCTAssertEqual(decoded.list, [.`self`, .`init`, .`Type`, .`Protocol`])
+    }
+
+    func testJsonDecodesAnyAndAllCasesByProtoName() throws {
+        let json = Data(#"{"list":["Any","allCases"]}"#.utf8)
+
+        let decoded = try JSONDecoder().decode(SwiftReservedEnumNames.self, from: json)
+
+        XCTAssertEqual(decoded.list, [.`Any`, .allCases])
+    }
+
+    func testNestedEnumNamedProtocolIsSuffixed() throws {
+        let message = SwiftReservedTypeNames {
+            $0.protocol = .PROTOCOL_ZERO
+            $0.protocols = [.PROTOCOL_ONE, .PROTOCOL_ZERO]
+        }
+        XCTAssertEqual(SwiftReservedTypeNames().$default_protocol, SwiftReservedTypeNames.Protocol_.PROTOCOL_ONE)
+
+        let data = try ProtoEncoder().encode(message)
+        let decoded = try ProtoDecoder().decode(SwiftReservedTypeNames.self, from: data)
+
+        XCTAssertEqual(decoded, message)
+        XCTAssertEqual(decoded.protocols.map { $0.description }, ["PROTOCOL_ONE", "PROTOCOL_ZERO"])
+    }
+
+    func testProto3ZeroConstantsAreTheDefaultedValues() {
+        XCTAssertEqual(SwiftProto3TypeZero.defaultedValue, .`Type`)
+        XCTAssertEqual(SwiftProto3SelfZero.defaultedValue, .`self`)
+        XCTAssertEqual(SwiftProto3InitZero.defaultedValue, .`init`)
+        XCTAssertEqual(SwiftProto3ProtocolZero.defaultedValue, .`Protocol`)
+        XCTAssertEqual(SwiftProto3AnyZero.defaultedValue, .`Any`)
+        XCTAssertEqual(SwiftProto3AllCasesZero.defaultedValue, .allCases_)
+        XCTAssertEqual(SwiftProto3SameNameZero.defaultedValue, .SwiftProto3SameNameZero)
+
+        let message = SwiftProto3ReservedEnumNames()
+        XCTAssertNil(message.type_zero)
+        XCTAssertEqual(message.$type_zero, .`Type`)
+        XCTAssertEqual(message.$self_zero, .`self`)
+        XCTAssertEqual(message.$init_zero, .`init`)
+        XCTAssertEqual(message.$protocol_zero, .`Protocol`)
+        XCTAssertEqual(message.$any_zero, .`Any`)
+        XCTAssertEqual(message.$all_cases_zero, .allCases_)
+        XCTAssertEqual(message.$same_name_zero, .SwiftProto3SameNameZero)
+    }
+
+    func testProto3ConstantsKeepTheirProtoNames() throws {
+        XCTAssertEqual(SwiftProto3AllCasesZero.allCases_.description, "allCases")
+        let all: [SwiftProto3AllCasesZero] = SwiftProto3AllCasesZero.allCases
+        XCTAssertEqual(all, [.allCases_, .OTHER_ALL_CASES])
+
+        let message = SwiftProto3ReservedEnumNames {
+            $0.type_zero = .OTHER
+            $0.self_zero = .OTHER_SELF
+            $0.init_zero = .OTHER_INIT
+            $0.protocol_zero = .OTHER_PROTOCOL
+            $0.any_zero = .OTHER_ANY
+            $0.all_cases_zero = .OTHER_ALL_CASES
+            $0.same_name_zero = .OTHER_SAME_NAME
+        }
+        let data = try ProtoEncoder().encode(message)
+        XCTAssertEqual(try ProtoDecoder().decode(SwiftProto3ReservedEnumNames.self, from: data), message)
+
+        let decoded = try JSONDecoder().decode(
+            SwiftProto3ReservedEnumNames.self,
+            from: Data(#"{"allCasesZero":"allCases","typeZero":"Type","sameNameZero":"SwiftProto3SameNameZero"}"#.utf8)
+        )
+        XCTAssertEqual(decoded.all_cases_zero, .allCases_)
+        XCTAssertEqual(decoded.type_zero, .`Type`)
+        XCTAssertEqual(decoded.same_name_zero, .SwiftProto3SameNameZero)
     }
 }

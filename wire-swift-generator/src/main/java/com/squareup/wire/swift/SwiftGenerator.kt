@@ -1553,7 +1553,7 @@ class SwiftGenerator private constructor(
         FOUNDATION_DATA,
         defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
       )
-      protoType.isEnum -> enumConstantReference(typeName, defaultValue.toString())
+      protoType.isEnum -> enumConstantReference(schema.getType(protoType) as EnumType, typeName, defaultValue.toString())
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
   }
@@ -1852,7 +1852,7 @@ class SwiftGenerator private constructor(
           addProperty(
             PropertySpec.varBuilder("defaultedValue", enumName, PUBLIC, STATIC).getter(
               FunctionSpec.getterBuilder().addCode(
-                CodeBlock.of("%L\n", enumConstantReference(type.typeName.makeNonOptional(), protoDefaultedName)),
+                CodeBlock.of("%L\n", enumConstantReference(type, type.typeName.makeNonOptional(), protoDefaultedName)),
               ).build(),
             ).build(),
           )
@@ -1870,7 +1870,7 @@ class SwiftGenerator private constructor(
         }
         type.constants.forEach { constant ->
           addEnumCase(
-            EnumerationCaseSpec.builder(constant.name.toSwiftEnumCaseDeclaration(), constant.tag)
+            EnumerationCaseSpec.builder(type.swiftCaseName(constant.name).toSwiftEnumCaseDeclaration(), constant.tag)
               .apply {
                 if (constant.documentation.isNotBlank()) {
                   addDoc("%L\n", constant.documentation.sanitizeDoc())
@@ -1891,7 +1891,7 @@ class SwiftGenerator private constructor(
                 .beginControlFlow("switch", "self")
                 .apply {
                   type.constants.forEach { constant ->
-                    addStatement("case .%L: return %S", constant.name.toSwiftEnumCaseName(), constant.name)
+                    addStatement("case .%L: return %S", type.swiftCaseName(constant.name).toSwiftEnumCaseName(), constant.name)
                   }
                 }
                 .endControlFlow("switch")
@@ -1910,7 +1910,7 @@ class SwiftGenerator private constructor(
                 FunctionSpec.getterBuilder()
                   .addStatement(
                     "return [%L]",
-                    type.constants.map { CodeBlock.of(".%L", it.name.toSwiftEnumCaseName()) }
+                    type.constants.map { CodeBlock.of(".%L", type.swiftCaseName(it.name).toSwiftEnumCaseName()) }
                       .joinToCode(",%W"),
                   )
                   .build(),
@@ -1963,6 +1963,10 @@ class SwiftGenerator private constructor(
         }
       }
 
+    /** Swift does not allow a type member named `Protocol`, so a nested type gets a suffix. */
+    private val ProtoType.nestedSafeName: String
+      get() = if (simpleName == "Protocol") "Protocol_" else safeName
+
     // TODO use a NameAllocator
     val Field.safeName: String
       get() = when (name) {
@@ -2008,28 +2012,48 @@ class SwiftGenerator private constructor(
      */
     private val SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING = setOf("self", "init", "Type", "Protocol")
 
+    /** Enum case names that need backticks, and that SwiftPoet does not escape on its own. */
+    private val SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE = setOf("Protocol", "Any")
+
     /**
      * Returns the name to declare an enum case with. SwiftPoet escapes `self`, `init` and `Type`
-     * on its own, but not `Protocol`.
+     * on its own, but not `Protocol` or `Any`.
      */
     private fun String.toSwiftEnumCaseDeclaration(): String {
       val name = toSwiftIdentifier()
-      return if (name == "Protocol") "`$name`" else name
+      return if (name in SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE) "`$name`" else name
     }
 
     /** Returns the enum case name to write after a dot, escaped when Swift needs it. */
     private fun String.toSwiftEnumCaseName(): CodeBlock {
       val name = toSwiftIdentifier()
-      return if (name == "Protocol") CodeBlock.of("`$name`") else CodeBlock.of("%N", name)
+      return if (name in SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE) CodeBlock.of("`$name`") else CodeBlock.of("%N", name)
     }
 
-    /** Returns an expression for [constantName] of the enum [enumName]. */
-    private fun enumConstantReference(enumName: TypeName, constantName: String): CodeBlock {
+    /**
+     * Returns the Swift name of an enum case. A case named `allCases` clashes with the `allCases`
+     * list that the generator writes for an enum with deprecated constants, so it gets a suffix.
+     */
+    private fun EnumType.swiftCaseName(constantName: String): String {
       val name = constantName.toSwiftIdentifier()
-      return if (name in SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING) {
-        CodeBlock.of("(.`%L` as %T)", name, enumName)
-      } else {
-        CodeBlock.of("%T.%L", enumName, name)
+      return if (name == "allCases" && constants.any { it.isDeprecated }) "allCases_" else name
+    }
+
+    /**
+     * Returns an expression for [constantName] of the enum [enumName]. Swift cannot read a case
+     * after its type name when the case is named `self`, `init`, `Type` or `Protocol`, or when it
+     * has the same name as its enum.
+     */
+    private fun enumConstantReference(
+      enumType: EnumType,
+      enumName: TypeName,
+      constantName: String,
+    ): CodeBlock {
+      val name = enumType.swiftCaseName(constantName)
+      return when {
+        name in SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING -> CodeBlock.of("(.`%L` as %T)", name, enumName)
+        name == (enumName as? DeclaredTypeName)?.simpleName -> CodeBlock.of("(.%L as %T)", name, enumName)
+        else -> CodeBlock.of("%T.%L", enumName, name)
       }
     }
 
@@ -2129,7 +2153,7 @@ class SwiftGenerator private constructor(
           val protoType = type.type
 
           val className = if (enclosingClassName != null) {
-            enclosingClassName.nestedType(protoType.safeName, alwaysQualify = true)
+            enclosingClassName.nestedType(protoType.nestedSafeName, alwaysQualify = true)
           } else {
             val safeName = protoType.safeName
 

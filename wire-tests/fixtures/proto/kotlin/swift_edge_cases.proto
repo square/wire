@@ -127,6 +127,8 @@ enum SwiftReservedEnum {
   init = 1;
   Type = 2;
   Protocol = 3;
+  Any = 4;
+  allCases = 5;
 }
 
 message SwiftReservedEnumNames {
@@ -136,4 +138,15 @@ message SwiftReservedEnumNames {
   optional SwiftReservedEnum default_protocol = 4 [default = Protocol];
   optional SwiftReservedEnum plain = 5;
   repeated SwiftReservedEnum list = 6;
+}
+
+message SwiftReservedTypeNames {
+  enum Protocol {
+    PROTOCOL_ZERO = 0;
+    PROTOCOL_ONE = 1;
+  }
+
+  optional Protocol protocol = 1;
+  optional Protocol default_protocol = 2 [default = PROTOCOL_ONE];
+  repeated Protocol protocols = 3;
 }

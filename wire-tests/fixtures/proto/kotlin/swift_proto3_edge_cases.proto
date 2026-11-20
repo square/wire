@@ -1,0 +1,65 @@
+/*
+ * Copyright 2026 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+
+package squareup.protos.kotlin.swift_proto3_edge_cases;
+
+// The zero constant of a proto3 enum becomes `defaultedValue`.
+enum SwiftProto3TypeZero {
+  Type = 0;
+  OTHER = 1;
+}
+
+enum SwiftProto3SelfZero {
+  self = 0;
+  OTHER_SELF = 1;
+}
+
+enum SwiftProto3InitZero {
+  init = 0;
+  OTHER_INIT = 1;
+}
+
+enum SwiftProto3ProtocolZero {
+  Protocol = 0;
+  OTHER_PROTOCOL = 1;
+}
+
+enum SwiftProto3AnyZero {
+  Any = 0;
+  OTHER_ANY = 1;
+}
+
+// A deprecated constant makes the generator write its own `allCases` list.
+enum SwiftProto3AllCasesZero {
+  allCases = 0 [deprecated = true];
+  OTHER_ALL_CASES = 1;
+}
+
+enum SwiftProto3SameNameZero {
+  SwiftProto3SameNameZero = 0;
+  OTHER_SAME_NAME = 1;
+}
+
+message SwiftProto3ReservedEnumNames {
+  optional SwiftProto3TypeZero type_zero = 1;
+  optional SwiftProto3SelfZero self_zero = 2;
+  optional SwiftProto3InitZero init_zero = 3;
+  optional SwiftProto3ProtocolZero protocol_zero = 4;
+  optional SwiftProto3AnyZero any_zero = 5;
+  optional SwiftProto3AllCasesZero all_cases_zero = 6;
+  optional SwiftProto3SameNameZero same_name_zero = 7;
+}

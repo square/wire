@@ -8,6 +8,8 @@ public enum SwiftReservedEnum : Int32, CaseIterable, Proto2Enum {
     case `init` = 1
     case `Type` = 2
     case `Protocol` = 3
+    case `Any` = 4
+    case allCases = 5
 
     public var description: String {
         switch self {
@@ -15,6 +17,8 @@ public enum SwiftReservedEnum : Int32, CaseIterable, Proto2Enum {
         case .`init`: return "init"
         case .`Type`: return "Type"
         case .`Protocol`: return "Protocol"
+        case .`Any`: return "Any"
+        case .allCases: return "allCases"
         }
     }
 
