@@ -56,6 +56,53 @@ class ReverseProtoWriterTest {
     assertUtf8("\udc00", "3f") // Unexpected, dangling low surrogate.
   }
 
+  @Test fun lonelyLowSurrogateIsWrittenAsQuestionMark() {
+    val cases = mapOf(
+      "after ASCII" to ("a\udc00" to "613f"),
+      "after a 2 byte char" to ("\u00e9\udc00" to "c3a93f"),
+      "after a 3 byte char" to ("\u20ac\udc00" to "e282ac3f"),
+      "after a char just below the surrogates" to ("\ud7ff\udc00" to "ed9fbf3f"),
+      "at the start" to ("\udc00b" to "3f62"),
+      "at the end" to ("b\udc00" to "623f"),
+      "twice in a row" to ("\udc00\udc00" to "3f3f"),
+      "twice in a row after ASCII" to ("a\udc00\udc00" to "613f3f"),
+      "after a valid pair" to ("\ud83d\ude00\ude00" to "f09f98803f"),
+      "after a high surrogate and a char" to ("\ud83dx\ude00" to "3f783f"),
+      "after a high surrogate and a valid pair" to ("\ud83d\ud83d\ude00" to "3ff09f9880"),
+      "dangling high surrogate after ASCII" to ("a\ud83d" to "613f"),
+    )
+    for ((name, case) in cases) {
+      val (string, expectedHex) = case
+      assertThat(reverseWrite { writeString(string) }.readByteString().hex(), name).isEqualTo(expectedHex)
+      assertSameAsForwardWriter(string, name)
+    }
+  }
+
+  @Test fun reverseWriterMatchesForwardWriterForMalformedSurrogates() {
+    val chars = listOf("a", "\u00e9", "\u20ac", "\ud83d", "\ude00", "\ud7ff", "\ue000")
+    // Every string of up to three of those chars.
+    for (first in chars) {
+      assertSameAsForwardWriter(first, first)
+      for (second in chars) {
+        assertSameAsForwardWriter(first + second, first + second)
+        for (third in chars) {
+          assertSameAsForwardWriter(first + second + third, first + second + third)
+        }
+      }
+    }
+  }
+
+  private fun assertSameAsForwardWriter(string: String, name: String) {
+    val forwardBuffer = Buffer()
+    ProtoWriter(forwardBuffer).writeString(string)
+    val forwardBytes = forwardBuffer.readByteString()
+
+    val reverseBytes = reverseWrite { writeString(string) }.readByteString()
+    assertThat(reverseBytes.hex(), name).isEqualTo(forwardBytes.hex())
+    assertThat(ProtoAdapter.STRING.encodedSize(string), name).isEqualTo(reverseBytes.size)
+    assertThat(ProtoAdapter.STRING.encode(string).size, name).isEqualTo(reverseBytes.size)
+  }
+
   @Test fun consistentWithRegularProtoWriterStrings() {
     val forwardBuffer = Buffer()
     ProtoWriter(forwardBuffer).apply {

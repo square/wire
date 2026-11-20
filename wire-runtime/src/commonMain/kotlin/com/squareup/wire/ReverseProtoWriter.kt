@@ -175,7 +175,7 @@ class ReverseProtoWriter {
           // surrogate. If not, the UTF-16 is invalid, in which case we emit a replacement
           // character.
           val high = (if (i >= 0) value[i].code else Int.MAX_VALUE)
-          if (high > 0xdbff || c !in 0xdc00..0xdfff) {
+          if (high !in 0xd800..0xdbff || c !in 0xdc00..0xdfff) {
             require(1)
             array[--arrayLimit] = '?'.code.toByte()
           } else {
