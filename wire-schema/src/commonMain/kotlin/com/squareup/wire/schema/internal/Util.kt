@@ -59,6 +59,9 @@ internal fun String.toBytes(): ByteString = ByteArray(length) { index ->
  * names the bytes returned by [toBytes]. Every char from U+007F to U+00FF is written as a three
  * digit octal escape, and a char above U+00FF is written as `?`. Protoc reads a raw char above
  * U+007F as several UTF-8 bytes.
+ *
+ * Otherwise a surrogate that has no partner is written as a `\u` escape, as a file in UTF-8 cannot
+ * hold it.
  */
 internal fun String.escapeQuotedString(bytes: Boolean = false): String = buildString {
   val source = if (bytes) {
@@ -66,7 +69,13 @@ internal fun String.escapeQuotedString(bytes: Boolean = false): String = buildSt
   } else {
     this@escapeQuotedString
   }
-  for (ch in source) {
+  var i = 0
+  while (i < source.length) {
+    val ch = source[i++]
+    if (ch.isHighSurrogate() && i < source.length && source[i].isLowSurrogate()) {
+      append(ch).append(source[i++])
+      continue
+    }
     append(
       when (ch) {
         '"' -> "\\\""
@@ -82,6 +91,7 @@ internal fun String.escapeQuotedString(bytes: Boolean = false): String = buildSt
         // Other control characters get three octal digits, like protoc, so a digit after them is safe.
         in '\u0000'..'\u001f', '\u007f' -> "\\" + ch.code.toString(8).padStart(3, '0')
         in '\u0080'..'\u00ff' -> if (bytes) "\\" + ch.code.toString(8) else ch
+        in '\ud800'..'\udfff' -> "\\u" + ch.code.toString(16)
         else -> ch
       },
     )

@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.containsOnly
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
@@ -1811,6 +1812,25 @@ class ProtoParserTest {
       .isEqualTo("\uD83DA")
     assertThat(parseStringDefault(""""\ude00\ud83d""""), name = "trail then head")
       .isEqualTo("\uDE00\uD83D")
+  }
+
+  @Test
+  fun lonelySurrogateInStringDefaultRoundTripsThroughSchemaOutput() {
+    // Each case is the literal, the parsed value, and the literal in the schema output.
+    val cases = listOf(
+      Triple(""""\ud83d"""", "\uD83D", """"\ud83d""""),
+      Triple(""""\ude00"""", "\uDE00", """"\ude00""""),
+      Triple(""""\ud83d\u0041"""", "\uD83DA", """"\ud83dA""""),
+      Triple(""""\ude00\ud83d"""", "\uDE00\uD83D", """"\ude00\ud83d""""),
+      Triple(""""\ud83d\ude00"""", "\uD83D\uDE00", "\"\uD83D\uDE00\""),
+    )
+    for ((literal, value, written) in cases) {
+      val proto = "message Foo {\n  optional string a = 1 [default = $literal];\n}\n"
+      val output = ProtoParser.parse(location, proto).toSchema()
+      assertThat(output, name = literal).contains("[default = $written]")
+      val field = (ProtoParser.parse(location, output).types[0] as MessageElement).fields[0]
+      assertThat(field.defaultValue, name = literal).isEqualTo(value)
+    }
   }
 
   @Test

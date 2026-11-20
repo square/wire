@@ -1601,6 +1601,40 @@ class KotlinGenerator private constructor(
     }
   }
 
+  /**
+   * Returns a string literal for [this]. A surrogate that has no partner is written as a `\u`
+   * escape, as `%S` would write it as is and a source file in UTF-8 cannot hold it.
+   */
+  private fun String.toStringLiteral(): CodeBlock {
+    val parts = mutableListOf<CodeBlock>()
+    val text = StringBuilder()
+    var i = 0
+    while (i < length) {
+      val c = this[i]
+      when {
+        c.isHighSurrogate() && i + 1 < length && this[i + 1].isLowSurrogate() -> {
+          text.append(c).append(this[i + 1])
+          i += 2
+        }
+
+        c.isSurrogate() -> {
+          if (text.isNotEmpty()) parts += CodeBlock.of("%S", text.toString())
+          text.clear()
+          parts += CodeBlock.of("%L", "\"\\u" + c.code.toString(16).padStart(4, '0') + "\"")
+          i++
+        }
+
+        else -> {
+          text.append(c)
+          i++
+        }
+      }
+    }
+    if (parts.isEmpty()) return CodeBlock.of("%S", this)
+    if (text.isNotEmpty()) parts += CodeBlock.of("%S", text.toString())
+    return parts.joinToCode("·+·")
+  }
+
   private fun defaultFieldInitializer(
     protoType: ProtoType,
     defaultValue: Any,
@@ -1621,7 +1655,7 @@ class KotlinGenerator private constructor(
       typeName == LONG -> defaultValue.toLongFieldInitializer()
       typeName == FLOAT -> defaultValue.toFloatFieldInitializer()
       typeName == DOUBLE -> defaultValue.toDoubleFieldInitializer()
-      typeName == STRING -> CodeBlock.of("%S", defaultValue)
+      typeName == STRING -> defaultValue.toString().toStringLiteral()
       typeName == ByteString::class.asTypeName() -> CodeBlock.of(
         "%S.%M()!!",
         defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
