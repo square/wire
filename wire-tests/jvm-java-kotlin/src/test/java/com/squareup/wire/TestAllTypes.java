@@ -468,7 +468,8 @@ public class TestAllTypes {
         .isEqualTo(
             "çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
                 + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
-    assertThat(new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1"))
+    // Like protoc, a raw char above U+007F in a bytes default names its UTF-8 bytes.
+    assertThat(new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "UTF-8"))
         .isEqualTo(
             "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
                 + "\u0011güzel");

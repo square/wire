@@ -581,6 +581,7 @@ class SchemaEncoderTest {
         |  optional bytes raw = 2 [default = "é"];
         |  optional bytes big = 3 [default = "\400"];
         |  optional bytes mixed = 4 [default = "a\351\400z"];
+        |  optional bytes unicode = 5 [default = "\u00e9\U0001F600"];
         |}
         |
         """.trimMargin(),
@@ -588,12 +589,16 @@ class SchemaEncoderTest {
     }
     val protoFile = schema.protoFile("test.proto")!!
 
-    // The .proto output writes one octal escape for each of those chars, and a question mark above U+00FF.
+    // The .proto output writes one octal escape for each byte, and a question mark above U+00FF.
+    // A raw char above U+007F names its UTF-8 bytes, like in protoc.
     val protoOutput = protoFile.toSchema()
     assertThat(protoOutput).contains("optional bytes octal = 1 [default = \"\\351\"];")
-    assertThat(protoOutput).contains("optional bytes raw = 2 [default = \"\\351\"];")
+    assertThat(protoOutput).contains("optional bytes raw = 2 [default = \"\\303\\251\"];")
     assertThat(protoOutput).contains("optional bytes big = 3 [default = \"?\"];")
     assertThat(protoOutput).contains("optional bytes mixed = 4 [default = \"a\\351?z\"];")
+    assertThat(protoOutput).contains(
+      "optional bytes unicode = 5 [default = \"\\303\\251\\360\\237\\230\\200\"];",
+    )
 
     // The descriptor names the same bytes. A consumer reads one byte for each char.
     val fileDescriptorProto = FileDescriptorProto.parseFrom(SchemaEncoder(schema).encode(protoFile).toByteArray())
@@ -601,7 +606,13 @@ class SchemaEncoderTest {
     val fields = descriptor.findMessageTypeByName("TestMessage").fields.associateBy { it.name }
     val descriptorBytes = fields.mapValues { (it.value.defaultValue as ByteString).toByteArray().toByteString().hex() }
     assertThat(descriptorBytes).isEqualTo(
-      mapOf("octal" to "e9", "raw" to "e9", "big" to "3f", "mixed" to "61e93f7a"),
+      mapOf(
+        "octal" to "e9",
+        "raw" to "c3a9",
+        "big" to "3f",
+        "mixed" to "61e93f7a",
+        "unicode" to "c3a9f09f9880",
+      ),
     )
 
     // Reading the .proto output back gives the same bytes as the descriptor.

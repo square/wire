@@ -352,6 +352,30 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("{'")
   }
 
+  @Test fun bytesDefaultsNameUtf8BytesOfRawChars() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  optional bytes raw = 1 [default = "é"];
+        |  optional bytes octal = 2 [default = "\351"];
+        |  optional bytes escape = 3 [default = "\u00e9"];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    // The bytes are c3 a9 for a raw char and a unicode escape, and e9 for an octal escape.
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: Foundation.Data(base64Encoded: "w6k=")!)""" + "\n    public var raw:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: Foundation.Data(base64Encoded: "6Q==")!)""" + "\n    public var octal:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: Foundation.Data(base64Encoded: "w6k=")!)""" + "\n    public var escape:")
+  }
+
   @Test fun stringDefaultWithLoneSurrogateIsWrittenAsQuestionMark() {
     val schema = buildSchema {
       add(

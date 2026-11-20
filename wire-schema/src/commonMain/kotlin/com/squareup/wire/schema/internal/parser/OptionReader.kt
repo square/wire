@@ -29,13 +29,16 @@ class OptionReader(internal val reader: SyntaxReader) {
   /**
    * Reads options enclosed in '[' and ']' if they are present and returns them. Returns an empty
    * list if no options are present.
+   *
+   * If [bytesDefault] is true, a `default` option holds the default of a `bytes` field. Its string
+   * value reads as one char per byte. See [SyntaxReader.readQuotedString].
    */
-  fun readOptions(): List<OptionElement> {
+  fun readOptions(bytesDefault: Boolean = false): List<OptionElement> {
     if (!reader.peekChar('[')) return emptyList()
 
     val result = mutableListOf<OptionElement>()
     while (true) {
-      result += readOption('=')
+      result += readOption('=', bytesDefault)
 
       // Check for closing ']'
       if (reader.peekChar(']')) break
@@ -47,7 +50,7 @@ class OptionReader(internal val reader: SyntaxReader) {
   }
 
   /** Reads a option containing a name, an '=' or ':', and a value.  */
-  fun readOption(keyValueSeparator: Char): OptionElement {
+  fun readOption(keyValueSeparator: Char, bytesDefault: Boolean = false): OptionElement {
     val isExtension = reader.peekChar() == '['
     val isParenthesized = reader.peekChar() == '('
     var name = reader.readName() // Option name.
@@ -74,7 +77,7 @@ class OptionReader(internal val reader: SyntaxReader) {
     } else {
       reader.expect(c == keyValueSeparator) { "expected '$keyValueSeparator' in option" }
     }
-    val kindAndValue = readKindAndValue()
+    val kindAndValue = readKindAndValue(bytes = bytesDefault && name == "default" && subNames.isEmpty())
     var kind = kindAndValue.kind
     var value = kindAndValue.value
     subNames.reversed().forEach { subName ->
@@ -93,11 +96,11 @@ class OptionReader(internal val reader: SyntaxReader) {
   }
 
   /** Reads a value that can be a map, list, string, number, boolean or enum.  */
-  private fun readKindAndValue(): KindAndValue {
+  private fun readKindAndValue(bytes: Boolean = false): KindAndValue {
     when (val peeked = reader.peekChar()) {
       '{' -> return KindAndValue(MAP, readMap('{', '}', ':'))
       '[' -> return KindAndValue(LIST, readList())
-      '"', '\'' -> return KindAndValue(STRING, reader.readString())
+      '"', '\'' -> return KindAndValue(STRING, reader.readQuotedString(bytes))
       else -> {
         if (peeked.isDigit() || peeked == '-') {
           return KindAndValue(NUMBER, reader.readWord())

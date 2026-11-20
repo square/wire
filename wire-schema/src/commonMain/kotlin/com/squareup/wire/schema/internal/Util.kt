@@ -55,13 +55,14 @@ internal fun String.toBytes(): ByteString = ByteArray(length) { index ->
 /**
  * Escapes [this] so it can sit between double quotes in `.proto` source.
  *
- * Wire models a `bytes` default as a string with one char per byte, so with [bytes] true the text
- * names the bytes returned by [toBytes]. Every char from U+007F to U+00FF is written as a three
- * digit octal escape, and a char above U+00FF is written as `?`. Protoc reads a raw char above
- * U+007F as several UTF-8 bytes.
+ * Wire models a `bytes` default as a string with one char per byte. The parser has already turned
+ * a raw char above U+007F, and a `\u` or `\U` escape, into the chars for its UTF-8 bytes. So with
+ * [bytes] true the text names the bytes returned by [toBytes]. Every char from U+007F to U+00FF
+ * is written as a three digit octal escape, and a char above U+00FF is written as `?`. Protoc
+ * reads the text as the same bytes.
  *
- * Otherwise a surrogate that has no partner is written as a `\u` escape, as a file in UTF-8 cannot
- * hold it.
+ * With [bytes] false, a surrogate that has no partner is written as a `\u` escape, as a file in
+ * UTF-8 cannot hold it.
  */
 internal fun String.escapeQuotedString(bytes: Boolean = false): String = buildString {
   val source = if (bytes) {

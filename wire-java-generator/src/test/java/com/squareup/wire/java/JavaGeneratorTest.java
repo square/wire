@@ -755,6 +755,26 @@ public final class JavaGeneratorTest {
   }
 
   @Test
+  public void bytesDefaultsNameUtf8BytesOfRawChars() throws IOException {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "message Message {\n"
+                    + "  optional bytes raw = 1 [default = \"\u00e9\"];\n"
+                    + "  optional bytes octal = 2 [default = \"\\351\"];\n"
+                    + "  optional bytes escape = 3 [default = \"\\u00e9\"];\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("Message");
+    // The bytes are c3 a9 for a raw char and a unicode escape, and e9 for an octal escape.
+    assertThat(code).contains("DEFAULT_RAW = ByteString.decodeBase64(\"w6k=\");");
+    assertThat(code).contains("DEFAULT_OCTAL = ByteString.decodeBase64(\"6Q==\");");
+    assertThat(code).contains("DEFAULT_ESCAPE = ByteString.decodeBase64(\"w6k=\");");
+  }
+
+  @Test
   public void stringDefaultWithLoneSurrogateIsWrittenAsEscape() throws IOException {
     Schema schema =
         new SchemaBuilder()

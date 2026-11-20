@@ -27,6 +27,7 @@ import java.nio.file.FileSystems
 import org.junit.Test
 import squareup.proto2.kotlin.alloptions.AllOptions as AllOptionsP2
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass as AllTypesOuterClassP2
+import squareup.proto2.kotlin.bytesdefaults.BytesDefaults as BytesDefaultsP2
 import squareup.proto2.kotlin.interop.InteropServiceOuterClass as InteropServiceOuterClassP2
 import squareup.proto2.kotlin.interop.InteropTest as InteropTestP2
 import squareup.proto3.kotlin.alltypes.AllTypesOuterClass as AllTypesOuterClassP3
@@ -84,6 +85,18 @@ class SchemaEncoderInteropTest {
       wireProtoFile = schema.protoFile("squareup/proto2/kotlin/alloptions/all_options.proto")!!,
       protocProtoFile = AllOptionsP2.getDescriptor().toProto(),
     )
+  }
+
+  /** Wire and protoc must name the same bytes for a `bytes` default, including for escapes. */
+  @Test fun `proto2 bytes_defaults`() {
+    val wireBytes = SchemaEncoder(schema).encode(
+      schema.protoFile("squareup/proto2/kotlin/bytesdefaults/bytes_defaults.proto")!!,
+    )
+    val wireDescriptor = FileDescriptorProto.parseFrom(wireBytes.toByteArray())
+    val protocDescriptor = BytesDefaultsP2.getDescriptor().toProto()
+
+    fun FileDescriptorProto.defaults() = getMessageType(0).fieldList.associate { it.name to it.defaultValue }
+    assertThat(wireDescriptor.defaults()).isEqualTo(protocDescriptor.defaults())
   }
 
   /**

@@ -3374,7 +3374,7 @@ public class AllTypes private constructor(
 
     @JvmField
     public val DEFAULT_DEFAULT_BYTES: ByteString =
-        "529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs".decodeBase64()!!
+        "w6dvawcIDAoNCQsBAQEPD34BAREBARFnw7x6ZWw=".decodeBase64()!!
 
     @JvmField
     public val DEFAULT_DEFAULT_NESTED_ENUM: NestedEnum = NestedEnum.A

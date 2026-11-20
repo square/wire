@@ -79,7 +79,15 @@ class SyntaxReader(
     }
   }
 
-  fun readQuotedString(): String {
+  /**
+   * Reads a quoted string and decodes its escapes.
+   *
+   * Wire keeps the literal of a `bytes` field as a string with one char per byte. With [bytes] true,
+   * a char that is not an escape and a `\u` or `\U` escape become the UTF-8 bytes of their code
+   * point, as chars from U+0080 to U+00FF. Protoc does the same. Octal and hex escapes stay one
+   * byte. With [bytes] false, the result holds the decoded text.
+   */
+  fun readQuotedString(bytes: Boolean = false): String {
     var startQuote = readChar()
     expect(startQuote == '"' || startQuote == '\'') { "expected quoted string" }
     val result = StringBuilder()
@@ -93,6 +101,7 @@ class SyntaxReader(
         }
         return result.toString()
       }
+      var isByte = false
       if (c == '\\') {
         expect(pos < data.size) { "unexpected end of file" }
         c = data[pos++]
@@ -104,21 +113,72 @@ class SyntaxReader(
           'r' -> c = '\r' // Carriage return.
           't' -> c = '\t' // Horizontal tab.
           'v' -> c = '\u000b' // Vertical tab.
-          'x', 'X' -> c = readNumericEscape(16, 2)
+          'x', 'X' -> {
+            c = readNumericEscape(16, 2)
+            isByte = true
+          }
           '0', '1', '2', '3', '4', '5', '6', '7' -> {
             --pos
             c = readNumericEscape(8, 3)
+            isByte = true
           }
           'u', 'U' -> {
-            appendUnicodeEscape(result, c)
+            appendUnicodeEscape(result, c, bytes)
             continue
           }
         }
       }
-      result.append(c)
+      if (bytes && c.code >= 0x80 && !isByte) {
+        appendCodePoint(result, readRawCodePoint(c), bytes = true)
+      } else {
+        result.append(c)
+      }
       if (c == '\n') newline()
     }
     throw unexpected("unterminated string")
+  }
+
+  /** Returns the code point that starts with [c], which [pos] just moved past. */
+  private fun readRawCodePoint(c: Char): Int {
+    if (c.isHighSurrogate() && pos < data.size && data[pos].isLowSurrogate()) {
+      return 0x10000 + ((c.code - 0xd800) shl 10) + (data[pos++].code - 0xdc00)
+    }
+    return c.code
+  }
+
+  /**
+   * Appends [codePoint]. With [bytes] true, this appends its UTF-8 bytes as chars. A surrogate
+   * that has no partner gets three bytes, like in protoc.
+   */
+  private fun appendCodePoint(result: StringBuilder, codePoint: Int, bytes: Boolean) {
+    when {
+      bytes -> when {
+        codePoint < 0x80 -> result.append(codePoint.toChar())
+        codePoint < 0x800 -> {
+          result.append((0xc0 or (codePoint shr 6)).toChar())
+          result.append((0x80 or (codePoint and 0x3f)).toChar())
+        }
+        codePoint < 0x10000 -> {
+          result.append((0xe0 or (codePoint shr 12)).toChar())
+          result.append((0x80 or ((codePoint shr 6) and 0x3f)).toChar())
+          result.append((0x80 or (codePoint and 0x3f)).toChar())
+        }
+        else -> {
+          result.append((0xf0 or (codePoint shr 18)).toChar())
+          result.append((0x80 or ((codePoint shr 12) and 0x3f)).toChar())
+          result.append((0x80 or ((codePoint shr 6) and 0x3f)).toChar())
+          result.append((0x80 or (codePoint and 0x3f)).toChar())
+        }
+      }
+
+      codePoint >= 0x10000 -> {
+        val offset = codePoint - 0x10000
+        result.append((0xd800 + (offset shr 10)).toChar())
+        result.append((0xdc00 + (offset and 0x3ff)).toChar())
+      }
+
+      else -> result.append(codePoint.toChar())
+    }
   }
 
   private fun readNumericEscape(radix: Int, len: Int): Char {
@@ -149,7 +209,7 @@ class SyntaxReader(
    *  * A `\U` value above 0x10FFFF and up to 0x1FFFFF is kept as the text `\U` plus eight digits.
    *  * A `\U` value above 0x1FFFFF, and too few hex digits, are errors.
    */
-  private fun appendUnicodeEscape(result: StringBuilder, escape: Char) {
+  private fun appendUnicodeEscape(result: StringBuilder, escape: Char, bytes: Boolean) {
     val length = if (escape == 'u') 4 else 8
     var codePoint = readHexDigits(pos, length)
     expect(codePoint != -1L) {
@@ -171,19 +231,11 @@ class SyntaxReader(
       }
     }
 
-    when {
-      codePoint > 0x10ffffL -> {
-        result.append("\\U")
-        result.append(codePoint.toString(16).padStart(8, '0'))
-      }
-
-      codePoint >= 0x10000L -> {
-        val offset = (codePoint - 0x10000L).toInt()
-        result.append((0xd800 + (offset shr 10)).toChar())
-        result.append((0xdc00 + (offset and 0x3ff)).toChar())
-      }
-
-      else -> result.append(codePoint.toInt().toChar())
+    if (codePoint > 0x10ffffL) {
+      result.append("\\U")
+      result.append(codePoint.toString(16).padStart(8, '0'))
+    } else {
+      appendCodePoint(result, codePoint.toInt(), bytes)
     }
   }
 

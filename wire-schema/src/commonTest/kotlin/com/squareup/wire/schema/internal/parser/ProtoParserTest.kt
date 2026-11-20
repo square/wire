@@ -1868,6 +1868,67 @@ class ProtoParserTest {
   }
 
   @Test
+  fun bytesDefaultNamesUtf8BytesOfRawChars() {
+    // Each char of the result is one byte, like in protoc.
+    assertThat(parseBytesDefault(""""é""""), name = "two bytes").isEqualTo("\u00c3\u00a9")
+    assertThat(parseBytesDefault(""""€""""), name = "three bytes").isEqualTo("\u00e2\u0082\u00ac")
+    assertThat(parseBytesDefault("\"\uD83D\uDE00\""), name = "four bytes")
+      .isEqualTo("\u00f0\u009f\u0098\u0080")
+    assertThat(parseBytesDefault("""'é' "a""""), name = "adjacent").isEqualTo("\u00c3\u00a9a")
+    assertThat(parseBytesDefault(""""a\351é\xffz""""), name = "mixed").isEqualTo("a\u00e9\u00c3\u00a9\u00ffz")
+  }
+
+  @Test
+  fun bytesDefaultKeepsOneByteForNumericEscapes() {
+    assertThat(parseBytesDefault(""""\351""""), name = "octal").isEqualTo("\u00e9")
+    assertThat(parseBytesDefault(""""\xe9""""), name = "hex").isEqualTo("\u00e9")
+    assertThat(parseBytesDefault(""""\377\000~\177""""), name = "edges").isEqualTo("\u00ff\u0000~\u007f")
+  }
+
+  @Test
+  fun bytesDefaultNamesUtf8BytesOfUnicodeEscapes() {
+    assertThat(parseBytesDefault(""""\u00e9""""), name = "four digits").isEqualTo("\u00c3\u00a9")
+    assertThat(parseBytesDefault(""""\U000000e9""""), name = "eight digits").isEqualTo("\u00c3\u00a9")
+    assertThat(parseBytesDefault(""""\u0041""""), name = "ascii").isEqualTo("A")
+    assertThat(parseBytesDefault(""""\u20ac""""), name = "three bytes").isEqualTo("\u00e2\u0082\u00ac")
+    assertThat(parseBytesDefault(""""\U0001F600""""), name = "four bytes").isEqualTo("\u00f0\u009f\u0098\u0080")
+    assertThat(parseBytesDefault(""""\ud83d\ude00""""), name = "pair").isEqualTo("\u00f0\u009f\u0098\u0080")
+    assertThat(parseBytesDefault(""""\U0000d83d\ude00""""), name = "pair with long head")
+      .isEqualTo("\u00f0\u009f\u0098\u0080")
+    assertThat(parseBytesDefault(""""a\U00110000""""), name = "above last code point").isEqualTo("a\\U00110000")
+  }
+
+  @Test
+  fun bytesDefaultWithLonelySurrogatesNamesThreeBytesEach() {
+    assertThat(parseBytesDefault(""""\ud83d""""), name = "head").isEqualTo("\u00ed\u00a0\u00bd")
+    assertThat(parseBytesDefault(""""\ude00""""), name = "trail").isEqualTo("\u00ed\u00b8\u0080")
+    // Only a long head and a short trail combine.
+    assertThat(parseBytesDefault(""""\ud83d\U0000de00""""), name = "short head, long trail")
+      .isEqualTo("\u00ed\u00a0\u00bd\u00ed\u00b8\u0080")
+    assertThat(parseBytesDefault(""""\U0000d83d\U0000de00""""), name = "long head, long trail")
+      .isEqualTo("\u00ed\u00a0\u00bd\u00ed\u00b8\u0080")
+  }
+
+  @Test
+  fun stringDefaultAndOtherOptionsKeepChars() {
+    val proto = """
+        |message Foo {
+        |  optional string a = 1 [default = "é\u00e9"];
+        |  optional bytes b = 2 [(x) = "é\u00e9"];
+        |}
+    """.trimMargin()
+    val fields = (ProtoParser.parse(location, proto).types[0] as MessageElement).fields
+    assertThat(fields[0].defaultValue).isEqualTo("\u00e9\u00e9")
+    assertThat(fields[1].options.single().value).isEqualTo("\u00e9\u00e9")
+  }
+
+  private fun parseBytesDefault(literal: String): String {
+    val proto = "message Foo {\n  optional bytes a = 1 [default = $literal];\n}\n"
+    val message = ProtoParser.parse(location, proto).types[0] as MessageElement
+    return message.fields[0].defaultValue!!
+  }
+
+  @Test
   fun stringWithSingleQuotes() {
     val proto = """
         |message Foo {
