@@ -126,6 +126,45 @@ final class UnknownFieldsTests: XCTestCase {
     }
     #endif
 
+    func testOutOfOrderFieldsAreOrderedByTagForEveryShape() throws {
+        var generator = SystemRandomNumberGenerator()
+        var seed: UInt64 = 0x2545F4914F6CDD1D
+        func random(_ bound: Int) -> Int {
+            seed ^= seed << 13
+            seed ^= seed >> 7
+            seed ^= seed << 17
+            return Int(seed % UInt64(bound))
+        }
+        _ = generator
+
+        let shapes: [String: [(tag: UInt32, bytes: [UInt8])]] = [
+            "one tag after a larger one": [(1015, varintField(1015, 1))]
+                + (0..<40_000).map { _ in (1014, varintField(1014, 1)) },
+            "two alternating tags": (0..<30_000).map { index in
+                let tag: UInt32 = index % 2 == 0 ? 1015 : 1014
+                return (tag, varintField(tag, UInt64(index)))
+            },
+            "descending distinct tags": (0..<20_000).reversed().map { (UInt32(1000 + $0), varintField(UInt32(1000 + $0), 1)) },
+            "random tags and sizes": (0..<20_000).map { _ in
+                let tag = UInt32(1000 + random(5_000))
+                return (tag, lengthField(tag, [UInt8](repeating: 7, count: random(20))))
+            },
+        ]
+        for (name, fields) in shapes {
+            var input = Foundation.Data()
+            for field in fields { input.append(contentsOf: field.bytes) }
+            var expected = Foundation.Data()
+            for field in fields.enumerated().sorted(by: { ($0.element.tag, $0.offset) < ($1.element.tag, $1.offset) }) {
+                expected.append(contentsOf: field.element.bytes)
+            }
+
+            XCTAssertEqual(UnknownFields(rawData: input).rawData, expected, name)
+            let message = try ProtoDecoder().decode(Extensible.self, from: input)
+            XCTAssertEqual(message.unknownFields.rawData, expected, name)
+            XCTAssertEqual(try ProtoEncoder().encode(message), expected, name)
+        }
+    }
+
     func testManyDescendingUnknownTagsAreSorted() throws {
         var input = Foundation.Data()
         var expected = Foundation.Data()
@@ -222,6 +261,47 @@ final class UnknownFieldsTests: XCTestCase {
         message.unknownFields[1001] = Foundation.Data(varintField(1001, 8))
 
         XCTAssertEqual(message.ext_int32, 8)
+
+        message.unknownFields[1001] = nil
+
+        XCTAssertNil(message.ext_int32)
+        XCTAssertTrue(message.unknownFields.isEmpty)
+    }
+
+    func testAbsentExtensionIsMemoizedUntilItIsSet() throws {
+        let input = Foundation.Data(varintField(1001, 42))
+        let original = try ProtoDecoder().decode(Extensible.self, from: input)
+        XCTAssertNil(original.ext_bool)
+        XCTAssertNil(original.ext_bool)
+
+        var copy = original
+        copy.ext_bool = true
+        XCTAssertEqual(copy.ext_bool, true)
+        XCTAssertNil(original.ext_bool)
+
+        var raw = original
+        raw.unknownFields[1011] = Foundation.Data(varintField(1011, 1))
+        XCTAssertEqual(raw.ext_bool, true)
+        XCTAssertNil(original.ext_bool)
+
+        copy.ext_bool = nil
+        XCTAssertNil(copy.ext_bool)
+        XCTAssertEqual(copy, original)
+    }
+
+    func testClearingAnAbsentTagChangesNothing() throws {
+        let input = Foundation.Data(varintField(1001, 42) + varintField(5000, 1))
+        var message = try ProtoDecoder().decode(Extensible.self, from: input)
+        XCTAssertEqual(message.ext_int32, 42)
+
+        message.ext_bool = nil
+        message.unknownFields[1500] = nil
+
+        XCTAssertEqual(message.unknownFields.rawData, input)
+        XCTAssertEqual(message.ext_int32, 42)
+        var plain = UnknownFields(rawData: input)
+        plain[7] = nil
+        XCTAssertEqual(plain.rawData, input)
     }
 
     func testExtensibleMessageWithoutUnknownFieldsHasEmptyFields() throws {
@@ -441,6 +521,51 @@ final class UnknownFieldsTests: XCTestCase {
         let unknownFields = UnknownFields(rawData: slice)
         XCTAssertEqual(unknownFields.rawData, Foundation.Data(varintField(3, 2) + varintField(9, 1)))
         XCTAssertEqual(unknownFields[9], Foundation.Data(varintField(9, 1)))
+
+        let ordered = UnknownFields(rawData: Foundation.Data(all.dropFirst(2).prefix(2)))
+        XCTAssertEqual(ordered.rawData.startIndex, 0)
+        XCTAssertEqual(ordered.rawData[0], varintField(9, 1)[0])
+        let orderedSlice = UnknownFields(rawData: all.dropFirst(4))
+        XCTAssertEqual(orderedSlice.rawData.startIndex, 0)
+        XCTAssertEqual(orderedSlice.rawData[0], varintField(3, 2)[0])
+    }
+
+    func testDictionaryStyleAccessors() {
+        var unknownFields = UnknownFields(minimumCapacity: 10)
+        XCTAssertTrue(unknownFields.isEmpty)
+
+        XCTAssertNil(unknownFields.updateValue(Foundation.Data(varintField(20, 2)), forKey: 20))
+        XCTAssertNil(unknownFields.updateValue(Foundation.Data(varintField(10, 1)), forKey: 10))
+        XCTAssertEqual(
+            unknownFields.updateValue(Foundation.Data(varintField(20, 3)), forKey: 20),
+            Foundation.Data(varintField(20, 2))
+        )
+        XCTAssertEqual(unknownFields.keys, [10, 20])
+        XCTAssertEqual(unknownFields.values, [Foundation.Data(varintField(10, 1)), Foundation.Data(varintField(20, 3))])
+
+        XCTAssertEqual(unknownFields[10, default: Foundation.Data()], Foundation.Data(varintField(10, 1)))
+        XCTAssertEqual(unknownFields[99, default: Foundation.Data([1])], Foundation.Data([1]))
+        unknownFields[30, default: Foundation.Data()] = Foundation.Data(varintField(30, 3))
+        XCTAssertEqual(unknownFields.keys, [10, 20, 30])
+
+        XCTAssertEqual(unknownFields.removeValue(forKey: 10), Foundation.Data(varintField(10, 1)))
+        XCTAssertNil(unknownFields.removeValue(forKey: 10))
+        XCTAssertEqual(unknownFields.keys, [20, 30])
+    }
+
+    func testExtensibleDictionaryStyleAccessors() throws {
+        var unknownFields = ExtensibleUnknownFields(minimumCapacity: 10)
+        XCTAssertNil(unknownFields.updateValue(Foundation.Data(varintField(1001, 42)), forKey: 1001))
+        var message = Extensible()
+        message.unknownFields = unknownFields
+        XCTAssertEqual(message.ext_int32, 42)
+
+        XCTAssertEqual(message.unknownFields.keys, [1001])
+        XCTAssertEqual(message.unknownFields.values, [Foundation.Data(varintField(1001, 42))])
+        XCTAssertEqual(message.unknownFields[1001, default: Foundation.Data()], Foundation.Data(varintField(1001, 42)))
+        XCTAssertEqual(message.unknownFields.removeValue(forKey: 1001), Foundation.Data(varintField(1001, 42)))
+        XCTAssertNil(message.ext_int32)
+        XCTAssertTrue(message.unknownFields.isEmpty)
     }
 
     // MARK: - Helpers

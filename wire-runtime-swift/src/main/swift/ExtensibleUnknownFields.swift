@@ -19,6 +19,9 @@ import Foundation
 ///
 /// The fields are stored as one `UnknownFields` value, so the memory used is close to the size of the input.
 /// Values parsed for extension fields are memoized by tag, and mutating the fields clears the memoized value of that tag.
+/// A dictionary value must hold only complete wire fields that carry its key as their tag.
+/// The dictionary style accessors (`subscript`, `keys`, `values`, `count`, `removeValue` and `updateValue`)
+/// read the bytes each time, so their cost is linear in the size of the data.
 public struct ExtensibleUnknownFields {
     public typealias Key = UInt32
     public typealias Value = Data
@@ -49,9 +52,15 @@ public struct ExtensibleUnknownFields {
         self.init(UnknownFields(fieldsByTag: fieldsByTag))
     }
 
+    /// Creates empty unknown fields. The capacity is ignored.
+    public init(minimumCapacity: Int) {
+        self.init()
+    }
+
     /// The wire bytes of the fields with each tag.
     ///
     /// Setting this property replaces all unknown fields and clears all memoized values.
+    /// Each value that is set must hold only complete wire fields that carry its key as their tag.
     public var fieldsByTag: [UInt32: Data] {
         get { fields.fieldsByTag }
         set { self = ExtensibleUnknownFields(fieldsByTag: newValue) }
@@ -60,6 +69,8 @@ public struct ExtensibleUnknownFields {
     /// The wire bytes of the fields with this tag, or nil if there are none.
     ///
     /// Setting a value replaces all fields with the tag and clears its memoized value.
+    /// The value must hold only complete wire fields that carry this tag.
+    /// This reads and writes in time linear to the size of the data.
     public subscript(key: Key) -> Value? {
         get {
             fields[key]
@@ -70,12 +81,44 @@ public struct ExtensibleUnknownFields {
         }
     }
 
+    /// The tags that have fields, in ascending order. This reads all the data.
+    public var keys: [UInt32] { fields.keys }
+
+    /// The wire bytes of the fields with each tag, in ascending tag order. This reads all the data.
+    public var values: [Data] { fields.values }
+
+    /// Removes all fields with this tag and returns their bytes, if there were any.
+    @discardableResult
+    public mutating func removeValue(forKey key: Key) -> Value? {
+        let old = self[key]
+        self[key] = nil
+        return old
+    }
+
+    /// Replaces all fields with this tag and returns their previous bytes, if there were any.
+    @discardableResult
+    public mutating func updateValue(_ value: Value, forKey key: Key) -> Value? {
+        let old = self[key]
+        self[key] = value
+        return old
+    }
+
+    /// The wire bytes of the fields with this tag, or the default if there are none.
+    public subscript(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
+        get { self[key] ?? defaultValue() }
+        set { self[key] = newValue }
+    }
+
     /// This will fetch a memoized value based on the backing data.
+    ///
+    /// A tag that is not there is memoized too, so repeated reads do not scan the data.
     func getParsedField<T>(fieldNumber: Key, compute: (Value) throws -> T) rethrows -> T? {
-        if let memoizedValues, let value: T = memoizedValues.value(for: fieldNumber) {
-            return value
+        if let memoizedValues, let memoized = memoizedValues.entry(for: fieldNumber) {
+            if memoized is AbsentField { return nil }
+            if let value = memoized as? T { return value }
         }
         guard let data = fields[fieldNumber] else {
+            memoizedValues?.store(AbsentField(), for: fieldNumber)
             return nil
         }
         let value = try compute(data)
@@ -99,6 +142,10 @@ public struct ExtensibleUnknownFields {
             memoizedValues = nil
             return
         }
+        // Clearing a tag that has no memoized value changes nothing.
+        if value == nil, memoizedValues?.entry(for: key) == nil {
+            return
+        }
         // Copies share the memoized values, so write to them only when this is the only copy.
         if memoizedValues == nil {
             memoizedValues = MemoizedValues()
@@ -111,7 +158,7 @@ public struct ExtensibleUnknownFields {
 
 extension ExtensibleUnknownFields: Codable, Equatable, Hashable, Sendable {
     public init(from decoder: any Decoder) throws {
-        self.init(UnknownFields(fieldsByTag: try [UInt32: Data](from: decoder)))
+        self.init(UnknownFields(uncheckedFieldsByTag: try [UInt32: Data](from: decoder)))
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -172,12 +219,15 @@ private final class MemoizedValues: @unchecked Sendable {
         lock.withLock { MemoizedValues(values: values) }
     }
 
-    /// This returns the cached value if it exists in the expected output type.
-    func value<T>(for key: UInt32) -> T? {
-        lock.withLock { values[key] as? T }
+    /// This returns the cached value, or an `AbsentField` if the tag is known to be missing.
+    func entry(for key: UInt32) -> Any? {
+        lock.withLock { values[key] }
     }
 
     func store(_ value: Any?, for key: UInt32) {
         lock.withLock { values[key] = value }
     }
 }
+
+/// Marks a tag that was looked up and has no fields.
+private struct AbsentField {}

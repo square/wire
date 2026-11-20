@@ -22,6 +22,9 @@ import Foundation
 /// This is the order Wire writes them in, and two values are equal when their bytes are equal.
 ///
 /// Use `fieldsByTag` to read or replace the fields as a dictionary of tag to wire bytes.
+/// A dictionary value must hold only complete wire fields that carry its key as their tag.
+/// The dictionary style accessors (`subscript`, `keys`, `values`, `count`, `removeValue` and `updateValue`)
+/// read the bytes each time, so their cost is linear in the size of the data.
 public struct UnknownFields: Sendable {
     public typealias Key = UInt32
     public typealias Value = Data
@@ -38,7 +41,8 @@ public struct UnknownFields: Sendable {
     /// Fields are reordered by tag when necessary.
     /// Bytes that are not valid fields are kept at the end, as they are.
     public init(rawData: Data) {
-        self.rawData = rawData
+        // This also moves a `Data` slice to indices that start at zero.
+        self.rawData = Data(rawData)
         self.canonicalize()
     }
 
@@ -49,8 +53,17 @@ public struct UnknownFields: Sendable {
 
     /// Creates unknown fields from a dictionary of tag to wire bytes.
     ///
-    /// Each value must hold the complete fields for its tag, as returned by `fieldsByTag`.
+    /// Each value must hold the complete wire fields for its tag, as returned by `fieldsByTag`.
+    /// Bytes that are not fields with the key as their tag are written as they are, but are found under another key or none.
+    /// Debug builds assert that each value follows this rule.
     public init(fieldsByTag: [UInt32: Data]) {
+        for (tag, data) in fieldsByTag {
+            assert(Self.isValid(data, forTag: tag), "Value for tag \(tag) must hold only wire fields with that tag")
+        }
+        self.init(uncheckedFieldsByTag: fieldsByTag)
+    }
+
+    internal init(uncheckedFieldsByTag fieldsByTag: [UInt32: Data]) {
         var data = Data()
         for tag in fieldsByTag.keys.sorted() {
             data.append(fieldsByTag[tag]!)
@@ -58,9 +71,14 @@ public struct UnknownFields: Sendable {
         self.rawData = data
     }
 
+    /// Creates empty unknown fields. The capacity is ignored.
+    public init(minimumCapacity: Int) {
+        self.init()
+    }
+
     public var isEmpty: Bool { rawData.isEmpty }
 
-    /// The number of distinct tags.
+    /// The number of distinct tags. This reads all the data.
     public var count: Int {
         var count = 0
         var last: UInt32?
@@ -78,6 +96,7 @@ public struct UnknownFields: Sendable {
     ///
     /// A value holds every occurrence of the tag, one after the other.
     /// Setting this property replaces all unknown fields.
+    /// Each value that is set must hold only complete wire fields that carry its key as their tag.
     public var fieldsByTag: [UInt32: Data] {
         get {
             var result: [UInt32: Data] = [:]
@@ -94,10 +113,51 @@ public struct UnknownFields: Sendable {
         }
     }
 
+    /// The tags that have fields, in ascending order. This reads all the data.
+    public var keys: [UInt32] {
+        var result: [UInt32] = []
+        scanFields { tag, _, _ in
+            if result.last != tag { result.append(tag) }
+            return true
+        }
+        return result
+    }
+
+    /// The wire bytes of the fields with each tag, in ascending tag order. This reads all the data.
+    public var values: [Data] {
+        let fields = fieldsByTag
+        return keys.map { fields[$0]! }
+    }
+
+    /// Removes all fields with this tag and returns their bytes, if there were any.
+    @discardableResult
+    public mutating func removeValue(forKey key: UInt32) -> Data? {
+        let old = self[key]
+        self[key] = nil
+        return old
+    }
+
+    /// Replaces all fields with this tag and returns their previous bytes, if there were any.
+    /// The value must hold only complete wire fields that carry the key as their tag.
+    @discardableResult
+    public mutating func updateValue(_ value: Data, forKey key: UInt32) -> Data? {
+        let old = self[key]
+        self[key] = value
+        return old
+    }
+
+    /// The wire bytes of the fields with this tag, or the default if there are none.
+    public subscript(key: UInt32, default defaultValue: @autoclosure () -> Data) -> Data {
+        get { self[key] ?? defaultValue() }
+        set { self[key] = newValue }
+    }
+
     /// The wire bytes of the fields with this tag, or nil if there are none.
     ///
     /// Setting a value replaces all fields with the tag.
-    /// The value must hold only fields with this tag.
+    /// The value must hold only complete wire fields that carry this tag.
+    /// Other bytes are written as they are, but are found under another key or none.
+    /// Debug builds assert this rule.
     /// This reads and writes in time linear to the size of the data.
     public subscript(key: UInt32) -> Data? {
         get {
@@ -115,6 +175,9 @@ public struct UnknownFields: Sendable {
             return result
         }
         set {
+            if let newValue {
+                assert(Self.isValid(newValue, forTag: key), "Value for tag \(key) must hold only wire fields with that tag")
+            }
             var lower: Int?
             var upper = 0
             let parsedEnd = rawData.withUnsafeBytes { bytes in
@@ -126,6 +189,8 @@ public struct UnknownFields: Sendable {
                     return true
                 }
             }
+            // Removing a tag that is not there changes nothing, so skip the copy.
+            if newValue == nil && upper == 0 { return }
             let insertAt = lower ?? parsedEnd
             let removeEnd = Swift.max(upper, insertAt)
             var result = Data()
@@ -214,35 +279,106 @@ public struct UnknownFields: Sendable {
         }
     }
 
-    /// Orders the fields by tag. Fields with the same tag keep their order.
-    private mutating func canonicalize() {
-        struct Field {
-            var tag: UInt32
-            var start: Int
-            var end: Int
+    /// Whether `data` is made only of complete wire fields that carry `tag`.
+    private static func isValid(_ data: Data, forTag tag: UInt32) -> Bool {
+        var isValid = true
+        let end = data.withUnsafeBytes { bytes in
+            scan(bytes) { fieldTag, _, _ in
+                if fieldTag != tag { isValid = false }
+                return isValid
+            }
         }
-        var fields: [Field] = []
+        return isValid && end == data.count
+    }
+
+    /// Orders the fields by tag. Fields with the same tag keep their order.
+    ///
+    /// The extra memory used depends on the number of distinct tags, not on the number of fields.
+    private mutating func canonicalize() {
         var isOrdered = true
         var lastTag: UInt32 = 0
-        let parsedEnd = scanFields { tag, start, end in
-            if tag < lastTag { isOrdered = false }
+        scanFields { tag, _, _ in
+            if tag < lastTag {
+                isOrdered = false
+                return false
+            }
             lastTag = tag
-            fields.append(Field(tag: tag, start: start, end: end))
             return true
         }
         if isOrdered { return }
 
-        fields.sort { ($0.tag, $0.start) < ($1.tag, $1.start) }
-        var result = Data()
-        result.reserveCapacity(rawData.count)
-        rawData.withUnsafeBytes { bytes in
-            for field in fields {
-                result.append(bytes, field.start..<field.end)
+        // First pass: add up the bytes of each tag.
+        var table: [TagOffset] = []
+        var limit = 4096
+        let parsedEnd = scanFields { tag, start, end in
+            if table.last?.tag == tag {
+                table[table.count - 1].offset += end - start
+            } else {
+                table.append(TagOffset(tag: tag, offset: end - start))
+                if table.count >= limit {
+                    Self.mergeEntries(&table)
+                    limit = Swift.max(limit, table.count * 2)
+                }
             }
-            result.append(bytes, parsedEnd...)
+            return true
+        }
+        Self.mergeEntries(&table)
+        // Turn the sizes into the offset where the bytes of each tag start.
+        var offset = 0
+        for index in table.indices {
+            let size = table[index].offset
+            table[index].offset = offset
+            offset += size
+        }
+
+        // Second pass: copy the fields to their place.
+        var result = Data(count: rawData.count)
+        rawData.withUnsafeBytes { source in
+            result.withUnsafeMutableBytes { target in
+                guard let sourceBase = source.baseAddress, let targetBase = target.baseAddress else { return }
+                var currentTag: UInt32?
+                var index = 0
+                _ = Self.scan(source) { tag, start, end in
+                    if tag != currentTag {
+                        currentTag = tag
+                        var low = 0
+                        var high = table.count
+                        while low < high {
+                            let middle = (low + high) / 2
+                            if table[middle].tag < tag { low = middle + 1 } else { high = middle }
+                        }
+                        index = low
+                    }
+                    memcpy(targetBase + table[index].offset, sourceBase + start, end - start)
+                    table[index].offset += end - start
+                    return true
+                }
+                memcpy(targetBase + parsedEnd, sourceBase + parsedEnd, source.count - parsedEnd)
+            }
         }
         rawData = result
     }
+
+    /// Sorts entries by tag and adds up the sizes of entries with the same tag.
+    private static func mergeEntries(_ table: inout [TagOffset]) {
+        table.sort { $0.tag < $1.tag }
+        var written = 0
+        for index in table.indices {
+            if written > 0 && table[written - 1].tag == table[index].tag {
+                table[written - 1].offset += table[index].offset
+            } else {
+                table[written] = table[index]
+                written += 1
+            }
+        }
+        table.removeLast(table.count - written)
+    }
+}
+
+/// The bytes used by a tag, or the offset where they start.
+private struct TagOffset {
+    var tag: UInt32
+    var offset: Int
 }
 
 extension UnknownFields: Equatable, Hashable {
@@ -258,7 +394,7 @@ extension UnknownFields: Equatable, Hashable {
 /// The coded form is a dictionary of tag to wire bytes, as it was before unknown fields were stored as one value.
 extension UnknownFields: Codable {
     public init(from decoder: any Decoder) throws {
-        self.init(fieldsByTag: try [UInt32: Data](from: decoder))
+        self.init(uncheckedFieldsByTag: try [UInt32: Data](from: decoder))
     }
 
     public func encode(to encoder: any Encoder) throws {

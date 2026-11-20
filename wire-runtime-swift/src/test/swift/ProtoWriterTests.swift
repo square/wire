@@ -869,7 +869,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testWriteUnknownFields() throws {
         let writer = ProtoWriter()
-        let data = Foundation.Data(hexEncoded: "001122334455")!
+        let data = Foundation.Data(hexEncoded: "08_96_01_08_02")!
         try writer.writeUnknownFields([1: data])
 
         XCTAssertEqual(Foundation.Data(writer.buffer, copyBytes: true), data)
