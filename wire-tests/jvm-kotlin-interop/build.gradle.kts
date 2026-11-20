@@ -17,6 +17,8 @@ dependencies {
 wire {
   sourcePath {
     srcDir("../fixtures/proto/kotlin")
+    srcDir("../fixtures/shared/proto/proto2")
+    srcDir("../fixtures/shared/proto/proto3")
     include(
       "all_types.proto",
       "edge_cases.proto",
@@ -47,6 +49,8 @@ wire {
       "simple_message.proto",
       "unknown_fields.proto",
       "uses_any.proto",
+      "use_array_interop.proto",
+      "use_array_proto2_interop.proto",
     )
   }
 

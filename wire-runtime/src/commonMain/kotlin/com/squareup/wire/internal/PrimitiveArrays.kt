@@ -45,3 +45,12 @@ internal fun Any?.primitiveArrayAsList(): Any? = when (this) {
   is DoubleArray -> asList()
   else -> this
 }
+
+/** Returns true if this is a primitive array with no elements. */
+internal fun Any.isEmptyPrimitiveArray(): Boolean = when (this) {
+  is IntArray -> isEmpty()
+  is LongArray -> isEmpty()
+  is FloatArray -> isEmpty()
+  is DoubleArray -> isEmpty()
+  else -> false
+}

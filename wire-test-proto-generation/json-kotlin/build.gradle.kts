@@ -15,6 +15,7 @@ wire {
       "person_kotlin.proto",
       "pizza.proto",
       "use_array.proto",
+      "use_array_proto2.proto",
     )
   }
   kotlin {

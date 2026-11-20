@@ -56,6 +56,14 @@ abstract class FieldOrOneOfBinding<M, B> {
    */
   abstract val writeIdentityValues: Boolean
 
+  /**
+   * The adapter for one element if this field uses a primitive array, like `IntArray`. This is null
+   * for every other field.
+   */
+  internal val primitiveArrayElementAdapter: ProtoAdapter<*>? by lazy {
+    singleAdapter.primitiveArrayElementAdapter()
+  }
+
   @Suppress("UNCHECKED_CAST")
   val adapter: ProtoAdapter<Any> by lazy {
     // Delegate adapters are created lazily; otherwise we could stack overflow!
@@ -64,7 +72,7 @@ abstract class FieldOrOneOfBinding<M, B> {
         keyAdapter as ProtoAdapter<Any>,
         singleAdapter as ProtoAdapter<Any>,
       ) as ProtoAdapter<Any>
-    } else if (singleAdapter.primitiveArrayElementAdapter() != null) {
+    } else if (primitiveArrayElementAdapter != null) {
       // Adapters for primitive arrays are already packed.
       singleAdapter as ProtoAdapter<Any>
     } else {
@@ -93,12 +101,4 @@ abstract class FieldOrOneOfBinding<M, B> {
     if (isMap && syntax == Syntax.PROTO_3) return true
     return false
   }
-}
-
-private fun Any.isEmptyPrimitiveArray(): Boolean = when (this) {
-  is IntArray -> isEmpty()
-  is LongArray -> isEmpty()
-  is FloatArray -> isEmpty()
-  is DoubleArray -> isEmpty()
-  else -> false
 }

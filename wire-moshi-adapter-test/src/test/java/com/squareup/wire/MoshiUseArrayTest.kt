@@ -25,6 +25,8 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import org.junit.Test
+import squareup.proto2.UseArrayProto2
+import squareup.proto2.UseArrayProto2Interop
 import squareup.proto3.UseArray
 import squareup.proto3.UseArrayInterop
 
@@ -34,7 +36,13 @@ class MoshiUseArrayTest {
     .add(WireJsonAdapterFactory())
     .build()
 
+  private val writeIdentityMoshi = Moshi.Builder()
+    .add(WireJsonAdapterFactory(writeIdentityValues = true))
+    .build()
+
   private fun <T> toJson(type: Class<T>, value: T): String = moshi.adapter(type).toJson(value)
+
+  private fun <T> toJsonWritingIdentityValues(type: Class<T>, value: T): String = writeIdentityMoshi.adapter(type).toJson(value)
 
   private fun <T> fromJson(type: Class<T>, json: String): T = moshi.adapter(type).fromJson(json)!!
 
@@ -123,7 +131,124 @@ class MoshiUseArrayTest {
       .messageContains("Repeated field arrayInt32 cannot contain a null element")
   }
 
+  @Test
+  fun emptyArraysAreWrittenWhenWritingIdentityValues() {
+    assertJsonEquals(
+      EMPTY_JSON,
+      toJsonWritingIdentityValues(UseArray::class.java, UseArray()),
+    )
+  }
+
+  @Test
+  fun proto2ArraysEncodeAsJsonArrays() {
+    val message = UseArrayProto2(
+      array_int32 = intArrayOf(1, -2),
+      array_uint32 = intArrayOf(1, Int.MAX_VALUE),
+      array_sint32 = intArrayOf(-3, 3),
+      array_fixed32 = intArrayOf(1, 2),
+      array_sfixed32 = intArrayOf(-4, 4),
+      array_int64 = longArrayOf(1L, Long.MIN_VALUE),
+      array_uint64 = longArrayOf(1L, -1L),
+      array_sint64 = longArrayOf(-5L, 5L),
+      array_fixed64 = longArrayOf(1L, 2L),
+      array_sfixed64 = longArrayOf(-6L, 6L),
+      array_float = floatArrayOf(1.5f),
+      array_double = doubleArrayOf(0.5),
+    )
+    val json = toJson(UseArrayProto2::class.java, message)
+    assertJsonEquals(PROTO2_JSON, json)
+    val parsed = fromJson(UseArrayProto2::class.java, json)
+    assertThat(parsed.array_uint64.toList()).isEqualTo(listOf(1L, -1L))
+    assertThat(parsed.array_int64.toList()).isEqualTo(listOf(1L, Long.MIN_VALUE))
+    assertThat(parsed.array_float.toList()).isEqualTo(listOf(1.5f))
+  }
+
+  @Test
+  fun proto2EmptyArraysAreWrittenAsEmptyArrays() {
+    assertJsonEquals(PROTO2_EMPTY_JSON, toJson(UseArrayProto2::class.java, UseArrayProto2()))
+    val parsed = fromJson(UseArrayProto2::class.java, PROTO2_EMPTY_JSON)
+    assertThat(parsed.array_int32.toList()).isEmpty()
+    assertThat(parsed.array_double.toList()).isEmpty()
+  }
+
+  @Test
+  fun proto2ArraysDecodeFromProtoFieldNames() {
+    val message = fromJson(
+      UseArrayProto2::class.java,
+      """{"array_int32":[1,2],"array_uint64":[18446744073709551615],"arraySint32":[-1]}""",
+    )
+    assertThat(message.array_int32.toList()).isEqualTo(listOf(1, 2))
+    assertThat(message.array_uint64.toList()).isEqualTo(listOf(-1L))
+    assertThat(message.array_sint32.toList()).isEqualTo(listOf(-1))
+  }
+
+  @Test
+  fun proto2ArraysRoundTripWithJavaInterop() {
+    val message = UseArrayProto2Interop.Builder()
+      .array_int32(intArrayOf(1, -2))
+      .array_uint64(longArrayOf(-1L))
+      .array_double(doubleArrayOf(0.5))
+      .build()
+    val json = toJson(UseArrayProto2Interop::class.java, message)
+    assertThat(json.contains("\"array_uint64\":[18446744073709551615]")).isEqualTo(true)
+    assertThat(fromJson(UseArrayProto2Interop::class.java, json)).isEqualTo(message)
+  }
+
   private companion object {
+    val PROTO2_JSON =
+      """
+      |{
+      |  "array_int32": [1, -2],
+      |  "array_uint32": [1, 2147483647],
+      |  "array_sint32": [-3, 3],
+      |  "array_fixed32": [1, 2],
+      |  "array_sfixed32": [-4, 4],
+      |  "array_int64": [1, -9223372036854775808],
+      |  "array_uint64": [1, 18446744073709551615],
+      |  "array_sint64": [-5, 5],
+      |  "array_fixed64": [1, 2],
+      |  "array_sfixed64": [-6, 6],
+      |  "array_float": [1.5],
+      |  "array_double": [0.5]
+      |}
+      """.trimMargin()
+
+    val PROTO2_EMPTY_JSON =
+      """
+      |{
+      |  "array_int32": [],
+      |  "array_uint32": [],
+      |  "array_sint32": [],
+      |  "array_fixed32": [],
+      |  "array_sfixed32": [],
+      |  "array_int64": [],
+      |  "array_uint64": [],
+      |  "array_sint64": [],
+      |  "array_fixed64": [],
+      |  "array_sfixed64": [],
+      |  "array_float": [],
+      |  "array_double": []
+      |}
+      """.trimMargin()
+
+    val EMPTY_JSON =
+      """
+      |{
+      |  "arrayInt32": [],
+      |  "arrayUint32": [],
+      |  "arraySint32": [],
+      |  "arrayFixed32": [],
+      |  "arraySfixed32": [],
+      |  "arrayInt64": [],
+      |  "arrayUint64": [],
+      |  "arraySint64": [],
+      |  "arrayFixed64": [],
+      |  "arraySfixed64": [],
+      |  "arrayFloat": [],
+      |  "arrayDouble": []
+      |}
+      """.trimMargin()
+
     val EXPECTED_JSON =
       """
       |{

@@ -143,10 +143,10 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       val fieldValue = field[value] ?: continue
       val redactsValue = field.isMessage || field.singleAdapter in REDACTED_BUILT_IN_ADAPTERS
       val redactedValue = when {
-        !redactsValue -> when (fieldValue) {
-          is List<*> -> fieldValue.toMutableList()
-          is Map<*, *> -> LinkedHashMap(fieldValue)
-          else -> fieldValue
+        !redactsValue -> when (val copyable = fieldValue.primitiveArrayAsList()) {
+          is List<*> -> copyable.toMutableList()
+          is Map<*, *> -> LinkedHashMap(copyable)
+          else -> copyable
         }
         field.isMap -> {
           @Suppress("UNCHECKED_CAST")
@@ -173,24 +173,30 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     var first = true
     for (field in fields.values) {
       val binding = field[value] ?: continue
+      // Like generated code, skip an empty array.
+      if (binding.isEmptyPrimitiveArray()) continue
       if (!first) append(", ")
       first = false
       append(field.name)
       append('=')
-      append(if (field.redacted) REDACTED else sanitizeAny(binding))
+      append(if (field.redacted) REDACTED else sanitizeAny(binding.primitiveArrayAsList()))
     }
     append('}')
   }
 
   override fun decode(reader: ProtoReader): M {
     val builder = newBuilder()
+    var arrayElements: MutableMap<Int, MutableList<Any?>>? = null
     val token = reader.beginMessage()
     while (true) {
       val tag = reader.nextTag()
       if (tag == -1) break
       val fieldEncoding = reader.peekFieldEncoding()!!
       val field = fields[tag]?.takeIf {
-        val expectedEncoding = if (it.isMap) FieldEncoding.LENGTH_DELIMITED else it.singleAdapter.fieldEncoding
+        val expectedEncoding = when {
+          it.isMap -> FieldEncoding.LENGTH_DELIMITED
+          else -> (it.primitiveArrayElementAdapter ?: it.singleAdapter).fieldEncoding
+        }
         // Only repeated fields accept a packed representation of a scalar value.
         fieldEncoding == expectedEncoding ||
           it.label.isRepeated &&
@@ -203,13 +209,19 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
             field.value(builder, value)
           } else {
             val singleAdapter = field.singleAdapter
+            val arrayElementAdapter = field.primitiveArrayElementAdapter
             if (field.label.isRepeated &&
               (field.label.isPacked || singleAdapter.fieldEncoding != FieldEncoding.LENGTH_DELIMITED) &&
               !reader.beforePossiblyPackedScalar()
             ) {
               continue
             }
-            if ((field.isMessage || singleAdapter in MESSAGE_BACKED_BUILT_IN_ADAPTERS) &&
+            if (arrayElementAdapter != null) {
+              // Collect the elements of a field that uses a primitive array. The builder gets them
+              // as one list after the last tag.
+              val allElements = arrayElements ?: mutableMapOf<Int, MutableList<Any?>>().also { arrayElements = it }
+              allElements.getOrPut(tag) { mutableListOf() }.add(arrayElementAdapter.decode(reader))
+            } else if ((field.isMessage || singleAdapter in MESSAGE_BACKED_BUILT_IN_ADAPTERS) &&
               !field.label.isRepeated
             ) {
               @Suppress("UNCHECKED_CAST")
@@ -240,6 +252,8 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
         binding.addUnknownField(builder, unknownTag, unknownEncoding, unknownEncoding.rawProtoAdapter().decode(unknownReader))
       }
     }
+
+    arrayElements?.forEach { (tag, elements) -> fields.getValue(tag).set(builder, elements) }
 
     if (hasMerges(reader)) {
       for ((tag, field) in mergedFields) {
