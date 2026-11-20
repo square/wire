@@ -138,6 +138,14 @@ class SwiftGenerator private constructor(
 
   fun generatedTypeName(type: Type) = type.typeName
 
+  /**
+   * The name to declare a type with. In a module, a top-level type named `Protocol` has backticks
+   * around its name, so a reference such as `module.`Protocol`` works. A declaration must not have
+   * them because SwiftPoet adds its own.
+   */
+  val DeclaredTypeName.declarationName: String
+    get() = simpleName.removeSurrounding("`")
+
   internal val Field.isMessage
     get() = type!!.isMessage
   internal val Field.isEnum
@@ -323,7 +331,7 @@ class SwiftGenerator private constructor(
 
     val typeSpecs = mutableListOf<TypeSpec>()
 
-    typeSpecs += TypeSpec.structBuilder(structType)
+    typeSpecs += TypeSpec.structBuilder(structType.declarationName)
       .addModifiers(PUBLIC)
       .apply {
         if (type.documentation.isNotBlank()) {
@@ -1843,7 +1851,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
   ): TypeSpec {
     val enumName = type.typeName
-    return TypeSpec.enumBuilder(enumName)
+    return TypeSpec.enumBuilder(enumName.declarationName)
       .addModifiers(PUBLIC)
       .addSuperTypes(listOf(INT32, CASE_ITERABLE, type.protoCodableType))
       .apply {
@@ -1930,7 +1938,7 @@ class SwiftGenerator private constructor(
   private fun generateEnclosing(
     type: EnclosingType,
     fileMembers: MutableList<FileMemberSpec>,
-  ): TypeSpec = TypeSpec.enumBuilder(type.typeName)
+  ): TypeSpec = TypeSpec.enumBuilder(type.typeName.declarationName)
     .addModifiers(PUBLIC)
     .addDoc(
       "%N\n",
@@ -2035,11 +2043,17 @@ class SwiftGenerator private constructor(
 
     /**
      * Returns the Swift name of an enum case. A case named `allCases` clashes with the `allCases`
-     * list that the generator writes for an enum with deprecated constants, so it gets a suffix.
+     * list that the generator writes for an enum with deprecated constants. A case named
+     * `defaultedValue` clashes with the `defaultedValue` of a proto3 enum with a zero constant.
+     * Both get a suffix.
      */
     private fun EnumType.swiftCaseName(constantName: String): String {
       val name = constantName.toSwiftIdentifier()
-      return if (name == "allCases" && constants.any { it.isDeprecated }) "allCases_" else name
+      return when {
+        name == "allCases" && constants.any { it.isDeprecated } -> "allCases_"
+        name == "defaultedValue" && syntax == PROTO_3 && constants.any { it.tag == 0 } -> "defaultedValue_"
+        else -> name
+      }
     }
 
     /**
@@ -2164,6 +2178,13 @@ class SwiftGenerator private constructor(
             enclosingClassName.nestedType(protoType.nestedSafeName, alwaysQualify = true)
           } else {
             val safeName = protoType.safeName
+            // Swift reads `module.Protocol` as a metatype of `module`, but `module.`Protocol``
+            // names the type.
+            val referenceName = if (safeName == "Protocol" && existingTypeModuleName[protoType] != null) {
+              "`$safeName`"
+            } else {
+              safeName
+            }
 
             val moduleName = existingTypeModuleName[protoType] ?: ""
             val isCommonSwiftType = protoType.simpleName in SWIFT_COMMON_TYPES
@@ -2173,7 +2194,7 @@ class SwiftGenerator private constructor(
             // Swift stdlib types or the same name of a type exists across multiple modules.
             // For those, we always qualify the type name to disambiguate.
             if (isCommonSwiftType || isInMultipleModules) {
-              DeclaredTypeName.qualifiedTypeName("$moduleName.$safeName")
+              DeclaredTypeName.qualifiedTypeName("$moduleName.$referenceName")
             } else {
               DeclaredTypeName(moduleName, safeName)
             }

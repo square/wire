@@ -54,6 +54,12 @@ enum SwiftProto3SameNameZero {
   OTHER_SAME_NAME = 1;
 }
 
+// The generator writes a static `defaultedValue` for a proto3 enum with a zero constant.
+enum SwiftProto3DefaultedValueName {
+  DEFAULTED_VALUE_ZERO = 0;
+  defaultedValue = 1;
+}
+
 message SwiftProto3ReservedEnumNames {
   optional SwiftProto3TypeZero type_zero = 1;
   optional SwiftProto3SelfZero self_zero = 2;
@@ -62,6 +68,7 @@ message SwiftProto3ReservedEnumNames {
   optional SwiftProto3AnyZero any_zero = 5;
   optional SwiftProto3AllCasesZero all_cases_zero = 6;
   optional SwiftProto3SameNameZero same_name_zero = 7;
+  optional SwiftProto3DefaultedValueName defaulted_value_name = 8;
 }
 
 // The first segment of the type name is also the name of a constant.

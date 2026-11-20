@@ -18,6 +18,8 @@ public struct SwiftProto3ReservedEnumNames {
     public var all_cases_zero: SwiftProto3AllCasesZero?
     @ProtoDefaulted
     public var same_name_zero: SwiftProto3SameNameZero?
+    @ProtoDefaulted
+    public var defaulted_value_name: SwiftProto3DefaultedValueName?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -64,6 +66,7 @@ extension SwiftProto3ReservedEnumNames : Proto3Codable {
         var any_zero: SwiftProto3AnyZero? = nil
         var all_cases_zero: SwiftProto3AllCasesZero? = nil
         var same_name_zero: SwiftProto3SameNameZero? = nil
+        var defaulted_value_name: SwiftProto3DefaultedValueName? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -75,6 +78,7 @@ extension SwiftProto3ReservedEnumNames : Proto3Codable {
             case 5: if let value = try protoReader.decode(SwiftProto3AnyZero.self) { any_zero = value }
             case 6: if let value = try protoReader.decode(SwiftProto3AllCasesZero.self) { all_cases_zero = value }
             case 7: if let value = try protoReader.decode(SwiftProto3SameNameZero.self) { same_name_zero = value }
+            case 8: if let value = try protoReader.decode(SwiftProto3DefaultedValueName.self) { defaulted_value_name = value }
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -87,6 +91,7 @@ extension SwiftProto3ReservedEnumNames : Proto3Codable {
         self._any_zero.wrappedValue = try SwiftProto3AnyZero.defaultIfMissing(any_zero)
         self._all_cases_zero.wrappedValue = try SwiftProto3AllCasesZero.defaultIfMissing(all_cases_zero)
         self._same_name_zero.wrappedValue = try SwiftProto3SameNameZero.defaultIfMissing(same_name_zero)
+        self._defaulted_value_name.wrappedValue = try SwiftProto3DefaultedValueName.defaultIfMissing(defaulted_value_name)
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -97,6 +102,7 @@ extension SwiftProto3ReservedEnumNames : Proto3Codable {
         try protoWriter.encode(tag: 5, value: self.any_zero)
         try protoWriter.encode(tag: 6, value: self.all_cases_zero)
         try protoWriter.encode(tag: 7, value: self.same_name_zero)
+        try protoWriter.encode(tag: 8, value: self.defaulted_value_name)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -114,6 +120,7 @@ extension SwiftProto3ReservedEnumNames : Codable {
         self._any_zero.wrappedValue = try container.decodeIfPresent(SwiftProto3AnyZero.self, firstOfKeys: "anyZero", "any_zero")
         self._all_cases_zero.wrappedValue = try container.decodeIfPresent(SwiftProto3AllCasesZero.self, firstOfKeys: "allCasesZero", "all_cases_zero")
         self._same_name_zero.wrappedValue = try container.decodeIfPresent(SwiftProto3SameNameZero.self, firstOfKeys: "sameNameZero", "same_name_zero")
+        self._defaulted_value_name.wrappedValue = try container.decodeIfPresent(SwiftProto3DefaultedValueName.self, firstOfKeys: "defaultedValueName", "defaulted_value_name")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -127,6 +134,7 @@ extension SwiftProto3ReservedEnumNames : Codable {
         try container.encodeIfPresent(self.any_zero, forKey: preferCamelCase ? "anyZero" : "any_zero")
         try container.encodeIfPresent(self.all_cases_zero, forKey: preferCamelCase ? "allCasesZero" : "all_cases_zero")
         try container.encodeIfPresent(self.same_name_zero, forKey: preferCamelCase ? "sameNameZero" : "same_name_zero")
+        try container.encodeIfPresent(self.defaulted_value_name, forKey: preferCamelCase ? "defaultedValueName" : "defaulted_value_name")
     }
 
 }

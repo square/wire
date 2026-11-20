@@ -20,6 +20,7 @@ import assertk.assertions.contains
 import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import io.outfoxx.swiftpoet.FileSpec
 import kotlin.test.Test
@@ -985,6 +986,119 @@ class SwiftGeneratorTest {
     // A oneof named `type` already compiles, so its output does not change.
     assertThat(typeCode).contains("public var type: OneofType.`Type`?")
     assertThat(typeCode).doesNotContain("Type_")
+  }
+
+  @Test fun topLevelTypeNamedProtocolIsBackticksWhenAnotherModuleReferencesIt() {
+    val schema = buildSchema {
+      add(
+        "one.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package one;
+        |
+        |message Protocol {
+        |  message Nested {
+        |    optional string a = 1;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "two.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package two;
+        |
+        |import "one.proto";
+        |
+        |message Holder {
+        |  optional one.Protocol a = 1;
+        |  optional one.Protocol.Nested b = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    // A module only knows the modules of the types it depends on, so `one.Protocol` has no module
+    // when module_one generates it.
+    val dependencies = mapOf(
+      ProtoType.get("one.Protocol") to "module_one",
+      ProtoType.get("one.Protocol.Nested") to "module_one",
+    )
+    val holderGenerator = SwiftGenerator(schema, dependencies)
+    val holderType = requireNotNull(schema.getType("two.Holder"))
+    val holderCode = FileSpec.builder("module_two", "Holder")
+      .indent("    ")
+      .apply { holderGenerator.generateTypeTo(holderType, this) }
+      .build()
+      .toString()
+    val protocolCode = schema.generateSwift("one.Protocol")
+
+    assertThat(holderCode).contains("public var a: module_one.`Protocol`?")
+    assertThat(holderCode).contains("public var b: module_one.`Protocol`.Nested?")
+    assertThat(holderCode).doesNotContain("module_one.Protocol")
+    // The module that declares the type is not changed.
+    assertThat(protocolCode).contains("public struct Protocol {")
+    assertThat(protocolCode).contains("extension Protocol : Equatable")
+    assertThat(protocolCode).doesNotContain("``")
+  }
+
+  @Test fun protoEnumConstantNamedDefaultedValueIsRenamedOnlyInProto3() {
+    val schema = buildSchema {
+      add(
+        "two.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package two;
+        |
+        |enum Two {
+        |  defaultedValue = 0;
+        |  OTHER_TWO = 1;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "three.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package three;
+        |
+        |enum Three {
+        |  ZERO = 0;
+        |  defaultedValue = 1;
+        |}
+        |
+        """.trimMargin(),
+      )
+      add(
+        "four.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package four;
+        |
+        |enum NoZero3 {
+        |  defaultedValue = 0;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val two = schema.generateSwift("two.Two")
+    val three = schema.generateSwift("three.Three")
+    val zero = schema.generateSwift("four.NoZero3")
+
+    // A proto2 enum has no static `defaultedValue`, so nothing changes.
+    assertThat(two).contains("case defaultedValue = 0")
+    assertThat(two).doesNotContain("defaultedValue_")
+    assertThat(three).contains("case defaultedValue_ = 1")
+    assertThat(three).contains("""case .defaultedValue_: return "defaultedValue"""")
+    assertThat(three).contains("public static var defaultedValue: Three {")
+    assertThat(zero).contains("case defaultedValue_ = 0")
+    assertThat(zero).contains("NoZero3.defaultedValue_")
   }
 
   private fun Schema.generateSwift(typeName: String): String {

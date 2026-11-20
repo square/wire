@@ -16,6 +16,8 @@
 import Foundation
 import Wire
 import XCTest
+import module_one
+import module_two
 @testable import WireTests
 
 /// Covers enum constants named `self`, `init`, `Type`, `Protocol`, `Any` and `allCases`, and an enum named `Protocol`.
@@ -151,6 +153,7 @@ final class ReservedEnumNamesTests : XCTestCase {
             $0.any_zero = .OTHER_ANY
             $0.all_cases_zero = .OTHER_ALL_CASES
             $0.same_name_zero = .OTHER_SAME_NAME
+            $0.defaulted_value_name = .DEFAULTED_VALUE_ZERO
         }
         let data = try ProtoEncoder().encode(message)
         XCTAssertEqual(try ProtoDecoder().decode(SwiftProto3ReservedEnumNames.self, from: data), message)
@@ -198,5 +201,54 @@ final class ReservedEnumNamesTests : XCTestCase {
         let message = SwiftProto3Outer { $0.kind = .KIND_OK }
         let data = try ProtoEncoder().encode(message)
         XCTAssertEqual(try ProtoDecoder().decode(SwiftProto3Outer.self, from: data), message)
+    }
+
+    func testRenamedConstantsUseTheProtoNameInJson() throws {
+        let message = SwiftProto3ReservedEnumNames {
+            $0.type_zero = .OTHER
+            $0.self_zero = .OTHER_SELF
+            $0.init_zero = .OTHER_INIT
+            $0.protocol_zero = .OTHER_PROTOCOL
+            $0.any_zero = .OTHER_ANY
+            $0.all_cases_zero = .allCases_
+            $0.same_name_zero = .OTHER_SAME_NAME
+            $0.defaulted_value_name = .defaultedValue_
+        }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+
+        let json = try encoder.encode(message)
+
+        let text = String(data: json, encoding: .utf8)!
+        XCTAssertTrue(text.contains("\"allCasesZero\":\"allCases\""), text)
+        XCTAssertTrue(text.contains("\"defaultedValueName\":\"defaultedValue\""), text)
+        XCTAssertFalse(text.contains("allCases_"), text)
+        XCTAssertFalse(text.contains("defaultedValue_"), text)
+        XCTAssertEqual(try JSONDecoder().decode(SwiftProto3ReservedEnumNames.self, from: json), message)
+    }
+
+    func testProto3ConstantNamedDefaultedValueKeepsItsProtoName() {
+        XCTAssertEqual(SwiftProto3DefaultedValueName.defaultedValue, .DEFAULTED_VALUE_ZERO)
+        XCTAssertEqual(SwiftProto3DefaultedValueName.defaultedValue_.description, "defaultedValue")
+        XCTAssertEqual(SwiftProto3DefaultedValueName.defaultedValue_.rawValue, 1)
+    }
+
+    func testProto2ConstantNamedDefaultedValueKeepsItsName() {
+        XCTAssertEqual(SwiftProto2DefaultedValueName.defaultedValue.description, "defaultedValue")
+        XCTAssertEqual(SwiftProto2DefaultedValueName.defaultedValue.rawValue, 0)
+    }
+
+    func testMessageNamedProtocolInAnotherModule() throws {
+        let message = SwiftModuleTwoMessage {
+            $0.protocol = module_one.`Protocol` { $0.name = "n" }
+            $0.protocols = [module_one.`Protocol`()]
+        }
+
+        let data = try ProtoEncoder().encode(message)
+        let decoded = try ProtoDecoder().decode(SwiftModuleTwoMessage.self, from: data)
+
+        XCTAssertEqual(decoded, message)
+        XCTAssertEqual(decoded.protocol?.name, "n")
+        XCTAssertEqual(try JSONDecoder().decode(SwiftModuleTwoMessage.self, from: JSONEncoder().encode(message)), message)
     }
 }

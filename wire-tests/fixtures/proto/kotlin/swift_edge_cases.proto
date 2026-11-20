@@ -180,3 +180,9 @@ message SwiftSameNameOuter {
   optional SwiftSameNameEnum top = 1 [default = SwiftSameNameEnum];
   optional Inner inner = 2 [default = SwiftSameNameOuter];
 }
+
+// A proto2 enum has no static `defaultedValue`, so the constant keeps its name.
+enum SwiftProto2DefaultedValueName {
+  defaultedValue = 0;
+  SWIFT_PROTO2_OTHER = 1;
+}
