@@ -15,11 +15,14 @@
  */
 package com.squareup.wire.internal
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import com.squareup.wire.internal.InstantJsonFormatter.fromString
 import com.squareup.wire.internal.InstantJsonFormatter.toStringOrNumber
 import com.squareup.wire.ofEpochSecond
+import java.time.DateTimeException
 import org.junit.Test
 
 class InstantJsonFormatterTest {
@@ -51,5 +54,11 @@ class InstantJsonFormatterTest {
       .isEqualTo(ofEpochSecond(-3_600L, 0L))
     assertThat(fromString("1970-01-01T01:00:00-02:00"))
       .isEqualTo(ofEpochSecond(10_800L, 0L))
+  }
+
+  @Test fun `string outside the timestamp range`() {
+    for (value in listOf("-0001-12-31T23:59:59Z", "+10000-01-01T00:00:00Z", "0001-01-01T00:00:00+01:00")) {
+      assertFailure { fromString(value) }.isInstanceOf<DateTimeException>()
+    }
   }
 }
