@@ -47,7 +47,6 @@ internal fun <S : Any> newRequestBody(
   minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   onlyMessage: S,
-  flushAfterWrite: Boolean,
 ): RequestBody = object : RequestBody() {
   override fun contentType() = APPLICATION_GRPC_MEDIA_TYPE
 
@@ -58,7 +57,7 @@ internal fun <S : Any> newRequestBody(
       messageAdapter = requestAdapter,
       callForCancel = null,
       grpcEncoding = "gzip",
-      flushAfterWrite = flushAfterWrite,
+      flushAfterWrite = false,
     )
     grpcMessageSink.use {
       it.write(onlyMessage)

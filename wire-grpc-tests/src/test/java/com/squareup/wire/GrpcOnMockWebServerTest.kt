@@ -112,43 +112,11 @@ class GrpcOnMockWebServerTest {
   }
 
   @Test
-  fun unaryRequestBodyIsFlushedByDefault() {
+  fun unaryRequestBodyIsNotFlushed() {
     mockWebServer.dispatcher = GrpcDispatcher(
       services = listOf(fakeRouteGuide),
       delegate = mockWebServer.dispatcher,
     )
-    val flushes = AtomicInteger()
-    interceptor = Interceptor { chain ->
-      val request = chain.request()
-      val body = request.body!!
-      chain.proceed(
-        request.newBuilder()
-          .method(request.method, countingFlushRequestBody(body, flushes))
-          .build(),
-      )
-    }
-
-    runBlocking {
-      val feature = routeGuideService.GetFeature().execute(Point(latitude = 5, longitude = 6))
-      assertThat(feature).isEqualTo(Feature(name = "tree"))
-    }
-
-    assertThat(flushes.get()).isEqualTo(1)
-  }
-
-  @Test
-  fun unaryRequestBodyIsNotFlushedWhenEndStreamOnLastUnaryMessage() {
-    mockWebServer.dispatcher = GrpcDispatcher(
-      services = listOf(fakeRouteGuide),
-      delegate = mockWebServer.dispatcher,
-    )
-    grpcClient = GrpcClient.Builder()
-      .client(okhttpClient)
-      .baseUrl(mockWebServer.url("/"))
-      .endStreamOnLastUnaryMessage(true)
-      .build()
-    routeGuideService = grpcClient.create(RouteGuideClient::class)
-
     val flushes = AtomicInteger()
     interceptor = Interceptor { chain ->
       val request = chain.request()
