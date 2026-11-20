@@ -399,6 +399,29 @@ class KotlinGeneratorTest {
     assertThat(code).contains("const val DEFAULT_R: Long = -2_147_483_647L")
   }
 
+  @Test fun bytesDefaultsNameUtf8BytesOfRawChars() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |message Message {
+        |  optional bytes raw = 1 [default = "é"];
+        |  optional bytes octal = 2 [default = "\351"];
+        |  optional bytes escape = 3 [default = "\u00e9"];
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
+    // The bytes are c3 a9 for a raw char and a unicode escape, and e9 for an octal escape.
+    assertThat(code.substringAfter("DEFAULT_RAW").substringBefore("@JvmField"))
+      .contains("\"w6k=\".decodeBase64()")
+    assertThat(code.substringAfter("DEFAULT_OCTAL").substringBefore("@JvmField"))
+      .contains("\"6Q==\".decodeBase64()")
+    assertThat(code.substringAfter("DEFAULT_ESCAPE").substringBefore("@JvmField"))
+      .contains("\"w6k=\".decodeBase64()")
+  }
+
   @Test fun nameAllocatorIsUsed() {
     val schema = buildSchema {
       add(

@@ -1,0 +1,22 @@
+syntax = "proto2";
+package squareup.proto2.kotlin.bytesdefaults;
+
+message BytesDefaultsMessage {
+  optional bytes ascii = 1 [default = "abc"];
+  optional bytes raw_two_bytes = 2 [default = "é"];
+  optional bytes raw_three_bytes = 3 [default = "€"];
+  optional bytes raw_four_bytes = 4 [default = "😀"];
+  optional bytes octal = 5 [default = "\351"];
+  optional bytes hex = 6 [default = "\xe9\xFF"];
+  optional bytes mixed = 7 [default = "a\351é\xffz"];
+  optional bytes unicode_four_digits = 8 [default = "é"];
+  optional bytes unicode_eight_digits = 9 [default = "\U0001F600"];
+  optional bytes unicode_pair = 10 [default = "😀"];
+  optional bytes unicode_long_head_pair = 11 [default = "\U0000d83d\ude00"];
+  optional bytes unicode_lone_head = 12 [default = "\ud83d"];
+  optional bytes unicode_lone_trail = 13 [default = "\ude00"];
+  optional bytes unicode_long_surrogates = 14 [default = "\U0000d83d\U0000de00"];
+  optional bytes unicode_short_head_long_trail = 15 [default = "\ud83d\U0000de00"];
+  optional bytes unicode_above_last_code_point = 16 [default = "a\U00110000b"];
+  optional string text = 17 [default = "éé\U0001F600😀"];
+}

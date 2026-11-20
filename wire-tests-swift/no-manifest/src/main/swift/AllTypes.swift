@@ -2494,7 +2494,7 @@ extension AllTypes {
         public var default_double: Double?
         @CustomDefaulted(defaultValue: "çok\u{7}\u{8}\u{c}\n\r\t\u{b}\u{1}\u{1}\u{1}\u{f}\u{f}~\u{1}\u{1}\u{11}\u{1}\u{1}\u{11}güzel")
         public var default_string: String?
-        @CustomDefaulted(defaultValue: Foundation.Data(base64Encoded: "529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs")!)
+        @CustomDefaulted(defaultValue: Foundation.Data(base64Encoded: "w6dvawcIDAoNCQsBAQEPD34BAREBARFnw7x6ZWw=")!)
         public var default_bytes: Foundation.Data?
         @CustomDefaulted(defaultValue: AllTypes.NestedEnum.A)
         public var default_nested_enum: AllTypes.NestedEnum?

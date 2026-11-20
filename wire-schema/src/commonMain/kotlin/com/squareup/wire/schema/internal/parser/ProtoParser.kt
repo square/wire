@@ -371,7 +371,8 @@ class ProtoParser internal constructor(
     val tag = reader.readInt()
 
     // Mutable copy to extract the default value, and add packed if necessary.
-    val options: MutableList<OptionElement> = OptionReader(reader).readOptions().toMutableList()
+    val options: MutableList<OptionElement> =
+      OptionReader(reader).readOptions(bytesDefault = type == "bytes").toMutableList()
 
     val defaultValue = stripDefault(options)
     val jsonName = stripJsonName(options)
