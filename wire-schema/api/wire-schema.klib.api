@@ -33,6 +33,7 @@ abstract interface com.squareup.wire.schema/SyntaxRules { // com.squareup.wire.s
     abstract fun validateEnumConstants(kotlin.collections/List<com.squareup.wire.schema/EnumConstant>, com.squareup.wire.schema/ErrorCollector) // com.squareup.wire.schema/SyntaxRules.validateEnumConstants|validateEnumConstants(kotlin.collections.List<com.squareup.wire.schema.EnumConstant>;com.squareup.wire.schema.ErrorCollector){}[0]
     abstract fun validateExtension(com.squareup.wire.schema/ProtoType, com.squareup.wire.schema/ErrorCollector) // com.squareup.wire.schema/SyntaxRules.validateExtension|validateExtension(com.squareup.wire.schema.ProtoType;com.squareup.wire.schema.ErrorCollector){}[0]
     abstract fun validateTypeReference(com.squareup.wire.schema/Type?, com.squareup.wire.schema/ErrorCollector) // com.squareup.wire.schema/SyntaxRules.validateTypeReference|validateTypeReference(com.squareup.wire.schema.Type?;com.squareup.wire.schema.ErrorCollector){}[0]
+    open fun isPackedByDefault(com.squareup.wire.schema/ProtoType, com.squareup.wire.schema/Field.Label?, kotlin/Boolean): kotlin/Boolean // com.squareup.wire.schema/SyntaxRules.isPackedByDefault|isPackedByDefault(com.squareup.wire.schema.ProtoType;com.squareup.wire.schema.Field.Label?;kotlin.Boolean){}[0]
 
     final object Companion { // com.squareup.wire.schema/SyntaxRules.Companion|null[0]
         final fun get(com.squareup.wire/Syntax?): com.squareup.wire.schema/SyntaxRules // com.squareup.wire.schema/SyntaxRules.Companion.get|get(com.squareup.wire.Syntax?){}[0]

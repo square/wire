@@ -345,6 +345,38 @@ class SchemaTest {
   }
 
   @Test
+  fun useArrayIsNotPermittedOnBool() {
+    try {
+      buildSchema {
+        add(
+          "message.proto".toPath(),
+          """
+          |syntax = "proto3";
+          |import "wire/extensions.proto";
+          |
+          |message Message {
+          |  repeated bool a = 1 [wire.use_array=true];
+          |  repeated bool b = 2 [packed=true, wire.use_array=true];
+          |}
+          """.trimMargin(),
+        )
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage(
+        """
+        |wire.use_array=true not permitted on bool fields
+        |  for field a (/sourcePath/message.proto:5:3)
+        |  in message Message (/sourcePath/message.proto:4:1)
+        |wire.use_array=true not permitted on bool fields
+        |  for field b (/sourcePath/message.proto:6:3)
+        |  in message Message (/sourcePath/message.proto:4:1)
+        """.trimMargin(),
+      )
+    }
+  }
+
+  @Test
   fun fieldIsDeprecated() {
     val schema = buildSchema {
       add(
@@ -2225,7 +2257,7 @@ class SchemaTest {
   }
 
   @Test
-  fun repeatedNumericScalarsShouldBePackedByDefaultForProto3() {
+  fun repeatedScalarsAndEnumsShouldBePackedByDefaultForProto3() {
     val schema = buildSchema {
       add(
         "message.proto".toPath(),
@@ -2253,9 +2285,25 @@ class SchemaTest {
         |
         |  repeated int32 set_to_false = 17 [packed = false];
         |  repeated int32 set_to_true = 18 [packed = true];
+        |
+        |  repeated OtherEnum q = 19;
+        |  repeated Message.NestedEnum r = 20;
+        |  repeated bool bool_set_to_false = 21 [packed = false];
+        |  repeated OtherEnum enum_set_to_false = 22 [packed = false];
+        |
+        |  bool not_repeated_bool = 23;
+        |  OtherEnum not_repeated_enum = 24;
+        |
+        |  enum NestedEnum {
+        |    NESTED_UNKNOWN = 0;
+        |  }
         |}
         |
         |message OtherMessage {}
+        |
+        |enum OtherEnum {
+        |  OTHER_UNKNOWN = 0;
+        |}
         |
         """.trimMargin(),
       )
@@ -2264,11 +2312,13 @@ class SchemaTest {
     val messageType = schema.getType("Message") as MessageType
     // Default to false.
     assertThat(messageType.field("a")!!.isPacked).isFalse()
-    assertThat(messageType.field("b")!!.isPacked).isFalse()
     assertThat(messageType.field("c")!!.isPacked).isFalse()
     assertThat(messageType.field("d")!!.isPacked).isFalse()
 
-    // Repeated numeric scalar default to true.
+    // Repeated numeric scalar, bool, and enum default to true.
+    assertThat(messageType.field("b")!!.isPacked).isTrue()
+    assertThat(messageType.field("q")!!.isPacked).isTrue()
+    assertThat(messageType.field("r")!!.isPacked).isTrue()
     assertThat(messageType.field("e")!!.isPacked).isTrue()
     assertThat(messageType.field("f")!!.isPacked).isTrue()
     assertThat(messageType.field("g")!!.isPacked).isTrue()
@@ -2285,6 +2335,40 @@ class SchemaTest {
     // Don't override set packed.
     assertThat(messageType.field("set_to_false")!!.isPacked).isFalse()
     assertThat(messageType.field("set_to_true")!!.isPacked).isTrue()
+    assertThat(messageType.field("bool_set_to_false")!!.isPacked).isFalse()
+    assertThat(messageType.field("enum_set_to_false")!!.isPacked).isFalse()
+
+    // Only repeated fields are packed.
+    assertThat(messageType.field("not_repeated_bool")!!.isPacked).isFalse()
+    assertThat(messageType.field("not_repeated_enum")!!.isPacked).isFalse()
+  }
+
+  @Test
+  fun repeatedScalarsAndEnumsAreNotPackedByDefaultForProto2() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  repeated bool a = 1;
+        |  repeated OtherEnum b = 2;
+        |  repeated int32 c = 3;
+        |}
+        |
+        |enum OtherEnum {
+        |  OTHER_UNKNOWN = 0;
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val messageType = schema.getType("Message") as MessageType
+    assertThat(messageType.field("a")!!.isPacked).isFalse()
+    assertThat(messageType.field("b")!!.isPacked).isFalse()
+    assertThat(messageType.field("c")!!.isPacked).isFalse()
   }
 
   @Test fun deprecatedOptionsForProto3() {

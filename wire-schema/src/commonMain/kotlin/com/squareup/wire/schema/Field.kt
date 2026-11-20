@@ -131,8 +131,9 @@ data class Field(
     val linker = linker.withContext(this)
     options.link(linker, location, validate)
     deprecated = options.get(DEPRECATED)
+    val isEnum = isRepeated && !type!!.isScalar && linker.get(type!!) is EnumType
     val packed = options.get(PACKED)
-      ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
+      ?: if (syntaxRules.isPackedByDefault(type!!, label, isEnum)) PACKED_OPTION_ELEMENT.value else null
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
 
@@ -152,6 +153,9 @@ data class Field(
     }
     if (useArray && type?.isScalar != true) {
       linker.errors += "wire.use_array=true only permitted on scalar fields"
+    }
+    if (useArray && type == ProtoType.BOOL) {
+      linker.errors += "wire.use_array=true not permitted on bool fields"
     }
     if (isExtension) {
       if (isRequired) {
