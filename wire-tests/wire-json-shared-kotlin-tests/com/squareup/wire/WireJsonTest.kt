@@ -15,11 +15,13 @@
  */
 package com.squareup.wire
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.doesNotContain
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.messageContains
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
@@ -521,6 +523,66 @@ class WireJsonTest {
     } catch (expected: JsonSyntaxException) {
       // Gson.
       assertThat(expected).messageContains("expected @type in \$.promotion")
+    }
+  }
+
+  @Test fun timestampAtRangeBoundariesDeserializes() {
+    val min = jsonLibrary.fromJson("""{"orderedAt":"0001-01-01T00:00:00Z"}""", PizzaDelivery::class.java)
+    assertThat(min.ordered_at).isEqualTo(ofEpochSecond(-62135596800L, 0L))
+    val max = jsonLibrary.fromJson(
+      """{"orderedAt":"9999-12-31T23:59:59.999999999Z"}""",
+      PizzaDelivery::class.java,
+    )
+    assertThat(max.ordered_at).isEqualTo(ofEpochSecond(253402300799L, 999_999_999L))
+    assertThat(PizzaDelivery.ADAPTER.decode(PizzaDelivery.ADAPTER.encode(max))).isEqualTo(max)
+  }
+
+  @Test fun timestampOutsideRangeOnReading() {
+    val timestamps = listOf(
+      // One second before 0001-01-01T00:00:00Z.
+      "-0001-12-31T23:59:59Z",
+      // One second after 9999-12-31T23:59:59Z.
+      "+10000-01-01T00:00:00Z",
+      // An offset that moves the instant one hour before the minimum.
+      "0001-01-01T00:00:00+01:00",
+    )
+    for (timestamp in timestamps) {
+      try {
+        jsonLibrary.fromJson("""{"orderedAt":"$timestamp"}""", PizzaDelivery::class.java)
+        fail("expected a failure for $timestamp")
+      } catch (expected: JsonDataException) {
+        // Moshi.
+        assertThat(expected).hasMessage("decode failed: $timestamp at path \$.orderedAt")
+      } catch (expected: JsonSyntaxException) {
+        // Gson.
+        assertThat(expected).messageContains("decode failed: $timestamp at path \$.orderedAt")
+      }
+    }
+  }
+
+  @Test fun timestampAtRangeBoundariesSerializes() {
+    val min = PizzaDelivery.Builder().ordered_at(ofEpochSecond(-62135596800L, 0L)).build()
+    val minJson = jsonLibrary.toJson(min, PizzaDelivery::class.java)
+    assertThat(minJson).contains("0001-01-01T00:00:00Z")
+    assertThat(jsonLibrary.fromJson(minJson, PizzaDelivery::class.java)).isEqualTo(min)
+    val max = PizzaDelivery.Builder().ordered_at(ofEpochSecond(253402300799L, 999_999_999L)).build()
+    val maxJson = jsonLibrary.toJson(max, PizzaDelivery::class.java)
+    assertThat(maxJson).contains("9999-12-31T23:59:59.999999999Z")
+    assertThat(jsonLibrary.fromJson(maxJson, PizzaDelivery::class.java)).isEqualTo(max)
+  }
+
+  @Test fun timestampOutsideRangeOnWriting() {
+    val seconds = listOf(
+      // One second before 0001-01-01T00:00:00Z.
+      -62135596801L,
+      // One second after 9999-12-31T23:59:59Z.
+      253402300800L,
+    )
+    for (second in seconds) {
+      val value = PizzaDelivery.Builder().ordered_at(ofEpochSecond(second, 0L)).build()
+      assertFailure { jsonLibrary.toJson(value, PizzaDelivery::class.java) }
+        .isInstanceOf<IllegalArgumentException>()
+      assertFailure { PizzaDelivery.ADAPTER.encode(value) }.isInstanceOf<IllegalArgumentException>()
     }
   }
 

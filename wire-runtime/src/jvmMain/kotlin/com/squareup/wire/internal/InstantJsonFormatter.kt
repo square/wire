@@ -16,6 +16,10 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.Instant
+import com.squareup.wire.TIMESTAMP_SECONDS_MAX
+import com.squareup.wire.TIMESTAMP_SECONDS_MIN
+import com.squareup.wire.checkTimestampRange
+import java.time.DateTimeException
 import java.time.format.DateTimeFormatter.ISO_INSTANT
 import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
@@ -26,10 +30,22 @@ import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
  * > fractional digits. Offsets other than "Z" are also accepted.
  */
 object InstantJsonFormatter : JsonFormatter<Instant> {
-  override fun toStringOrNumber(value: Instant): Any = ISO_INSTANT.format(value)
+  /** Throws an [IllegalArgumentException] if the instant is outside years 1 to 9999, like binary encode. */
+  override fun toStringOrNumber(value: Instant): Any {
+    checkTimestampRange(value.epochSecond, value.nano)
+    return ISO_INSTANT.format(value)
+  }
 
+  /**
+   * Throws a [DateTimeException] if the string is not an RFC 3339 timestamp, or if the timestamp is
+   * outside years 1 to 9999, which is the range that the binary encoding accepts.
+   */
   override fun fromString(value: String): Instant {
     val parsed = ISO_OFFSET_DATE_TIME.parse(value)
-    return Instant.from(parsed)
+    val instant = Instant.from(parsed)
+    if (instant.epochSecond !in TIMESTAMP_SECONDS_MIN..TIMESTAMP_SECONDS_MAX) {
+      throw DateTimeException("Timestamp out of range: $value")
+    }
+    return instant
   }
 }
