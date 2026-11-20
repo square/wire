@@ -17,6 +17,9 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
 
+private val HEAD_SURROGATES = 0xd800L..0xdbffL
+private val TRAIL_SURROGATES = 0xdc00L..0xdfffL
+
 /** A general purpose reader for formats like `.proto`. */
 class SyntaxReader(
   private val data: CharArray,
@@ -106,6 +109,10 @@ class SyntaxReader(
             --pos
             c = readNumericEscape(8, 3)
           }
+          'u', 'U' -> {
+            appendUnicodeEscape(result, c)
+            continue
+          }
         }
       }
       result.append(c)
@@ -128,6 +135,68 @@ class SyntaxReader(
     }
     expect(value >= 0) { "expected a digit after \\x or \\X" }
     return value.toChar()
+  }
+
+  /**
+   * Reads the digits of a `\u` (4 digits) or `\U` (8 digits) escape and appends the character it
+   * names. [escape] is the `u` or `U` that [pos] just moved past. This follows protoc:
+   *
+   *  * A head surrogate followed by a `\u` trail surrogate makes one code point. The head may come
+   *    from a `\u` or a `\U` escape.
+   *  * A surrogate that has no partner stays a lone surrogate.
+   *  * Protoc does not combine a head surrogate with a `\U` trail. A Kotlin string cannot tell a
+   *    lone head followed by a lone trail from a pair, so this reads as a pair here.
+   *  * A `\U` value above 0x10FFFF and up to 0x1FFFFF is kept as the text `\U` plus eight digits.
+   *  * A `\U` value above 0x1FFFFF, and too few hex digits, are errors.
+   */
+  private fun appendUnicodeEscape(result: StringBuilder, escape: Char) {
+    val length = if (escape == 'u') 4 else 8
+    var codePoint = readHexDigits(pos, length)
+    expect(codePoint != -1L) {
+      when (escape) {
+        'u' -> "expected four hex digits for \\u escape sequence"
+        else -> "expected eight hex digits up to 10ffff for \\U escape sequence"
+      }
+    }
+    expect(codePoint <= 0x1fffffL) {
+      "expected eight hex digits up to 10ffff for \\U escape sequence"
+    }
+    pos += length
+
+    if (codePoint in HEAD_SURROGATES && pos + 1 < data.size && data[pos] == '\\' && data[pos + 1] == 'u') {
+      val trail = readHexDigits(pos + 2, 4)
+      if (trail in TRAIL_SURROGATES) {
+        codePoint = 0x10000L + ((codePoint - HEAD_SURROGATES.first) shl 10) + (trail - TRAIL_SURROGATES.first)
+        pos += 6
+      }
+    }
+
+    when {
+      codePoint > 0x10ffffL -> {
+        result.append("\\U")
+        result.append(codePoint.toString(16).padStart(8, '0'))
+      }
+
+      codePoint >= 0x10000L -> {
+        val offset = (codePoint - 0x10000L).toInt()
+        result.append((0xd800 + (offset shr 10)).toChar())
+        result.append((0xdc00 + (offset and 0x3ff)).toChar())
+      }
+
+      else -> result.append(codePoint.toInt().toChar())
+    }
+  }
+
+  /** Returns the value of exactly [length] hex digits at [start], or -1 if there are not enough. */
+  private fun readHexDigits(start: Int, length: Int): Long {
+    if (start + length > data.size) return -1L
+    var value = 0L
+    for (i in start until start + length) {
+      val digit = hexDigit(data[i])
+      if (digit == -1) return -1L
+      value = value * 16 + digit
+    }
+    return value
   }
 
   private fun hexDigit(c: Char): Int = when (c) {

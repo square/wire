@@ -610,4 +610,31 @@ class SchemaEncoderTest {
       .fields.associate { it.name to it.default!!.toBytes().hex() }
     assertThat(reparsedBytes).isEqualTo(descriptorBytes)
   }
+
+  @Test fun `encode string default with a lone surrogate as question mark`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message TestMessage {
+        |  optional string head = 1 [default = "\ud83d"];
+        |  optional string trail = 2 [default = "\ude00"];
+        |  optional string pair = 3 [default = "\ud83d\ude00"];
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    // A descriptor string is UTF-8, which cannot hold a lone surrogate, so it becomes a question mark.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    val defaults = fileDescriptorProto.getMessageType(0).fieldList.associate { it.name to it.defaultValue }
+    assertThat(defaults).isEqualTo(
+      mapOf("head" to "?", "trail" to "?", "pair" to "\uD83D\uDE00"),
+    )
+  }
 }
