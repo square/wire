@@ -23,6 +23,7 @@ import XCTest
 /// `ProtoDecoder.decode` may only throw `ProtoDecoder.Error`, and it must not crash.
 /// A message that decodes must also encode again, and the encoded bytes must decode.
 /// Encoding the decoded copy must give the same bytes as the first encoding.
+/// The encoder sorts map keys, so that the comparison does not depend on Dictionary order.
 /// A crash prints the type, the seed, the index and the input in hex on stderr.
 /// Every other failure names the type, the seed and the index, and shows the input in hex.
 ///
@@ -34,6 +35,22 @@ import XCTest
 /// - `WIRE_FUZZ_SEED` replaces the base seed, to explore new inputs.
 final class DecodeFuzzTests: XCTestCase {
     private static let inputsPerType = 3_000
+
+    private static var sortedEncoder: ProtoEncoder {
+        let encoder = ProtoEncoder()
+        encoder.outputFormatting = .sortedKeys
+        return encoder
+    }
+
+    func testSortedKeysMakeMapEncodingIndependentOfDictionaryOrder() throws {
+        let mappy = Mappy { $0.things = Dictionary(uniqueKeysWithValues: (0..<20).map { ("key\($0)", Thing { $0.name = "value" }) }) }
+        let bytes = try Self.sortedEncoder.encode(mappy)
+        for _ in 0..<200 {
+            let first = try ProtoDecoder().decode(Mappy.self, from: bytes)
+            let second = try ProtoDecoder().decode(Mappy.self, from: bytes)
+            XCTAssertEqual(try Self.sortedEncoder.encode(first), try Self.sortedEncoder.encode(second))
+        }
+    }
 
     func testDecodingRandomBytesThrowsOnlyProtoDecoderError() {
         FuzzCrashReporter.install()
@@ -139,9 +156,9 @@ final class DecodeFuzzTests: XCTestCase {
             decoded += 1
 
             do {
-                let encoded = try ProtoEncoder().encode(message)
+                let encoded = try Self.sortedEncoder.encode(message)
                 let again = try decoder.decode(messageType, from: encoded)
-                let encodedAgain = try ProtoEncoder().encode(again)
+                let encodedAgain = try Self.sortedEncoder.encode(again)
                 if encodedAgain != encoded {
                     record("encode after decode", FuzzMismatch(), index, bytes)
                 }
