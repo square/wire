@@ -17,6 +17,7 @@ package com.squareup.wire.testing
 
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ProtoReader
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import java.io.IOException
@@ -30,7 +31,8 @@ import okio.ByteString.Companion.toByteString
  * Feeds random but mostly well-formed wire bytes to a [ProtoAdapter] and checks the decode
  * contract: decoding may only throw [IOException] (this includes `ProtocolException` and
  * `EOFException`). Any other exception, including a [StackOverflowError], fails the test. When
- * decoding succeeds, the message must also encode again, and the encoded bytes must decode.
+ * decoding succeeds, the message must also encode again, and the encoded bytes must decode. Encoding
+ * the decoded copy must give the same bytes as the first encoding.
  *
  * The input is deterministic. Each input comes from a [Random] seeded with the base seed and the
  * input index, so a failure message with the seed and index is enough to reproduce it.
@@ -47,8 +49,9 @@ import okio.ByteString.Companion.toByteString
  * [Config.tags] and the generator falls back to a random wire grammar. [Config.seeds] holds valid
  * encoded messages. The fuzzer mutates them, which reaches messages with required fields.
  *
- * Some inputs nest a message field 150 levels or more, and repeat the field at each level. Decoding
- * them must fail, because merged messages share the recursion limit with their parents.
+ * Some inputs nest a message field deeper than the recursion limit, and repeat the field at each
+ * level. Decoding them must fail, because merged messages share the recursion limit with their
+ * parents.
  */
 object DecodeFuzzer {
   class Config(
@@ -62,9 +65,11 @@ object DecodeFuzzer {
      */
     val tags: List<Int> = (1..20).toList(),
     /**
-     * Proto2 `required` fields that are missing on the wire are a documented, intended failure:
-     * generated code throws an [IllegalStateException] named "Required field...". Set this to true
-     * for message types that have required fields. No other [IllegalStateException] is accepted.
+     * Generated code throws an [IllegalStateException] named "Required field..." when a proto2
+     * `required` field is missing on the wire. This is a known gap: `decode` is declared to throw
+     * only [IOException], and changing the exception type is outside this test. The fuzzer accepts
+     * that one exception, only for message types that have required fields. Set this to true for
+     * those types. No other [IllegalStateException] is accepted.
      */
     val missingRequiredFieldsAllowed: Boolean = false,
     /** The base seed. `WIRE_FUZZ_SEED` overrides it. */
@@ -116,7 +121,7 @@ object DecodeFuzzer {
         val value = try {
           path.decode(adapter, bytes)
         } catch (e: Throwable) {
-          if (!isDocumented(e, config)) {
+          if (!isAllowed(e, config)) {
             failures.record(Failure("decode ${path.label}", e, name, baseSeed, index, bytes))
           }
           continue
@@ -130,7 +135,10 @@ object DecodeFuzzer {
         try {
           @Suppress("UNCHECKED_CAST")
           val encoded = (adapter as ProtoAdapter<Any>).encode(value)
-          adapter.decode(encoded)
+          val again = path.decode(adapter, encoded)
+          if (again != null && !adapter.encode(again).contentEquals(encoded)) {
+            throw AssertionError("encode(decode(encode(m))) differs from encode(m)")
+          }
         } catch (e: Throwable) {
           failures.record(Failure("encode after ${path.label}", e, name, baseSeed, index, bytes))
         }
@@ -150,7 +158,7 @@ object DecodeFuzzer {
     }
   }
 
-  private fun isDocumented(e: Throwable, config: Config): Boolean = when {
+  private fun isAllowed(e: Throwable, config: Config): Boolean = when {
     e is IOException -> true
     config.missingRequiredFieldsAllowed &&
       e is IllegalStateException &&
@@ -364,8 +372,8 @@ object DecodeFuzzer {
     }
 
     /**
-     * Nests messages through message fields of [root], 150 levels or more. Every level holds the
-     * same field twice: an empty message, then the message for the next level. Generated code keeps
+     * Nests messages through message fields of [root], deeper than the recursion limit. Every level
+     * holds the same field twice: an empty message, then the message for the next level. Generated code keeps
      * the second occurrence as bytes and merges it into the first one after the last tag. The
      * merged messages must share the recursion limit with their parents. A type that has no
      * message field to follow stops early, and then the input has no expected failure.
@@ -416,8 +424,8 @@ object DecodeFuzzer {
     private companion object {
       const val MAX_DEPTH = 6
 
-      /** More than the default recursion limit of 100. */
-      const val MERGE_NESTING_LEVELS = 150
+      /** Deeper than the default recursion limit, with some room to spare. */
+      const val MERGE_NESTING_LEVELS = ProtoReader.DEFAULT_RECURSION_LIMIT + 50
 
       fun varint(buffer: Buffer, value: Long) {
         var v = value

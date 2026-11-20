@@ -22,6 +22,7 @@ import XCTest
 ///
 /// `ProtoDecoder.decode` may only throw `ProtoDecoder.Error`, and it must not crash.
 /// A message that decodes must also encode again, and the encoded bytes must decode.
+/// Encoding the decoded copy must give the same bytes as the first encoding.
 /// A crash prints the type, the seed, the index and the input in hex on stderr.
 /// Every other failure names the type, the seed and the index, and shows the input in hex.
 ///
@@ -139,7 +140,11 @@ final class DecodeFuzzTests: XCTestCase {
 
             do {
                 let encoded = try ProtoEncoder().encode(message)
-                _ = try decoder.decode(messageType, from: encoded)
+                let again = try decoder.decode(messageType, from: encoded)
+                let encodedAgain = try ProtoEncoder().encode(again)
+                if encodedAgain != encoded {
+                    record("encode after decode", FuzzMismatch(), index, bytes)
+                }
             } catch {
                 record("encode after decode", error, index, bytes)
             }
@@ -153,6 +158,11 @@ final class DecodeFuzzTests: XCTestCase {
         }
         return order.compactMap { failures[$0] }
     }
+}
+
+/// The second encoding of a message differs from the first one.
+private struct FuzzMismatch: Error, CustomStringConvertible {
+    var description: String { "encode(decode(encode(m))) differs from encode(m)" }
 }
 
 // MARK: - Input generation
@@ -354,55 +364,86 @@ private struct FuzzSpec {
 
 /// Remembers the current input. A trap such as an overflow or an index out of range kills the
 /// process, so the signal handler prints the input before the process ends.
+///
+/// The handler allocates nothing and calls only `write(2)`, `sigaction` and `raise`. It exists on Apple platforms only. It only reads
+/// buffers that `install()` allocates and `begin()` fills before any crash can happen.
 private enum FuzzCrashReporter {
     private static let capacity = 1 << 16
-    nonisolated(unsafe) private static var buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: capacity)
-    nonisolated(unsafe) private static var length = 0
-    nonisolated(unsafe) private static var index = 0
-    nonisolated(unsafe) private static var seed: UInt64 = 0
-    nonisolated(unsafe) private static var name = UnsafeMutablePointer<UInt8>.allocate(capacity: 128)
-    nonisolated(unsafe) private static var nameLength = 0
+    private static let headerCapacity = 256
+    private static let maxSignal = 64
+
+    /// The input bytes of the current input, at most `capacity`.
+    nonisolated(unsafe) private static var input = UnsafeMutablePointer<UInt8>.allocate(capacity: capacity)
+    nonisolated(unsafe) private static var inputLength = 0
+    /// The line that starts the report, such as "DecodeFuzzTests crash: type=Person seed=1 index=7 bytes=12 input=".
+    nonisolated(unsafe) private static var header = UnsafeMutablePointer<UInt8>.allocate(capacity: headerCapacity)
+    nonisolated(unsafe) private static var headerLength = 0
+    /// Room for the header, two hex digits per input byte, and a newline.
+    nonisolated(unsafe) private static var output = UnsafeMutablePointer<UInt8>.allocate(capacity: headerCapacity + 2 * capacity + 1)
+    /// The handlers that were installed before `install()`, indexed by signal number.
+    nonisolated(unsafe) private static var previous = UnsafeMutablePointer<sigaction>.allocate(capacity: maxSignal)
 
     private static let signals = [SIGTRAP, SIGILL, SIGSEGV, SIGBUS, SIGABRT]
 
     static func install() {
+        // Touch every lazy global now, so that the handler never initializes one.
+        _ = input
+        _ = header
+        _ = output
+        _ = previous
+        #if canImport(Darwin)
         for signalNumber in signals {
-            signal(signalNumber) { received in
+            var action = sigaction()
+            action.__sigaction_u.__sa_handler = { received in
                 FuzzCrashReporter.report()
-                signal(received, SIG_DFL)
+                // Restore the previous handler, then raise the signal again so that it runs.
+                _ = sigaction(received, FuzzCrashReporter.previous + Int(received), nil)
                 raise(received)
             }
+            sigemptyset(&action.sa_mask)
+            action.sa_flags = 0
+            (previous + Int(signalNumber)).initialize(to: sigaction())
+            sigaction(signalNumber, &action, previous + Int(signalNumber))
         }
+        #endif
     }
 
     static func uninstall() {
-        for signalNumber in signals { signal(signalNumber, SIG_DFL) }
+        #if canImport(Darwin)
+        for signalNumber in signals { sigaction(signalNumber, previous + Int(signalNumber), nil) }
+        #endif
     }
 
     static func begin(name typeName: String, seed baseSeed: UInt64, index inputIndex: Int, bytes: [UInt8]) {
-        let nameBytes = Array(typeName.utf8.prefix(127))
-        for (offset, byte) in nameBytes.enumerated() { name[offset] = byte }
-        nameLength = nameBytes.count
-        seed = baseSeed
-        index = inputIndex
-        length = min(bytes.count, capacity)
-        for offset in 0..<length { buffer[offset] = bytes[offset] }
+        inputLength = min(bytes.count, capacity)
+        for offset in 0..<inputLength { input[offset] = bytes[offset] }
+        let text = Array("\nDecodeFuzzTests crash: type=\(typeName.prefix(100)) seed=\(baseSeed) index=\(inputIndex) bytes=\(inputLength) input=".utf8)
+        headerLength = min(text.count, headerCapacity)
+        for offset in 0..<headerLength { header[offset] = text[offset] }
     }
 
     static func end() {
-        length = 0
+        inputLength = 0
+        headerLength = 0
     }
 
     private static func report() {
-        var text = Array("\nDecodeFuzzTests crash: type=".utf8)
-        text += UnsafeBufferPointer(start: name, count: nameLength)
-        text += Array(" seed=\(seed) index=\(index) bytes=\(length) input=".utf8)
-        let digits: [UInt8] = Array("0123456789abcdef".utf8)
-        for offset in 0..<length {
-            text.append(digits[Int(buffer[offset] >> 4)])
-            text.append(digits[Int(buffer[offset] & 15)])
+        var count = 0
+        for offset in 0..<headerLength {
+            output[count] = header[offset]
+            count += 1
         }
-        text.append(10)
-        _ = text.withUnsafeBufferPointer { write(2, $0.baseAddress, $0.count) }
+        for offset in 0..<inputLength {
+            output[count] = hexDigit(input[offset] >> 4)
+            output[count + 1] = hexDigit(input[offset] & 15)
+            count += 2
+        }
+        output[count] = 10
+        count += 1
+        _ = write(2, output, count)
+    }
+
+    private static func hexDigit(_ nibble: UInt8) -> UInt8 {
+        nibble < 10 ? 48 + nibble : 87 + nibble
     }
 }
