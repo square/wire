@@ -22,6 +22,8 @@ import "swift_module_one.proto";
 message SwiftModuleTwoMessage {
   optional string name = 1;
   optional module_one.SortOrder order = 2;
+  optional module_one.Protocol protocol = 3;
+  repeated module_one.Protocol protocols = 4;
 
   message NestedMessage {
     repeated module_one.SwiftModuleOneEnum array_types = 1;

@@ -43,7 +43,7 @@ class SwiftSchemaHandler : SchemaHandler() {
 
     val modulePath = context.outDirectory
     val typeName = generator.generatedTypeName(type)
-    val swiftFile = FileSpec.builder(typeName.moduleName, typeName.simpleName)
+    val swiftFile = FileSpec.builder(typeName.moduleName, with(generator) { typeName.declarationName })
       .addComment(CODE_GENERATED_BY_WIRE)
       .addComment("\nSource: %L in %L", type.type, sourcePathForComment(type.location))
       .indent("    ")

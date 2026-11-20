@@ -138,6 +138,14 @@ class SwiftGenerator private constructor(
 
   fun generatedTypeName(type: Type) = type.typeName
 
+  /**
+   * The name to declare a type with. In a module, a top-level type named `Protocol` has backticks
+   * around its name, so a reference such as `module.`Protocol`` works. A declaration must not have
+   * them because SwiftPoet adds its own.
+   */
+  internal val DeclaredTypeName.declarationName: String
+    get() = simpleName.removeSurrounding("`")
+
   internal val Field.isMessage
     get() = type!!.isMessage
   internal val Field.isEnum
@@ -186,7 +194,7 @@ class SwiftGenerator private constructor(
       // Proto2 allows for non-zero default values
       // We can only handle them if the enum has no pruned values
       syntax == PROTO_3
-    }?.firstOrNull { it.tag == 0 }?.name?.toSwiftIdentifier()
+    }?.firstOrNull { it.tag == 0 }?.name
 
   private val Field.isProtoDefaulted: Boolean
     get() {
@@ -312,7 +320,7 @@ class SwiftGenerator private constructor(
   ): List<TypeSpec> {
     val structType = type.typeName
     val oneOfEnumNames = type.oneOfs.associateWith {
-      structType.nestedType(it.safeName.replaceFirstChar(Char::uppercase))
+      structType.nestedType(it.safeName.replaceFirstChar(Char::uppercase).toNestedSafeName())
     }
 
     // TODO use a NameAllocator
@@ -323,7 +331,7 @@ class SwiftGenerator private constructor(
 
     val typeSpecs = mutableListOf<TypeSpec>()
 
-    typeSpecs += TypeSpec.structBuilder(structType)
+    typeSpecs += TypeSpec.structBuilder(structType.declarationName)
       .addModifiers(PUBLIC)
       .apply {
         if (type.documentation.isNotBlank()) {
@@ -1553,7 +1561,7 @@ class SwiftGenerator private constructor(
         FOUNDATION_DATA,
         defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
       )
-      protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue.toString().toSwiftIdentifier())
+      protoType.isEnum -> enumConstantReference(schema.getType(protoType) as EnumType, typeName, defaultValue.toString())
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
   }
@@ -1843,7 +1851,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
   ): TypeSpec {
     val enumName = type.typeName
-    return TypeSpec.enumBuilder(enumName)
+    return TypeSpec.enumBuilder(enumName.declarationName)
       .addModifiers(PUBLIC)
       .addSuperTypes(listOf(INT32, CASE_ITERABLE, type.protoCodableType))
       .apply {
@@ -1852,7 +1860,7 @@ class SwiftGenerator private constructor(
           addProperty(
             PropertySpec.varBuilder("defaultedValue", enumName, PUBLIC, STATIC).getter(
               FunctionSpec.getterBuilder().addCode(
-                CodeBlock.of("%T.%L\n", type.typeName.makeNonOptional(), protoDefaultedName),
+                CodeBlock.of("%L\n", enumConstantReference(type, type.typeName.makeNonOptional(), protoDefaultedName, insideEnum = true)),
               ).build(),
             ).build(),
           )
@@ -1870,7 +1878,7 @@ class SwiftGenerator private constructor(
         }
         type.constants.forEach { constant ->
           addEnumCase(
-            EnumerationCaseSpec.builder(constant.name.toSwiftIdentifier(), constant.tag)
+            EnumerationCaseSpec.builder(type.swiftCaseName(constant.name).toSwiftEnumCaseDeclaration(), constant.tag)
               .apply {
                 if (constant.documentation.isNotBlank()) {
                   addDoc("%L\n", constant.documentation.sanitizeDoc())
@@ -1891,7 +1899,7 @@ class SwiftGenerator private constructor(
                 .beginControlFlow("switch", "self")
                 .apply {
                   type.constants.forEach { constant ->
-                    addStatement("case .%N: return %S", constant.name.toSwiftIdentifier(), constant.name)
+                    addStatement("case .%L: return %S", type.swiftCaseName(constant.name).toSwiftEnumCaseName(), constant.name)
                   }
                 }
                 .endControlFlow("switch")
@@ -1910,7 +1918,7 @@ class SwiftGenerator private constructor(
                 FunctionSpec.getterBuilder()
                   .addStatement(
                     "return [%L]",
-                    type.constants.map { CodeBlock.of(".%N", it.name.toSwiftIdentifier()) }
+                    type.constants.map { CodeBlock.of(".%L", type.swiftCaseName(it.name).toSwiftEnumCaseName()) }
                       .joinToCode(",%W"),
                   )
                   .build(),
@@ -1930,7 +1938,7 @@ class SwiftGenerator private constructor(
   private fun generateEnclosing(
     type: EnclosingType,
     fileMembers: MutableList<FileMemberSpec>,
-  ): TypeSpec = TypeSpec.enumBuilder(type.typeName)
+  ): TypeSpec = TypeSpec.enumBuilder(type.typeName.declarationName)
     .addModifiers(PUBLIC)
     .addDoc(
       "%N\n",
@@ -1962,6 +1970,13 @@ class SwiftGenerator private constructor(
           else -> this.simpleName.toSwiftIdentifier()
         }
       }
+
+    /** Swift does not allow a type member named `Protocol`, so a nested type gets a suffix. */
+    private val ProtoType.nestedSafeName: String
+      get() = if (simpleName == "Protocol") "Protocol_" else safeName
+
+    /** Same as [nestedSafeName], for the enum of a oneof, which is nested in its message. */
+    private fun String.toNestedSafeName(): String = if (this == "Protocol") "Protocol_" else this
 
     // TODO use a NameAllocator
     val Field.safeName: String
@@ -1999,6 +2014,70 @@ class SwiftGenerator private constructor(
 
     /** Proto names can hold `-` and `.`, which Swift identifiers cannot. */
     private fun String.toSwiftIdentifier(): String = replace('-', '_').replace('.', '_')
+
+    /**
+     * Enum constants that Swift reads as something else when they follow a type name. `Foo.self`
+     * is the metatype, `Foo.init` is the initializer, and `Foo.Type` and `Foo.Protocol` are
+     * metatypes too. Backticks fix the declaration, but not a reference that names the enum, so
+     * those references use an implicit member expression instead.
+     */
+    private val SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING = setOf("self", "init", "Type", "Protocol")
+
+    /** Enum case names that need backticks, and that SwiftPoet does not escape on its own. */
+    private val SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE = setOf("Protocol", "Any")
+
+    /**
+     * Returns the name to declare an enum case with. SwiftPoet escapes `self`, `init` and `Type`
+     * on its own, but not `Protocol` or `Any`.
+     */
+    private fun String.toSwiftEnumCaseDeclaration(): String {
+      val name = toSwiftIdentifier()
+      return if (name in SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE) "`$name`" else name
+    }
+
+    /** Returns the enum case name to write after a dot, escaped when Swift needs it. */
+    private fun String.toSwiftEnumCaseName(): CodeBlock {
+      val name = toSwiftIdentifier()
+      return if (name in SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE) CodeBlock.of("`$name`") else CodeBlock.of("%N", name)
+    }
+
+    /**
+     * Returns the Swift name of an enum case. A case named `allCases` clashes with the `allCases`
+     * list that the generator writes for an enum with deprecated constants. A case named
+     * `defaultedValue` clashes with the `defaultedValue` of a proto3 enum with a zero constant.
+     * Both get a suffix.
+     */
+    private fun EnumType.swiftCaseName(constantName: String): String {
+      val name = constantName.toSwiftIdentifier()
+      return when {
+        name == "allCases" && constants.any { it.isDeprecated } -> "allCases_"
+        name == "defaultedValue" && syntax == PROTO_3 && constants.any { it.tag == 0 } -> "defaultedValue_"
+        else -> name
+      }
+    }
+
+    /**
+     * Returns an expression for [constantName] of the enum [enumName]. Swift cannot read a case
+     * after its type name when the case is named `self`, `init`, `Type` or `Protocol`.
+     *
+     * Inside the enum, [insideEnum], a case that has the name of the first segment of the type name
+     * hides that segment, so `Status.Kind.Status` fails there. Outside the enum it compiles, so the
+     * output stays the same.
+     */
+    private fun enumConstantReference(
+      enumType: EnumType,
+      enumName: TypeName,
+      constantName: String,
+      insideEnum: Boolean = false,
+    ): CodeBlock {
+      val name = enumType.swiftCaseName(constantName)
+      return when {
+        name in SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING -> CodeBlock.of("(.`%L` as %T)", name, enumName)
+        insideEnum && name == (enumName as? DeclaredTypeName)?.simpleNames?.first() ->
+          CodeBlock.of("(.%L as %T)", name, enumName)
+        else -> CodeBlock.of("%T.%L", enumName, name)
+      }
+    }
 
     val MessageType.isExtensible: Boolean
       get() = extensionsList.isNotEmpty()
@@ -2096,9 +2175,16 @@ class SwiftGenerator private constructor(
           val protoType = type.type
 
           val className = if (enclosingClassName != null) {
-            enclosingClassName.nestedType(protoType.safeName, alwaysQualify = true)
+            enclosingClassName.nestedType(protoType.nestedSafeName, alwaysQualify = true)
           } else {
             val safeName = protoType.safeName
+            // Swift reads `module.Protocol` as a metatype of `module`, but `module.`Protocol``
+            // names the type.
+            val referenceName = if (safeName == "Protocol" && existingTypeModuleName[protoType] != null) {
+              "`$safeName`"
+            } else {
+              safeName
+            }
 
             val moduleName = existingTypeModuleName[protoType] ?: ""
             val isCommonSwiftType = protoType.simpleName in SWIFT_COMMON_TYPES
@@ -2108,7 +2194,7 @@ class SwiftGenerator private constructor(
             // Swift stdlib types or the same name of a type exists across multiple modules.
             // For those, we always qualify the type name to disambiguate.
             if (isCommonSwiftType || isInMultipleModules) {
-              DeclaredTypeName.qualifiedTypeName("$moduleName.$safeName")
+              DeclaredTypeName.qualifiedTypeName("$moduleName.$referenceName")
             } else {
               DeclaredTypeName(moduleName, safeName)
             }

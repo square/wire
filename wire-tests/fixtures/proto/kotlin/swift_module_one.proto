@@ -48,3 +48,8 @@ message SwiftModuleOneAmbiguousMessage {
 
 message DateTime {
 }
+
+// Swift reads `module_one.Protocol` as a metatype.
+message Protocol {
+  optional string name = 1;
+}

@@ -9,6 +9,8 @@ public struct SwiftModuleTwoMessage {
     @ProtoDefaulted
     public var name: String?
     public var order: module_one.SortOrder?
+    public var `protocol`: module_one.`Protocol`?
+    public var protocols: [module_one.`Protocol`] = []
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -50,24 +52,36 @@ extension SwiftModuleTwoMessage : Proto2Codable {
     public init(from protoReader: ProtoReader) throws {
         var name: String? = nil
         var order: module_one.SortOrder? = nil
+        var `protocol`: module_one.`Protocol`? = nil
+        var protocols: [module_one.`Protocol`] = []
+        var protocolProtoData: Foundation.Data? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: name = try protoReader.decode(String.self)
             case 2: if let value = try protoReader.decode(module_one.SortOrder.self) { order = value }
+            case 3: try protoReader.decodeMessage(into: &protocolProtoData)
+            case 4: try protoReader.decode(into: &protocols)
             default: try protoReader.readUnknownField(tag: tag)
             }
+        }
+        if let protocolProtoData {
+            `protocol` = try protoReader.decodeMergedMessage(module_one.`Protocol`.self, from: protocolProtoData)
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self._name.wrappedValue = name
         self.order = order
+        self.`protocol` = `protocol`
+        self.protocols = protocols
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.name)
         try protoWriter.encode(tag: 2, value: self.order)
+        try protoWriter.encode(tag: 3, value: self.`protocol`)
+        try protoWriter.encode(tag: 4, value: self.protocols)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -80,13 +94,20 @@ extension SwiftModuleTwoMessage : Codable {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._name.wrappedValue = try container.decodeIfPresent(String.self, forKey: "name")
         self.order = try container.decodeIfPresent(module_one.SortOrder.self, forKey: "order")
+        self.`protocol` = try container.decodeIfPresent(module_one.`Protocol`.self, forKey: "protocol")
+        self.protocols = try container.decodeProtoArray(module_one.`Protocol`.self, forKey: "protocols")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(self.name, forKey: "name")
         try container.encodeIfPresent(self.order, forKey: "order")
+        try container.encodeIfPresent(self.`protocol`, forKey: "protocol")
+        if includeDefaults || !self.protocols.isEmpty {
+            try container.encodeProtoArray(self.protocols, forKey: "protocols")
+        }
     }
 
 }

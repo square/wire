@@ -20,6 +20,7 @@ import assertk.assertions.contains
 import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import io.outfoxx.swiftpoet.FileSpec
 import kotlin.test.Test
@@ -666,6 +667,460 @@ class SwiftGeneratorTest {
     assertThat(code).contains("""firstOfKeys: "%s %S %1S", "b"""")
     assertThat(code).contains("""forKey: "%c"""")
     assertThat(code).contains("""forKey: preferCamelCase ? "%c" : "c"""")
+  }
+
+  @Test fun enumConstantsWithSpecialSwiftMeaningKeepTheirNames() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  self = 0;
+        |  init = 1;
+        |  Type = 2;
+        |  Protocol = 3;
+        |  PLAIN = 4;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Special")
+
+    assertThat(code).contains("case `self` = 0")
+    assertThat(code).contains("case `init` = 1")
+    assertThat(code).contains("case `Type` = 2")
+    assertThat(code).contains("case `Protocol` = 3")
+    assertThat(code).contains("case PLAIN = 4")
+    assertThat(code).contains("""case .`self`: return "self"""")
+    assertThat(code).contains("""case .`init`: return "init"""")
+    assertThat(code).contains("""case .`Type`: return "Type"""")
+    assertThat(code).contains("""case .`Protocol`: return "Protocol"""")
+    assertThat(code).contains("""case .PLAIN: return "PLAIN"""")
+    assertThat(code).doesNotContain("``")
+  }
+
+  @Test fun deprecatedEnumConstantsWithSpecialSwiftMeaningAreEscapedInAllCases() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  self = 0 [deprecated = true];
+        |  Type = 1;
+        |  Protocol = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Special")
+
+    assertThat(code).contains("return [.`self`, .`Type`, .`Protocol`]")
+  }
+
+  @Test fun enumDefaultsWithSpecialSwiftMeaningUseImplicitMembers() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  self = 0;
+        |  init = 1;
+        |  Type = 2;
+        |  Protocol = 3;
+        |  PLAIN = 4;
+        |}
+        |
+        |message Message {
+        |  optional Special a = 1 [default = self];
+        |  optional Special b = 2 [default = init];
+        |  optional Special c = 3 [default = Type];
+        |  optional Special d = 4 [default = Protocol];
+        |  optional Special e = 5 [default = PLAIN];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`self` as Special))")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`init` as Special))")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`Type` as Special))")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: (.`Protocol` as Special))")
+    // Constants without a special meaning keep the same output.
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Special.PLAIN)")
+  }
+
+  @Test fun proto3EnumWithSpecialZeroConstantHasDefaultedValue() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |enum Special {
+        |  Type = 0;
+        |  OTHER = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Special")
+
+    assertThat(code).contains("case `Type` = 0")
+    assertThat(code).contains("(.`Type` as Special)\n")
+  }
+
+  @Test fun nestedTypeNamedProtocolGetsASuffix() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Outer {
+        |  enum Protocol {
+        |    A = 0;
+        |    B = 1;
+        |  }
+        |  message Nested {
+        |    optional Protocol protocol = 1;
+        |  }
+        |
+        |  optional Protocol p = 1;
+        |  optional Protocol q = 2 [default = B];
+        |  optional Nested nested = 3;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Outer")
+
+    assertThat(code).contains("public enum Protocol_ : Int32")
+    assertThat(code).contains("public var p: Outer.Protocol_?")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Outer.Protocol_.B)")
+    assertThat(code).doesNotContain("Outer.Protocol?")
+    assertThat(schema.generateSwift("Outer.Nested")).contains("public var `protocol`: Outer.Protocol_?")
+    assertThat(code).doesNotContain("enum Protocol ")
+  }
+
+  @Test fun topLevelTypeNamedProtocolKeepsItsName() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Protocol {
+        |  A = 0;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Protocol")
+
+    assertThat(code).contains("public enum Protocol : Int32")
+    assertThat(code).doesNotContain("Protocol_")
+  }
+
+  @Test fun enumConstantsNamedAnyAreEscaped() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Special {
+        |  Any = 0;
+        |  OTHER = 1;
+        |}
+        |
+        |message Message {
+        |  optional Special a = 1 [default = Any];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val enumCode = schema.generateSwift("Special")
+    val messageCode = schema.generateSwift("Message")
+
+    assertThat(enumCode).contains("case `Any` = 0")
+    assertThat(enumCode).contains("""case .`Any`: return "Any"""")
+    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: Special.Any)")
+  }
+
+  @Test fun enumConstantNamedAllCasesIsRenamedOnlyWhenTheGeneratorWritesAllCases() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Plain {
+        |  allCases = 0;
+        |  OTHER = 1;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "deprecated.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package other;
+        |
+        |enum WithDeprecated {
+        |  allCases = 0;
+        |  OLD = 1 [deprecated = true];
+        |}
+        |
+        |message Message {
+        |  optional WithDeprecated a = 1 [default = allCases];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val plainCode = schema.generateSwift("Plain")
+    val deprecatedCode = schema.generateSwift("other.WithDeprecated")
+    val messageCode = schema.generateSwift("other.Message")
+
+    // Without a deprecated constant, Swift synthesizes `allCases` and nothing changes.
+    assertThat(plainCode).contains("case allCases = 0")
+    assertThat(plainCode).doesNotContain("allCases_")
+    assertThat(plainCode).doesNotContain("public static var allCases")
+
+    // With one, the generator writes `allCases` itself, so the case needs another name.
+    assertThat(deprecatedCode).contains("case allCases_ = 0")
+    assertThat(deprecatedCode).contains("""case .allCases_: return "allCases"""")
+    assertThat(deprecatedCode).contains("return [.allCases_, .OLD]")
+    assertThat(messageCode).contains("@CustomDefaulted(defaultValue: WithDeprecated.allCases_)")
+  }
+
+  @Test fun proto2DefaultNamedLikeItsEnumKeepsTheQualifiedForm() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |enum Status {
+        |  Status = 0;
+        |  OTHER = 1;
+        |}
+        |
+        |message Outer {
+        |  enum Inner {
+        |    Outer = 0;
+        |    OTHER_INNER = 1;
+        |  }
+        |
+        |  optional Status a = 1 [default = Status];
+        |  optional Status b = 2 [default = OTHER];
+        |  optional Inner c = 3 [default = Outer];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Outer")
+
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Status.Status)")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Status.OTHER)")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: Outer.Inner.Outer)")
+    assertThat(code).doesNotContain(" as ")
+  }
+
+  @Test fun proto3ZeroConstantNamedLikeTheFirstTypeSegmentUsesImplicitMember() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |enum Level {
+        |  Level = 0;
+        |  HIGH = 1;
+        |}
+        |
+        |message Status {
+        |  enum Kind {
+        |    Status = 0;
+        |    OK = 1;
+        |  }
+        |  enum Other {
+        |    Kind = 0;
+        |    FINE = 1;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    assertThat(schema.generateSwift("Level")).contains("(.Level as Level)\n")
+    assertThat(schema.generateSwift("Status.Kind")).contains("(.Status as Status.Kind)\n")
+    // `Status.Other.Kind` still compiles, since `Status` is the first segment.
+    assertThat(schema.generateSwift("Status.Other")).contains("Status.Other.Kind\n")
+  }
+
+  @Test fun oneofNamedProtocolGetsASuffix() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message OneofProtocol {
+        |  oneof protocol {
+        |    string a = 1;
+        |    int32 b = 2;
+        |  }
+        |}
+        |
+        |message OneofType {
+        |  oneof type {
+        |    string c = 1;
+        |    int32 d = 2;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val protocolCode = schema.generateSwift("OneofProtocol")
+    val typeCode = schema.generateSwift("OneofType")
+
+    assertThat(protocolCode).contains("public var `protocol`: OneofProtocol.Protocol_?")
+    assertThat(protocolCode).contains("public enum Protocol_")
+    assertThat(protocolCode).doesNotContain("enum Protocol ")
+    // A oneof named `type` already compiles, so its output does not change.
+    assertThat(typeCode).contains("public var type: OneofType.`Type`?")
+    assertThat(typeCode).doesNotContain("Type_")
+  }
+
+  @Test fun topLevelTypeNamedProtocolIsBackticksWhenAnotherModuleReferencesIt() {
+    val schema = buildSchema {
+      add(
+        "one.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package one;
+        |
+        |message Protocol {
+        |  message Nested {
+        |    optional string a = 1;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "two.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package two;
+        |
+        |import "one.proto";
+        |
+        |message Holder {
+        |  optional one.Protocol a = 1;
+        |  optional one.Protocol.Nested b = 2;
+        |}
+        """.trimMargin(),
+      )
+    }
+    // A module only knows the modules of the types it depends on, so `one.Protocol` has no module
+    // when module_one generates it.
+    val dependencies = mapOf(
+      ProtoType.get("one.Protocol") to "module_one",
+      ProtoType.get("one.Protocol.Nested") to "module_one",
+    )
+    val holderGenerator = SwiftGenerator(schema, dependencies)
+    val holderType = requireNotNull(schema.getType("two.Holder"))
+    val holderCode = FileSpec.builder("module_two", "Holder")
+      .indent("    ")
+      .apply { holderGenerator.generateTypeTo(holderType, this) }
+      .build()
+      .toString()
+    val protocolCode = schema.generateSwift("one.Protocol")
+
+    assertThat(holderCode).contains("public var a: module_one.`Protocol`?")
+    assertThat(holderCode).contains("public var b: module_one.`Protocol`.Nested?")
+    assertThat(holderCode).doesNotContain("module_one.Protocol")
+    // The module that declares the type is not changed.
+    assertThat(protocolCode).contains("public struct Protocol {")
+    assertThat(protocolCode).contains("extension Protocol : Equatable")
+    assertThat(protocolCode).doesNotContain("``")
+  }
+
+  @Test fun protoEnumConstantNamedDefaultedValueIsRenamedOnlyInProto3() {
+    val schema = buildSchema {
+      add(
+        "two.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package two;
+        |
+        |enum Two {
+        |  defaultedValue = 0;
+        |  OTHER_TWO = 1;
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "three.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package three;
+        |
+        |enum Three {
+        |  ZERO = 0;
+        |  defaultedValue = 1;
+        |}
+        |
+        """.trimMargin(),
+      )
+      add(
+        "four.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |package four;
+        |
+        |enum NoZero3 {
+        |  defaultedValue = 0;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val two = schema.generateSwift("two.Two")
+    val three = schema.generateSwift("three.Three")
+    val zero = schema.generateSwift("four.NoZero3")
+
+    // A proto2 enum has no static `defaultedValue`, so nothing changes.
+    assertThat(two).contains("case defaultedValue = 0")
+    assertThat(two).doesNotContain("defaultedValue_")
+    assertThat(three).contains("case defaultedValue_ = 1")
+    assertThat(three).contains("""case .defaultedValue_: return "defaultedValue"""")
+    assertThat(three).contains("public static var defaultedValue: Three {")
+    assertThat(zero).contains("case defaultedValue_ = 0")
+    assertThat(zero).contains("NoZero3.defaultedValue_")
   }
 
   private fun Schema.generateSwift(typeName: String): String {

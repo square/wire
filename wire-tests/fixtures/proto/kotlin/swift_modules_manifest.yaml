@@ -32,6 +32,7 @@ module_one:
   - squareup.protos.kotlin.swift_modules.module_one.SwiftModuleOneAmbiguousMessage
   - squareup.protos.kotlin.swift_modules.module_one.SortOrder
   - squareup.protos.kotlin.swift_modules.module_one.DateTime
+  - squareup.protos.kotlin.swift_modules.module_one.Protocol
   dependencies:
     - module_address
     - module_location
