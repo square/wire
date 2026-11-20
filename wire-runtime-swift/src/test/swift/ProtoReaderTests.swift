@@ -1524,7 +1524,7 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
-            XCTAssertEqual(unknownFields, [2: Foundation.Data(hexEncoded: "15_FFFFFFFF")])
+            XCTAssertEqual(unknownFields, [2: Foundation.Data(hexEncoded: "15_FFFFFFFF")!])
         }
     }
 
@@ -1545,7 +1545,7 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
-            XCTAssertEqual(unknownFields, [1: Foundation.Data(hexEncoded: "08_05"), 3: Foundation.Data(hexEncoded: "18_FFFFFFFF0F")])
+            XCTAssertEqual(unknownFields, [1: Foundation.Data(hexEncoded: "08_05")!, 3: Foundation.Data(hexEncoded: "18_FFFFFFFF0F")!])
         }
     }
 
@@ -1576,7 +1576,7 @@ final class ProtoReaderTests: XCTestCase {
                 try reader.readUnknownField(tag: tag)
             }
 
-            XCTAssertEqual(unknownFields, [2: Foundation.Data(hexEncoded: "120A0D0500000015FFFFFFFF")])
+            XCTAssertEqual(unknownFields, [2: Foundation.Data(hexEncoded: "120A0D0500000015FFFFFFFF")!])
         }
     }
 
@@ -1599,12 +1599,12 @@ final class ProtoReaderTests: XCTestCase {
                 case 1: XCTAssertEqual(try UInt32(truncatingIfNeeded: reader.readVarint()), 5)
                 case 2:
                     let nestedMessage = try reader.decode(NestedMessage.self)
-                    XCTAssertEqual(nestedMessage.unknownFields, [1: Foundation.Data(hexEncoded: "0D_05000000"), 2: Foundation.Data(hexEncoded: "15_FFFFFFFF")])
+                    XCTAssertEqual(nestedMessage.unknownFields, [1: Foundation.Data(hexEncoded: "0D_05000000")!, 2: Foundation.Data(hexEncoded: "15_FFFFFFFF")!])
                 default: try reader.readUnknownField(tag: tag)
                 }
             }
 
-            XCTAssertEqual(unknownFields, [3: Foundation.Data(hexEncoded: "1D_FBFFFFFF")])
+            XCTAssertEqual(unknownFields, [3: Foundation.Data(hexEncoded: "1D_FBFFFFFF")!])
         }
     }
 

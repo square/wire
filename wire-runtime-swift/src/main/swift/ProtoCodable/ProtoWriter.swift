@@ -553,23 +553,24 @@ public final class ProtoWriter {
     /**
      Append unknown fields data to the output, in ascending tag order.
 
-     Dictionary order changes on each launch, so we sort to keep the encoded bytes stable.
+     `UnknownFields` keeps its fields in that order, so the encoded bytes are stable.
      */
     public func writeUnknownFields(_ fields: UnknownFields) throws {
-        guard fields.count > 1 else {
-            fields.values.forEach {
-                self.buffer.append($0)
-            }
-            return
-        }
-        for (_, data) in fields.sorted(by: { $0.key < $1.key }) {
-            self.buffer.append(data)
-        }
+        self.buffer.append(fields.rawData)
     }
 
     /** Append unknown fields data to the output */
     public func writeUnknownFields(_ fields: ExtensibleUnknownFields) throws {
-        try writeUnknownFields(fields.rawData)
+        try writeUnknownFields(fields.fields)
+    }
+
+    /**
+     Append unknown fields data to the output, in ascending tag order.
+
+     This keeps calls that pass a dictionary literal compiling, as they do for the two types above.
+     */
+    public func writeUnknownFields(_ fields: [UInt32: Data]) throws {
+        try writeUnknownFields(UnknownFields(fieldsByTag: fields))
     }
 
     // MARK: - Internal Methods - Writing Primitives
