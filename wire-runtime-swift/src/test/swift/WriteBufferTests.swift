@@ -18,6 +18,16 @@ import XCTest
 
 final class WriteBufferTests: XCTestCase {
 
+    func testAppendRawBufferPointer() {
+        let buffer = WriteBuffer()
+        let bytes: [UInt8] = [0x00, 0x11, 0x22]
+
+        bytes.withUnsafeBytes { buffer.append($0) }
+        buffer.append(UnsafeRawBufferPointer(start: nil, count: 0))
+
+        XCTAssertEqual(Foundation.Data(buffer, copyBytes: true), Foundation.Data(hexEncoded: "001122"))
+    }
+
     func testInsertAtBeginning() {
         let buffer = WriteBuffer()
         buffer.append(Foundation.Data(hexEncoded: "2233")!)
