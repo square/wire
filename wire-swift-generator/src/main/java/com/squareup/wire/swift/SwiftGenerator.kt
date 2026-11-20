@@ -143,7 +143,7 @@ class SwiftGenerator private constructor(
    * around its name, so a reference such as `module.`Protocol`` works. A declaration must not have
    * them because SwiftPoet adds its own.
    */
-  val DeclaredTypeName.declarationName: String
+  internal val DeclaredTypeName.declarationName: String
     get() = simpleName.removeSurrounding("`")
 
   internal val Field.isMessage
