@@ -988,9 +988,11 @@ class SwiftGenerator private constructor(
                   "firstOfKeys"
                 } ?: "forKey"
 
+                // Pass the keys as an argument. Text inside a format string is read as format
+                // directives, and a JSON name can hold `%`.
                 val keys = listOf(field.codableName, field.name)
                   .filterNotNull()
-                  .map { CodeBlock.of("%S", it) }
+                  .map { it.toSwiftStringLiteralBlock() }
                   .joinToCode()
 
                 val fieldName = if (hasPropertyWrapper) {
@@ -1004,9 +1006,10 @@ class SwiftGenerator private constructor(
                   "self.%1N"
                 }
                 addStatement(
-                  "$prefix = try $container.$decode($typeArg%2T.self, $forKeys: $keys)",
+                  "$prefix = try $container.$decode($typeArg%2T.self, $forKeys: %3L)",
                   fieldName,
                   typeName,
+                  keys,
                 )
               }
 
@@ -1029,18 +1032,18 @@ class SwiftGenerator private constructor(
                   if (index == 0) {
                     beginControlFlow(
                       "if",
-                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
+                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3L)",
                       fieldName,
                       typeName,
-                      keyName,
+                      keyName.toSwiftStringLiteralBlock(),
                     )
                   } else {
                     nextControlFlow(
                       "else if",
-                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3S)",
+                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3L)",
                       fieldName,
                       typeName,
-                      keyName,
+                      keyName.toSwiftStringLiteralBlock(),
                     )
                   }
                   addStatement("self.%1N = .%2N(%3N)", oneOf.safeName, field.safeName, fieldName)
@@ -1086,10 +1089,10 @@ class SwiftGenerator private constructor(
 
                   val (keys, args) = field.codableName?.let { codableName ->
                     Pair(
-                      "preferCamelCase ? %3S : %2S",
-                      arrayOf(field.name, codableName),
+                      "preferCamelCase ? %3L : %2L",
+                      arrayOf(field.name.toSwiftStringLiteralBlock(), codableName.toSwiftStringLiteralBlock()),
                     )
-                  } ?: Pair("%2S", arrayOf(field.name))
+                  } ?: Pair("%2L", arrayOf(field.name.toSwiftStringLiteralBlock()))
 
                   addStatement(
                     "try $container.$encode(${typeArg}self.%1N, forKey: $keys)",
@@ -1131,10 +1134,10 @@ class SwiftGenerator private constructor(
                 oneOf.fields.forEach { field ->
                   val (keys, args) = field.codableName?.let { codableName ->
                     Pair(
-                      "preferCamelCase ? %3S : %2S",
-                      arrayOf(field.name, codableName),
+                      "preferCamelCase ? %3L : %2L",
+                      arrayOf(field.name.toSwiftStringLiteralBlock(), codableName.toSwiftStringLiteralBlock()),
                     )
-                  } ?: Pair("%2S", arrayOf(field.name))
+                  } ?: Pair("%2L", arrayOf(field.name.toSwiftStringLiteralBlock()))
 
                   addStatement(
                     "case .%1N(let %1N): try $container.encode(%1N, forKey: $keys)",
@@ -1990,6 +1993,9 @@ class SwiftGenerator private constructor(
       }
       append('"')
     }
+
+    /** Returns this string as a Swift string literal code block that SwiftPoet writes as is. */
+    private fun String.toSwiftStringLiteralBlock(): CodeBlock = CodeBlock.of("%L", toSwiftStringLiteral())
 
     /** Proto names can hold `-` and `.`, which Swift identifiers cannot. */
     private fun String.toSwiftIdentifier(): String = replace('-', '_').replace('.', '_')
