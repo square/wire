@@ -24,11 +24,13 @@ import assertk.assertions.messageContains
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
+import com.squareup.wire.protos.kotlin.use_array_redacted.UseArrayRedacted
 import org.junit.Test
 import squareup.proto2.UseArrayProto2
 import squareup.proto2.UseArrayProto2Interop
 import squareup.proto3.UseArray
 import squareup.proto3.UseArrayInterop
+import squareup.proto3.UseArrayTwin
 
 /** Fields with `(wire.use_array)` encode and decode as JSON arrays, like any repeated field. */
 class MoshiUseArrayTest {
@@ -192,6 +194,70 @@ class MoshiUseArrayTest {
     val json = toJson(UseArrayProto2Interop::class.java, message)
     assertThat(json.contains("\"array_uint64\":[18446744073709551615]")).isEqualTo(true)
     assertThat(fromJson(UseArrayProto2Interop::class.java, json)).isEqualTo(message)
+  }
+
+  @Test
+  fun nullArrayDecodesAsEmptyArray() {
+    val message = fromJson(UseArray::class.java, """{"arrayInt32":null,"arrayDouble":null,"arrayInt64":[1]}""")
+    assertThat(message.array_int32.toList()).isEmpty()
+    assertThat(message.array_double.toList()).isEmpty()
+    assertThat(message.array_int64.toList()).isEqualTo(listOf(1L))
+  }
+
+  @Test
+  fun specialFloatingPointValuesBehaveLikeLists() {
+    val inputs = listOf(
+      """{"arrayFloat":["NaN","Infinity","-Infinity"]}""",
+      """{"arrayDouble":["NaN","Infinity","-Infinity"]}""",
+      """{"arrayFloat":["abc"]}""",
+      """{"arrayDouble":[1e400]}""",
+    )
+    for (json in inputs) {
+      val array = outcome { fromJson(UseArray::class.java, json).let { "${it.array_float.toList()}${it.array_double.toList()}" } }
+      val list = outcome { fromJson(UseArrayTwin::class.java, json).let { "${it.array_float}${it.array_double}" } }
+      assertThat(array).isEqualTo(list)
+    }
+    val written = outcome {
+      toJson(UseArray::class.java, UseArray(array_float = floatArrayOf(Float.NaN), array_double = doubleArrayOf(Double.POSITIVE_INFINITY)))
+    }
+    val writtenList = outcome {
+      toJson(UseArrayTwin::class.java, UseArrayTwin(array_float = listOf(Float.NaN), array_double = listOf(Double.POSITIVE_INFINITY)))
+    }
+    assertThat(written).isEqualTo(writtenList)
+  }
+
+  @Test
+  fun sameJsonDecodesToSameValuesAsList() {
+    val array = fromJson(UseArray::class.java, EXPECTED_JSON)
+    val list = fromJson(UseArrayTwin::class.java, EXPECTED_JSON)
+    assertThat(array.array_int32.toList()).isEqualTo(list.array_int32)
+    assertThat(array.array_uint32.toList()).isEqualTo(list.array_uint32)
+    assertThat(array.array_sint32.toList()).isEqualTo(list.array_sint32)
+    assertThat(array.array_fixed32.toList()).isEqualTo(list.array_fixed32)
+    assertThat(array.array_sfixed32.toList()).isEqualTo(list.array_sfixed32)
+    assertThat(array.array_int64.toList()).isEqualTo(list.array_int64)
+    assertThat(array.array_uint64.toList()).isEqualTo(list.array_uint64)
+    assertThat(array.array_sint64.toList()).isEqualTo(list.array_sint64)
+    assertThat(array.array_fixed64.toList()).isEqualTo(list.array_fixed64)
+    assertThat(array.array_sfixed64.toList()).isEqualTo(list.array_sfixed64)
+    assertThat(array.array_float.toList()).isEqualTo(list.array_float)
+    assertThat(array.array_double.toList()).isEqualTo(list.array_double)
+    assertJsonEquals(toJson(UseArrayTwin::class.java, list), toJson(UseArray::class.java, array))
+  }
+
+  private fun outcome(block: () -> String): String = try {
+    block()
+  } catch (e: Exception) {
+    "${e::class.java.name}: ${e.message}"
+  }
+
+  @Test
+  fun redactedArrayIsListedAsRedacted() {
+    val message = UseArrayRedacted(secret = intArrayOf(1, 2), visible = intArrayOf(3))
+    val json = moshi.adapter(UseArrayRedacted::class.java).redacting().toJson(message)
+    assertJsonEquals("""{"visible":[3],"__redacted_fields":["secret"]}""", json)
+    assertThat(moshi.adapter(UseArrayRedacted::class.java).toJson(message))
+      .isEqualTo("""{"secret":[1,2],"visible":[3]}""")
   }
 
   private companion object {

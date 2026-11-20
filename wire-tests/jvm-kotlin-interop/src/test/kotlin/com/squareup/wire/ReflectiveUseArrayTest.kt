@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos.kotlin.use_array_redacted.UseArrayRedacted
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -133,5 +134,18 @@ class ReflectiveUseArrayTest {
     assertEquals(proto2Message.toString(), proto2Reflective.toString(proto2Message))
     val partial = UseArrayInterop(array_int32 = intArrayOf(7), array_double = doubleArrayOf(0.5))
     assertEquals(partial.toString(), proto3Reflective.toString(partial))
+  }
+
+  @Test fun redactedArrayFieldIsClearedAndHiddenInToString() {
+    val adapter = ProtoAdapter.newMessageAdapter(UseArrayRedacted::class.java)
+    val message = UseArrayRedacted(secret = intArrayOf(1, 2), visible = intArrayOf(3))
+
+    val redacted = adapter.redact(message)
+    assertEquals(UseArrayRedacted.ADAPTER.redact(message), redacted)
+    assertContentEquals(intArrayOf(), redacted.secret)
+    assertContentEquals(intArrayOf(3), redacted.visible)
+
+    assertEquals("UseArrayRedacted{secret=\u2588\u2588, visible=[3]}", adapter.toString(message))
+    assertEquals(message.toString(), adapter.toString(message))
   }
 }

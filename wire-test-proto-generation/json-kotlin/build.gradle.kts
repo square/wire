@@ -7,6 +7,7 @@ wire {
   sourcePath {
     srcDir("../../wire-tests/fixtures/shared/proto/proto2")
     srcDir("../../wire-tests/fixtures/shared/proto/proto3")
+    srcDir("../../wire-tests/fixtures/proto/kotlin")
     include(
       "all_structs.proto",
       "dinosaur_kotlin.proto",
@@ -15,6 +16,8 @@ wire {
       "person_kotlin.proto",
       "pizza.proto",
       "use_array.proto",
+      "option_redacted.proto",
+      "use_array_redacted.proto",
       "use_array_proto2.proto",
     )
   }

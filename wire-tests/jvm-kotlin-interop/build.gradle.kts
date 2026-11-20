@@ -50,6 +50,7 @@ wire {
       "unknown_fields.proto",
       "uses_any.proto",
       "use_array_interop.proto",
+      "use_array_redacted.proto",
       "use_array_proto2_interop.proto",
     )
   }

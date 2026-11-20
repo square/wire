@@ -32,3 +32,20 @@ message UseArray {
   repeated float array_float = 11 [(wire.use_array) = true];
   repeated double array_double = 12 [(wire.use_array) = true];
 }
+
+// The same fields as UseArray, as lists.
+message UseArrayTwin {
+  repeated int32 array_int32 = 1;
+  repeated uint32 array_uint32 = 2;
+  repeated sint32 array_sint32 = 3;
+  repeated fixed32 array_fixed32 = 4;
+  repeated sfixed32 array_sfixed32 = 5;
+  repeated int64 array_int64 = 6;
+  repeated uint64 array_uint64 = 7;
+  repeated sint64 array_sint64 = 8;
+  repeated fixed64 array_fixed64 = 9;
+  repeated sfixed64 array_sfixed64 = 10;
+  repeated float array_float = 11;
+  repeated double array_double = 12;
+}
+

@@ -29,6 +29,7 @@ wire {
       "option_redacted.proto",
       "redacted_map.proto",
       "use_array.proto",
+      "use_array_redacted.proto",
       "use_array_proto2.proto",
     )
   }
