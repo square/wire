@@ -351,6 +351,28 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("{'")
   }
 
+  @Test fun stringDefaultWithLoneSurrogateIsWrittenAsQuestionMark() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  optional string head = 1 [default = "\ud83d"];
+        |  optional string pair = 2 [default = "\ud83d\ude00"];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    // Swift cannot hold a lone surrogate, and the file on disk is UTF-8, so it holds a question mark.
+    val code = schema.generateSwift("Message").toByteArray(Charsets.UTF_8).toString(Charsets.UTF_8)
+
+    assertThat(code).contains("@CustomDefaulted(defaultValue: \"?\")\n    public var head:")
+    assertThat(code).contains("@CustomDefaulted(defaultValue: \"\uD83D\uDE00\")\n    public var pair:")
+  }
+
   @Test fun requiredFieldsWithDefaultsAreStoredAsPlainProperties() {
     val schema = buildSchema {
       add(
