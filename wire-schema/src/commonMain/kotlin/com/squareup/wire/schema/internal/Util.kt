@@ -25,6 +25,8 @@ import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 import com.squareup.wire.schema.internal.parser.OptionElement
+import okio.ByteString
+import okio.ByteString.Companion.toByteString
 import okio.Path
 import okio.Path.Companion.toPath
 
@@ -41,14 +43,30 @@ internal fun Location.sourcePathForComment(): String = buildString {
 }
 
 /**
+ * Returns the bytes that a `bytes` default or option literal names. Wire keeps such a literal as a
+ * string with one char per byte. Generated code reads it the same way, and a char above U+00FF has
+ * no byte, so it becomes `?`. Every place that writes a bytes literal must name these bytes.
+ */
+internal fun String.toBytes(): ByteString = ByteArray(length) { index ->
+  val code = this[index].code
+  (if (code <= 0xff) code else '?'.code).toByte()
+}.toByteString()
+
+/**
  * Escapes [this] so it can sit between double quotes in `.proto` source.
  *
- * Wire models a `bytes` default as a string with one char per byte, so with [bytes] true every
- * char from U+007F to U+00FF is written as a three digit octal escape. Protoc reads a raw char
- * above U+007F as several UTF-8 bytes.
+ * Wire models a `bytes` default as a string with one char per byte, so with [bytes] true the text
+ * names the bytes returned by [toBytes]. Every char from U+007F to U+00FF is written as a three
+ * digit octal escape, and a char above U+00FF is written as `?`. Protoc reads a raw char above
+ * U+007F as several UTF-8 bytes.
  */
 internal fun String.escapeQuotedString(bytes: Boolean = false): String = buildString {
-  for (ch in this@escapeQuotedString) {
+  val source = if (bytes) {
+    toBytes().toByteArray().joinToString("") { (it.toInt() and 0xff).toChar().toString() }
+  } else {
+    this@escapeQuotedString
+  }
+  for (ch in source) {
     append(
       when (ch) {
         '"' -> "\\\""

@@ -16,8 +16,10 @@
 package com.squareup.wire.schema.internal
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import com.google.protobuf.ByteString
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.DescriptorProtos.DescriptorProto
 import com.google.protobuf.DescriptorProtos.DescriptorProto.ExtensionRange
@@ -28,8 +30,10 @@ import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.google.protobuf.DescriptorProtos.MethodDescriptorProto
 import com.google.protobuf.DescriptorProtos.MethodOptions
 import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto
+import com.google.protobuf.Descriptors
 import com.google.protobuf.UnknownFieldSet
 import com.squareup.wire.buildSchema
+import com.squareup.wire.schema.MessageType
 import kotlin.test.Test
 import okio.ByteString.Companion.toByteString
 import okio.Path.Companion.toPath
@@ -436,5 +440,174 @@ class SchemaEncoderTest {
         )
         .build(),
     )
+  }
+
+  @Test fun `encode bytes defaults one char per byte`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message TestMessage {
+        |  optional bytes ascii = 1 [default = "abc"];
+        |  optional bytes octal = 2 [default = "a\351\377z"];
+        |  optional bytes hex = 3 [default = "\xe9\xFF"];
+        |  optional bytes special = 4 [default = "\n\t\"\'\\\000~\177"];
+        |  optional string text = 5 [default = "caf\351"];
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    val defaults = fileDescriptorProto.getMessageType(0).fieldList.associate { it.name to it.defaultValue }
+    // The descriptor holds the C-escaped text of the bytes, like protoc writes it.
+    assertThat(defaults).isEqualTo(
+      mapOf(
+        "ascii" to "abc",
+        "octal" to "a\\351\\377z",
+        "hex" to "\\351\\377",
+        "special" to "\\n\\t\\\"\\'\\\\\\000~\\177",
+        "text" to "caf\u00e9",
+      ),
+    )
+
+    // A descriptor consumer reads one byte for each char of the original default.
+    val file = Descriptors.FileDescriptor.buildFrom(fileDescriptorProto, emptyArray())
+    val fields = file.findMessageTypeByName("TestMessage").fields.associateBy { it.name }
+    assertThat((fields.getValue("ascii").defaultValue as ByteString).toByteArray().toByteString().hex())
+      .isEqualTo("616263")
+    assertThat((fields.getValue("octal").defaultValue as ByteString).toByteArray().toByteString().hex())
+      .isEqualTo("61e9ff7a")
+    assertThat((fields.getValue("hex").defaultValue as ByteString).toByteArray().toByteString().hex())
+      .isEqualTo("e9ff")
+    assertThat((fields.getValue("special").defaultValue as ByteString).toByteArray().toByteString().hex())
+      .isEqualTo("0a0922275c007e7f")
+  }
+
+  @Test fun `encode bytes option one char per byte`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MessageOptions {
+        |  optional bytes raw = 22005;
+        |}
+        |
+        |message TestMessage {
+        |  option (raw) = "a\351\377";
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    // The record is tag 22005, length 3, then the bytes 0x61, 0xe9, and 0xff.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    val options = fileDescriptorProto.getMessageType(0).options.toByteString()
+    assertThat(options.toByteArray().toByteString().hex()).isEqualTo("aadf0a0361e9ff")
+  }
+
+  @Test fun `encode bytes default above U+00FF as question mark`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message TestMessage {
+        |  optional bytes big = 1 [default = "\400"];
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    // Generated code turns a char above U+00FF into a question mark, and so does the descriptor.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    assertThat(fileDescriptorProto.getMessageType(0).getField(0).defaultValue).isEqualTo("?")
+  }
+
+  @Test fun `encode bytes option above U+00FF as question mark`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MessageOptions {
+        |  optional bytes raw = 22005;
+        |}
+        |
+        |message TestMessage {
+        |  option (raw) = "\400";
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+
+    val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
+
+    // The record is tag 22005, length 1, then a question mark.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    val options = fileDescriptorProto.getMessageType(0).options.toByteString()
+    assertThat(options.toByteArray().toByteString().hex()).isEqualTo("aadf0a013f")
+  }
+
+  @Test fun `proto output and descriptor name the same bytes for a bytes default`() {
+    val schema = buildSchema {
+      add(
+        "test.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message TestMessage {
+        |  optional bytes octal = 1 [default = "\351"];
+        |  optional bytes raw = 2 [default = "é"];
+        |  optional bytes big = 3 [default = "\400"];
+        |  optional bytes mixed = 4 [default = "a\351\400z"];
+        |}
+        |
+        """.trimMargin(),
+      )
+    }
+    val protoFile = schema.protoFile("test.proto")!!
+
+    // The .proto output writes one octal escape for each of those chars, and a question mark above U+00FF.
+    val protoOutput = protoFile.toSchema()
+    assertThat(protoOutput).contains("optional bytes octal = 1 [default = \"\\351\"];")
+    assertThat(protoOutput).contains("optional bytes raw = 2 [default = \"\\351\"];")
+    assertThat(protoOutput).contains("optional bytes big = 3 [default = \"?\"];")
+    assertThat(protoOutput).contains("optional bytes mixed = 4 [default = \"a\\351?z\"];")
+
+    // The descriptor names the same bytes. A consumer reads one byte for each char.
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(SchemaEncoder(schema).encode(protoFile).toByteArray())
+    val descriptor = Descriptors.FileDescriptor.buildFrom(fileDescriptorProto, emptyArray())
+    val fields = descriptor.findMessageTypeByName("TestMessage").fields.associateBy { it.name }
+    val descriptorBytes = fields.mapValues { (it.value.defaultValue as ByteString).toByteArray().toByteString().hex() }
+    assertThat(descriptorBytes).isEqualTo(
+      mapOf("octal" to "e9", "raw" to "e9", "big" to "3f", "mixed" to "61e93f7a"),
+    )
+
+    // Reading the .proto output back gives the same bytes as the descriptor.
+    val reparsed = buildSchema { add("test.proto".toPath(), protoOutput) }
+    val reparsedBytes = (reparsed.getType("TestMessage") as MessageType)
+      .fields.associate { it.name to it.default!!.toBytes().hex() }
+    assertThat(reparsedBytes).isEqualTo(descriptorBytes)
   }
 }
