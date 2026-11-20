@@ -1779,6 +1779,75 @@ class ProtoParserTest {
   }
 
   @Test
+  fun unicodeEscapesInStringDefault() {
+    assertThat(parseStringDefault(""""caf\u00e9""""), name = "four digits").isEqualTo("caf\u00e9")
+    assertThat(parseStringDefault(""""\u00E9""""), name = "upper case digits").isEqualTo("\u00e9")
+    assertThat(parseStringDefault(""""\U000000e9""""), name = "eight digits").isEqualTo("\u00e9")
+    assertThat(parseStringDefault(""""\u0041b""""), name = "digit after escape").isEqualTo("Ab")
+    assertThat(parseStringDefault(""""\u00e9a""""), name = "hex digit after escape").isEqualTo("\u00e9a")
+    assertThat(parseStringDefault(""""\u0000""""), name = "nul").isEqualTo("\u0000")
+    assertThat(parseStringDefault("""'\u00e9' "\u00e8""""), name = "adjacent").isEqualTo("\u00e9\u00e8")
+  }
+
+  @Test
+  fun unicodeEscapesAboveBasicMultilingualPlane() {
+    val grinning = "\uD83D\uDE00"
+    assertThat(parseStringDefault(""""\U0001F600""""), name = "eight digits").isEqualTo(grinning)
+    assertThat(parseStringDefault(""""\U0010FFFF""""), name = "largest").isEqualTo("\uDBFF\uDFFF")
+    assertThat(parseStringDefault(""""\ud83d\ude00""""), name = "pair").isEqualTo(grinning)
+    assertThat(parseStringDefault(""""\uD83D\uDE00""""), name = "upper case pair").isEqualTo(grinning)
+    assertThat(parseStringDefault(""""\U0000d83d\ude00""""), name = "pair with long head")
+      .isEqualTo(grinning)
+  }
+
+  @Test
+  fun lonelySurrogateEscapesAreKept() {
+    assertThat(parseStringDefault(""""\ud83d""""), name = "head").isEqualTo("\uD83D")
+    assertThat(parseStringDefault(""""\ude00""""), name = "trail").isEqualTo("\uDE00")
+    assertThat(parseStringDefault(""""\ud83dx""""), name = "head then letter").isEqualTo("\uD83Dx")
+    assertThat(parseStringDefault(""""\ud83d\u0041""""), name = "head then non trail")
+      .isEqualTo("\uD83DA")
+    assertThat(parseStringDefault(""""\ud83d\x41""""), name = "head then other escape")
+      .isEqualTo("\uD83DA")
+    assertThat(parseStringDefault(""""\ude00\ud83d""""), name = "trail then head")
+      .isEqualTo("\uDE00\uD83D")
+  }
+
+  @Test
+  fun longUnicodeEscapeAboveLastCodePointIsKeptAsText() {
+    assertThat(parseStringDefault(""""a\U00110000b""""), name = "first").isEqualTo("a\\U00110000b")
+    assertThat(parseStringDefault(""""\U001FFFFF""""), name = "last").isEqualTo("\\U001fffff")
+  }
+
+  @Test
+  fun unicodeEscapesInOptionString() {
+    val proto = """
+        |message Foo {
+        |  optional string name = 1 [(x) = "caf\u00e9 \U0001F600", (y) = '\ud83d\ude00'];
+        |}
+    """.trimMargin()
+    val field = (ProtoParser.parse(location, proto).types[0] as MessageElement).fields[0]
+    assertThat(field.options.map { it.value }).isEqualTo(listOf("caf\u00e9 \uD83D\uDE00", "\uD83D\uDE00"))
+  }
+
+  @Test
+  fun invalidUnicodeEscapes() {
+    assertThat(assertFails { parseStringDefault(""""\u12"""") }).messageContains("expected four hex digits")
+    assertThat(assertFails { parseStringDefault(""""\u"""") }).messageContains("expected four hex digits")
+    assertThat(assertFails { parseStringDefault(""""\uZZZZ"""") }).messageContains("expected four hex digits")
+    assertThat(assertFails { parseStringDefault(""""\U0001F60"""") })
+      .messageContains("expected eight hex digits up to 10ffff")
+    assertThat(assertFails { parseStringDefault(""""\U00200000"""") })
+      .messageContains("expected eight hex digits up to 10ffff")
+  }
+
+  private fun parseStringDefault(literal: String): String {
+    val proto = "message Foo {\n  optional string a = 1 [default = $literal];\n}\n"
+    val message = ProtoParser.parse(location, proto).types[0] as MessageElement
+    return message.fields[0].defaultValue!!
+  }
+
+  @Test
   fun stringWithSingleQuotes() {
     val proto = """
         |message Foo {
