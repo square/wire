@@ -135,16 +135,18 @@ public final class ProtoDecoder {
 
     // MARK: - Internal Methods
 
-    /** Decode merged nested-message bytes while retaining the parent reader's recursion depth. */
+    /** Decode merged nested-message bytes while retaining the parent reader's recursion depth and merge budget. */
     internal func decode<T: ProtoDecodable>(
         _ type: T.Type,
         from data: Data,
-        recursionDepthOffset: Int
+        recursionDepthOffset: Int,
+        mergeParent: ProtoReader
     ) throws -> T {
         try decodeWithReader(
             from: data,
             emptyValue: try T(from: .empty),
-            recursionDepthOffset: recursionDepthOffset
+            recursionDepthOffset: recursionDepthOffset,
+            mergeParent: mergeParent
         ) { reader in
             try reader.decode(type)
         }
@@ -275,6 +277,7 @@ public final class ProtoDecoder {
         from data: Data,
         emptyValue: @autoclosure () throws -> T?,
         recursionDepthOffset: Int = 0,
+        mergeParent: ProtoReader? = nil,
         decoder: (ProtoReader) throws -> T
     ) throws -> T {
         var value: T?
@@ -292,7 +295,8 @@ public final class ProtoDecoder {
             let reader = ProtoReader(
                 buffer: readBuffer,
                 enumDecodingStrategy: enumDecodingStrategy,
-                recursionDepthOffset: recursionDepthOffset
+                recursionDepthOffset: recursionDepthOffset,
+                mergeParent: mergeParent
             )
             value = try decoder(reader)
         }
@@ -309,6 +313,8 @@ public final class ProtoDecoder {
      *
      * A size of zero decodes as an empty message, and decoding continues with the next element.
      * `ProtoEncoder.encodeSizeDelimited(_:)` does not write empty messages, so encoding and then decoding drops them.
+     * Each zero byte decodes to one empty message, so memory grows with the size of the data.
+     * Limit the size of untrusted data before you decode it.
      *
      * - Parameters:
      *   - type: the type to decode
