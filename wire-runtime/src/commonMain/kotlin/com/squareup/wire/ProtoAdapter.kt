@@ -1368,13 +1368,20 @@ private fun durationOfSecondsOrThrow(seconds: Long, nanos: Int): Duration {
   }
 }
 
-/** Throws a [ProtocolException] if the seconds and nanos are too large for an [Instant]. */
+/**
+ * Throws a [ProtocolException] if the seconds and nanos are too large for an [Instant], or if the
+ * resulting [Instant] is outside the range that the Timestamp encoder accepts.
+ */
 private fun ofEpochSecondOrThrow(seconds: Long, nanos: Int): Instant {
-  try {
-    return ofEpochSecond(seconds, nanos.toLong())
+  val result = try {
+    ofEpochSecond(seconds, nanos.toLong())
   } catch (e: RuntimeException) {
     throw protocolExceptionWithCause("Timestamp out of range: seconds=$seconds nanos=$nanos", e)
   }
+  if (result.getEpochSecond() !in TIMESTAMP_SECONDS_MIN..TIMESTAMP_SECONDS_MAX) {
+    throw ProtocolException("Timestamp out of range: seconds=$seconds nanos=$nanos")
+  }
+  return result
 }
 
 // Protobuf Timestamp valid range: 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z inclusive.

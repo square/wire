@@ -245,6 +245,36 @@ class ProtoAdapterTest {
     }.isInstanceOf<UnsupportedOperationException>()
   }
 
+  @Test fun instantDecodeAcceptsMinAndMaxBoundaries() {
+    val min = "088092b8c398feffffff01".decodeHex()
+    val max = "08ff82d1ffaf0710ff93ebdc03".decodeHex()
+    assertThat(ProtoAdapter.INSTANT.decode(min)).isEqualTo(ofEpochSecond(-62135596800L, 0L))
+    assertThat(ProtoAdapter.INSTANT.decode(Buffer().write(min)))
+      .isEqualTo(ofEpochSecond(-62135596800L, 0L))
+    assertThat(ProtoAdapter.INSTANT.decode(max)).isEqualTo(ofEpochSecond(253402300799L, 999_999_999L))
+    assertThat(ProtoAdapter.INSTANT.decode(Buffer().write(max)))
+      .isEqualTo(ofEpochSecond(253402300799L, 999_999_999L))
+  }
+
+  @Test fun instantDecodeRejectsSecondsOutsideRange() {
+    val inputs = listOf(
+      // One second below 0001-01-01T00:00:00Z.
+      "08ff91b8c398feffffff01",
+      // One second above 9999-12-31T23:59:59Z.
+      "088083d1ffaf07",
+      // Nanos that carry the last valid second into the next one.
+      "08ff82d1ffaf07108094ebdc03",
+      // Negative nanos that borrow from the first valid second.
+      "088092b8c398feffffff0110ffffffffffffffffff01",
+    )
+    for (hex in inputs) {
+      val encoded = hex.decodeHex()
+      assertFailure { ProtoAdapter.INSTANT.decode(encoded) }.isInstanceOf<ProtocolException>()
+      assertFailure { ProtoAdapter.INSTANT.decode(Buffer().write(encoded)) }
+        .isInstanceOf<ProtocolException>()
+    }
+  }
+
   @Test fun instantEncodeValidMinBoundary() {
     // 0001-01-01T00:00:00Z.
     val instant = ofEpochSecond(-62135596800L, 0L)
