@@ -1861,6 +1861,58 @@ class ProtoParserTest {
       .messageContains("expected eight hex digits up to 10ffff")
   }
 
+  @Test
+  fun escapesThatProtocAcceptsAndWireAlreadyDecodedStayTheSame() {
+    assertThat(parseStringDefault(""""\?\'\"\\""""), name = "punctuation").isEqualTo("?'\"\\")
+    assertThat(parseStringDefault(""""\a\b\f\n\r\t\v""""), name = "letters")
+      .isEqualTo("\u0007\b\u000c\n\r\t\u000b")
+    assertThat(parseStringDefault(""""\1234""""), name = "four octal digits").isEqualTo("S4")
+    assertThat(parseStringDefault(""""\x414\X4""""), name = "hex digits").isEqualTo("A4\u0004")
+    assertThat(parseBytesDefault(""""\?\'\"\\""""), name = "bytes punctuation").isEqualTo("?'\"\\")
+  }
+
+  @Test
+  fun unknownEscapeIsASyntaxErrorAtTheBackslash() {
+    val proto = "message Foo {\n  optional string a = 1 [default = \"ab\\q\"];\n}\n"
+    assertThat(assertFails { ProtoParser.parse(location, proto) })
+      .hasMessage("Syntax error in file.proto:2:39: invalid escape sequence in string literal")
+  }
+
+  @Test
+  fun unknownEscapesAreRejected() {
+    for (escaped in listOf("q", "d", "e", "s", "z", "8", "9", "\u00e9", "\u20ac", "\ud83d\ude00", " ", "\n")) {
+      val literal = "\"a\\$escaped\""
+      assertThat(assertFails { parseStringDefault(literal) }, name = "string default $literal")
+        .messageContains("invalid escape sequence in string literal")
+      assertThat(assertFails { parseBytesDefault(literal) }, name = "bytes default $literal")
+        .messageContains("invalid escape sequence in string literal")
+      assertThat(assertFails { parseOptionString(literal) }, name = "option $literal")
+        .messageContains("invalid escape sequence in string literal")
+    }
+  }
+
+  @Test
+  fun unknownEscapeInAdjacentStringIsRejected() {
+    assertThat(assertFails { parseStringDefault("\"a\" 'b\\q'") })
+      .messageContains("invalid escape sequence in string literal")
+  }
+
+  @Test
+  fun octalEscapeAbove377KeepsLowEightBits() {
+    assertThat(parseStringDefault(""""\400""""), name = "string 400").isEqualTo("\u0000")
+    assertThat(parseStringDefault(""""\401\777\500a""""), name = "string 401 777 500").isEqualTo("\u0001\u00ff\u0040a")
+    assertThat(parseBytesDefault(""""\400""""), name = "bytes 400").isEqualTo("\u0000")
+    assertThat(parseBytesDefault(""""\401\777\500a\377""""), name = "bytes 401 777 500")
+      .isEqualTo("\u0001\u00ff\u0040a\u00ff")
+    assertThat(parseOptionString(""""\400\777""""), name = "option").isEqualTo("\u0000\u00ff")
+  }
+
+  private fun parseOptionString(literal: String): String {
+    val proto = "message Foo {\n  optional string a = 1 [(x) = $literal];\n}\n"
+    val message = ProtoParser.parse(location, proto).types[0] as MessageElement
+    return message.fields[0].options.single().value as String
+  }
+
   private fun parseStringDefault(literal: String): String {
     val proto = "message Foo {\n  optional string a = 1 [default = $literal];\n}\n"
     val message = ProtoParser.parse(location, proto).types[0] as MessageElement
