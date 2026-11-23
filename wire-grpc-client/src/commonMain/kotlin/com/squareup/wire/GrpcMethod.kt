@@ -15,12 +15,17 @@
  */
 package com.squareup.wire
 
-import kotlin.jvm.JvmOverloads
-
-class GrpcMethod<S : Any, R : Any> @JvmOverloads constructor(
+class GrpcMethod<S : Any, R : Any>(
   val path: String,
   val requestAdapter: ProtoAdapter<S>,
   val responseAdapter: ProtoAdapter<R>,
   val requestStreaming: Boolean = false,
   val responseStreaming: Boolean = false,
-)
+) {
+  /** Keeps the binary signature of the constructor before [requestStreaming] and [responseStreaming] were added. */
+  constructor(
+    path: String,
+    requestAdapter: ProtoAdapter<S>,
+    responseAdapter: ProtoAdapter<R>,
+  ) : this(path, requestAdapter, responseAdapter, requestStreaming = false, responseStreaming = false)
+}

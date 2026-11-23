@@ -122,6 +122,7 @@ abstract class com.squareup.wire/GrpcResponseBody { // com.squareup.wire/GrpcRes
 }
 
 final class <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcMethod { // com.squareup.wire/GrpcMethod|null[0]
+    constructor <init>(kotlin/String, com.squareup.wire/ProtoAdapter<#A>, com.squareup.wire/ProtoAdapter<#B>) // com.squareup.wire/GrpcMethod.<init>|<init>(kotlin.String;com.squareup.wire.ProtoAdapter<1:0>;com.squareup.wire.ProtoAdapter<1:1>){}[0]
     constructor <init>(kotlin/String, com.squareup.wire/ProtoAdapter<#A>, com.squareup.wire/ProtoAdapter<#B>, kotlin/Boolean = ..., kotlin/Boolean = ...) // com.squareup.wire/GrpcMethod.<init>|<init>(kotlin.String;com.squareup.wire.ProtoAdapter<1:0>;com.squareup.wire.ProtoAdapter<1:1>;kotlin.Boolean;kotlin.Boolean){}[0]
 
     final val path // com.squareup.wire/GrpcMethod.path|{}path[0]
