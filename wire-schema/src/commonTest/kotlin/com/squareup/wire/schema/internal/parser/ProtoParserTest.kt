@@ -1879,6 +1879,32 @@ class ProtoParserTest {
   }
 
   @Test
+  fun escapedNewlineDoesNotAdvanceTheLine() {
+    val proto = "message Foo {\n  optional string a = 1 [default = \"a\\nb\\q\"];\n}\n"
+    assertThat(assertFails { ProtoParser.parse(location, proto) })
+      .hasMessage("Syntax error in file.proto:2:41: invalid escape sequence in string literal")
+  }
+
+  @Test
+  fun fieldAfterStringWithEscapedNewlinesKeepsItsLine() {
+    val proto = "message Foo {\n" +
+      "  optional string a = 1 [default = \"a\\nb\\012c\\x0ad\\u000ae\\r\\n\"];\n" +
+      "  optional string b = 2;\n" +
+      "}\n"
+    val message = ProtoParser.parse(location, proto).types[0] as MessageElement
+    assertThat(message.fields[0].defaultValue).isEqualTo("a\nb\nc\nd\ne\r\n")
+    assertThat(message.fields[0].location).isEqualTo(location.at(2, 3))
+    assertThat(message.fields[1].location).isEqualTo(location.at(3, 3))
+  }
+
+  @Test
+  fun rawNewlineInStringStillAdvancesTheLine() {
+    val proto = "message Foo {\n  optional string a = 1 [default = \"a\nb\"];\n  optional string b = 2;\n}\n"
+    val message = ProtoParser.parse(location, proto).types[0] as MessageElement
+    assertThat(message.fields[1].location).isEqualTo(location.at(4, 3))
+  }
+
+  @Test
   fun unknownEscapesAreRejected() {
     for (escaped in listOf("q", "d", "e", "s", "z", "8", "9", "\u00e9", "\u20ac", "\ud83d\ude00", " ", "\n")) {
       val literal = "\"a\\$escaped\""
@@ -2489,7 +2515,7 @@ class ProtoParserTest {
               ),
             ),
             FieldElement(
-              location = location.at(17, 3),
+              location = location.at(16, 3),
               label = OPTIONAL,
               type = "bytes",
               name = "default_bytes",
@@ -2503,7 +2529,7 @@ class ProtoParserTest {
               ),
             ),
             FieldElement(
-              location = location.at(19, 3),
+              location = location.at(17, 3),
               label = OPTIONAL,
               type = "NestedEnum",
               name = "default_nested_enum",

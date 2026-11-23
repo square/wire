@@ -107,7 +107,9 @@ class SyntaxReader(
         return result.toString()
       }
       var isByte = false
+      var isEscape = false
       if (c == '\\') {
+        isEscape = true
         val backslash = location().copy(column = pos - lineStart)
         expect(pos < data.size) { "unexpected end of file" }
         c = data[pos++]
@@ -141,7 +143,8 @@ class SyntaxReader(
       } else {
         result.append(c)
       }
-      if (c == '\n') newline()
+      // Only a newline in the source starts a new line, not one that an escape decoded.
+      if (c == '\n' && !isEscape) newline()
     }
     throw unexpected("unterminated string")
   }
