@@ -518,7 +518,7 @@ class SchemaEncoderTest {
     assertThat(options.toByteArray().toByteString().hex()).isEqualTo("aadf0a0361e9ff")
   }
 
-  @Test fun `encode bytes default above U+00FF as question mark`() {
+  @Test fun `encode bytes default with octal escape above 377 as its low eight bits`() {
     val schema = buildSchema {
       add(
         "test.proto".toPath(),
@@ -535,12 +535,12 @@ class SchemaEncoderTest {
 
     val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
 
-    // Generated code turns a char above U+00FF into a question mark, and so does the descriptor.
+    // Like protoc, \400 keeps its low eight bits, so it names the byte 0x00.
     val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
-    assertThat(fileDescriptorProto.getMessageType(0).getField(0).defaultValue).isEqualTo("?")
+    assertThat(fileDescriptorProto.getMessageType(0).getField(0).defaultValue).isEqualTo("\\000")
   }
 
-  @Test fun `encode bytes option above U+00FF as question mark`() {
+  @Test fun `encode bytes option with octal escape above 377 as its low eight bits`() {
     val schema = buildSchema {
       add(
         "test.proto".toPath(),
@@ -563,10 +563,10 @@ class SchemaEncoderTest {
 
     val encoded = SchemaEncoder(schema).encode(schema.protoFile("test.proto")!!)
 
-    // The record is tag 22005, length 1, then a question mark.
+    // The record is tag 22005, length 1, then the byte 0x00.
     val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
     val options = fileDescriptorProto.getMessageType(0).options.toByteString()
-    assertThat(options.toByteArray().toByteString().hex()).isEqualTo("aadf0a013f")
+    assertThat(options.toByteArray().toByteString().hex()).isEqualTo("aadf0a0100")
   }
 
   @Test fun `proto output and descriptor name the same bytes for a bytes default`() {
@@ -589,13 +589,13 @@ class SchemaEncoderTest {
     }
     val protoFile = schema.protoFile("test.proto")!!
 
-    // The .proto output writes one octal escape for each byte, and a question mark above U+00FF.
+    // The .proto output writes one octal escape for each byte, and \400 names the byte 0x00.
     // A raw char above U+007F names its UTF-8 bytes, like in protoc.
     val protoOutput = protoFile.toSchema()
     assertThat(protoOutput).contains("optional bytes octal = 1 [default = \"\\351\"];")
     assertThat(protoOutput).contains("optional bytes raw = 2 [default = \"\\303\\251\"];")
-    assertThat(protoOutput).contains("optional bytes big = 3 [default = \"?\"];")
-    assertThat(protoOutput).contains("optional bytes mixed = 4 [default = \"a\\351?z\"];")
+    assertThat(protoOutput).contains("optional bytes big = 3 [default = \"\\000\"];")
+    assertThat(protoOutput).contains("optional bytes mixed = 4 [default = \"a\\351\\000z\"];")
     assertThat(protoOutput).contains(
       "optional bytes unicode = 5 [default = \"\\303\\251\\360\\237\\230\\200\"];",
     )
@@ -609,8 +609,8 @@ class SchemaEncoderTest {
       mapOf(
         "octal" to "e9",
         "raw" to "c3a9",
-        "big" to "3f",
-        "mixed" to "61e93f7a",
+        "big" to "00",
+        "mixed" to "61e9007a",
         "unicode" to "c3a9f09f9880",
       ),
     )

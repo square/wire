@@ -86,6 +86,11 @@ class SyntaxReader(
    * a char that is not an escape and a `\u` or `\U` escape become the UTF-8 bytes of their code
    * point, as chars from U+0080 to U+00FF. Protoc does the same. Octal and hex escapes stay one
    * byte. With [bytes] false, the result holds the decoded text.
+   *
+   * The valid escapes are the same as in protoc: `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\v`, `\\`,
+   * `\?`, `\'`, `\"`, one to three octal digits, `\x` or `\X` with one or two hex digits, `\u`
+   * and `\U`. An octal escape above `\377` keeps its low eight bits, like in protoc. Any other
+   * escape is a syntax error at the backslash.
    */
   fun readQuotedString(bytes: Boolean = false): String {
     var startQuote = readChar()
@@ -102,7 +107,10 @@ class SyntaxReader(
         return result.toString()
       }
       var isByte = false
+      var isEscape = false
       if (c == '\\') {
+        isEscape = true
+        val backslash = location().copy(column = pos - lineStart)
         expect(pos < data.size) { "unexpected end of file" }
         c = data[pos++]
         when (c) {
@@ -126,6 +134,8 @@ class SyntaxReader(
             appendUnicodeEscape(result, c, bytes)
             continue
           }
+          '\\', '?', '\'', '"' -> Unit // The escaped char stands for itself.
+          else -> throw unexpected("invalid escape sequence in string literal", backslash)
         }
       }
       if (bytes && c.code >= 0x80 && !isByte) {
@@ -133,7 +143,8 @@ class SyntaxReader(
       } else {
         result.append(c)
       }
-      if (c == '\n') newline()
+      // Only a newline in the source starts a new line, not one that an escape decoded.
+      if (c == '\n' && !isEscape) newline()
     }
     throw unexpected("unterminated string")
   }
@@ -194,7 +205,8 @@ class SyntaxReader(
       pos++
     }
     expect(value >= 0) { "expected a digit after \\x or \\X" }
-    return value.toChar()
+    // Like protoc, an escape above 0xff such as \400 keeps its low eight bits.
+    return (value and 0xff).toChar()
   }
 
   /**
