@@ -1606,8 +1606,14 @@ class KotlinGenerator private constructor(
   /**
    * Returns a string literal for [this]. A surrogate that has no partner is written as a `\u`
    * escape, as `%S` would write it as is and a source file in UTF-8 cannot hold it.
+   *
+   * The result is a block that holds the literal as its only argument. KotlinPoet removes the
+   * trailing newlines of the last `String` argument of a property initializer. A nested block is
+   * not changed, so a default that ends with a newline keeps it.
    */
-  private fun String.toStringLiteral(): CodeBlock {
+  private fun String.toStringLiteral(): CodeBlock = CodeBlock.of("%L", toStringLiteralParts())
+
+  private fun String.toStringLiteralParts(): CodeBlock {
     val parts = mutableListOf<CodeBlock>()
     val text = StringBuilder()
     var i = 0

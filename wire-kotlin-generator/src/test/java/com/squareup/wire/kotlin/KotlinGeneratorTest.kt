@@ -422,6 +422,49 @@ class KotlinGeneratorTest {
       .contains("\"w6k=\".decodeBase64()")
   }
 
+  @Test fun stringDefaultsKeepTrailingNewlines() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |message Message {
+        |  optional string nl = 1 [default = "\n"];
+        |  optional string nl_unicode = 2 [default = "\u000a"];
+        |  optional string cr = 3 [default = "\r"];
+        |  optional string crlf = 4 [default = "\r\n"];
+        |  optional string nl_nl = 5 [default = "\n\n"];
+        |  optional string space_nl = 6 [default = " \n"];
+        |  optional string nl_space = 7 [default = "\n "];
+        |  optional string tab = 8 [default = "\t"];
+        |  optional string space = 9 [default = " "];
+        |  optional string spaces = 10 [default = "   "];
+        |  optional string dollar = 11 [default = "a${'$'}b ${'$'}{c} ${'$'}"];
+        |  optional string inner = 12 [default = "a\nb"];
+        |  optional string lead = 13 [default = "\na"];
+        |  optional string trail = 14 [default = "a\n"];
+        |  optional string surrogate_nl = 15 [default = "x\ud83d\n"];
+        |}
+        """.trimMargin(),
+      )
+    }
+    val code = KotlinWithProfilesGenerator(schema).generateKotlin("Message")
+    assertThat(code).contains("DEFAULT_NL: String = \"\\n\"")
+    assertThat(code).contains("DEFAULT_NL_UNICODE: String = \"\\n\"")
+    assertThat(code).contains("DEFAULT_CR: String = \"\\r\"")
+    assertThat(code).contains("DEFAULT_CRLF: String = \"\\r\\n\"")
+    assertThat(code).contains("DEFAULT_NL_NL: String = \"\\n\\n\"")
+    assertThat(code).contains("DEFAULT_SPACE_NL: String = \" \\n\"")
+    assertThat(code).contains("DEFAULT_NL_SPACE: String = \"\\n \"")
+    assertThat(code).contains("DEFAULT_TAB: String = \"\\t\"")
+    assertThat(code).contains("DEFAULT_SPACE: String = \" \"")
+    assertThat(code).contains("DEFAULT_SPACES: String = \"   \"")
+    assertThat(code).contains("DEFAULT_DOLLAR: String = \"a\${'\$'}b \${'\$'}{c} \${'\$'}\"")
+    assertThat(code).contains("DEFAULT_INNER_: String = \"a\\nb\"")
+    assertThat(code).contains("DEFAULT_LEAD: String = \"\\na\"")
+    assertThat(code).contains("DEFAULT_TRAIL: String = \"a\\n\"")
+    assertThat(code).contains("DEFAULT_SURROGATE_NL: String = \"x\" + \"\\ud83d\" + \"\\n\"")
+  }
+
   @Test fun stringDefaultWithLoneSurrogateIsWrittenAsEscape() {
     val schema = buildSchema {
       add(

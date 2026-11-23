@@ -352,6 +352,45 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("{'")
   }
 
+  @Test fun stringDefaultsKeepTrailingNewlines() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Message {
+        |  optional string nl = 1 [default = "\n"];
+        |  optional string nl_unicode = 2 [default = "\u000a"];
+        |  optional string cr = 3 [default = "\r"];
+        |  optional string crlf = 4 [default = "\r\n"];
+        |  optional string nl_nl = 5 [default = "\n\n"];
+        |  optional string space_nl = 6 [default = " \n"];
+        |  optional string nl_space = 7 [default = "\n "];
+        |  optional string tab = 8 [default = "\t"];
+        |  optional string space = 9 [default = " "];
+        |  optional string spaces = 10 [default = "   "];
+        |  optional string dollar = 11 [default = "a${'$'}b ${'$'}{c} ${'$'}"];
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "\n")""" + "\n    public var nl:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "\n")""" + "\n    public var nl_unicode:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "\r")""" + "\n    public var cr:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "\r\n")""" + "\n    public var crlf:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "\n\n")""" + "\n    public var nl_nl:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: " \n")""" + "\n    public var space_nl:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "\n ")""" + "\n    public var nl_space:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "\t")""" + "\n    public var tab:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: " ")""" + "\n    public var space:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "   ")""" + "\n    public var spaces:")
+    assertThat(code).contains("""@CustomDefaulted(defaultValue: "a${'$'}b ${'$'}{c} ${'$'}")""" + "\n    public var dollar:")
+  }
+
   @Test fun bytesDefaultsNameUtf8BytesOfRawChars() {
     val schema = buildSchema {
       add(
