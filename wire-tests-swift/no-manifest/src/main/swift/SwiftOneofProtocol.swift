@@ -4,7 +4,7 @@ import Wire
 
 public struct SwiftOneofProtocol {
 
-    public var `protocol`: SwiftOneofProtocol.Protocol_?
+    public var `protocol`: SwiftOneofProtocol.`Protocol`?
     public var unknownFields: UnknownFields = .init()
 
     public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -44,7 +44,7 @@ extension SwiftOneofProtocol : ProtoMessage {
 extension SwiftOneofProtocol : Proto2Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var `protocol`: Protocol_? = nil
+        var `protocol`: `Protocol`? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -100,7 +100,7 @@ extension SwiftOneofProtocol : Codable {
  */
 extension SwiftOneofProtocol {
 
-    public enum Protocol_ {
+    public enum `Protocol` {
 
         case a(String)
         case b(Int32)
@@ -117,14 +117,14 @@ extension SwiftOneofProtocol {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension SwiftOneofProtocol.Protocol_ : Equatable {
+extension SwiftOneofProtocol.`Protocol` : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension SwiftOneofProtocol.Protocol_ : Hashable {
+extension SwiftOneofProtocol.`Protocol` : Hashable {
 }
 #endif
 
-extension SwiftOneofProtocol.Protocol_ : Sendable {
+extension SwiftOneofProtocol.`Protocol` : Sendable {
 }

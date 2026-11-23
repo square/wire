@@ -80,3 +80,30 @@ message SwiftProto3Outer {
 
   optional Kind kind = 1;
 }
+
+message SwiftProto3FieldNames {
+  string self = 1;
+  string Self = 2;
+  string Type = 3;
+  string Protocol = 4;
+  string Any = 5;
+  optional string optional_protocol = 6;
+  repeated string init = 7;
+}
+
+message SwiftProto3OneofNames {
+  oneof self {
+    string a = 1;
+    int32 b = 2;
+  }
+
+  oneof Protocol {
+    string c = 3;
+    int32 d = 4;
+  }
+
+  oneof any {
+    string e = 5;
+    int32 f = 6;
+  }
+}

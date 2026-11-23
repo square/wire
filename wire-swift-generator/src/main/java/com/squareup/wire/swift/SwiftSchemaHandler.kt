@@ -57,7 +57,7 @@ class SwiftSchemaHandler : SchemaHandler() {
     checkNoCaseOnlyCollision(filePath, "${type.type} at ${type.location}", context)
     try {
       context.fileSystem.write(filePath) {
-        writeUtf8(swiftFile.toString())
+        writeUtf8(swiftFile.toSwiftSource())
       }
     } catch (e: IOException) {
       throw IOException(
