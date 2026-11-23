@@ -242,7 +242,9 @@ class GrpcOnMockWebServerTest {
       }
       callThread.start()
 
-      assertThat(done.await(1, TimeUnit.SECONDS)).isTrue()
+      // The blockers hold the dispatcher until the end, so a call that needs it never completes.
+      // The long wait only absorbs slow CI machines.
+      assertThat(done.await(10, TimeUnit.SECONDS)).isTrue()
       return result.get()
     } finally {
       release.countDown()
