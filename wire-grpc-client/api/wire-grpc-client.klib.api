@@ -123,13 +123,18 @@ abstract class com.squareup.wire/GrpcResponseBody { // com.squareup.wire/GrpcRes
 
 final class <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcMethod { // com.squareup.wire/GrpcMethod|null[0]
     constructor <init>(kotlin/String, com.squareup.wire/ProtoAdapter<#A>, com.squareup.wire/ProtoAdapter<#B>) // com.squareup.wire/GrpcMethod.<init>|<init>(kotlin.String;com.squareup.wire.ProtoAdapter<1:0>;com.squareup.wire.ProtoAdapter<1:1>){}[0]
+    constructor <init>(kotlin/String, com.squareup.wire/ProtoAdapter<#A>, com.squareup.wire/ProtoAdapter<#B>, kotlin/Boolean = ..., kotlin/Boolean = ...) // com.squareup.wire/GrpcMethod.<init>|<init>(kotlin.String;com.squareup.wire.ProtoAdapter<1:0>;com.squareup.wire.ProtoAdapter<1:1>;kotlin.Boolean;kotlin.Boolean){}[0]
 
     final val path // com.squareup.wire/GrpcMethod.path|{}path[0]
         final fun <get-path>(): kotlin/String // com.squareup.wire/GrpcMethod.path.<get-path>|<get-path>(){}[0]
     final val requestAdapter // com.squareup.wire/GrpcMethod.requestAdapter|{}requestAdapter[0]
         final fun <get-requestAdapter>(): com.squareup.wire/ProtoAdapter<#A> // com.squareup.wire/GrpcMethod.requestAdapter.<get-requestAdapter>|<get-requestAdapter>(){}[0]
+    final val requestStreaming // com.squareup.wire/GrpcMethod.requestStreaming|{}requestStreaming[0]
+        final fun <get-requestStreaming>(): kotlin/Boolean // com.squareup.wire/GrpcMethod.requestStreaming.<get-requestStreaming>|<get-requestStreaming>(){}[0]
     final val responseAdapter // com.squareup.wire/GrpcMethod.responseAdapter|{}responseAdapter[0]
         final fun <get-responseAdapter>(): com.squareup.wire/ProtoAdapter<#B> // com.squareup.wire/GrpcMethod.responseAdapter.<get-responseAdapter>|<get-responseAdapter>(){}[0]
+    final val responseStreaming // com.squareup.wire/GrpcMethod.responseStreaming|{}responseStreaming[0]
+        final fun <get-responseStreaming>(): kotlin/Boolean // com.squareup.wire/GrpcMethod.responseStreaming.<get-responseStreaming>|<get-responseStreaming>(){}[0]
 }
 
 final class com.squareup.wire/GrpcException : okio/IOException { // com.squareup.wire/GrpcException|null[0]

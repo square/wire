@@ -48,6 +48,7 @@ import org.junit.Test
 import org.junit.rules.Timeout
 import routeguide.Feature
 import routeguide.Point
+import routeguide.Rectangle
 import routeguide.RouteGuideClient
 import routeguide.RouteNote
 
@@ -289,6 +290,104 @@ class GrpcClientTimeoutTest {
   }
 
   @Test
+  fun serverStreamingCallTimeoutIsEnforcedOnClient() {
+    val grpcCall = routeGuideService.ListFeatures()
+    grpcCall.timeout.timeout(500, TimeUnit.MILLISECONDS)
+
+    val responseSource = grpcCall.executeBlocking(Rectangle())
+    val elapsedMillis = elapsedMillis {
+      assertFailure {
+        responseSource.read()
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+  }
+
+  @Test
+  fun serverStreamingCallDeadlineIsEnforcedOnClientWhenSuspending() {
+    val grpcCall = routeGuideService.ListFeatures()
+    grpcCall.timeout.deadline(500, TimeUnit.MILLISECONDS)
+
+    val elapsedMillis = elapsedMillis {
+      runBlocking {
+        val responseChannel = grpcCall.executeIn(this, Rectangle())
+        assertFailure {
+          responseChannel.receive()
+        }.isDeadlineExceeded()
+      }
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+  }
+
+  @Test
+  fun serverStreamingCallTimeoutIsEnforcedWhenServerStallsMidStream() {
+    // The server sends the headers and one message, then stalls for 4 seconds.
+    val firstFeature = grpcFrame(Feature.ADAPTER.encode(Feature(name = "first")))
+    val secondFeature = grpcFrame(Feature.ADAPTER.encode(Feature(name = "second")))
+    respond = {
+      grpcResponse()
+        .setBody(Buffer().write(firstFeature).write(secondFeature))
+        .throttleBody(firstFeature.size.toLong(), 4, TimeUnit.SECONDS)
+    }
+    val grpcCall = routeGuideService.ListFeatures()
+    grpcCall.timeout.timeout(500, TimeUnit.MILLISECONDS)
+
+    val elapsedMillis = elapsedMillis {
+      val responseSource = grpcCall.executeBlocking(Rectangle())
+      assertThat(responseSource.read()).isEqualTo(Feature(name = "first"))
+      assertFailure {
+        responseSource.read()
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 3_000L)
+  }
+
+  @Test
+  fun serverStreamingCallWithTimeoutSucceedsWhenServerRespondsInTime() {
+    respond = { grpcResponse(Feature.ADAPTER.encode(Feature(name = "only"))) }
+    val grpcCall = routeGuideService.ListFeatures()
+    grpcCall.timeout.timeout(5, TimeUnit.SECONDS)
+
+    val responseSource = grpcCall.executeBlocking(Rectangle())
+    assertThat(responseSource.read()).isEqualTo(Feature(name = "only"))
+    assertThat(responseSource.read()).isEqualTo(null)
+
+    assertThat(grpcCall.isCanceled()).isFalse()
+    assertThat(mockWebServer.takeRequest().grpcTimeoutMicros()).isBetween(1L, 5_000_000L)
+  }
+
+  @Test
+  fun legacyServerStreamingCallTimeoutIsEnforcedOnClient() {
+    val method = GrpcMethod(
+      path = "/routeguide.RouteGuide/ListFeatures",
+      requestAdapter = Rectangle.ADAPTER,
+      responseAdapter = Feature.ADAPTER,
+      responseStreaming = true,
+    )
+    val grpcCall = grpcClient.newStreamingCall(method)
+    grpcCall.timeout.timeout(500, TimeUnit.MILLISECONDS)
+
+    val (requestSink, responseSource) = grpcCall.executeBlocking()
+    requestSink.write(Rectangle())
+    val elapsedMillis = elapsedMillis {
+      assertFailure {
+        responseSource.read()
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
+
+    requestSink.closeQuietly()
+  }
+
+  @Test
   fun unaryCallUsesClientDefaultTimeout() {
     val service = grpcClient.newBuilder()
       .callTimeout(500, TimeUnit.MILLISECONDS)
@@ -325,6 +424,25 @@ class GrpcClientTimeoutTest {
     assertThat(elapsedMillis).isBetween(400L, 5_000L)
 
     requestSink.closeQuietly()
+  }
+
+  @Test
+  fun serverStreamingCallUsesClientDefaultTimeout() {
+    val service = grpcClient.newBuilder()
+      .callTimeout(500, TimeUnit.MILLISECONDS)
+      .build()
+      .create(RouteGuideClient::class)
+    val grpcCall = service.ListFeatures()
+
+    val responseSource = grpcCall.executeBlocking(Rectangle())
+    val elapsedMillis = elapsedMillis {
+      assertFailure {
+        responseSource.read()
+      }.isDeadlineExceeded()
+    }
+
+    assertThat(grpcCall.isCanceled()).isTrue()
+    assertThat(elapsedMillis).isBetween(400L, 5_000L)
   }
 
   @Test

@@ -61,6 +61,13 @@ class GrpcMaxInboundMessageSizeTest {
     responseAdapter = Feature.ADAPTER,
   )
 
+  private val serverStreamingMethod = GrpcMethod(
+    path = "/routeguide.RouteGuide/ListFeatures",
+    requestAdapter = Point.ADAPTER,
+    responseAdapter = Feature.ADAPTER,
+    responseStreaming = true,
+  )
+
   @Before
   fun setUp() {
     mockWebServer.protocols = listOf(Protocol.H2_PRIOR_KNOWLEDGE)
@@ -190,6 +197,51 @@ class GrpcMaxInboundMessageSizeTest {
       assertThat(responses.receive()).isEqualTo(small)
       assertFailure { responses.receive() }.isMessageTooLarge()
     }
+  }
+
+  @Test
+  fun blockingServerStreamingCallFailsOnTheLargeMessageOnly() {
+    val small = featureOfSize(10)
+    enqueue(
+      frame(Feature.ADAPTER.encode(small)) +
+        frame(Feature.ADAPTER.encode(featureOfSize(1000))),
+    )
+
+    val source = client(maxInboundMessageSize = 100).newServerStreamingCall(serverStreamingMethod).executeBlocking(Point())
+
+    assertThat(source.read()).isEqualTo(small)
+    assertFailure { source.read() }.isMessageTooLarge()
+  }
+
+  @Test
+  fun suspendServerStreamingCallFailsOnTheLargeMessageOnly() {
+    val small = featureOfSize(10)
+    enqueue(
+      frame(Feature.ADAPTER.encode(small)) +
+        frame(Feature.ADAPTER.encode(featureOfSize(1000))),
+    )
+
+    runBlocking {
+      val responses = client(maxInboundMessageSize = 100).newServerStreamingCall(serverStreamingMethod).executeIn(this, Point())
+      assertThat(responses.receive()).isEqualTo(small)
+      assertFailure { responses.receive() }.isMessageTooLarge()
+    }
+  }
+
+  @Test
+  fun legacyServerStreamingCallFailsOnTheLargeMessageOnly() {
+    val small = featureOfSize(10)
+    enqueue(
+      frame(Feature.ADAPTER.encode(small)) +
+        frame(Feature.ADAPTER.encode(featureOfSize(1000))),
+    )
+
+    val (sink, source) = client(maxInboundMessageSize = 100).newStreamingCall(serverStreamingMethod).executeBlocking()
+    sink.write(Point())
+    sink.close()
+
+    assertThat(source.read()).isEqualTo(small)
+    assertFailure { source.read() }.isMessageTooLarge()
   }
 
   @Test

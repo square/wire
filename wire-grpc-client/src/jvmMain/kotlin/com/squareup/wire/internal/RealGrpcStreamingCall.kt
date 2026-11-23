@@ -97,9 +97,10 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     }
     call.enqueue(
       responseChannel.readFromResponseBodyCallback(
-        this,
-        method.responseAdapter,
-        grpcClient.maxInboundMessageSize,
+        onResponseMetadata = { this.responseMetadata = it },
+        callTimeout = callTimeout,
+        responseAdapter = method.responseAdapter,
+        maxInboundMessageSize = grpcClient.maxInboundMessageSize,
       ),
     )
 
@@ -109,7 +110,8 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
     val call = initCall()
     val messageSource = BlockingMessageSource(
-      grpcCall = this,
+      onResponseMetadata = { this.responseMetadata = it },
+      callTimeout = callTimeout,
       responseAdapter = method.responseAdapter,
       call = call,
       maxInboundMessageSize = grpcClient.maxInboundMessageSize,
