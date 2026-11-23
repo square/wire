@@ -602,7 +602,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    // Wire maps google.rpc.Status to com.squareup.wire.RpcStatus, so it never emits its own copy.
+    // Wire maps google.rpc.Status to com.squareup.wire.rpc.RpcStatus, so it never emits its own copy.
     assertThat(fs.findFiles("generated")).containsExactlyInAnyOrderAsRelativePaths(
       "generated/java/squareup/errors/Failure.java",
       "generated/kt/squareup/errors/Failure.kt",

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.rpc.RpcStatus
 import okio.IOException
 
 class GrpcException(

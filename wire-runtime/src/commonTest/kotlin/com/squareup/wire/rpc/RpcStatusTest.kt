@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.rpc
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import com.squareup.wire.AnyMessage
 import kotlin.test.Test
 import okio.ByteString.Companion.decodeHex
 

@@ -1734,11 +1734,11 @@ class KotlinGeneratorTest {
       )
     }
     val code = KotlinWithProfilesGenerator(schema).generateKotlin("common.proto.Message")
-    assertThat(code).contains("import com.squareup.wire.RpcStatus")
+    assertThat(code).contains("import com.squareup.wire.rpc.RpcStatus")
     assertThat(code).doesNotContain("com.google.rpc")
     assertThat(code).contains("public val status: RpcStatus? = null")
     assertThat(code).contains("public val statuses: List<RpcStatus> = immutableCopyOf(\"statuses\", statuses)")
-    assertThat(code).contains("adapter = \"com.squareup.wire.RpcStatus#ADAPTER\"")
+    assertThat(code).contains("adapter = \"com.squareup.wire.rpc.RpcStatus#ADAPTER\"")
     assertThat(code).contains("RpcStatus.ADAPTER.asRepeated()")
   }
 

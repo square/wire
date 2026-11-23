@@ -18,6 +18,7 @@ package com.squareup.wire
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import com.squareup.wire.rpc.RpcStatus
 import java.io.ByteArrayOutputStream
 import java.io.ObjectOutputStream
 import org.junit.Test

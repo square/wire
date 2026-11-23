@@ -15,9 +15,17 @@
  */
 @file:Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 
-package com.squareup.wire
+package com.squareup.wire.rpc
 
+import com.squareup.wire.AnyMessage
+import com.squareup.wire.FieldEncoding
+import com.squareup.wire.Message
+import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
+import com.squareup.wire.WireField
 import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
