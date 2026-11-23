@@ -520,7 +520,7 @@ class GrpcClientTest {
       requests.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
       assertThat(responses.receive()).isEqualTo(Feature(name = "tree"))
       requests.close(CancellationException("canceled by caller"))
-      assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull()
+      assertThat(responses.receiveCatching().exceptionOrNull()).isNotNull().isInstanceOf<IOException>()
 
       mockService.awaitSuccess()
       assertThat(callReference.get()!!.isCanceled()).isTrue()
@@ -603,6 +603,54 @@ class GrpcClientTest {
         hasMessage("expected 1 message but got none")
       }
     }
+    assertThat(callReference.get()).isNull()
+  }
+
+  @Test
+  fun legacyServerStreamingSecondRequestBlocking() {
+    enqueueListFeatures()
+
+    val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+    requests.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    assertFailure { requests.write(Rectangle()) }.all {
+      isInstanceOf<ProtocolException>()
+      hasMessage("expected 1 message but got multiple")
+    }
+    requests.close()
+    // The first request already started the call.
+    assertThat(responses.read()).isEqualTo(Feature(name = "tree"))
+    assertThat(responses.read()).isEqualTo(Feature(name = "house"))
+    assertThat(responses.read()).isNull()
+
+    mockService.awaitSuccessBlocking()
+  }
+
+  @Test
+  fun legacyServerStreamingSecondRequestSuspend() {
+    enqueueListFeatures(delayBeforeLastFeature = true)
+
+    runBlocking {
+      val (requests, responses) = newLegacyListFeaturesCall().executeIn(this)
+      requests.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+      requests.send(Rectangle())
+      var result = responses.receiveCatching()
+      while (result.isSuccess) result = responses.receiveCatching()
+      assertThat(result.exceptionOrNull()).isNotNull().all {
+        isInstanceOf<ProtocolException>()
+        hasMessage("expected 1 message but got multiple")
+      }
+    }
+    assertThat(callReference.get()!!.isCanceled()).isTrue()
+  }
+
+  @Test
+  fun legacyServerStreamingCloseResponsesBeforeRequestBlocking() {
+    val (requests, responses) = newLegacyListFeaturesCall().executeBlocking()
+    responses.close()
+    requests.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requests.close()
+
+    assertFailure { responses.read() }.isInstanceOf<IOException>()
     assertThat(callReference.get()).isNull()
   }
 

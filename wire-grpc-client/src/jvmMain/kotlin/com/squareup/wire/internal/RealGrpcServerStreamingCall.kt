@@ -46,9 +46,12 @@ internal class RealGrpcServerStreamingCall<S : Any, R : Any>(
   override val method: GrpcMethod<S, R>,
 ) : GrpcServerStreamingCall<S, R> {
 
+  // The legacy adapter can call cancel() on another thread than the one that starts the call.
+
   /** Non-null once this is executed. */
-  private var call: okhttp3.Call? = null
-  private var canceled = false
+  @Volatile private var call: okhttp3.Call? = null
+
+  @Volatile private var canceled = false
 
   /** Initialized once this is executed. */
   private lateinit var callTimeout: GrpcCallTimeout
@@ -254,11 +257,11 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
       try {
         sendRequest(requestChannel, responseChannel)
       } catch (e: Throwable) {
-        responseChannel.close(e)
+        responseChannel.close(e.toResponseFailure())
       }
     }.invokeOnCompletion { cause ->
       // The scope can be canceled before the coroutine starts.
-      if (cause != null) responseChannel.close(cause)
+      if (cause != null) responseChannel.close(cause.toResponseFailure())
     }
 
     onExecuted { responseChannel.close(IOException("canceled")) }
@@ -273,7 +276,7 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
       val cause = first.exceptionOrNull()
       responseChannel.close(
         if (cause != null) {
-          CancellationException("request canceled", cause)
+          IOException("request canceled", cause)
         } else {
           ProtocolException("expected 1 message but got none")
         },
@@ -289,7 +292,7 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
     val cause = next.exceptionOrNull()
     when {
       next.isSuccess -> responseChannel.close(ProtocolException("expected 1 message but got multiple"))
-      cause != null -> responseChannel.close(CancellationException("request canceled", cause))
+      cause != null -> responseChannel.close(IOException("request canceled", cause))
     }
   }
 
@@ -342,6 +345,17 @@ internal class GrpcServerStreamingCallStreamingAdapter<S : Any, R : Any>(
     this.failResponses = failResponses
     if (callDelegate.isCanceled()) failResponses()
   }
+}
+
+/**
+ * Returns the exception that fails the response channel.
+ * Like the duplex implementation, readers get an [IOException] and not a [CancellationException].
+ * A consumer coroutine would otherwise treat the failure as its own cancellation.
+ */
+private fun Throwable.toResponseFailure(): IOException = when (this) {
+  is IOException -> this
+  is CancellationException -> IOException("canceled", this)
+  else -> asIOException()
 }
 
 internal fun <S : Any, R : Any> RealGrpcServerStreamingCall<S, R>.asGrpcStreamingCall() = GrpcServerStreamingCallStreamingAdapter(this)
