@@ -884,6 +884,8 @@ final class com.squareup.wire.schema/ProtoType { // com.squareup.wire.schema/Pro
             final fun <get-INT64>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/ProtoType.Companion.INT64.<get-INT64>|<get-INT64>(){}[0]
         final val INT64_VALUE // com.squareup.wire.schema/ProtoType.Companion.INT64_VALUE|{}INT64_VALUE[0]
             final fun <get-INT64_VALUE>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/ProtoType.Companion.INT64_VALUE.<get-INT64_VALUE>|<get-INT64_VALUE>(){}[0]
+        final val RPC_STATUS // com.squareup.wire.schema/ProtoType.Companion.RPC_STATUS|{}RPC_STATUS[0]
+            final fun <get-RPC_STATUS>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/ProtoType.Companion.RPC_STATUS.<get-RPC_STATUS>|<get-RPC_STATUS>(){}[0]
         final val SFIXED32 // com.squareup.wire.schema/ProtoType.Companion.SFIXED32|{}SFIXED32[0]
             final fun <get-SFIXED32>(): com.squareup.wire.schema/ProtoType // com.squareup.wire.schema/ProtoType.Companion.SFIXED32.<get-SFIXED32>|<get-SFIXED32>(){}[0]
         final val SFIXED64 // com.squareup.wire.schema/ProtoType.Companion.SFIXED64|{}SFIXED64[0]

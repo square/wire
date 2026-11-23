@@ -133,6 +133,7 @@ final class <#A: kotlin/Any, #B: kotlin/Any> com.squareup.wire/GrpcMethod { // c
 }
 
 final class com.squareup.wire/GrpcException : okio/IOException { // com.squareup.wire/GrpcException|null[0]
+    constructor <init>(com.squareup.wire.rpc/RpcStatus, kotlin/String? = ...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.rpc.RpcStatus;kotlin.String?){}[0]
     constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? = ...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?){}[0]
     constructor <init>(com.squareup.wire/GrpcStatus, kotlin/String?, kotlin/ByteArray? = ..., kotlin/String? = ...) // com.squareup.wire/GrpcException.<init>|<init>(com.squareup.wire.GrpcStatus;kotlin.String?;kotlin.ByteArray?;kotlin.String?){}[0]
 
@@ -142,6 +143,8 @@ final class com.squareup.wire/GrpcException : okio/IOException { // com.squareup
         final fun <get-grpcStatus>(): com.squareup.wire/GrpcStatus // com.squareup.wire/GrpcException.grpcStatus.<get-grpcStatus>|<get-grpcStatus>(){}[0]
     final val grpcStatusDetails // com.squareup.wire/GrpcException.grpcStatusDetails|{}grpcStatusDetails[0]
         final fun <get-grpcStatusDetails>(): kotlin/ByteArray? // com.squareup.wire/GrpcException.grpcStatusDetails.<get-grpcStatusDetails>|<get-grpcStatusDetails>(){}[0]
+    final val rpcStatus // com.squareup.wire/GrpcException.rpcStatus|{}rpcStatus[0]
+        final fun <get-rpcStatus>(): com.squareup.wire.rpc/RpcStatus? // com.squareup.wire/GrpcException.rpcStatus.<get-rpcStatus>|<get-rpcStatus>(){}[0]
     final val url // com.squareup.wire/GrpcException.url|{}url[0]
         final fun <get-url>(): kotlin/String? // com.squareup.wire/GrpcException.url.<get-url>|<get-url>(){}[0]
 }

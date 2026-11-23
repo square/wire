@@ -375,6 +375,28 @@ final class <#A: out com.squareup.wire/OneOf.Key<#B>, #B: kotlin/Any?> com.squar
     }
 }
 
+final class com.squareup.wire.rpc/RpcStatus : com.squareup.wire/Message<com.squareup.wire.rpc/RpcStatus, kotlin/Nothing> { // com.squareup.wire.rpc/RpcStatus|null[0]
+    constructor <init>(kotlin/Int = ..., kotlin/String = ..., kotlin.collections/List<com.squareup.wire/AnyMessage> = ..., okio/ByteString = ...) // com.squareup.wire.rpc/RpcStatus.<init>|<init>(kotlin.Int;kotlin.String;kotlin.collections.List<com.squareup.wire.AnyMessage>;okio.ByteString){}[0]
+
+    final val code // com.squareup.wire.rpc/RpcStatus.code|{}code[0]
+        final fun <get-code>(): kotlin/Int // com.squareup.wire.rpc/RpcStatus.code.<get-code>|<get-code>(){}[0]
+    final val details // com.squareup.wire.rpc/RpcStatus.details|{}details[0]
+        final fun <get-details>(): kotlin.collections/List<com.squareup.wire/AnyMessage> // com.squareup.wire.rpc/RpcStatus.details.<get-details>|<get-details>(){}[0]
+    final val message // com.squareup.wire.rpc/RpcStatus.message|{}message[0]
+        final fun <get-message>(): kotlin/String // com.squareup.wire.rpc/RpcStatus.message.<get-message>|<get-message>(){}[0]
+
+    final fun copy(kotlin/Int = ..., kotlin/String = ..., kotlin.collections/List<com.squareup.wire/AnyMessage> = ..., okio/ByteString = ...): com.squareup.wire.rpc/RpcStatus // com.squareup.wire.rpc/RpcStatus.copy|copy(kotlin.Int;kotlin.String;kotlin.collections.List<com.squareup.wire.AnyMessage>;okio.ByteString){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.squareup.wire.rpc/RpcStatus.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.squareup.wire.rpc/RpcStatus.hashCode|hashCode(){}[0]
+    final fun newBuilder(): kotlin/Nothing // com.squareup.wire.rpc/RpcStatus.newBuilder|newBuilder(){}[0]
+    final fun toString(): kotlin/String // com.squareup.wire.rpc/RpcStatus.toString|toString(){}[0]
+
+    final object Companion { // com.squareup.wire.rpc/RpcStatus.Companion|null[0]
+        final val ADAPTER // com.squareup.wire.rpc/RpcStatus.Companion.ADAPTER|{}ADAPTER[0]
+            final fun <get-ADAPTER>(): com.squareup.wire/ProtoAdapter<com.squareup.wire.rpc/RpcStatus> // com.squareup.wire.rpc/RpcStatus.Companion.ADAPTER.<get-ADAPTER>|<get-ADAPTER>(){}[0]
+    }
+}
+
 final class com.squareup.wire/AnyMessage : com.squareup.wire/Message<com.squareup.wire/AnyMessage, kotlin/Nothing> { // com.squareup.wire/AnyMessage|null[0]
     constructor <init>(kotlin/String, okio/ByteString = ...) // com.squareup.wire/AnyMessage.<init>|<init>(kotlin.String;okio.ByteString){}[0]
 
