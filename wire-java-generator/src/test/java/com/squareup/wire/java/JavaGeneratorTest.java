@@ -720,6 +720,48 @@ public final class JavaGeneratorTest {
                 + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
   }
 
+  @Test
+  public void stringDefaultsKeepTrailingNewlines() throws IOException {
+    Schema schema =
+        new SchemaBuilder()
+            .add(
+                Path.get("message.proto"),
+                ""
+                    + "message Message {\n"
+                    + "  optional string nl = 1 [default = \"\\n\"];\n"
+                    + "  optional string nl_unicode = 2 [default = \"\\u000a\"];\n"
+                    + "  optional string cr = 3 [default = \"\\r\"];\n"
+                    + "  optional string crlf = 4 [default = \"\\r\\n\"];\n"
+                    + "  optional string nl_nl = 5 [default = \"\\n\\n\"];\n"
+                    + "  optional string space_nl = 6 [default = \" \\n\"];\n"
+                    + "  optional string nl_space = 7 [default = \"\\n \"];\n"
+                    + "  optional string tab = 8 [default = \"\\t\"];\n"
+                    + "  optional string space = 9 [default = \" \"];\n"
+                    + "  optional string spaces = 10 [default = \"   \"];\n"
+                    + "  optional string dollar = 11 [default = \"a$b ${c} $\"];\n"
+                    + "  optional string inner = 12 [default = \"a\\nb\"];\n"
+                    + "  optional string lead = 13 [default = \"\\na\"];\n"
+                    + "  optional string trail = 14 [default = \"a\\n\"];\n"
+                    + "}\n")
+            .build();
+    String code = new JavaWithProfilesGenerator(schema).generateJava("Message");
+    assertThat(code).contains("String DEFAULT_NL = \"\\n\";");
+    assertThat(code).contains("String DEFAULT_NL_UNICODE = \"\\n\";");
+    assertThat(code).contains("String DEFAULT_CR = \"\\r\";");
+    assertThat(code).contains("String DEFAULT_CRLF = \"\\r\\n\";");
+    // JavaPoet splits a literal after each newline.
+    assertThat(code).contains("String DEFAULT_NL_NL = \"\\n\"\n      + \"\\n\";");
+    assertThat(code).contains("String DEFAULT_SPACE_NL = \" \\n\";");
+    assertThat(code).contains("String DEFAULT_NL_SPACE = \"\\n\"\n      + \" \";");
+    assertThat(code).contains("String DEFAULT_TAB = \"\\t\";");
+    assertThat(code).contains("String DEFAULT_SPACE = \" \";");
+    assertThat(code).contains("String DEFAULT_SPACES = \"   \";");
+    assertThat(code).contains("String DEFAULT_DOLLAR = \"a$b ${c} $\";");
+    assertThat(code).contains("String DEFAULT_INNER = \"a\\n\"\n      + \"b\";");
+    assertThat(code).contains("String DEFAULT_LEAD = \"\\n\"\n      + \"a\";");
+    assertThat(code).contains("String DEFAULT_TRAIL = \"a\\n\";");
+  }
+
   /** https://github.com/square/wire/issues/655 */
   @Test
   public void defaultValues() throws IOException {
