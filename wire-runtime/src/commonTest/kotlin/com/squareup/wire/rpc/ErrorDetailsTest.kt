@@ -19,7 +19,6 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import com.squareup.wire.AnyMessage
-import com.squareup.wire.RpcStatus
 import com.squareup.wire.durationOfSeconds
 import kotlin.test.Test
 
