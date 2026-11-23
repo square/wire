@@ -629,8 +629,9 @@ class GrpcClientTest {
   fun legacyServerStreamingSecondRequestSuspend() {
     enqueueListFeatures(delayBeforeLastFeature = true)
 
+    val grpcCall = newLegacyListFeaturesCall()
     runBlocking {
-      val (requests, responses) = newLegacyListFeaturesCall().executeIn(this)
+      val (requests, responses) = grpcCall.executeIn(this)
       requests.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
       requests.send(Rectangle())
       var result = responses.receiveCatching()
@@ -640,7 +641,8 @@ class GrpcClientTest {
         hasMessage("expected 1 message but got multiple")
       }
     }
-    assertThat(callReference.get()!!.isCanceled()).isTrue()
+    // The OkHttp call can be canceled before its interceptors run, so check the gRPC call.
+    assertThat(grpcCall.isCanceled()).isTrue()
   }
 
   @Test
