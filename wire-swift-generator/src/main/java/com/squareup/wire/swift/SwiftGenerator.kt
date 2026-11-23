@@ -1275,9 +1275,11 @@ class SwiftGenerator private constructor(
         .apply {
           val storageParams = mutableListOf<CodeBlock>()
           type.declaredFields.filter { it.isRequiredParameter }.forEach { field ->
-            // Swift warns about backticks around `self` in an argument label.
+            // Swift warns about backticks around `self`, `Protocol` and `Any` in an argument label.
             storageParams += if (field.safeName == "self") {
               CodeBlock.of("self: %N", type.parameterName(field))
+            } else if (field.safeName in SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE) {
+              CodeBlock.of("%1L: %2N", field.safeName, field.escapedName)
             } else {
               CodeBlock.of("%1N: %2N", field.escapedName, type.parameterName(field))
             }

@@ -185,9 +185,8 @@ final class ReservedFieldNamesTests : XCTestCase {
     }
 
     func testHeapAllocatedMessageWithAOneofNamedSelf() throws {
-        let message = SwiftHeapNames(Any: "required") {
+        let message = SwiftHeapNames(Protocol: "p", Any: "required") {
             $0.`self` = .b(9)
-            $0.`Protocol` = "p"
             $0.f16 = "last"
         }
 
@@ -196,7 +195,10 @@ final class ReservedFieldNamesTests : XCTestCase {
         XCTAssertEqual(decoded.`self`, .b(9))
         XCTAssertEqual(decoded.`Protocol`, "p")
         XCTAssertEqual(decoded.f16, "last")
-        _ = try jsonRoundTrip(message)
+        let json = try jsonRoundTrip(message)
+        XCTAssertTrue(json.contains(#""Any":"required""#), json)
+        XCTAssertTrue(json.contains(#""Protocol":"p""#), json)
+        XCTAssertTrue(json.contains(#""b":9"#), json)
     }
 
     func testHeapAllocatedMessageWithAFieldNamedSelf() throws {

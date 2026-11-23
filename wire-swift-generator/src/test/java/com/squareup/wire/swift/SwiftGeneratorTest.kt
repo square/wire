@@ -1228,6 +1228,38 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("``")
   }
 
+  @Test fun heapAllocatedMessageWritesArgumentLabelsWithoutBackticks() {
+    val others = (4..16).joinToString("\n") { "|  optional string f$it = $it;" }
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Heap {
+        |  required string Protocol = 1;
+        |  required string Any = 2;
+        |  required string self = 3;
+        $others
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Heap")
+
+    assertThat(code).contains("private var storage: Heap.Storage")
+    // Swift warns about backticks around these names in an argument label.
+    assertThat(code).contains("Protocol: `Protocol`,")
+    assertThat(code).contains("Any: `Any`,")
+    assertThat(code).contains("self: self_,")
+    assertThat(code).contains("`Protocol`: String,")
+    assertThat(code).contains("`Any`: String,")
+    assertThat(code).contains("`self` self_: String,")
+    assertThat(code).doesNotContain("`Protocol`: `Protocol`")
+    assertThat(code).doesNotContain("`Any`: `Any`")
+  }
+
   @Test fun nestedTypeNamedAnyHasBackticks() {
     val schema = buildSchema {
       add(

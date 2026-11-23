@@ -293,7 +293,7 @@ message SwiftHeapNames {
     int32 b = 2;
   }
 
-  optional string Protocol = 3;
+  required string Protocol = 3;
   required string Any = 4;
   optional string f5 = 5;
   optional string f6 = 6;
@@ -307,6 +307,7 @@ message SwiftHeapNames {
   optional string f14 = 14;
   optional string f15 = 15;
   optional string f16 = 16;
+  optional string f17 = 17;
 }
 
 message SwiftHeapFieldNames {
