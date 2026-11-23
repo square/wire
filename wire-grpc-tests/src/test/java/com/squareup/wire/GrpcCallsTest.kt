@@ -26,6 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -250,46 +251,116 @@ class GrpcCallsTest {
 
   @Test
   fun executeInRespectsScope() {
-    val dispatcher = newSingleThreadContext("grpc-test-thread")
-    val scope = CoroutineScope(dispatcher)
-    var threadName: String? = null
-
-    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
-      threadName = Thread.currentThread().name
-      requests.receive()
-      responses.close()
+    val threadName = runOnSingleThreadScope { scope, onThread ->
+      val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+        onThread(Thread.currentThread().name)
+        requests.receive()
+        responses.close()
+      }
+      val (send, receive) = grpcCall.executeIn(scope)
+      runBlocking {
+        send.send("hello")
+        receive.receiveCatching()
+      }
     }
 
-    val (send, receive) = grpcCall.executeIn(scope)
-    runBlocking {
-      send.send("hello")
-      receive.receiveCatching()
+    assertThat(threadName.startsWith("grpc-test-thread")).isTrue()
+  }
+
+  @Test
+  fun clientStreamingExecuteInRespectsScope() {
+    val threadName = runOnSingleThreadScope { scope, onThread ->
+      val grpcCall = GrpcClientStreamingCall<String, String> {
+        onThread(Thread.currentThread().name)
+        receive()
+      }
+      val (send, response) = grpcCall.executeIn(scope)
+      runBlocking {
+        send.send("hello")
+        response.await()
+      }
     }
 
-    assertThat(threadName!!.startsWith("grpc-test-thread")).isTrue()
-    dispatcher.close()
+    assertThat(threadName.startsWith("grpc-test-thread")).isTrue()
+  }
+
+  @Test
+  fun serverStreamingExecuteInRespectsScope() {
+    val threadName = runOnSingleThreadScope { scope, onThread ->
+      val grpcCall = GrpcServerStreamingCall<String, String> {
+        onThread(Thread.currentThread().name)
+        close()
+      }
+      runBlocking {
+        grpcCall.executeIn(scope, "hello").receiveCatching()
+      }
+    }
+
+    assertThat(threadName.startsWith("grpc-test-thread")).isTrue()
   }
 
   @Test
   fun executeBlockingRunsThreadBlockingFunctionsOnIoDispatcher() {
-    // Dispatchers.Default has about one thread per core, and Dispatchers.IO has at least 64.
-    // Start more blocking functions than Default has threads. Each one waits for all to start.
+    assertRunsThreadBlockingFunctionsOnIoDispatcher { grpcCall ->
+      val responses = grpcCall.executeBlocking().second
+      return@assertRunsThreadBlockingFunctionsOnIoDispatcher { responses.read() }
+    }
+  }
+
+  @Test
+  fun executeInScopeWithoutDispatcherRunsThreadBlockingFunctionsOnIoDispatcher() {
+    assertRunsThreadBlockingFunctionsOnIoDispatcher { grpcCall ->
+      @Suppress("OPT_IN_USAGE")
+      val responses = grpcCall.executeIn(GlobalScope).second
+      return@assertRunsThreadBlockingFunctionsOnIoDispatcher { runBlocking { responses.receive() } }
+    }
+  }
+
+  @Test
+  fun executeRunsThreadBlockingFunctionsOnIoDispatcher() {
+    assertRunsThreadBlockingFunctionsOnIoDispatcher { grpcCall ->
+      @Suppress("DEPRECATION")
+      val responses = grpcCall.execute().second
+      return@assertRunsThreadBlockingFunctionsOnIoDispatcher { runBlocking { responses.receive() } }
+    }
+  }
+
+  /** Runs [block] with a single-thread scope, and returns the thread name that [block] reports. */
+  private fun runOnSingleThreadScope(block: (CoroutineScope, (String) -> Unit) -> Unit): String {
+    val dispatcher = newSingleThreadContext("grpc-test-thread")
+    try {
+      var threadName: String? = null
+      block(CoroutineScope(dispatcher)) { threadName = it }
+      return threadName!!
+    } finally {
+      dispatcher.close()
+    }
+  }
+
+  /**
+   * Dispatchers.Default has about one thread per core, and Dispatchers.IO has at least 64.
+   * This starts more blocking functions than Default has threads, and each one waits for all to start.
+   * [start] executes the call and returns a function that reads one response.
+   */
+  private fun assertRunsThreadBlockingFunctionsOnIoDispatcher(
+    start: (GrpcStreamingCall<String, String>) -> () -> String?,
+  ) {
     val callCount = Runtime.getRuntime().availableProcessors().coerceAtLeast(2) + 1
     assumeTrue(callCount <= 64)
     val started = CountDownLatch(callCount)
 
-    val sources = List(callCount) {
+    val reads = List(callCount) {
       val grpcCall = GrpcStreamingCall<String, String> { _, responses ->
         started.countDown()
         val allStarted = started.await(5, SECONDS)
         responses.send(if (allStarted) "all started" else "starved")
         responses.close()
       }
-      grpcCall.executeBlocking().second
+      start(grpcCall)
     }
 
-    for (source in sources) {
-      assertThat(source.read()).isEqualTo("all started")
+    for (read in reads) {
+      assertThat(read()).isEqualTo("all started")
     }
   }
 

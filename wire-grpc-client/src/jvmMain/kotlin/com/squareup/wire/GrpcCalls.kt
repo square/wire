@@ -20,6 +20,8 @@ package com.squareup.wire
 import com.squareup.wire.internal.asGrpcClientStreamingCall
 import com.squareup.wire.internal.asGrpcServerStreamingCall
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.ContinuationInterceptor
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,7 +30,6 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.onClosed
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import okio.Timeout
@@ -119,7 +120,8 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
  * [executeIn][GrpcStreamingCall.executeIn] or [executeBlocking][GrpcStreamingCall.executeBlocking].
  *
  * [executeIn][GrpcStreamingCall.executeIn] launches [function] on the dispatcher of the provided scope.
- * If [function] does blocking work, wrap that work in `withContext(Dispatchers.IO)`.
+ * If the scope has no dispatcher, like [GlobalScope], it launches [function] on [Dispatchers.IO].
+ * If [function] does blocking work on another dispatcher, wrap that work in `withContext(Dispatchers.IO)`.
  * [executeBlocking][GrpcStreamingCall.executeBlocking] and the deprecated `execute()` launch [function] on [Dispatchers.IO].
  *
  * The function must close the [SendChannel] when it has no more messages to transmit.
@@ -184,21 +186,18 @@ fun <S : Any, R : Any> GrpcStreamingCall(
 
     @Deprecated(
       "Provide a scope, preferably not GlobalScope",
-      replaceWith = ReplaceWith(
-        "executeIn(GlobalScope + Dispatchers.IO)",
-        "kotlinx.coroutines.Dispatchers",
-        "kotlinx.coroutines.GlobalScope",
-        "kotlinx.coroutines.plus",
-      ),
+      replaceWith = ReplaceWith("executeIn(GlobalScope)", "kotlinx.coroutines.GlobalScope"),
       level = DeprecationLevel.WARNING,
     )
     @Suppress("OPT_IN_USAGE")
-    override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope + Dispatchers.IO)
+    override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope)
 
     override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> {
       check(executed.compareAndSet(false, true)) { "already executed" }
 
-      val job = scope.launch {
+      // Without a dispatcher, launch would use Dispatchers.Default, which blocking functions can starve.
+      val dispatcher = if (scope.coroutineContext[ContinuationInterceptor] == null) Dispatchers.IO else EmptyCoroutineContext
+      val job = scope.launch(dispatcher) {
         try {
           function(requestChannel, responseChannel)
         } catch (e: Exception) {
@@ -219,7 +218,7 @@ fun <S : Any, R : Any> GrpcStreamingCall(
     override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
       // TODO(Benoit) Could we use a better scope here?
       // Callers block threads on the returned streams, so run the function on the IO dispatcher.
-      executeIn(GlobalScope + Dispatchers.IO)
+      executeIn(GlobalScope)
       return requestChannel.toMessageSink() to responseChannel.toMessageSource()
     }
 

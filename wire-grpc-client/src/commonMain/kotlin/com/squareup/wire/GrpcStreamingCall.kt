@@ -86,7 +86,7 @@ interface GrpcStreamingCall<S : Any, R : Any> {
   /**
    * Enqueues this call for execution and returns channels to send and receive the call's messages.
    * The OkHttp implementation uses [Dispatchers.IO] to transmit outbound messages.
-   * The `GrpcStreamingCall { ... }` helper runs its function on the dispatcher of [scope] instead.
+   * The `GrpcStreamingCall { ... }` helper runs its function on the dispatcher of [scope] instead, or on `Dispatchers.IO` if [scope] has none.
    */
   fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>>
 
@@ -101,8 +101,8 @@ interface GrpcStreamingCall<S : Any, R : Any> {
     level = DeprecationLevel.WARNING,
     message = "Provide a scope, preferably not GlobalScope",
     replaceWith = ReplaceWith(
-      expression = "executeIn(GlobalScope + Dispatchers.IO)",
-      imports = ["kotlinx.coroutines.Dispatchers", "kotlinx.coroutines.GlobalScope", "kotlinx.coroutines.plus"],
+      expression = "executeIn(GlobalScope)",
+      imports = ["kotlinx.coroutines.GlobalScope"],
     ),
   )
   fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>>
