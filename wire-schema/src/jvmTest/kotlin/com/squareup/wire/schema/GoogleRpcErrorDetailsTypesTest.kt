@@ -24,7 +24,8 @@ import kotlin.test.Test
 
 /**
  * Checks that the hard-coded [GOOGLE_RPC_ERROR_DETAILS_TYPES] matches the bundled
- * `google/rpc/error_details.proto` and the runtime classes it names.
+ * `google/rpc/error_details.proto` and the runtime classes it names, and that each class has the
+ * static `ADAPTER` field that generated code and reflection use.
  */
 class GoogleRpcErrorDetailsTypesTest {
   @Test fun mapCoversEveryTypeOfTheBundledProto() {
@@ -44,8 +45,8 @@ class GoogleRpcErrorDetailsTypesTest {
   @Test fun mapNamesRuntimeClassesWithMatchingTypeUrls() {
     for ((protoType, names) in GOOGLE_RPC_ERROR_DETAILS_TYPES) {
       val className = "$GOOGLE_RPC_ERROR_DETAILS_PACKAGE.${names.joinToString("$")}"
-      val companion = Class.forName(className).getField("Companion").get(null)
-      val adapter = companion.javaClass.getMethod("getADAPTER").invoke(companion) as ProtoAdapter<*>
+      // Generated code and reflection find the adapter through this static field.
+      val adapter = ProtoAdapter.get("$className#ADAPTER")
       assertThat(adapter.typeUrl, name = className)
         .isEqualTo("type.googleapis.com/$protoType")
     }
