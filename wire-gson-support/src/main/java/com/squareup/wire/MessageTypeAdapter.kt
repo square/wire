@@ -82,7 +82,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
         )
       }
 
-      jsonField.fieldBinding.set(builder, value)
+      jsonField.fieldBinding.setFromJson(builder, value)
     }
     input.endObject()
     return builder.build()

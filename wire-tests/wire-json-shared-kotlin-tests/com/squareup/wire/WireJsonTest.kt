@@ -33,6 +33,7 @@ import com.squareup.wire.proto2.alltypes.AllTypes as AllTypesProto2
 import com.squareup.wire.proto3.alltypes.AllTypes as AllTypesProto3
 import java.io.File
 import java.util.Collections
+import kotlin.test.assertFailsWith
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -366,29 +367,57 @@ class WireJsonTest {
     assertThat(value.delivered_within_or_free).isEqualTo(durationOfSeconds(5L, 3L))
   }
 
-  @Test fun lastMemberOfOneOfWinsOnReading() {
-    val parsed = jsonLibrary.fromJson(
+  @Test fun twoMembersOfOneOfAreRejectedOnReading() {
+    for (json in listOf(
       """{"oneof_string":"a","oneof_int32":1}""",
-      AllTypesProto3::class.java,
-    )
-    assertThat(parsed).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
+      """{"oneof_int32":1,"oneof_string":"a"}""",
+      """{"oneof_string":"a","oneof_nested_message":{"a":1}}""",
+    )) {
+      val exception = assertFailsWith<IllegalArgumentException> {
+        jsonLibrary.fromJson(json, AllTypesProto3::class.java)
+      }
+      // Generated Java and generated Kotlin differ in the case of the first letter.
+      assertThat(exception.message!!).contains("t most one of ")
+      assertThat(exception.message!!).contains("may be non-null")
+    }
   }
 
-  // This decodes binary, not JSON. It lives here because jvm-json-java sets compact = true, so only the
-  // reflective adapter runs. Moving it to another suite would stop it from covering that adapter.
-  @Test fun lastMemberOfOneOfWinsOnDecoding() {
-    val string = AllTypesProto3.ADAPTER.encodeByteString(AllTypesProto3.Builder().oneof_string("a").build())
-    val int32 = AllTypesProto3.ADAPTER.encodeByteString(AllTypesProto3.Builder().oneof_int32(1).build())
-
-    fun decode(vararg members: ByteString): AllTypesProto3 {
-      val buffer = Buffer()
-      members.forEach { buffer.write(it) }
-      return AllTypesProto3.ADAPTER.decode(buffer.readByteString())
+  @Test fun nullMemberOfOneOfNextToValueIsIgnoredOnReading() {
+    val string = AllTypesProto3.Builder().oneof_string("a").build()
+    val int32 = AllTypesProto3.Builder().oneof_int32(1).build()
+    for ((json, expected) in listOf(
+      """{"oneof_string":"a","oneof_int32":null}""" to string,
+      """{"oneof_int32":null,"oneof_string":"a"}""" to string,
+      """{"oneof_int32":1,"oneof_string":null}""" to int32,
+      """{"oneof_string":null,"oneof_int32":1}""" to int32,
+      """{"oneof_string":null,"oneof_int32":null}""" to AllTypesProto3.Builder().build(),
+    )) {
+      assertThat(jsonLibrary.fromJson(json, AllTypesProto3::class.java)).isEqualTo(expected)
     }
+  }
 
-    assertThat(decode(string, int32)).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
-    assertThat(decode(int32, string, int32)).isEqualTo(AllTypesProto3.Builder().oneof_int32(1).build())
-    assertThat(decode(int32, string)).isEqualTo(AllTypesProto3.Builder().oneof_string("a").build())
+  @Test fun sameMemberOfOneOfTwiceKeepsTheLastValueOnReading() {
+    val parsed = jsonLibrary.fromJson(
+      """{"oneof_string":"a","oneof_string":"b"}""",
+      AllTypesProto3::class.java,
+    )
+    assertThat(parsed).isEqualTo(AllTypesProto3.Builder().oneof_string("b").build())
+  }
+
+  @Test fun lastMemberOfOneOfWinsOnDecodingBinary() {
+    val string = AllTypesProto3.Builder().oneof_string("a").build()
+    val int32 = AllTypesProto3.Builder().oneof_int32(1).build()
+    val adapter = ProtoAdapter.newMessageAdapter(AllTypesProto3::class.java)
+    for ((members, expected) in listOf(
+      listOf(string, int32) to int32,
+      listOf(int32, string) to string,
+    )) {
+      val bytes = members.fold(Buffer()) { buffer, member ->
+        buffer.write(AllTypesProto3.ADAPTER.encodeByteString(member))
+      }.readByteString()
+      assertThat(AllTypesProto3.ADAPTER.decode(bytes)).isEqualTo(expected)
+      assertThat(adapter.decode(bytes)).isEqualTo(expected)
+    }
   }
 
   @Test fun unknownEnumValueIsKeptAsUnknownField() {

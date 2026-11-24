@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package squareup.wire.json.oneof.boxed;
+
+option java_package = "squareup.wire.json.oneof.boxed";
+
+message Nested {
+  string name = 1;
+}
+
+message Choice {
+  oneof choice {
+    string text = 1;
+    int32 number = 2;
+    Nested nested = 3;
+  }
+  string other = 4;
+}
