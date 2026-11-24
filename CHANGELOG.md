@@ -1,6 +1,73 @@
 Change Log
 ==========
 
+Version 8.0.0-alpha01
+---------------------
+
+_2026-11-24_
+
+### Common
+
+* ⚠ Breaking: Wire no longer generates `google.rpc.Status` or the types of `google/rpc/error_details.proto`. Kotlin and Java fields of these types use the new classes in the `com.squareup.wire.rpc` package of `wire-runtime`: `RpcStatus`, `ErrorInfo`, `RetryInfo`, `DebugInfo`, `QuotaFailure`, `PreconditionFailure`, `BadRequest`, `RequestInfo`, `ResourceInfo`, `Help` and `LocalizedMessage`. Their type URLs stay `type.googleapis.com/google.rpc.*`. Replace `com.google.rpc.Status`, `com.google.rpc.ErrorInfo` and the other types, or your own `java_package` classes, with these classes. `RpcStatus` has no Java builder: Java code creates it with its constructor and reads it with getters. Code that an older Wire generated still uses `com.google.rpc.*`, so generate all modules with the same Wire version. The Proto target no longer emits these two files. Swift does not change (#3758, #3759)
+* ⚠ Breaking: Wire packs proto3 `repeated bool` and `repeated` enum fields by default, as the proto3 spec and protoc do. The encoded bytes of these fields change, but every protobuf reader accepts both forms. Add `[packed = false]` to a field to keep the unpacked encoding. `wire.use_array` is now rejected on `bool` fields. `SyntaxRules.isPackedByDefault(type, label)` is deprecated in favor of `isPackedByDefault(type, label, isEnum)` (#3754)
+* ⚠ Breaking: Java `compact = true` code, `ProtoAdapter.newMessageAdapter` and `Schema.protoAdapter` no longer write proto3 implicit-presence fields that hold an identity value, such as `0`, `""` or the zero enum constant. Their bytes now match protoc and generated adapters (#3752)
+* ⚠ Breaking: the `.proto` parser rejects the escapes that protoc rejects, such as `\q`, `\8` or `"C:\users"`. An octal escape above `\377` keeps its low eight bits, as in protoc (#3810, #3820)
+* New: the `.proto` parser decodes `\u` and `\U` escapes in string literals, as protoc does. Before, it dropped the backslash, so `"caf\u00e9"` became `cafu00e9` (#3810)
+* Change: in the default of a `bytes` field, the parser reads a raw char above U+007F, and a `\u` or `\U` escape, as UTF-8 bytes, as protoc does. Before, `[default = "é"]` gave `e9` where protoc gives `c3 a9` (#3814)
+* Change: Wire logs a warning for an import with an absolute path or a `..` segment. `WireLogger` has a new `warning` method with a default empty body. The Kotlin and Swift handlers warn when two generated files have paths that differ only by case. If the output file system folds case, the run fails (#3787)
+* Change: decoding limits the work and the recursion depth of merged message fields. Merges share a work budget per outermost decode: 512 MiB plus 64 bytes per byte read. Over the budget, decoding fails with a `ProtocolException`. This also protects code from older Wire versions and custom `ProtoReader32` readers (#3779, #3803)
+* Change: generated Kotlin and Java decoders, the reflective adapter and the schema adapter merge a repeated singular message field once, after its last tag. The decode time is now proportional to the total size of the occurrences, not to its square. Messages with more than 64 singular message fields keep the old behavior (#3794)
+* Fix: the map adapter skips unknown tags and decodes a missing message value as the default value. An entry with an unknown enum value moves to the unknown fields of the parent message (#3785)
+* Fix: decoding a `Timestamp` outside years 1 to 9999 throws `ProtocolException`. Moshi and Gson also reject such a timestamp string. JSON encode of such an `Instant` throws `IllegalArgumentException`, like binary encode (#3816)
+* Fix: decoding a `Timestamp` or `Duration` with seconds that do not fit throws `ProtocolException`, not `DateTimeException` or `ArithmeticException` (#3792)
+* Fix: `ReverseProtoWriter` writes a lone trail surrogate as `?`, like `ProtoWriter`. Before, it merged the surrogate with the previous char, so the bytes did not match `encodedSize` (#3819)
+* Fix: reflective adapters, which Java `compact = true` code and `Schema.protoAdapter` use, return null for an unknown enum number, so the caller keeps it as an unknown field. They keep the last oneof member on the wire, and keep null for `NullValue` and an empty `Value` (#3781)
+* Fix: `redact` on reflective adapters keeps the fields that are not redacted. Before, it returned an empty message. Wrapper adapters return their value from `redact` instead of throwing `UnsupportedOperationException` (#3784)
+* Fix: `FieldBinding` looks up the adapter of a field once, instead of on each read (#3803)
+* Fix: `toString()` escapes newlines, carriage returns, tabs, other control characters, Unicode direction controls and the byte order mark. This applies to generated Kotlin and Java code, the reflective adapter, map keys and values, sealed oneof strings and the `AnyMessage` type URL. A string can no longer forge a log line (#3790, #3806)
+* Fix: `AnyMessage.toString()` prints the type URL and the size of the value. Before, it printed the packed bytes, which can hold redacted fields (#3780)
+* Fix: `STRUCT_MAP.redact` redacts each value. Before, it threw for any non-empty map (#3780)
+* Fix: JSON parsing rejects `uint64` and `fixed64` values outside -2^63 to 2^64-1, and `uint32` and `fixed32` values outside -2^31 to 2^32-1. Before, they wrapped around or lost their high bits (#3782)
+* Fix: JSON parsing of `uint32`, `fixed32` and `UInt32Value` rejects `NaN`, `Infinity`, hex forms and suffixes such as `5f`. Before, `"NaN"` became 0 and `"5f"` became 5 (#3799)
+* Fix: Moshi and Gson map adapters throw `JsonDataException` or `JsonSyntaxException` for bad keys and null values. Gson throws `JsonSyntaxException` when the `@type` of an `Any` is not a string (#3782)
+* Fix: Gson throws a `JsonIOException` past 254 levels of nested `Any` when it writes JSON. Before, it could overflow the stack (#3786)
+* Fix: `DurationJsonFormatter` formats numbers with `Locale.ROOT`. Parsing rejects signs in the fraction, such as `1.-5s`, and digits that are not ASCII (#3789)
+* Fix: `SchemaEncoder` writes a bytes default as the C-escaped text that `descriptor.proto` specifies, and a bytes option value with one byte per char (#3804)
+* Fix: the Proto target escapes option map values, reserved names, import paths and bytes defaults. It writes bytes defaults as quoted strings (#3776)
+* Fix: `SchemaReflector` returns `NOT_FOUND` for an unknown file name or a symbol without a dot. Before, it threw an unchecked exception (#3788)
+
+### gRPC
+
+* ⚠ Breaking: `GrpcStreamingCall { ... }`, `GrpcClientStreamingCall { ... }` and `GrpcServerStreamingCall { ... }` run their function on the dispatcher of the scope that `executeIn(scope)` receives, not on `Dispatchers.IO`. A scope without a dispatcher still uses `Dispatchers.IO`. Wrap blocking work in `withContext(Dispatchers.IO)`. `executeBlocking()` and `execute()` still use `Dispatchers.IO` (#3569)
+* New: `GrpcClient.Builder.maxInboundMessageSize` limits the size of a response message. The default is 64 MiB. The client checks the length prefix and the decompressed message. A message over the limit fails the call with a `GrpcException` that has `GrpcStatus.RESOURCE_EXHAUSTED` (#3783)
+* New: `GrpcException.rpcStatus` decodes the `grpc-status-details-bin` trailer. A new constructor creates the exception from an `RpcStatus` (#3758)
+* Fix: server streaming calls send the complete request and the half-close before they read responses. Before, a race could delay the responses by about 5 minutes on servers that wait for the half-close. `GrpcMethod` has new `requestStreaming` and `responseStreaming` parameters, and the Kotlin generator sets them. Generate clients again to get the fix for `GrpcStreamingCall` server streaming methods. Server streaming calls also apply the call timeout, the deadline and `maxInboundMessageSize` (#3572)
+* Fix: unary calls send `END_STREAM` in the frame of the request message. Before, a separate empty frame could add a round trip on servers that wait for the half-close (#3818 by [Amin Mousavi][aminmsvi])
+* Fix: every call style fails with an `IOException` when the response cannot be read, such as for a negative `grpc-status` or a response that fails to decode. Before, the suspend and callback calls never completed. `GrpcStatus` accepts any code (#3777, #3797)
+
+### Kotlin
+
+* Fix: generated decoders merge repeated occurrences of a message member of a boxed or sealed oneof, as protobuf does. Before, the last occurrence replaced the earlier ones. A sealed oneof with more than about 21 message members keeps the old code (#3809)
+* Fix: the generated `redact` of a boxed oneof redacts message members through their adapter, and keeps the other members. Before, it cleared the whole oneof (#3774)
+* Fix: a string default that ends with a newline keeps it. Before, `"a\n"` became `"a"` (#3821)
+* Fix: Moshi and Gson encode and decode `wire.use_array` fields as JSON arrays. `ProtoAdapter.newMessageAdapter` also decodes, redacts and prints these fields like generated code (#3811)
+
+### Swift
+
+* ⚠ Breaking: `UnknownFields` is a struct that keeps all unknown fields in one `Data` value, not a `[UInt32: Data]` typealias. `ExtensibleUnknownFields` is a `Sequence`, not a `Collection`. Dictionary APIs such as indexes, `merge`, `mapValues` and `removeAll` no longer compile on these types. Use `fieldsByTag` to get and set a `[UInt32: Data]`. Decoding many unknown fields uses much less memory (#3813)
+* ⚠ Breaking: the runtime packs proto3 repeated fields by default, and `[packed = false]` on a proto3 repeated field gives unpacked output (#3754)
+* Change: merges of repeated message fields in code from older Wire versions have the same work budget as the JVM runtime. Over the budget, decoding throws `ProtoDecoder.Error.invalidStructure`. Generate the code again to remove this cost (#3805)
+* Fix: the runtime compiles on Linux (#3762 by [Alex Castillo González][pcbeingused333])
+* Fix: map entries decode like protobuf-java and the JVM runtime (#3800)
+* Fix: `decodeSizeDelimited` decodes a zero-length element as an empty message and continues. Before, it stopped and dropped every element after it (#3775)
+* Fix: decoding JSON into `StructMessage`, `StructValue`, `ListValue` or a recursive generated message throws a `DecodingError` past 65 levels of nesting, the limit of the binary decoder (#3773, #3791)
+* Fix: `Duration` and `Timestamp` no longer crash with an arithmetic overflow for extreme values. Values that do not fit in an `Int64` are clamped (#3772)
+* Fix: `description` hides redacted fields whose names start or end with `_`. It escapes quotes, backslashes, control characters, Unicode direction controls and the byte order mark in string values (#3778, #3805)
+* Fix: generated code compiles for string defaults with `$`, float defaults such as `inf`, `nan` and `1.`, and proto names with a dash or a dot (#3793)
+* Fix: required fields with an explicit default compile. JSON always writes required fields, also when they hold the zero value (#3807)
+* Fix: generated code writes JSON names that contain `$` or `%` correctly (#3808)
+* Fix: generated code compiles for enum constants named `self`, `init`, `Type`, `Protocol` or `Any`. A nested type or a oneof named `Protocol` becomes `Protocol_` (#3812)
+
 Version 7.2.2
 ---------------------
 
@@ -2333,6 +2400,7 @@ Initial version.
  [tonghuaroot]: https://github.com/tonghuaroot
  [eyupcanakman]: https://github.com/eyupcanakman
  [aaron-edwards]: https://github.com/aaron-edwards
+ [aminmsvi]: https://github.com/aminmsvi
  [amorde]: https://github.com/amorde
  [bek-kah]: https://github.com/bek-kah
  [bom]: https://docs.gradle.org/6.2/userguide/platforms.html#sub:bom_import
@@ -2364,6 +2432,7 @@ Initial version.
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
  [omarismail94]: https://github.com/omarismail94
  [paul35621]: https://github.com/paul35621
+ [pcbeingused333]: https://github.com/pcbeingused333
  [quanturium]: https://github.com/quanturium
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [sashaweiss-signal]: https://github.com/sashaweiss-signal
