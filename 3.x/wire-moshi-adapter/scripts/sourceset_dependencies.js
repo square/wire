@@ -1,0 +1,1 @@
+sourceset_dependencies='{":wire-moshi-adapter/main":[]}'
