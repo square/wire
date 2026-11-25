@@ -146,6 +146,13 @@ class SwiftGenerator private constructor(
   internal val DeclaredTypeName.declarationName: String
     get() = simpleName.removeSurrounding("`")
 
+  /**
+   * The name of a type in its declaration. A nested type named `Protocol` or `Any` has backticks
+   * around its name, which are only a marker here, see [toSwiftSource].
+   */
+  private val DeclaredTypeName.typeSpecName: String
+    get() = if (enclosingTypeName() != null) declarationName.toDeclaredName() else declarationName
+
   internal val Field.isMessage
     get() = type!!.isMessage
   internal val Field.isEnum
@@ -321,19 +328,21 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
   ): List<TypeSpec> {
     val structType = type.typeName
-    val oneOfEnumNames = type.oneOfs.associateWith {
-      structType.nestedType(it.safeName.replaceFirstChar(Char::uppercase).toNestedSafeName())
-    }
+    val oneOfEnumNames = type.oneOfEnumNames()
 
     // TODO use a NameAllocator
     val propertyNames = type.declaredFields.map { it.safeName } + type.oneOfs.map { it.safeName }
 
     val storageType = structType.nestedType("Storage")
+
+    val selfIsHidden = type.selfIsHidden()
+    val selfName = if (selfIsHidden) structType.canonicalName else "Self"
+    val storageSelfName = if (selfIsHidden) storageType.canonicalName else "Self"
     val storageName = if ("storage" in propertyNames) "_storage" else "storage"
 
     val typeSpecs = mutableListOf<TypeSpec>()
 
-    typeSpecs += TypeSpec.structBuilder(structType.declarationName)
+    typeSpecs += TypeSpec.structBuilder(structType.typeSpecName)
       .addModifiers(PUBLIC)
       .apply {
         if (type.documentation.isNotBlank()) {
@@ -352,12 +361,12 @@ class SwiftGenerator private constructor(
           )
 
           generateMessageStoragePropertyDelegates(type, storageName, storageType, oneOfEnumNames)
-          generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames)
+          generateMessageStorageDelegateConstructor(type, storageName, storageType, oneOfEnumNames, selfName)
           generateMessageExtensions(type, storageType, fileMembers, forStorageType = true)
           generateMessageExtensionStorageDelegates(type, storageName, structType, fileMembers)
         } else {
           generateMessageProperties(type, oneOfEnumNames)
-          generateMessageConstructor(type, oneOfEnumNames)
+          generateMessageConstructor(type, oneOfEnumNames, selfName)
           generateMessageExtensions(type, structType, fileMembers)
         }
       }
@@ -390,7 +399,7 @@ class SwiftGenerator private constructor(
       val defaultedValueExtension = ExtensionSpec.builder(structType)
         .addSuperType(protoDefaultedValue)
         .addProperty(
-          PropertySpec.varBuilder("defaultedValue", SelfTypeName.INSTANCE.makeNonOptional(), PUBLIC, STATIC).getter(
+          PropertySpec.varBuilder("defaultedValue", if (selfIsHidden) structType else SelfTypeName.INSTANCE.makeNonOptional(), PUBLIC, STATIC).getter(
             FunctionSpec.getterBuilder().addCode(".init()\n").build(),
           ).build(),
         ).build()
@@ -412,7 +421,7 @@ class SwiftGenerator private constructor(
             .apply {
               type.fields.forEach { field ->
                 if (field.isRedacted) {
-                  addEnumCase(field.name.toSwiftIdentifier())
+                  addEnumCase(field.name.toSwiftEnumCaseDeclaration())
                 }
               }
             }
@@ -518,7 +527,7 @@ class SwiftGenerator private constructor(
             .addModifiers(PUBLIC)
             .apply {
               generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
-              generateMessageConstructor(type, oneOfEnumNames)
+              generateMessageConstructor(type, oneOfEnumNames, storageSelfName)
             }
             .build(),
         )
@@ -609,6 +618,11 @@ class SwiftGenerator private constructor(
             return result
           }
 
+          // A local named `self` would hide the instance, so it gets another name.
+          fun localNameOf(safeName: String): String = if (safeName == "self") allocateLocalName("self_") else safeName.toBackticksIfNeeded()
+          val fieldLocals = type.declaredFields.associateWith { localNameOf(it.safeName) }
+          val oneOfLocals = type.oneOfs.associateWith { localNameOf(it.safeName) }
+
           val messageDataNames = type.declaredFields
             .filter { it.isMessage && !it.isRepeated && !it.isMap }
             .associateWith { allocateLocalName("${it.safeName}ProtoData") }
@@ -649,14 +663,14 @@ class SwiftGenerator private constructor(
               PROTO_3 -> field.proto3InitialValue
             }
 
-            addStatement("var %N: %T = %L", field.safeName, localType, initializer)
+            addStatement("var %N: %T = %L", fieldLocals.getValue(field), localType, initializer)
           }
           messageDataNames.values.forEach { dataName ->
             addStatement("var %N: %T = nil", dataName, FOUNDATION_DATA.makeOptional())
           }
           type.oneOfs.forEach { oneOf ->
             val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
-            addStatement("var %N: %T = nil", oneOf.safeName, enumName.makeOptional())
+            addStatement("var %N: %T = nil", oneOfLocals.getValue(oneOf), enumName.makeOptional())
             oneOfTagNames[oneOf]?.let { tagName ->
               addStatement("var %N: %T = nil", tagName, UINT32.makeOptional())
             }
@@ -676,7 +690,7 @@ class SwiftGenerator private constructor(
           type.declaredFields.forEach { field ->
             val decoder = CodeBlock.Builder()
             if (field.isMap) {
-              decoder.add("try $reader.decode(into: &%N", field.safeName)
+              decoder.add("try $reader.decode(into: &%N", fieldLocals.getValue(field))
               field.keyType.encoding?.let { keyEncoding ->
                 decoder.add(", keyEncoding: .%N", keyEncoding)
               }
@@ -685,7 +699,7 @@ class SwiftGenerator private constructor(
               }
             } else {
               if (field.isRepeated) {
-                decoder.add("try $reader.decode(into: &%N", field.safeName)
+                decoder.add("try $reader.decode(into: &%N", fieldLocals.getValue(field))
               } else if (field.isMessage) {
                 decoder.add("try $reader.decodeMessage(into: &%N", messageDataNames.getValue(field))
               } else if (field.isEnum) {
@@ -694,13 +708,13 @@ class SwiftGenerator private constructor(
                   field.tag,
                   enumValue,
                   field.typeName.makeNonOptional(),
-                  field.safeName,
+                  fieldLocals.getValue(field),
                 )
                 return@forEach
               } else {
                 val typeName = field.typeName.makeNonOptional()
 
-                decoder.add("%N = try $reader.decode(%T.self", field.safeName, typeName)
+                decoder.add("%N = try $reader.decode(%T.self", fieldLocals.getValue(field), typeName)
               }
               field.type!!.encoding?.let { encoding ->
                 decoder.add(", encoding: .%N", encoding)
@@ -730,8 +744,8 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: if let %6N = try $reader.decode(%4T.self) { %5N = %1L; %2N = .%3N(%6N) }",
                       field.tag,
-                      oneOf.safeName,
-                      field.safeName,
+                      oneOfLocals.getValue(oneOf),
+                      field.escapedName,
                       field.typeName.makeNonOptional(),
                       tagName,
                       enumValue,
@@ -740,8 +754,8 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: if let %5N = try $reader.decode(%4T.self) { %2N = .%3N(%5N) }",
                       field.tag,
-                      oneOf.safeName,
-                      field.safeName,
+                      oneOfLocals.getValue(oneOf),
+                      field.escapedName,
                       field.typeName.makeNonOptional(),
                       enumValue,
                     )
@@ -753,8 +767,8 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: %5N = %1L; %2N = .%3N(try $reader.decode(%4T.self))",
                       field.tag,
-                      oneOf.safeName,
-                      field.safeName,
+                      oneOfLocals.getValue(oneOf),
+                      field.escapedName,
                       field.typeName.makeNonOptional(),
                       tagName,
                     )
@@ -762,8 +776,8 @@ class SwiftGenerator private constructor(
                     addStatement(
                       "case %1L: %2N = .%3N(try $reader.decode(%4T.self))",
                       field.tag,
-                      oneOf.safeName,
-                      field.safeName,
+                      oneOfLocals.getValue(oneOf),
+                      field.escapedName,
                       field.typeName.makeNonOptional(),
                     )
                   }
@@ -779,7 +793,7 @@ class SwiftGenerator private constructor(
             beginControlFlow("if", "let %N", dataName)
             addStatement(
               "%N = try $reader.decodeMergedMessage(%T.self, from: %N)",
-              field.safeName,
+              fieldLocals.getValue(field),
               field.typeName.makeNonOptional(),
               dataName,
             )
@@ -792,8 +806,8 @@ class SwiftGenerator private constructor(
               beginControlFlow("if", "%N == %L, let %N", tagName, field.tag, dataName)
               addStatement(
                 "%N = .%N(try $reader.decodeMergedMessage(%T.self, from: %N))",
-                oneOf.safeName,
-                field.safeName,
+                oneOfLocals.getValue(oneOf),
+                field.escapedName,
                 field.typeName.makeNonOptional(),
                 dataName,
               )
@@ -809,21 +823,21 @@ class SwiftGenerator private constructor(
 
             val initializer = when (type.syntax) {
               PROTO_2 -> if (field.isOptional || field.isRepeated || field.isMap) {
-                CodeBlock.of("%N", field.safeName)
+                CodeBlock.of("%N", fieldLocals.getValue(field))
               } else {
-                CodeBlock.of("try %1T.checkIfMissing(%2N, %3S)", structType, field.safeName, field.name)
+                CodeBlock.of("try %1T.checkIfMissing(%2N, %3S)", structType, fieldLocals.getValue(field), field.name)
               }
               PROTO_3 -> if (field.isEnum && !field.isRepeated) {
-                CodeBlock.of("try %1T.defaultIfMissing(%2N)", field.typeName.makeNonOptional(), field.safeName)
+                CodeBlock.of("try %1T.defaultIfMissing(%2N)", field.typeName.makeNonOptional(), fieldLocals.getValue(field))
               } else {
-                CodeBlock.of("%N", field.safeName)
+                CodeBlock.of("%N", fieldLocals.getValue(field))
               }
             }
 
             val fieldName = if (hasPropertyWrapper) {
               "_${field.safeName}"
             } else {
-              field.safeName
+              field.escapedName
             }
             addStatement(
               if (hasPropertyWrapper) {
@@ -836,7 +850,7 @@ class SwiftGenerator private constructor(
             )
           }
           type.oneOfs.forEach { oneOf ->
-            addStatement("self.%1N = %1N", oneOf.safeName)
+            addStatement("self.%1N = %2N", oneOf.escapedName, oneOfLocals.getValue(oneOf))
           }
         }
         .build(),
@@ -851,7 +865,7 @@ class SwiftGenerator private constructor(
         .apply {
           type.declaredFields.forEach { field ->
             if (field.isMap) {
-              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.safeName)
+              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.escapedName)
               field.keyType.encoding?.let { keyEncoding ->
                 addCode(", keyEncoding: .%N", keyEncoding)
               }
@@ -860,7 +874,7 @@ class SwiftGenerator private constructor(
               }
               addCode(")\n")
             } else {
-              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.safeName)
+              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.escapedName)
               field.type!!.encoding?.let { encoding ->
                 addCode(", encoding: .%N", encoding)
               }
@@ -874,8 +888,10 @@ class SwiftGenerator private constructor(
             }
           }
           type.oneOfs.forEach { oneOf ->
-            beginControlFlow("if", "let %1N = self.%1N", oneOf.safeName)
-            addStatement("try %N.encode(to: $writer)", oneOf.safeName)
+            // A local named `self` would hide the instance.
+            val encodeLocal = if (oneOf.safeName == "self") "self_" else oneOf.escapedName
+            beginControlFlow("if", "let %1N = self.%2N", encodeLocal, oneOf.escapedName)
+            addStatement("try %N.encode(to: $writer)", encodeLocal)
             endControlFlow("if")
           }
         }
@@ -1011,7 +1027,7 @@ class SwiftGenerator private constructor(
                 val fieldName = if (hasPropertyWrapper) {
                   "_${field.safeName}"
                 } else {
-                  field.safeName
+                  field.escapedName
                 }
                 val prefix = if (hasPropertyWrapper) {
                   "self.%1N.wrappedValue"
@@ -1040,7 +1056,7 @@ class SwiftGenerator private constructor(
                   val typeName = field.typeName.makeNonOptional()
 
                   val safeName = field.safeName
-                  val fieldName = if (safeName == "self") "self_" else safeName
+                  val fieldName = if (safeName == "self") "self_" else safeName.toBackticksIfNeeded()
 
                   if (index == 0) {
                     beginControlFlow(
@@ -1059,10 +1075,10 @@ class SwiftGenerator private constructor(
                       keyName.toSwiftStringLiteralBlock(),
                     )
                   }
-                  addStatement("self.%1N = .%2N(%3N)", oneOf.safeName, field.safeName, fieldName)
+                  addStatement("self.%1N = .%2N(%3N)", oneOf.escapedName, field.escapedName, fieldName)
                 }
                 nextControlFlow("else", "")
-                addStatement("self.%N = nil", oneOf.safeName)
+                addStatement("self.%N = nil", oneOf.escapedName)
                 endControlFlow("if")
               }
             }
@@ -1109,7 +1125,7 @@ class SwiftGenerator private constructor(
 
                   addStatement(
                     "try $container.$encode(${typeArg}self.%1N, forKey: $keys)",
-                    field.safeName,
+                    field.escapedName,
                     *args,
                   )
                 }
@@ -1124,15 +1140,15 @@ class SwiftGenerator private constructor(
                   // so it is always included too, whatever its value.
                   addEncode()
                 } else if (field.isCollection) {
-                  beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.safeName)
+                  beginControlFlow("if", "includeDefaults || !self.%N.isEmpty", field.escapedName)
                   addEncode()
                   endControlFlow("if")
                 } else if (field.isEnum) {
-                  beginControlFlow("if", "includeDefaults || self.%N.rawValue != 0", field.safeName)
+                  beginControlFlow("if", "includeDefaults || self.%N.rawValue != 0", field.escapedName)
                   addEncode()
                   endControlFlow("if")
                 } else if (defaultValue != null) {
-                  beginControlFlow("if", "includeDefaults || self.%N != %L", field.safeName, defaultValue)
+                  beginControlFlow("if", "includeDefaults || self.%N != %L", field.escapedName, defaultValue)
                   addEncode()
                   endControlFlow("if")
                 } else {
@@ -1143,7 +1159,7 @@ class SwiftGenerator private constructor(
               }
 
               type.oneOfs.forEach { oneOf ->
-                beginControlFlow("switch", "self.%N", oneOf.safeName)
+                beginControlFlow("switch", "self.%N", oneOf.escapedName)
                 oneOf.fields.forEach { field ->
                   val (keys, args) = field.codableName?.let { codableName ->
                     Pair(
@@ -1154,7 +1170,7 @@ class SwiftGenerator private constructor(
 
                   addStatement(
                     "case .%1N(let %1N): try $container.encode(%1N, forKey: $keys)",
-                    field.safeName,
+                    field.escapedName,
                     *args,
                   )
                 }
@@ -1167,6 +1183,23 @@ class SwiftGenerator private constructor(
       }
     }
     .build()
+
+  /**
+   * Returns the name of the `init` parameter for [field] as it is used in the body. A parameter
+   * named `self` would hide the instance, so it gets another name and keeps `self` as its label.
+   */
+  private fun MessageType.parameterName(field: Field): String {
+    if (field.safeName != "self") return field.escapedName
+    var name = "self_"
+    while (declaredFields.any { it.safeName == name }) name = "_$name"
+    return name
+  }
+
+  private fun Field.parameterSpecBuilder(type: MessageType): ParameterSpec.Builder = if (safeName == "self") {
+    ParameterSpec.builder(safeName, type.parameterName(this), typeName)
+  } else {
+    ParameterSpec.builder(declaredName, typeName)
+  }
 
   private fun ParameterSpec.Builder.withFieldDefault(field: Field) = apply {
     when {
@@ -1185,7 +1218,7 @@ class SwiftGenerator private constructor(
   ) = apply {
     type.declaredFields.filter(fieldsFilter).forEach { field ->
       addParameter(
-        ParameterSpec.builder(field.safeName, field.typeName)
+        field.parameterSpecBuilder(type)
           .apply {
             if (includeDefaults) {
               withFieldDefault(field)
@@ -1198,7 +1231,7 @@ class SwiftGenerator private constructor(
       type.oneOfs.forEach { oneOf ->
         val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
         addParameter(
-          ParameterSpec.builder(oneOf.safeName, enumName)
+          ParameterSpec.builder(oneOf.declaredName, enumName)
             .defaultValue("nil")
             .build(),
         )
@@ -1211,6 +1244,7 @@ class SwiftGenerator private constructor(
     storageName: String,
     storageType: DeclaredTypeName,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    selfName: String,
   ) {
     val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty() || type.isExtensible
 
@@ -1227,7 +1261,7 @@ class SwiftGenerator private constructor(
         .apply {
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
-              TypeVariableName.typeVariable("inout Self.${storageType.simpleName}"),
+              TypeVariableName.typeVariable("inout $selfName.${storageType.simpleName}"),
               returnType = void,
             )
 
@@ -1241,7 +1275,14 @@ class SwiftGenerator private constructor(
         .apply {
           val storageParams = mutableListOf<CodeBlock>()
           type.declaredFields.filter { it.isRequiredParameter }.forEach { field ->
-            storageParams += CodeBlock.of("%1N: %1N", field.safeName)
+            // Swift warns about backticks around `self`, `Protocol` and `Any` in an argument label.
+            storageParams += if (field.safeName == "self") {
+              CodeBlock.of("self: %N", type.parameterName(field))
+            } else if (field.safeName in SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE) {
+              CodeBlock.of("%1L: %2N", field.safeName, field.escapedName)
+            } else {
+              CodeBlock.of("%1N: %2N", field.escapedName, type.parameterName(field))
+            }
           }
 
           if (needsConfigure) {
@@ -1262,6 +1303,7 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageConstructor(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    selfName: String,
   ) {
     val needsConfigure = type.declaredFields.any { !it.isRequiredParameter } || type.oneOfs.isNotEmpty() || type.isExtensible
 
@@ -1278,7 +1320,7 @@ class SwiftGenerator private constructor(
         .apply {
           if (needsConfigure) {
             val closureType = FunctionTypeName.get(
-              TypeVariableName.typeVariable("inout Self"),
+              TypeVariableName.typeVariable("inout $selfName"),
               returnType = void,
             )
 
@@ -1295,7 +1337,7 @@ class SwiftGenerator private constructor(
             val fieldName = if (hasPropertyWrapper) {
               "_${field.safeName}"
             } else {
-              field.safeName
+              field.escapedName
             }
             addStatement(
               if (hasPropertyWrapper) {
@@ -1304,7 +1346,7 @@ class SwiftGenerator private constructor(
                 "self.%1N = %2N"
               },
               fieldName,
-              field.safeName,
+              type.parameterName(field),
             )
           }
           if (needsConfigure) {
@@ -1331,7 +1373,7 @@ class SwiftGenerator private constructor(
         .addDoc("Extensions of %T\n", structType)
         .apply {
           type.extensionFields.forEach { field ->
-            val property = PropertySpec.varBuilder(field.safeName, field.extensionAccessorType, PUBLIC)
+            val property = PropertySpec.varBuilder(field.declaredName, field.extensionAccessorType, PUBLIC)
               .apply {
                 if (field.documentation.isNotBlank()) {
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
@@ -1344,12 +1386,12 @@ class SwiftGenerator private constructor(
               }
               .getter(
                 FunctionSpec.getterBuilder()
-                  .addStatement("%N.%N", storageName, field.safeName)
+                  .addStatement("%N.%N", storageName, field.escapedName)
                   .build(),
               )
               .setter(
                 FunctionSpec.setterBuilder()
-                  .addStatement("%N.%N = newValue", storageName, field.safeName)
+                  .addStatement("%N.%N = newValue", storageName, field.escapedName)
                   .build(),
               )
               .build()
@@ -1416,7 +1458,7 @@ class SwiftGenerator private constructor(
             addDoc("Extensions of %T\n", structType)
           }
           type.extensionFields.forEach { field ->
-            val property = PropertySpec.varBuilder(field.safeName, field.extensionAccessorType, PUBLIC)
+            val property = PropertySpec.varBuilder(field.declaredName, field.extensionAccessorType, PUBLIC)
               .apply {
                 if (!forStorageType && field.documentation.isNotBlank()) {
                   addDoc("\n%L\n", field.documentation.sanitizeDoc())
@@ -1494,7 +1536,7 @@ class SwiftGenerator private constructor(
     forStorageType: Boolean = false,
   ) {
     type.declaredFields.forEach { field ->
-      val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
+      val property = PropertySpec.varBuilder(field.declaredName, field.typeName, PUBLIC)
       if (!forStorageType && field.documentation.isNotBlank()) {
         property.addDoc("%L\n", field.documentation.sanitizeDoc())
       }
@@ -1526,7 +1568,7 @@ class SwiftGenerator private constructor(
       val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
 
       addProperty(
-        PropertySpec.varBuilder(oneOf.safeName, enumName.makeOptional(), PUBLIC)
+        PropertySpec.varBuilder(oneOf.declaredName, enumName.makeOptional(), PUBLIC)
           .apply {
             if (oneOf.documentation.isNotBlank()) {
               addDoc("%N\n", oneOf.documentation.sanitizeDoc())
@@ -1659,15 +1701,15 @@ class SwiftGenerator private constructor(
     addProperty(subscript)
 
     type.declaredFields.forEach { field ->
-      val property = PropertySpec.varBuilder(field.safeName, field.typeName, PUBLIC)
+      val property = PropertySpec.varBuilder(field.declaredName, field.typeName, PUBLIC)
         .getter(
           FunctionSpec.getterBuilder()
-            .addStatement("%N.%N", storageName, field.safeName)
+            .addStatement("%N.%N", storageName, field.escapedName)
             .build(),
         )
         .setter(
           FunctionSpec.setterBuilder()
-            .addStatement("%N.%N = newValue", storageName, field.safeName)
+            .addStatement("%N.%N = newValue", storageName, field.escapedName)
             .build(),
         )
 
@@ -1685,15 +1727,15 @@ class SwiftGenerator private constructor(
       val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
 
       addProperty(
-        PropertySpec.varBuilder(oneOf.safeName, enumName.makeOptional(), PUBLIC)
+        PropertySpec.varBuilder(oneOf.declaredName, enumName.makeOptional(), PUBLIC)
           .getter(
             FunctionSpec.getterBuilder()
-              .addStatement("%N.%N", storageName, oneOf.safeName)
+              .addStatement("%N.%N", storageName, oneOf.escapedName)
               .build(),
           )
           .setter(
             FunctionSpec.setterBuilder()
-              .addStatement("%N.%N = newValue", storageName, oneOf.safeName)
+              .addStatement("%N.%N = newValue", storageName, oneOf.escapedName)
               .build(),
           )
           .apply {
@@ -1732,12 +1774,12 @@ class SwiftGenerator private constructor(
       // TODO use a NameAllocator
       val writer = if (oneOf.fields.any { it.name == "protoWriter" }) "_protoWriter" else "protoWriter"
       addType(
-        TypeSpec.enumBuilder(enumName)
+        TypeSpec.enumBuilder(enumName.typeSpecName)
           .addModifiers(PUBLIC)
           .apply {
             oneOf.fields.forEach { oneOfField ->
               addEnumCase(
-                EnumerationCaseSpec.builder(oneOfField.safeName, oneOfField.typeName.makeNonOptional())
+                EnumerationCaseSpec.builder(oneOfField.escapedName, oneOfField.typeName.makeNonOptional())
                   .apply {
                     if (oneOfField.documentation.isNotBlank()) {
                       addDoc("%L\n", oneOfField.documentation.sanitizeDoc())
@@ -1760,7 +1802,7 @@ class SwiftGenerator private constructor(
                 oneOf.fields.forEach { field ->
                   addStatement(
                     "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
-                    field.safeName,
+                    field.escapedName,
                     field.tag,
                   )
                 }
@@ -1802,7 +1844,7 @@ class SwiftGenerator private constructor(
               .apply {
                 oneOf.fields.forEach { field ->
                   if (field.isRedacted) {
-                    addEnumCase(field.name.toSwiftIdentifier())
+                    addEnumCase(field.name.toSwiftEnumCaseDeclaration())
                   }
                 }
               }
@@ -1816,6 +1858,30 @@ class SwiftGenerator private constructor(
     }
   }
 
+  private fun MessageType.oneOfEnumNames(): Map<OneOf, DeclaredTypeName> = oneOfs.associateWith {
+    typeName.nestedType(it.safeName.replaceFirstChar(Char::uppercase).toBackticksIfNeeded())
+  }
+
+  /**
+   * Returns true if this message or an enclosing message has a oneof with an enum named `Self`,
+   * which is the case for a oneof named `self`. That enum hides `Self` in the message and in its
+   * nested types, so the generated code writes the name of the type instead.
+   */
+  private fun MessageType.selfIsHidden(): Boolean {
+    var current: Type? = this
+    while (current != null) {
+      if (current is MessageType) {
+        val enumNames = current.oneOfEnumNames()
+        if (current.oneOfs.any { oneOfSafeDeclaredTypeName(it, current as MessageType, enumNames).declarationName == "Self" }) {
+          return true
+        }
+      }
+      val enclosingName = current.type.enclosingTypeOrPackage ?: break
+      current = schema.getType(enclosingName)
+    }
+    return false
+  }
+
   private fun oneOfSafeDeclaredTypeName(
     oneOf: OneOf,
     type: MessageType,
@@ -1823,15 +1889,15 @@ class SwiftGenerator private constructor(
   ): DeclaredTypeName {
     val oneOfTypeName = oneOfEnumNames.getValue(oneOf)
     if (type.nestedTypes.any { it.typeName.simpleName == oneOfTypeName.simpleName }) {
-      return oneOfTypeName.peerType("${oneOfTypeName.simpleName}_OneOf")
+      return oneOfTypeName.peerType("${oneOfTypeName.declarationName}_OneOf")
     }
 
     var currentType: ProtoType? = type.type
 
     while (currentType != null) {
       val simpleName = currentType.simpleName
-      if (oneOf.safeName.equals(simpleName, ignoreCase = true)) {
-        return oneOfTypeName.peerType("${oneOfTypeName.simpleName}_OneOf")
+      if (oneOf.escapedName.equals(simpleName, ignoreCase = true)) {
+        return oneOfTypeName.peerType("${oneOfTypeName.declarationName}_OneOf")
       }
 
       val enclosingName = currentType.enclosingTypeOrPackage ?: break
@@ -1856,7 +1922,7 @@ class SwiftGenerator private constructor(
     fileMembers: MutableList<FileMemberSpec>,
   ): TypeSpec {
     val enumName = type.typeName
-    return TypeSpec.enumBuilder(enumName.declarationName)
+    return TypeSpec.enumBuilder(enumName.typeSpecName)
       .addModifiers(PUBLIC)
       .addSuperTypes(listOf(INT32, CASE_ITERABLE, type.protoCodableType))
       .apply {
@@ -1943,7 +2009,7 @@ class SwiftGenerator private constructor(
   private fun generateEnclosing(
     type: EnclosingType,
     fileMembers: MutableList<FileMemberSpec>,
-  ): TypeSpec = TypeSpec.enumBuilder(type.typeName.declarationName)
+  ): TypeSpec = TypeSpec.enumBuilder(type.typeName.typeSpecName)
     .addModifiers(PUBLIC)
     .addDoc(
       "%N\n",
@@ -1976,12 +2042,14 @@ class SwiftGenerator private constructor(
         }
       }
 
-    /** Swift does not allow a type member named `Protocol`, so a nested type gets a suffix. */
+    /**
+     * Swift does not allow a type member named `Protocol`, so a nested type gets a suffix. Backticks
+     * would not be enough here, because Swift reads `Outer.`Protocol`.self` as a metatype of
+     * `Outer`, and the generated code writes `.self` after the name of a type. A nested type named
+     * `Any` has backticks, because Swift does not accept `Any` as a name.
+     */
     private val ProtoType.nestedSafeName: String
-      get() = if (simpleName == "Protocol") "Protocol_" else safeName
-
-    /** Same as [nestedSafeName], for the enum of a oneof, which is nested in its message. */
-    private fun String.toNestedSafeName(): String = if (this == "Protocol") "Protocol_" else this
+      get() = if (simpleName == "Protocol") "Protocol_" else safeName.toBackticksIfNeeded()
 
     // TODO use a NameAllocator
     val Field.safeName: String
@@ -1992,6 +2060,33 @@ class SwiftGenerator private constructor(
 
     private val OneOf.safeName: String
       get() = name.toSwiftIdentifier()
+
+    /** The name of a property, parameter or case, to write with `%N` or `%L`. */
+    private val Field.escapedName: String
+      get() = safeName.toBackticksIfNeeded()
+
+    /** The name to give to a SwiftPoet property or parameter that declares this field. */
+    private val Field.declaredName: String
+      get() = safeName.toDeclaredName()
+
+    private val OneOf.escapedName: String
+      get() = safeName.toBackticksIfNeeded()
+
+    private val OneOf.declaredName: String
+      get() = safeName.toDeclaredName()
+
+    /**
+     * Returns this name with backticks if Swift needs them and SwiftPoet does not add them. SwiftPoet
+     * adds its own to `self`, `Self`, `Type` and `init`, so those stay as they are.
+     */
+    private fun String.toBackticksIfNeeded(): String = if (this in SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE) "`$this`" else this
+
+    /**
+     * SwiftPoet escapes the name of a property, parameter or type that it declares, and it would
+     * escape backticks a second time. A name that needs backticks gets a marker instead, which
+     * [toSwiftSource] replaces.
+     */
+    private fun String.toDeclaredName(): String = if (this in SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE) "$this$BACKTICK_MARKER" else this
 
     /**
      * Returns this string as a Swift string literal. SwiftPoet's `%S` writes `$` as `${'$'}`, which
@@ -2028,8 +2123,11 @@ class SwiftGenerator private constructor(
      */
     private val SWIFT_ENUM_CASES_WITH_SPECIAL_MEANING = setOf("self", "init", "Type", "Protocol")
 
-    /** Enum case names that need backticks, and that SwiftPoet does not escape on its own. */
-    private val SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE = setOf("Protocol", "Any")
+    /** Names that need backticks, and that SwiftPoet does not escape on its own. */
+    internal val SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE = setOf("Protocol", "Any")
+
+    /** Stands for a backtick in a declared name until [toSwiftSource] writes the final text. */
+    internal const val BACKTICK_MARKER = "\u0001"
 
     /**
      * Returns the name to declare an enum case with. SwiftPoet escapes `self`, `init` and `Type`
@@ -2037,13 +2135,13 @@ class SwiftGenerator private constructor(
      */
     private fun String.toSwiftEnumCaseDeclaration(): String {
       val name = toSwiftIdentifier()
-      return if (name in SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE) "`$name`" else name
+      return if (name in SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE) "`$name`" else name
     }
 
     /** Returns the enum case name to write after a dot, escaped when Swift needs it. */
     private fun String.toSwiftEnumCaseName(): CodeBlock {
       val name = toSwiftIdentifier()
-      return if (name in SWIFT_ENUM_CASES_SWIFTPOET_DOES_NOT_ESCAPE) CodeBlock.of("`$name`") else CodeBlock.of("%N", name)
+      return if (name in SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE) CodeBlock.of("`$name`") else CodeBlock.of("%N", name)
     }
 
     /**
@@ -2276,4 +2374,17 @@ class SwiftGenerator private constructor(
       return indirections
     }
   }
+}
+
+/**
+ * Returns the Swift source of this file. SwiftPoet escapes a name that it declares and cannot
+ * write backticks for `Protocol` or `Any`, so the generator marks those names and this function
+ * writes the backticks.
+ */
+internal fun FileSpec.toSwiftSource(): String {
+  var source = toString()
+  for (name in SwiftGenerator.SWIFT_NAMES_SWIFTPOET_DOES_NOT_ESCAPE) {
+    source = source.replace("$name${SwiftGenerator.BACKTICK_MARKER}", "`$name`")
+  }
+  return source
 }

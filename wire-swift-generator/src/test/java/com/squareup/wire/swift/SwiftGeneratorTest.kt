@@ -1038,7 +1038,7 @@ class SwiftGeneratorTest {
     assertThat(schema.generateSwift("Status.Other")).contains("Status.Other.Kind\n")
   }
 
-  @Test fun oneofNamedProtocolGetsASuffix() {
+  @Test fun oneofNamedProtocolKeepsItsNameWithBackticks() {
     val schema = buildSchema {
       add(
         "message.proto".toPath(),
@@ -1052,8 +1052,22 @@ class SwiftGeneratorTest {
         |  }
         |}
         |
+        |message OneofProtocolUpper {
+        |  oneof Protocol {
+        |    string a = 1;
+        |    int32 b = 2;
+        |  }
+        |}
+        |
         |message OneofType {
         |  oneof type {
+        |    string c = 1;
+        |    int32 d = 2;
+        |  }
+        |}
+        |
+        |message OneofTypeUpper {
+        |  oneof Type {
         |    string c = 1;
         |    int32 d = 2;
         |  }
@@ -1063,14 +1077,252 @@ class SwiftGeneratorTest {
     }
 
     val protocolCode = schema.generateSwift("OneofProtocol")
+    val protocolUpperCode = schema.generateSwift("OneofProtocolUpper")
     val typeCode = schema.generateSwift("OneofType")
+    val typeUpperCode = schema.generateSwift("OneofTypeUpper")
 
-    assertThat(protocolCode).contains("public var `protocol`: OneofProtocol.Protocol_?")
-    assertThat(protocolCode).contains("public enum Protocol_")
-    assertThat(protocolCode).doesNotContain("enum Protocol ")
-    // A oneof named `type` already compiles, so its output does not change.
+    assertThat(protocolCode).contains("public var `protocol`: OneofProtocol.`Protocol`?")
+    assertThat(protocolCode).contains("public enum `Protocol` {")
+    assertThat(protocolCode).contains("extension OneofProtocol.`Protocol` : Equatable")
+    assertThat(protocolCode).contains("var `protocol`: `Protocol`? = nil")
+    assertThat(protocolCode).doesNotContain("Protocol_")
+    assertThat(protocolCode).doesNotContain("``")
+    assertThat(protocolCode).doesNotContain("\u0001")
+    assertThat(protocolUpperCode).contains("public var `Protocol`: OneofProtocolUpper.`Protocol`?")
+    assertThat(protocolUpperCode).contains("public enum `Protocol` {")
+    assertThat(protocolUpperCode).contains("self.`Protocol` = `Protocol`")
+    assertThat(protocolUpperCode).doesNotContain("``")
+    // A oneof named `type` or `Type` already compiles, because SwiftPoet adds the backticks.
     assertThat(typeCode).contains("public var type: OneofType.`Type`?")
     assertThat(typeCode).doesNotContain("Type_")
+    assertThat(typeUpperCode).contains("public var `Type`: OneofTypeUpper.`Type`?")
+    assertThat(typeUpperCode).doesNotContain("``")
+  }
+
+  @Test fun oneofNamedSelfNamesTheMessageInsteadOfSelf() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message OneofSelf {
+        |  message Inner {
+        |    optional string a = 1;
+        |  }
+        |
+        |  oneof self {
+        |    string a = 1;
+        |    int32 b = 2;
+        |  }
+        |}
+        |
+        |message OneofSelfUpper {
+        |  oneof Self {
+        |    string a = 1;
+        |    int32 b = 2;
+        |  }
+        |}
+        |
+        |message OneofOther {
+        |  oneof other {
+        |    string a = 1;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("OneofSelf")
+    val upperCode = schema.generateSwift("OneofSelfUpper")
+    val innerCode = schema.generateSwift("OneofSelf.Inner")
+    val otherCode = schema.generateSwift("OneofOther")
+
+    assertThat(code).contains("public var `self`: OneofSelf.`Self`?")
+    assertThat(code).contains("public enum `Self` {")
+    // The enum hides `Self`, so the message writes its own name.
+    assertThat(code).contains("public init(configure: (inout OneofSelf) -> Swift.Void = { _ in })")
+    assertThat(code).contains("public static var defaultedValue: OneofSelf {")
+    assertThat(code).doesNotContain("inout Self")
+    assertThat(code).doesNotContain("defaultedValue: Self")
+    // A local named `self` would hide the instance.
+    assertThat(code).contains("var self_: `Self`? = nil")
+    assertThat(code).contains("self.`self` = self_")
+    assertThat(code).contains("if let self_ = self.`self` {")
+    assertThat(code).contains("self.`self` = .a(a)")
+    // The nested types are in the scope of the enum too.
+    assertThat(innerCode).contains("public init(configure: (inout OneofSelf.Inner) -> Swift.Void = { _ in })")
+    assertThat(innerCode).contains("public static var defaultedValue: OneofSelf.Inner {")
+    assertThat(upperCode).contains("public var `Self`: OneofSelfUpper.`Self`?")
+    assertThat(upperCode).contains("public init(configure: (inout OneofSelfUpper) -> Swift.Void = { _ in })")
+    // Other messages keep `Self`.
+    assertThat(otherCode).contains("public init(configure: (inout Self) -> Swift.Void = { _ in })")
+    assertThat(otherCode).contains("public static var defaultedValue: Self {")
+  }
+
+  @Test fun fieldsNamedProtocolAndAnyHaveBackticks() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Names {
+        |  optional string Protocol = 1;
+        |  required string Any = 2;
+        |  optional string Type = 3;
+        |  optional string Self = 4;
+        |  optional string protocol = 5;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Names")
+
+    assertThat(code).contains("public var `Protocol`: String?")
+    assertThat(code).contains("public var `Any`: String")
+    assertThat(code).contains("public init(`Any`: String, configure: (inout Self) -> Swift.Void = { _ in })")
+    assertThat(code).contains("self.`Any` = `Any`")
+    assertThat(code).contains("self._Protocol.wrappedValue = `Protocol`")
+    assertThat(code).contains("try protoWriter.encode(tag: 1, value: self.`Protocol`)")
+    // The JSON keys have no backticks.
+    assertThat(code).contains("forKey: \"Protocol\"")
+    assertThat(code).contains("forKey: \"Any\"")
+    // SwiftPoet adds the backticks to these names on its own, so nothing is added twice.
+    assertThat(code).contains("public var `Type`: String?")
+    assertThat(code).contains("public var `Self`: String?")
+    assertThat(code).contains("public var `protocol`: String?")
+    assertThat(code).doesNotContain("``")
+    assertThat(code).doesNotContain("\u0001")
+  }
+
+  @Test fun fieldNamedSelfDoesNotHideTheInstance() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Names {
+        |  optional string self = 1;
+        |  repeated string other = 2;
+        |}
+        |
+        |message Required {
+        |  required string self = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Names")
+    val requiredCode = schema.generateSwift("Required")
+
+    assertThat(code).contains("public var `self`: String?")
+    assertThat(code).contains("var self_: String? = nil")
+    assertThat(code).contains("case 1: self_ = try protoReader.decode(String.self)")
+    assertThat(code).contains("self._self.wrappedValue = self_")
+    assertThat(code).contains("self.unknownFields = try protoReader.endMessage(token: token)")
+    assertThat(code).contains("try protoWriter.encode(tag: 1, value: self.`self`)")
+    assertThat(code).contains("forKey: \"self\"")
+    assertThat(requiredCode).contains("public init(`self` self_: String)")
+    assertThat(requiredCode).contains("self.`self` = self_")
+  }
+
+  @Test fun oneofCasesAndRedactedKeysNamedProtocolHaveBackticks() {
+    val schema = buildSchema {
+      add(
+        "redacted.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |package p;
+        |
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.FieldOptions {
+        |  optional bool redacted = 22001;
+        |}
+        |
+        |message Names {
+        |  optional string Protocol = 1 [(p.redacted) = true];
+        |  optional string self = 2 [(p.redacted) = true];
+        |
+        |  oneof choice {
+        |    int32 Any = 3 [(p.redacted) = true];
+        |    string other = 4;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("p.Names")
+
+    assertThat(code).contains("case `Protocol`\n")
+    assertThat(code).contains("case `self`\n")
+    assertThat(code).contains("case `Any`(Int32)")
+    assertThat(code).contains("case .`Any`(let `Any`): try container.encode(`Any`, forKey: \"Any\")")
+    assertThat(code).doesNotContain("``")
+  }
+
+  @Test fun heapAllocatedMessageWritesArgumentLabelsWithoutBackticks() {
+    val others = (4..16).joinToString("\n") { "|  optional string f$it = $it;" }
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Heap {
+        |  required string Protocol = 1;
+        |  required string Any = 2;
+        |  required string self = 3;
+        $others
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Heap")
+
+    assertThat(code).contains("private var storage: Heap.Storage")
+    // Swift warns about backticks around these names in an argument label.
+    assertThat(code).contains("Protocol: `Protocol`,")
+    assertThat(code).contains("Any: `Any`,")
+    assertThat(code).contains("self: self_,")
+    assertThat(code).contains("`Protocol`: String,")
+    assertThat(code).contains("`Any`: String,")
+    assertThat(code).contains("`self` self_: String,")
+    assertThat(code).doesNotContain("`Protocol`: `Protocol`")
+    assertThat(code).doesNotContain("`Any`: `Any`")
+  }
+
+  @Test fun nestedTypeNamedAnyHasBackticks() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |
+        |message Outer {
+        |  message Any {
+        |    optional string a = 1;
+        |  }
+        |
+        |  optional Any value = 1;
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Outer")
+
+    assertThat(code).contains("public var value: Outer.`Any`?")
+    assertThat(code).contains("public struct `Any` {")
+    assertThat(code).contains("extension Outer.`Any` : Equatable")
+    assertThat(code).doesNotContain("``")
   }
 
   @Test fun topLevelTypeNamedProtocolIsBackticksWhenAnotherModuleReferencesIt() {
@@ -1117,7 +1369,7 @@ class SwiftGeneratorTest {
       .indent("    ")
       .apply { holderGenerator.generateTypeTo(holderType, this) }
       .build()
-      .toString()
+      .toSwiftSource()
     val protocolCode = schema.generateSwift("one.Protocol")
 
     assertThat(holderCode).contains("public var a: module_one.`Protocol`?")
@@ -1262,6 +1514,6 @@ class SwiftGeneratorTest {
         swiftGenerator.generateTypeTo(type, this)
       }
       .build()
-      .toString()
+      .toSwiftSource()
   }
 }

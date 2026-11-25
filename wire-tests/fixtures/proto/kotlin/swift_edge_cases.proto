@@ -186,3 +186,155 @@ enum SwiftProto2DefaultedValueName {
   defaultedValue = 0;
   SWIFT_PROTO2_OTHER = 1;
 }
+
+// A oneof named `self` or `Self` has an enum named `Self`, which hides `Self` in the message.
+message SwiftOneofSelf {
+  oneof self {
+    string a = 1;
+    int32 b = 2;
+  }
+}
+
+message SwiftOneofSelfUpper {
+  oneof Self {
+    string a = 1;
+    int32 b = 2;
+  }
+}
+
+message SwiftOneofProtocolUpper {
+  oneof Protocol {
+    string a = 1;
+    int32 b = 2;
+  }
+}
+
+message SwiftOneofTypeUpper {
+  oneof Type {
+    string a = 1;
+    int32 b = 2;
+  }
+}
+
+message SwiftOneofAny {
+  oneof any {
+    string a = 1;
+    int32 b = 2;
+  }
+}
+
+// The enum named `Self` also hides `Self` in the nested types.
+message SwiftSelfNested {
+  message Inner {
+    optional string a = 1;
+  }
+
+  message Self {
+    optional string a = 1;
+  }
+
+  oneof self {
+    Inner x = 1;
+    string y = 2;
+  }
+
+  optional Self s = 3;
+  optional Inner i = 4;
+}
+
+message SwiftFieldNames {
+  optional string self = 1;
+  optional string Self = 2;
+  optional string Type = 3;
+  optional string Protocol = 4;
+  optional string Any = 5;
+  repeated string init = 6;
+}
+
+message SwiftRequiredFieldNames {
+  required string self = 1;
+  required string Protocol = 2;
+  required string Any = 3;
+}
+
+message SwiftOneofFieldNames {
+  oneof choice {
+    string self = 1;
+    int32 Protocol = 2;
+    bool Any = 3;
+    string Type = 4;
+    string Self = 5;
+  }
+}
+
+message SwiftNestedAny {
+  message Any {
+    optional string a = 1;
+  }
+
+  optional Any value = 1;
+}
+
+message SwiftRedactedNames {
+  optional string self = 1 [(squareup.protos.kotlin.redacted_option.redacted) = true];
+  optional string Protocol = 2 [(squareup.protos.kotlin.redacted_option.redacted) = true];
+  optional string plain = 3;
+
+  oneof Any {
+    string x = 4 [(squareup.protos.kotlin.redacted_option.redacted) = true];
+    string y = 5;
+  }
+}
+
+// A message with 16 fields keeps its fields in a heap-allocated storage.
+message SwiftHeapNames {
+  oneof self {
+    string a = 1;
+    int32 b = 2;
+  }
+
+  required string Protocol = 3;
+  required string Any = 4;
+  optional string f5 = 5;
+  optional string f6 = 6;
+  optional string f7 = 7;
+  optional string f8 = 8;
+  optional string f9 = 9;
+  optional string f10 = 10;
+  optional string f11 = 11;
+  optional string f12 = 12;
+  optional string f13 = 13;
+  optional string f14 = 14;
+  optional string f15 = 15;
+  optional string f16 = 16;
+  optional string f17 = 17;
+}
+
+message SwiftHeapFieldNames {
+  required string self = 1;
+  optional string Protocol = 2;
+  optional string f3 = 3;
+  optional string f4 = 4;
+  optional string f5 = 5;
+  optional string f6 = 6;
+  optional string f7 = 7;
+  optional string f8 = 8;
+  optional string f9 = 9;
+  optional string f10 = 10;
+  optional string f11 = 11;
+  optional string f12 = 12;
+  optional string f13 = 13;
+  optional string f14 = 14;
+  optional string f15 = 15;
+  optional string f16 = 16;
+}
+
+message SwiftExtensibleNames {
+  extensions 100 to 200;
+}
+
+extend SwiftExtensibleNames {
+  optional string self = 101;
+  optional string Protocol = 102;
+  optional string Any = 103 [default = "d"];
+}

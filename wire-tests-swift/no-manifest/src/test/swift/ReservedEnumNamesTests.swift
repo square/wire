@@ -167,8 +167,10 @@ final class ReservedEnumNamesTests : XCTestCase {
         XCTAssertEqual(decoded.same_name_zero, .SwiftProto3SameNameZero)
     }
 
-    func testOneofNamedProtocolIsSuffixed() throws {
-        let message = SwiftOneofProtocol { $0.protocol = SwiftOneofProtocol.Protocol_.b(7) }
+    func testOneofNamedProtocolKeepsItsEnumName() throws {
+        // Swift reads `SwiftOneofProtocol.`Protocol`.b(7)` as a metatype, so the case needs a type annotation.
+        let value: SwiftOneofProtocol.`Protocol` = .b(7)
+        let message = SwiftOneofProtocol { $0.protocol = value }
 
         let data = try ProtoEncoder().encode(message)
         let decoded = try ProtoDecoder().decode(SwiftOneofProtocol.self, from: data)
