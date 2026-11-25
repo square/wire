@@ -44,8 +44,24 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   private val keyAdapterString = wireField.keyAdapter
   private val adapterString = wireField.adapter
   override val redacted: Boolean = wireField.redacted
-  private val builderSetter = getBuilderSetter(builderType, wireField, lastOneOfMemberWins = true)
-  private val jsonBuilderSetter = getBuilderSetter(builderType, wireField, lastOneOfMemberWins = false)
+
+  /**
+   * The builder method of a oneof member that has no `ONE_OF` label, or null for other fields.
+   * Generated Java and generated Kotlin with builders do not emit `ONE_OF` labels. This method
+   * clears the other members of the oneof, so the last member on the wire wins.
+   */
+  private val oneOfBuilderMethod: Method? = when {
+    builderType.isAssignableFrom(KotlinConstructorBuilder::class.java) -> null
+    wireField.label.isOneOf -> null
+    wireField.oneofName.isEmpty() -> null
+    else -> builderOneOfMethod(builderType)
+  }
+  private val builderSetter = getBuilderSetter(builderType, wireField, oneOfBuilderMethod)
+
+  // Only a field with a oneof builder method needs a separate JSON setter. Other fields share the
+  // binary setter, so they do no second reflective lookup.
+  private val jsonBuilderSetter =
+    if (oneOfBuilderMethod == null) builderSetter else getBuilderSetter(builderType, wireField, null)
   private val builderGetter = getBuilderGetter(builderType, wireField)
   private val instanceGetter = getInstanceGetter(messageType)
 
@@ -67,17 +83,18 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   /**
    * Returns a function that assigns a value to the builder.
    *
-   * When [lastOneOfMemberWins] is true, setting a oneof member clears the other members. Binary
-   * decoding needs this, because the protobuf rule is that the last member on the wire wins.
+   * When [oneOfMethod] is not null, the setter calls it, and it clears the other members of the
+   * oneof. Binary decoding needs this, because the protobuf rule is that the last member on the wire
+   * wins.
    *
-   * When it is false, a oneof member that generated Java or Kotlin code declares as a plain field
-   * is assigned without clearing the other members. If the input sets two members, `build()` then
+   * When it is null, a oneof member that generated Java or Kotlin code declares as a plain field is
+   * assigned without clearing the other members. If the input sets two members, `build()` then
    * throws, as it did in Wire 7. JSON decoding uses this.
    */
   private fun getBuilderSetter(
     builderType: Class<*>,
     wireField: WireField,
-    lastOneOfMemberWins: Boolean,
+    oneOfMethod: Method?,
   ): (B, Any?) -> Unit = when {
     builderType.isAssignableFrom(KotlinConstructorBuilder::class.java) -> { builder, value ->
       (builder as KotlinConstructorBuilder<*, *>).set(wireField, value)
@@ -94,13 +111,6 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
       }
     }
     else -> {
-      // Generated Java does not emit `ONE_OF` labels. The builder method of a oneof member clears
-      // the other members, so the last member on the wire wins.
-      val oneOfMethod = if (lastOneOfMemberWins && wireField.oneofName.isNotEmpty()) {
-        builderOneOfMethod(builderType)
-      } else {
-        null
-      }
       if (oneOfMethod != null) {
         { builder, value ->
           oneOfMethod.invoke(builder, value)
