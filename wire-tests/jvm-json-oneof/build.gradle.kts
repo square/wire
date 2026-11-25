@@ -44,6 +44,10 @@ wire {
     buildersOnly = true
   }
   kotlin {
+    includes = listOf("squareup.wire.json.oneof.sealed_plain.*")
+    oneofMode = "sealed_class"
+  }
+  kotlin {
     includes = listOf("squareup.wire.json.oneof.sealed.*")
     oneofMode = "sealed_class"
     javaInterop = true

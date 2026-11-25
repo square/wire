@@ -108,5 +108,24 @@ internal class SealedOneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
     }
   }
 
+  override fun setFromJson(builder: B, value: Any?) {
+    // Binary decoding keeps the last member of a oneof. JSON decoding rejects two members.
+    if (value == null) return
+    val existing = if (isKotlinConstructorBuilder) {
+      @Suppress("UNCHECKED_CAST")
+      (builder as KotlinConstructorBuilder<M, B>).getSealedOneof(messageField.name)
+    } else {
+      builderField!!.get(builder)
+    }
+    if (existing != null && !subclassType.isInstance(existing)) {
+      val existingName = existing.javaClass.getAnnotation(WireOneofField::class.java)
+        ?.declaredName
+        ?.takeIf { it.isNotEmpty() }
+        ?: existing.javaClass.simpleName
+      throw duplicateOneOfMember(messageField.name, existingName, name)
+    }
+    set(builder, value)
+  }
+
   override fun value(builder: B, value: Any?) = set(builder, value)
 }

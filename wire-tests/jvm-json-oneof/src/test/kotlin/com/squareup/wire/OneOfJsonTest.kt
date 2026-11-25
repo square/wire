@@ -35,8 +35,8 @@ import org.junit.runners.Parameterized.Parameters
  * code that Wire's reflective adapters support.
  *
  * Wire 7 rejected two members for generated Java and for generated Kotlin with flat oneofs, like
- * protobuf-java does. It kept the last member for boxed and sealed oneofs, and so does Wire 8.
- * Binary decoding keeps the last member for every style.
+ * protobuf-java does. Wire 8 rejects them for boxed and sealed oneofs too. Binary decoding keeps
+ * the last member for every style.
  */
 @RunWith(Parameterized::class)
 class OneOfJsonTest(
@@ -59,8 +59,8 @@ class OneOfJsonTest(
     /** A reflective constructor call wraps the [IllegalArgumentException] of generated Kotlin. */
     KOTLIN_REFLECTIVE,
 
-    /** The last member wins. */
-    NONE,
+    /** The binding throws an [IllegalArgumentException] with a message that names the two members. */
+    BINDING,
   }
 
   enum class Style(val packageName: String, val rejection: Rejection) {
@@ -69,27 +69,25 @@ class OneOfJsonTest(
     KOTLIN_INTEROP("kotlin_interop", Rejection.KOTLIN),
     KOTLIN_BUILDERS("kotlin_builders", Rejection.KOTLIN),
     KOTLIN_INTEROP_BUILDERS("kotlin_interop_builders", Rejection.KOTLIN),
-    BOXED("boxed", Rejection.NONE),
-    BOXED_BUILDERS("boxed_builders", Rejection.NONE),
-    SEALED("sealed", Rejection.NONE),
-    SEALED_BUILDERS("sealed_builders", Rejection.NONE),
+    BOXED("boxed", Rejection.BINDING),
+    BOXED_BUILDERS("boxed_builders", Rejection.BINDING),
+    SEALED_PLAIN("sealed_plain", Rejection.BINDING),
+    SEALED("sealed", Rejection.BINDING),
+    SEALED_BUILDERS("sealed_builders", Rejection.BINDING),
   }
 
   private val type: Class<*> = Class.forName("squareup.wire.json.oneof.${style.packageName}.Choice")
 
   @Test fun twoMembersInEitherOrder() {
-    for ((json, lastWins) in listOf(
-      """{"text":"a","number":1}""" to """{"number":1}""",
-      """{"number":1,"text":"a"}""" to """{"text":"a"}""",
-      """{"text":"a","nested":{"name":"n"}}""" to """{"nested":{"name":"n"}}""",
-      """{"nested":{"name":"n"},"number":2}""" to """{"number":2}""",
-      """{"text":"a","other":"o","number":1}""" to """{"number":1,"other":"o"}""",
+    for ((json, first, second) in listOf(
+      Triple("""{"text":"a","number":1}""", "text", "number"),
+      Triple("""{"number":1,"text":"a"}""", "number", "text"),
+      Triple("""{"text":"a","nested":{"name":"n"}}""", "text", "nested"),
+      Triple("""{"nested":{"name":"n"},"number":2}""", "nested", "number"),
+      Triple("""{"text":"a","other":"o","number":1}""", "text", "number"),
+      Triple("""{"text":"a","number":null,"nested":{"name":"n"}}""", "text", "nested"),
     )) {
-      if (style.rejection == Rejection.NONE) {
-        assertThat(roundTrip(json)).isEqualTo(lastWins)
-      } else {
-        assertRejected { fromJson(json) }
-      }
+      assertRejected(first, second) { fromJson(json) }
     }
   }
 
@@ -128,23 +126,25 @@ class OneOfJsonTest(
     }
   }
 
-  private fun assertRejected(block: () -> Unit) {
-    val message = "t most one of text, number, nested may be non-null"
+  private fun assertRejected(first: String, second: String, block: () -> Unit) {
     when (style.rejection) {
       Rejection.JAVA -> {
         val e = assertFailsWith<IllegalArgumentException> { block() }
-        assertThat(e.message).isEqualTo("a$message")
+        assertThat(e.message).isEqualTo("at most one of text, number, nested may be non-null")
       }
       Rejection.KOTLIN -> {
         val e = assertFailsWith<IllegalArgumentException> { block() }
-        assertThat(e.message).isEqualTo("A$message")
+        assertThat(e.message).isEqualTo("At most one of text, number, nested may be non-null")
       }
       Rejection.KOTLIN_REFLECTIVE -> {
         val e = assertFailsWith<InvocationTargetException> { block() }
         assertThat(e.cause).isNotNull().isInstanceOf<IllegalArgumentException>()
-        assertThat(e.cause!!.message).isEqualTo("A$message")
+        assertThat(e.cause!!.message).isEqualTo("At most one of text, number, nested may be non-null")
       }
-      Rejection.NONE -> error("not rejected")
+      Rejection.BINDING -> {
+        val e = assertFailsWith<IllegalArgumentException> { block() }
+        assertThat(e.message).isEqualTo("At most one of $first, $second may be non-null in oneof choice")
+      }
     }
   }
 

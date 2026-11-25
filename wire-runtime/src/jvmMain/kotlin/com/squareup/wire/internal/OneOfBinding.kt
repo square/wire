@@ -69,6 +69,17 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
     builderField.set(builder, if (value != null) OneOf(key as OneOf.Key<Any>, value) else null)
   }
 
+  override fun setFromJson(builder: B, value: Any?) {
+    // Binary decoding keeps the last member of a oneof. JSON decoding rejects two members.
+    if (value != null) {
+      val existing = builderField.get(builder) as OneOf<*, *>?
+      if (existing != null && existing.key != key) {
+        throw duplicateOneOfMember(messageField.name, existing.key.declaredName, name)
+      }
+    }
+    set(builder, value)
+  }
+
   override fun get(message: M): Any? {
     val oneOfOrNull = messageField.get(message) as OneOf<*, *>?
     return oneOfOrNull?.getOrNull(key)
@@ -79,3 +90,15 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
     return oneOfOrNull?.getOrNull(key)
   }
 }
+
+/**
+ * Returns the exception that JSON decoding throws when the input sets two members of the oneof
+ * named [oneOfName]. This follows the message of generated code for flat oneofs.
+ */
+internal fun duplicateOneOfMember(
+  oneOfName: String,
+  firstMember: String,
+  secondMember: String,
+): IllegalArgumentException = IllegalArgumentException(
+  "At most one of $firstMember, $secondMember may be non-null in oneof $oneOfName",
+)

@@ -88,10 +88,11 @@ abstract class FieldOrOneOfBinding<M, B> {
   /**
    * Assigns [value], read from JSON, to the builder.
    *
-   * Binary decoding keeps the last member that the input sets in a oneof, so [set] does too. For
-   * oneofs of generated Java and of generated Kotlin with flat members, JSON decoding instead
-   * fails when the input sets two members. Wire 7 did this, and protobuf-java does it too.
-   * Other bindings keep the last member, as [set] does.
+   * Binary decoding keeps the last member that the input sets in a oneof, so [set] does too. JSON
+   * decoding instead fails with an [IllegalArgumentException] when the input sets two members of
+   * one oneof. This holds for generated Java, for generated Kotlin with flat members, and for
+   * boxed and sealed oneofs. Protobuf-java does the same. The JSON adapters skip null values, so
+   * a null member next to a value does not conflict.
    */
   open fun setFromJson(builder: B, value: Any?) = set(builder, value)
 
