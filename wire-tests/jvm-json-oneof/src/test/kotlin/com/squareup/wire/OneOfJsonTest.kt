@@ -70,6 +70,8 @@ class OneOfJsonTest(
     KOTLIN_BUILDERS("kotlin_builders", Rejection.KOTLIN),
     KOTLIN_INTEROP_BUILDERS("kotlin_interop_builders", Rejection.KOTLIN),
     BOXED("boxed", Rejection.BINDING),
+    BOXED_PLAIN("boxed_plain", Rejection.BINDING),
+    BOXED_MIN_SIZE("boxed_min_size", Rejection.BINDING),
     BOXED_BUILDERS("boxed_builders", Rejection.BINDING),
     SEALED_PLAIN("sealed_plain", Rejection.BINDING),
     SEALED("sealed", Rejection.BINDING),
@@ -108,10 +110,37 @@ class OneOfJsonTest(
     assertThat(roundTrip("""{"text":"a","text":"b"}""")).isEqualTo("""{"text":"b"}""")
   }
 
+  @Test fun everyMemberRoundTripsThroughJson() {
+    for (json in listOf(
+      """{"text":"a"}""",
+      """{"number":1}""",
+      """{"nested":{"name":"n"}}""",
+      """{"other":"o"}""",
+      """{}""",
+    )) {
+      assertThat(roundTrip(json)).isEqualTo(json)
+    }
+  }
+
+  @Test fun reflectiveAdapterEncodesDecodesAndRedactsEveryMember() {
+    val reflective = reflectiveAdapter()
+    val generated = adapterOf(type)
+    for (json in listOf(
+      """{"text":"a"}""",
+      """{"number":1}""",
+      """{"nested":{"name":"n"}}""",
+      """{}""",
+    )) {
+      val message = fromJson(json)
+      val bytes = generated.encodeByteString(message)
+      assertThat(reflective.encodeByteString(message)).isEqualTo(bytes)
+      assertThat(reflective.decode(bytes)).isEqualTo(message)
+      assertThat(reflective.redact(message)).isEqualTo(message)
+    }
+  }
+
   @Test fun lastMemberWinsOnBinaryDecoding() {
-    @Suppress("UNCHECKED_CAST")
-    val reflective = ProtoAdapter::class.java.getMethod("newMessageAdapter", Class::class.java)
-      .invoke(null, type) as ProtoAdapter<Any>
+    val reflective = reflectiveAdapter()
     val generated = adapterOf(type)
     // Tag 1 is `text` with "a", then tag 2 is `number` with 1. Then in the other order.
     val textThenNumber = Buffer().writeByte(0x0a).writeByte(1).writeUtf8("a").writeByte(0x10).writeByte(1).readByteString()
@@ -147,6 +176,10 @@ class OneOfJsonTest(
       }
     }
   }
+
+  @Suppress("UNCHECKED_CAST")
+  private fun reflectiveAdapter(): ProtoAdapter<Any> = ProtoAdapter::class.java.getMethod("newMessageAdapter", Class::class.java)
+    .invoke(null, type) as ProtoAdapter<Any>
 
   @Suppress("UNCHECKED_CAST")
   private fun adapterOf(type: Class<*>): ProtoAdapter<Any> {

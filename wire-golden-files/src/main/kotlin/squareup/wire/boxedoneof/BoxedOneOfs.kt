@@ -15,6 +15,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.WireBoxedOneof
 import com.squareup.wire.`internal`.decodeOneOfOrDefer
 import com.squareup.wire.`internal`.endMerges
 import com.squareup.wire.`internal`.finishOneOfMerge
@@ -36,6 +37,7 @@ import squareup.proto3.options.FieldOptionOption
 
 public class BoxedOneOfs(
   @JvmField
+  @field:WireBoxedOneof(schemaIndex = 0)
   public val value_: OneOf<Value<*>, *>? = null,
   unknownFields: ByteString = ByteString.EMPTY,
 ) : Message<BoxedOneOfs, BoxedOneOfs.Builder>(ADAPTER, unknownFields) {

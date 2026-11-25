@@ -25,7 +25,7 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
   private val fieldValueMap: MutableMap<Int, Pair<WireField, Any?>>
   private val repeatedFieldValueMap: MutableMap<Int, Pair<WireField, MutableList<*>>>
   private val mapFieldKeyValueMap: MutableMap<Int, Pair<WireField, MutableMap<*, *>>>
-  private val sealedOneofValues: MutableMap<String, Any?> = LinkedHashMap()
+  private val oneOfValues: MutableMap<String, Any?> = LinkedHashMap()
 
   init {
     val fieldCount = messageType.declaredFields.size
@@ -54,11 +54,11 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
     }
   }
 
-  fun setSealedOneof(fieldName: String, value: Any?) {
-    sealedOneofValues[fieldName] = value
+  fun setOneOf(fieldName: String, value: Any?) {
+    oneOfValues[fieldName] = value
   }
 
-  fun getSealedOneof(fieldName: String): Any? = sealedOneofValues[fieldName]
+  fun getOneOf(fieldName: String): Any? = oneOfValues[fieldName]
 
   private fun clobberOtherIsOneOfs(field: WireField) {
     fieldValueMap.values
@@ -98,7 +98,14 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
       val sealedOneof = field.getAnnotation(WireSealedOneof::class.java)
       if (sealedOneof != null) {
         val name = field.name
-        return@mapNotNull ConstructorParam(field.type, sealedOneof.schemaIndex) { sealedOneofValues[name] }
+        return@mapNotNull ConstructorParam(field.type, sealedOneof.schemaIndex) { oneOfValues[name] }
+      }
+      if (field.type == OneOf::class.java) {
+        val boxedOneof = field.getAnnotation(WireBoxedOneof::class.java)
+        if (boxedOneof != null) {
+          val name = field.name
+          return@mapNotNull ConstructorParam(field.type, boxedOneof.schemaIndex) { oneOfValues[name] }
+        }
       }
       null
     }.sortedBy { it.schemaIndex }

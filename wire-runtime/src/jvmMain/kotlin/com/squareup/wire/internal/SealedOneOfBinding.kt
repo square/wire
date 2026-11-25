@@ -87,7 +87,7 @@ internal class SealedOneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
   override fun getFromBuilder(builder: B): Any? {
     val sealed = if (isKotlinConstructorBuilder) {
       @Suppress("UNCHECKED_CAST")
-      (builder as KotlinConstructorBuilder<M, B>).getSealedOneof(messageField.name)
+      (builder as KotlinConstructorBuilder<M, B>).getOneOf(messageField.name)
     } else {
       builderField!!.get(builder)
     } ?: return null
@@ -102,7 +102,7 @@ internal class SealedOneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
     val sealed = ctor.newInstance(value)
     if (isKotlinConstructorBuilder) {
       @Suppress("UNCHECKED_CAST")
-      (builder as KotlinConstructorBuilder<M, B>).setSealedOneof(messageField.name, sealed)
+      (builder as KotlinConstructorBuilder<M, B>).setOneOf(messageField.name, sealed)
     } else {
       builderField!!.set(builder, sealed)
     }
@@ -113,7 +113,7 @@ internal class SealedOneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
     if (value == null) return
     val existing = if (isKotlinConstructorBuilder) {
       @Suppress("UNCHECKED_CAST")
-      (builder as KotlinConstructorBuilder<M, B>).getSealedOneof(messageField.name)
+      (builder as KotlinConstructorBuilder<M, B>).getOneOf(messageField.name)
     } else {
       builderField!!.get(builder)
     }

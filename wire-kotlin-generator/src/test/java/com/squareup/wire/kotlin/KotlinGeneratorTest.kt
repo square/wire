@@ -2682,24 +2682,25 @@ class KotlinGeneratorTest {
       |    schemaIndex = 5,
       |  )
       |  public val e: String? = null,
+      |  @field:WireBoxedOneof(schemaIndex = 6)
       |  public val decision: OneOf<Decision<*>, *>? = null,
       |  @field:WireField(
       |    tag = 10,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      |    schemaIndex = 6,
+      |    schemaIndex = 7,
       |  )
       |  public val i: String? = null,
       |  @field:WireField(
       |    tag = 12,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
       |    oneofName = "unique",
-      |    schemaIndex = 7,
+      |    schemaIndex = 8,
       |  )
       |  public val j: String? = null,
       |  @field:WireField(
       |    tag = 11,
       |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      |    schemaIndex = 8,
+      |    schemaIndex = 9,
       |  )
       |  public val k: String? = null,
       |  unknownFields: ByteString = ByteString.EMPTY,
@@ -2987,6 +2988,36 @@ class KotlinGeneratorTest {
       .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.BOXED)
     assertThat(code).contains("public val method: OneOf<Method<*>, *>? = null")
     assertThat(code).doesNotContain("sealed class Method")
+  }
+
+  @Test fun boxedOneOfAnnotatedWithSchemaIndexUnlessBuildersOnly() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |message PaymentMethodChoice {
+        |  optional string note = 3;
+        |  oneof method {
+        |    string card_id = 1;
+        |    string cash = 2;
+        |  }
+        |  optional string other = 4;
+        |}
+        """.trimMargin(),
+      )
+    }
+    for (javaInterop in listOf(false, true)) {
+      val code = KotlinWithProfilesGenerator(schema)
+        .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.BOXED, javaInterop = javaInterop)
+      assertThat(code).contains("    tag = 3,\n    adapter = \"com.squareup.wire.ProtoAdapter#STRING\",\n    schemaIndex = 0,\n  )")
+      assertThat(code).contains("@field:WireBoxedOneof(schemaIndex = 1)")
+      assertThat(code).contains("    tag = 4,\n    adapter = \"com.squareup.wire.ProtoAdapter#STRING\",\n    schemaIndex = 2,\n  )")
+    }
+
+    val buildersOnly = KotlinWithProfilesGenerator(schema)
+      .generateKotlin("PaymentMethodChoice", oneofMode = OneofMode.BOXED, buildersOnly = true)
+    assertThat(buildersOnly).doesNotContain("WireBoxedOneof")
   }
 
   @Test fun toStringEscapesKeywordNames() {
