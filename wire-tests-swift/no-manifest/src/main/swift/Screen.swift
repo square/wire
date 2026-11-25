@@ -93,32 +93,16 @@ extension Screen : Codable {
 
     public init(from decoder: Decoder) throws {
         let _container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let screen_oneof_string = try _container.decodeIfPresent(String.self, forKey: "screenOneofString") {
-            self.screen = .screen_oneof_string(screen_oneof_string)
-        } else if let screen_oneof_string = try _container.decodeIfPresent(String.self, forKey: "screen_oneof_string") {
-            self.screen = .screen_oneof_string(screen_oneof_string)
-        } else if let screen_oneof_int32 = try _container.decodeIfPresent(Int32.self, forKey: "screenOneofInt32") {
-            self.screen = .screen_oneof_int32(screen_oneof_int32)
-        } else if let screen_oneof_int32 = try _container.decodeIfPresent(Int32.self, forKey: "screen_oneof_int32") {
-            self.screen = .screen_oneof_int32(screen_oneof_int32)
-        } else if let screen_oneof_sub_message = try _container.decodeIfPresent(Screen.SubMessage.self, forKey: "screenOneofSubMessage") {
-            self.screen = .screen_oneof_sub_message(screen_oneof_sub_message)
-        } else if let screen_oneof_sub_message = try _container.decodeIfPresent(Screen.SubMessage.self, forKey: "screen_oneof_sub_message") {
-            self.screen = .screen_oneof_sub_message(screen_oneof_sub_message)
-        } else if let self_ = try _container.decodeIfPresent(Screen.Self_.self, forKey: "self") {
-            self.screen = .`self`(self_)
-        } else {
-            self.screen = nil
-        }
-        if let view_oneof_string = try _container.decodeIfPresent(String.self, forKey: "viewOneofString") {
-            self.view = .view_oneof_string(view_oneof_string)
-        } else if let view_oneof_string = try _container.decodeIfPresent(String.self, forKey: "view_oneof_string") {
-            self.view = .view_oneof_string(view_oneof_string)
-        } else if let container = try _container.decodeIfPresent(String.self, forKey: "container") {
-            self.view = .container(container)
-        } else {
-            self.view = nil
-        }
+        var _screen = OneOfDecoder<Screen_OneOf>(name: "screen")
+        try _screen.decode(String.self, from: _container, as: Screen_OneOf.screen_oneof_string, forKeys: "screenOneofString", "screen_oneof_string")
+        try _screen.decode(Int32.self, from: _container, as: Screen_OneOf.screen_oneof_int32, forKeys: "screenOneofInt32", "screen_oneof_int32")
+        try _screen.decode(Screen.SubMessage.self, from: _container, as: Screen_OneOf.screen_oneof_sub_message, forKeys: "screenOneofSubMessage", "screen_oneof_sub_message")
+        try _screen.decode(Screen.Self_.self, from: _container, as: Screen_OneOf.`self`, forKeys: "self")
+        self.screen = _screen.value
+        var _view = OneOfDecoder<View>(name: "view")
+        try _view.decode(String.self, from: _container, as: View.view_oneof_string, forKeys: "viewOneofString", "view_oneof_string")
+        try _view.decode(String.self, from: _container, as: View.container, forKeys: "container")
+        self.view = _view.value
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -362,24 +346,13 @@ extension Screen.SubMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._string.wrappedValue = try container.decodeIfPresent(String.self, forKey: "string")
-        if let submessage_screen_oneof_string = try container.decodeIfPresent(String.self, forKey: "submessageScreenOneofString") {
-            self.screen = .submessage_screen_oneof_string(submessage_screen_oneof_string)
-        } else if let submessage_screen_oneof_string = try container.decodeIfPresent(String.self, forKey: "submessage_screen_oneof_string") {
-            self.screen = .submessage_screen_oneof_string(submessage_screen_oneof_string)
-        } else {
-            self.screen = nil
-        }
-        if let submessage_oneof_string = try container.decodeIfPresent(String.self, forKey: "submessageOneofString") {
-            self.submessage = .submessage_oneof_string(submessage_oneof_string)
-        } else if let submessage_oneof_string = try container.decodeIfPresent(String.self, forKey: "submessage_oneof_string") {
-            self.submessage = .submessage_oneof_string(submessage_oneof_string)
-        } else if let submessage_oneof_nested_sub_message = try container.decodeIfPresent(Screen.SubMessage.NestedSubMessage.self, forKey: "submessageOneofNestedSubMessage") {
-            self.submessage = .submessage_oneof_nested_sub_message(submessage_oneof_nested_sub_message)
-        } else if let submessage_oneof_nested_sub_message = try container.decodeIfPresent(Screen.SubMessage.NestedSubMessage.self, forKey: "submessage_oneof_nested_sub_message") {
-            self.submessage = .submessage_oneof_nested_sub_message(submessage_oneof_nested_sub_message)
-        } else {
-            self.submessage = nil
-        }
+        var _screen = OneOfDecoder<Screen.SubMessage.Screen_OneOf>(name: "screen")
+        try _screen.decode(String.self, from: container, as: Screen.SubMessage.Screen_OneOf.submessage_screen_oneof_string, forKeys: "submessageScreenOneofString", "submessage_screen_oneof_string")
+        self.screen = _screen.value
+        var _submessage = OneOfDecoder<Screen.SubMessage.Submessage_OneOf>(name: "submessage")
+        try _submessage.decode(String.self, from: container, as: Screen.SubMessage.Submessage_OneOf.submessage_oneof_string, forKeys: "submessageOneofString", "submessage_oneof_string")
+        try _submessage.decode(Screen.SubMessage.NestedSubMessage.self, from: container, as: Screen.SubMessage.Submessage_OneOf.submessage_oneof_nested_sub_message, forKeys: "submessageOneofNestedSubMessage", "submessage_oneof_nested_sub_message")
+        self.submessage = _submessage.value
     }
 
     public func encode(to encoder: Encoder) throws {

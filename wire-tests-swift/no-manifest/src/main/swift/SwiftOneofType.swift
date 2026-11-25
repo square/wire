@@ -73,13 +73,10 @@ extension SwiftOneofType : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let c = try container.decodeIfPresent(String.self, forKey: "c") {
-            self.type = .c(c)
-        } else if let d = try container.decodeIfPresent(Int32.self, forKey: "d") {
-            self.type = .d(d)
-        } else {
-            self.type = nil
-        }
+        var _type = OneOfDecoder<`Type`>(name: "type")
+        try _type.decode(String.self, from: container, as: `Type`.c, forKeys: "c")
+        try _type.decode(Int32.self, from: container, as: `Type`.d, forKeys: "d")
+        self.type = _type.value
     }
 
     public func encode(to encoder: Encoder) throws {

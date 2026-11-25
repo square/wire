@@ -96,6 +96,7 @@ class SwiftGenerator private constructor(
   private val protoIntEncoding = DeclaredTypeName.typeName("Wire.ProtoIntEncoding")
 
   private val stringLiteralCodingKeys = DeclaredTypeName.typeName("Wire.StringLiteralCodingKeys")
+  private val oneOfDecoder = DeclaredTypeName.typeName("Wire.OneOfDecoder")
 
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
@@ -481,7 +482,7 @@ class SwiftGenerator private constructor(
       fileMembers += FileMemberSpec.builder(protoCodableExtension).build()
 
       if (!type.needsCustomCodable) {
-        fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType))
+        fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType, oneOfEnumNames))
           .addGuard("!$FLAG_REMOVE_CODABLE")
           .build()
       }
@@ -572,7 +573,7 @@ class SwiftGenerator private constructor(
         .build()
       fileMembers += FileMemberSpec.builder(storageProtoCodableExtension).build()
 
-      val storageCodableExtension = messageCodableExtension(type, storageType)
+      val storageCodableExtension = messageCodableExtension(type, storageType, oneOfEnumNames)
       fileMembers += FileMemberSpec.builder(storageCodableExtension)
         .addGuard("!$FLAG_REMOVE_CODABLE")
         .build()
@@ -940,6 +941,7 @@ class SwiftGenerator private constructor(
   private fun messageCodableExtension(
     type: MessageType,
     structType: DeclaredTypeName,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
   ): ExtensionSpec = ExtensionSpec.builder(structType)
     .addSuperType(codable)
     .apply {
@@ -1027,43 +1029,38 @@ class SwiftGenerator private constructor(
               }
 
               type.oneOfs.forEach { oneOf ->
-                oneOf.fields.fold(mutableListOf<Pair<Field, String>>()) { memo, field ->
-                  field.codableName?.let { codableName ->
-                    memo.add(Pair(field, codableName))
-                  }
-                  memo.add(Pair(field, field.name))
-
-                  memo
-                }.forEachIndexed { index, pair ->
-                  val (field, keyName) = pair
-
-                  val typeName = field.typeName.makeNonOptional()
-
-                  val safeName = field.safeName
-                  val fieldName = if (safeName == "self") "self_" else safeName
-
-                  if (index == 0) {
-                    beginControlFlow(
-                      "if",
-                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3L)",
-                      fieldName,
-                      typeName,
-                      keyName.toSwiftStringLiteralBlock(),
-                    )
+                // The helper decodes every member and throws if two of them are non-null. A member
+                // that is null or missing is skipped, so a null next to a value keeps the value.
+                val enumName = oneOfSafeDeclaredTypeName(oneOf, type, oneOfEnumNames)
+                val decoderName = "_${oneOf.safeName}"
+                addStatement(
+                  "var %N = %T(name: %L)",
+                  decoderName,
+                  oneOfDecoder.parameterizedBy(enumName),
+                  oneOf.name.toSwiftStringLiteralBlock(),
+                )
+                oneOf.fields.forEach { field ->
+                  // Keep the order of the keys: the camelCase name wins over the proto name.
+                  val keys = listOf(field.codableName, field.name)
+                    .filterNotNull()
+                    .map { it.toSwiftStringLiteralBlock() }
+                    .joinToCode()
+                  // `Choice.Type` and `Choice.Protocol` are metatypes, not the cases, even with
+                  // backticks. A closure with an implicit member works for them.
+                  val makeValue = if (field.safeName == "Type" || field.safeName == "Protocol") {
+                    CodeBlock.of("{ .`%L`(\$0) }", field.safeName)
                   } else {
-                    nextControlFlow(
-                      "else if",
-                      "let %1N = try $container.decodeIfPresent(%2T.self, forKey: %3L)",
-                      fieldName,
-                      typeName,
-                      keyName.toSwiftStringLiteralBlock(),
-                    )
+                    CodeBlock.of("%T.%N", enumName, field.safeName)
                   }
-                  addStatement("self.%1N = .%2N(%3N)", oneOf.safeName, field.safeName, fieldName)
+                  addStatement(
+                    "try %N.decode(%T.self, from: $container, as: %L, forKeys: %L)",
+                    decoderName,
+                    field.typeName.makeNonOptional(),
+                    makeValue,
+                    keys,
+                  )
                 }
-                nextControlFlow("else", "")
-                addStatement("self.%N = nil", oneOf.safeName)
-                endControlFlow("if")
+                addStatement("self.%N = %N.value", oneOf.safeName, decoderName)
               }
             }
             .build(),

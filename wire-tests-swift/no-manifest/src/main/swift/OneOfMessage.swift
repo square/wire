@@ -80,15 +80,11 @@ extension OneOfMessage : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let foo = try container.decodeIfPresent(Int32.self, forKey: "foo") {
-            self.choice = .foo(foo)
-        } else if let bar = try container.decodeIfPresent(String.self, forKey: "bar") {
-            self.choice = .bar(bar)
-        } else if let baz = try container.decodeIfPresent(String.self, forKey: "baz") {
-            self.choice = .baz(baz)
-        } else {
-            self.choice = nil
-        }
+        var _choice = OneOfDecoder<Choice>(name: "choice")
+        try _choice.decode(Int32.self, from: container, as: Choice.foo, forKeys: "foo")
+        try _choice.decode(String.self, from: container, as: Choice.bar, forKeys: "bar")
+        try _choice.decode(String.self, from: container, as: Choice.baz, forKeys: "baz")
+        self.choice = _choice.value
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -73,13 +73,10 @@ extension RedactedOneOf : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let b = try container.decodeIfPresent(Int32.self, forKey: "b") {
-            self.a = .b(b)
-        } else if let c = try container.decodeIfPresent(String.self, forKey: "c") {
-            self.a = .c(c)
-        } else {
-            self.a = nil
-        }
+        var _a = OneOfDecoder<A>(name: "a")
+        try _a.decode(Int32.self, from: container, as: A.b, forKeys: "b")
+        try _a.decode(String.self, from: container, as: A.c, forKeys: "c")
+        self.a = _a.value
     }
 
     public func encode(to encoder: Encoder) throws {

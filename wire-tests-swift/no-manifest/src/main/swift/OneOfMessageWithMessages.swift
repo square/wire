@@ -87,15 +87,11 @@ extension OneOfMessageWithMessages : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let first = try container.decodeIfPresent(OneOfMessageWithMessages.Inner.self, forKey: "first") {
-            self.choice = .first(first)
-        } else if let second = try container.decodeIfPresent(OneOfMessageWithMessages.Inner.self, forKey: "second") {
-            self.choice = .second(second)
-        } else if let note = try container.decodeIfPresent(String.self, forKey: "note") {
-            self.choice = .note(note)
-        } else {
-            self.choice = nil
-        }
+        var _choice = OneOfDecoder<Choice>(name: "choice")
+        try _choice.decode(OneOfMessageWithMessages.Inner.self, from: container, as: Choice.first, forKeys: "first")
+        try _choice.decode(OneOfMessageWithMessages.Inner.self, from: container, as: Choice.second, forKeys: "second")
+        try _choice.decode(String.self, from: container, as: Choice.note, forKeys: "note")
+        self.choice = _choice.value
     }
 
     public func encode(to encoder: Encoder) throws {
