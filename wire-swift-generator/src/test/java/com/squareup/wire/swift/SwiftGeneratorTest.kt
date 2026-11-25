@@ -306,6 +306,45 @@ class SwiftGeneratorTest {
     assertThat(code).doesNotContain("choice = (try protoReader.decode(Kind.self))")
   }
 
+  @Test fun jsonDecodingOfOneOfUsesTheRuntimeDecoder() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto3";
+        |
+        |message Message {
+        |  oneof choice {
+        |    string text_value = 1;
+        |    int32 number = 2;
+        |    string Type = 3;
+        |    string Protocol = 4;
+        |  }
+        |}
+        """.trimMargin(),
+      )
+    }
+
+    val code = schema.generateSwift("Message")
+
+    assertThat(code).contains("""var _choice = OneOfDecoder<Choice>(name: "choice")""")
+    assertThat(code).contains(
+      """try _choice.decode(String.self, from: container, as: Choice.text_value, forKeys: "textValue", "text_value")""",
+    )
+    assertThat(code).contains(
+      """try _choice.decode(Int32.self, from: container, as: Choice.number, forKeys: "number")""",
+    )
+    // `Choice.Type` and `Choice.Protocol` are metatypes, so those cases use a closure.
+    assertThat(code).contains(
+      """try _choice.decode(String.self, from: container, as: { .`Type`($0) }, forKeys: "Type")""",
+    )
+    assertThat(code).contains(
+      """try _choice.decode(String.self, from: container, as: { .`Protocol`($0) }, forKeys: "Protocol")""",
+    )
+    assertThat(code).contains("self.choice = _choice.value")
+    assertThat(code).doesNotContain("else if let")
+  }
+
   @Test fun oneOfNamesDoNotCollideWithNestedTypes() {
     for (nestedType in listOf("message Selection {}", "enum Selection { UNKNOWN = 0; }")) {
       val schema = buildSchema {
@@ -699,7 +738,7 @@ class SwiftGeneratorTest {
     assertThat(code).contains("""firstOfKeys: "a${'$'}b", "a"""")
     assertThat(code).contains("""forKey: preferCamelCase ? "a${'$'}b" : "a"""")
     assertThat(code).contains("""firstOfKeys: "${'$'}{x}", "b"""")
-    assertThat(code).contains("""forKey: "${'$'}c"""")
+    assertThat(code).contains("""forKeys: "${'$'}c", "c"""")
     assertThat(code).contains("""forKey: preferCamelCase ? "${'$'}c" : "c"""")
     assertThat(code).doesNotContain("{'")
   }
@@ -728,7 +767,7 @@ class SwiftGeneratorTest {
     assertThat(code).contains("""firstOfKeys: "100%", "a"""")
     assertThat(code).contains("""forKey: preferCamelCase ? "100%" : "a"""")
     assertThat(code).contains("""firstOfKeys: "%s %S %1S", "b"""")
-    assertThat(code).contains("""forKey: "%c"""")
+    assertThat(code).contains("""forKeys: "%c", "c"""")
     assertThat(code).contains("""forKey: preferCamelCase ? "%c" : "c"""")
   }
 

@@ -101,17 +101,10 @@ extension SwiftJsonNames : Codable {
         self._percent.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "100%", "percent")
         self._directive.wrappedValue = try container.decodeIfPresent(String.self, firstOfKeys: "%s %S %1S", "directive")
         self.required_name = try container.decode(String.self, firstOfKeys: "$required", "required_name")
-        if let oneof_dollar = try container.decodeIfPresent(String.self, forKey: "$one") {
-            self.choice = .oneof_dollar(oneof_dollar)
-        } else if let oneof_dollar = try container.decodeIfPresent(String.self, forKey: "oneof_dollar") {
-            self.choice = .oneof_dollar(oneof_dollar)
-        } else if let oneof_percent = try container.decodeIfPresent(Int32.self, forKey: "%one") {
-            self.choice = .oneof_percent(oneof_percent)
-        } else if let oneof_percent = try container.decodeIfPresent(Int32.self, forKey: "oneof_percent") {
-            self.choice = .oneof_percent(oneof_percent)
-        } else {
-            self.choice = nil
-        }
+        var _choice = OneOfDecoder<Choice>(name: "choice")
+        try _choice.decode(String.self, from: container, as: Choice.oneof_dollar, forKeys: "$one", "oneof_dollar")
+        try _choice.decode(Int32.self, from: container, as: Choice.oneof_percent, forKeys: "%one", "oneof_percent")
+        self.choice = _choice.value
     }
 
     public func encode(to encoder: Encoder) throws {

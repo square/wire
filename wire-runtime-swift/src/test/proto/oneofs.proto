@@ -35,3 +35,17 @@ message OneOfs {
   }
   optional NestedEnum standalone_enum = 4;
 }
+
+message OneOfsHolder {
+  optional OneOfs one_ofs = 1;
+}
+
+// Members that Swift reads as something else when they follow a type name.
+message OneOfsSpecialNames {
+  oneof choice {
+    string self = 1;
+    string init = 2;
+    string Type = 3;
+    string Protocol = 4;
+  }
+}

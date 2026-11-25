@@ -91,6 +91,81 @@ extension KeyedDecodingContainer {
     }
 }
 
+// MARK: - OneOfDecoder
+
+/**
+ Decodes the members of one `oneof` from a JSON object.
+
+ Generated `Codable` initializers create one decoder for each `oneof`.
+ They call `decode(_:from:as:forKeys:)` once for each member, in declaration order.
+ A member that is missing or `null` is skipped.
+ If two members are present and not `null`, the second call throws a `DecodingError.dataCorrupted`.
+ The message of the error names the `oneof` and both JSON keys.
+ This is the same rule as the protobuf runtimes from Google.
+
+ A member can have two keys: its camelCase JSON name and its proto name.
+ The first key that is not `null` sets the member, and the later keys of that member are not read.
+ A JSON object that has both keys of one member is not an error.
+ */
+public struct OneOfDecoder<Value> {
+    private let name: String
+    private var selectedKey: String?
+
+    /// The member that the JSON object sets, or `nil` if it sets none.
+    public private(set) var value: Value?
+
+    /// - Parameter name: The proto name of the `oneof`.
+    public init(name: String) {
+        self.name = name
+    }
+
+    public mutating func decode<Key : CodingKey, T : Decodable>(
+        _ type: T.Type,
+        from container: KeyedDecodingContainer<Key>,
+        as makeValue: (T) -> Value,
+        forKeys keys: Key...
+    ) throws {
+        for key in keys {
+            if let member = try container.decodeIfPresent(type, forKey: key) {
+                try select(makeValue(member), key: key, in: container)
+                return
+            }
+        }
+    }
+
+    /// Decodes an enum with `decodeIfPresent(_:forKey:)` for `ProtoEnum`, which reads the decoding strategy.
+    public mutating func decode<Key : CodingKey, T : ProtoEnum>(
+        _ type: T.Type,
+        from container: KeyedDecodingContainer<Key>,
+        as makeValue: (T) -> Value,
+        forKeys keys: Key...
+    ) throws {
+        for key in keys {
+            if let member = try container.decodeIfPresent(type, forKey: key) {
+                try select(makeValue(member), key: key, in: container)
+                return
+            }
+        }
+    }
+
+    private mutating func select<Key : CodingKey>(
+        _ member: Value,
+        key: Key,
+        in container: KeyedDecodingContainer<Key>
+    ) throws {
+        if let selectedKey = selectedKey {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: container.codingPath + [key],
+                    debugDescription: "Cannot set the oneof '\(name)' with the key '\(key.stringValue)'. The key '\(selectedKey)' already set it."
+                )
+            )
+        }
+        value = member
+        selectedKey = key.stringValue
+    }
+}
+
 // MARK: - ProtoEnum
 
 extension KeyedDecodingContainer {

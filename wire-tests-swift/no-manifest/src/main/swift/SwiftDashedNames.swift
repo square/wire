@@ -125,13 +125,10 @@ extension SwiftDashedNames : Codable {
         self._secret_field.wrappedValue = try container.decodeIfPresent(String.self, forKey: "secret-field")
         self.dashed_list = try container.decodeProtoArray(String.self, forKey: "dashed-list")
         self.dashed_map = try container.decodeProtoMap([String : String].self, forKey: "dashed-map")
-        if let dashed_oneof_string = try container.decodeIfPresent(String.self, forKey: "dashed-oneof-string") {
-            self.dashed_oneof = .dashed_oneof_string(dashed_oneof_string)
-        } else if let dotted_oneof_int = try container.decodeIfPresent(Int32.self, forKey: "dotted.oneof.int") {
-            self.dashed_oneof = .dotted_oneof_int(dotted_oneof_int)
-        } else {
-            self.dashed_oneof = nil
-        }
+        var _dashed_oneof = OneOfDecoder<Dashed_oneof>(name: "dashed-oneof")
+        try _dashed_oneof.decode(String.self, from: container, as: Dashed_oneof.dashed_oneof_string, forKeys: "dashed-oneof-string")
+        try _dashed_oneof.decode(Int32.self, from: container, as: Dashed_oneof.dotted_oneof_int, forKeys: "dotted.oneof.int")
+        self.dashed_oneof = _dashed_oneof.value
     }
 
     public func encode(to encoder: Encoder) throws {

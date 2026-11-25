@@ -73,13 +73,10 @@ extension SwiftOneofProtocol : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let a = try container.decodeIfPresent(String.self, forKey: "a") {
-            self.`protocol` = .a(a)
-        } else if let b = try container.decodeIfPresent(Int32.self, forKey: "b") {
-            self.`protocol` = .b(b)
-        } else {
-            self.`protocol` = nil
-        }
+        var _protocol = OneOfDecoder<Protocol_>(name: "protocol")
+        try _protocol.decode(String.self, from: container, as: Protocol_.a, forKeys: "a")
+        try _protocol.decode(Int32.self, from: container, as: Protocol_.b, forKeys: "b")
+        self.`protocol` = _protocol.value
     }
 
     public func encode(to encoder: Encoder) throws {
