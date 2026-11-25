@@ -25,16 +25,21 @@ import Foundation
 /// A dictionary value must hold only complete wire fields that carry its key as their tag.
 /// The dictionary style accessors (`subscript`, `keys`, `values`, `count`, `removeValue` and `updateValue`)
 /// read the bytes each time, so their cost is linear in the size of the data.
+///
+/// This type is one pointer in size, because every generated message holds one and messages are stored inline in each other.
+/// The bytes live in a reference to a box that is nil when there are no fields, so an empty value does not allocate.
+/// Copies share the box, and a mutation copies the bytes first when the box is shared.
 public struct UnknownFields: Sendable {
     public typealias Key = UInt32
     public typealias Value = Data
 
-    /// The wire bytes of every field, ordered by tag.
-    public private(set) var rawData: Data
+    /// Holds the bytes of the fields. It is nil if, and only if, there are no fields.
+    private var storage: Storage?
 
-    public init() {
-        rawData = Data()
-    }
+    /// The wire bytes of every field, ordered by tag.
+    public var rawData: Data { storage?.data ?? Data() }
+
+    public init() {}
 
     /// Creates unknown fields from wire bytes.
     ///
@@ -42,13 +47,13 @@ public struct UnknownFields: Sendable {
     /// Bytes that are not valid fields are kept at the end, as they are.
     public init(rawData: Data) {
         // This also moves a `Data` slice to indices that start at zero.
-        self.rawData = Data(rawData)
-        self.canonicalize()
+        let data = Data(rawData)
+        self.init(orderedRawData: data.withUnsafeBytes { Self.orderedCopy(of: $0) } ?? data)
     }
 
     /// Creates unknown fields from bytes that are already ordered by tag.
     internal init(orderedRawData: Data) {
-        self.rawData = orderedRawData
+        self.storage = orderedRawData.isEmpty ? nil : Storage(orderedRawData)
     }
 
     /// Creates unknown fields from a dictionary of tag to wire bytes.
@@ -68,7 +73,7 @@ public struct UnknownFields: Sendable {
         for tag in fieldsByTag.keys.sorted() {
             data.append(fieldsByTag[tag]!)
         }
-        self.rawData = data
+        self.init(orderedRawData: data)
     }
 
     /// Creates empty unknown fields. The capacity is ignored.
@@ -76,7 +81,7 @@ public struct UnknownFields: Sendable {
         self.init()
     }
 
-    public var isEmpty: Bool { rawData.isEmpty }
+    public var isEmpty: Bool { storage == nil }
 
     /// The number of distinct tags. This reads all the data.
     public var count: Int {
@@ -200,7 +205,18 @@ public struct UnknownFields: Sendable {
                 if let newValue { result.append(newValue) }
                 result.append(bytes, removeEnd...)
             }
-            rawData = result
+            replaceRawData(with: result)
+        }
+    }
+
+    /// Sets the bytes, and reuses the box when no other copy shares it.
+    private mutating func replaceRawData(with data: Data) {
+        if data.isEmpty {
+            storage = nil
+        } else if isKnownUniquelyReferenced(&storage) {
+            storage?.data = data
+        } else {
+            storage = Storage(data)
         }
     }
 
@@ -291,16 +307,9 @@ public struct UnknownFields: Sendable {
         return isValid && end == data.count
     }
 
-    /// Orders the fields by tag. Fields with the same tag keep their order.
-    private mutating func canonicalize() {
-        if let ordered = rawData.withUnsafeBytes({ Self.orderedCopy(of: $0) }) {
-            rawData = ordered
-        }
-    }
-
     /// Creates unknown fields from bytes that may be out of order, without first copying them to a `Data`.
     internal init(unorderedBytes bytes: UnsafeRawBufferPointer) {
-        self.rawData = Self.orderedCopy(of: bytes) ?? Data(bytes)
+        self.init(orderedRawData: Self.orderedCopy(of: bytes) ?? Data(bytes))
     }
 
     /// Returns the fields ordered by tag, or nil if they already are. Fields with the same tag keep their order.
@@ -391,9 +400,21 @@ private struct TagOffset {
     var offset: Int
 }
 
+/// The shared bytes of one or more `UnknownFields` values.
+///
+/// The owner of a reference changes `data` only after `isKnownUniquelyReferenced` returned true for it.
+/// A box that is shared is never changed, so it is safe to read from many threads.
+private final class Storage: @unchecked Sendable {
+    var data: Data
+
+    init(_ data: Data) {
+        self.data = data
+    }
+}
+
 extension UnknownFields: Equatable, Hashable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.rawData == rhs.rawData
+        lhs.storage === rhs.storage || lhs.rawData == rhs.rawData
     }
 
     public func hash(into hasher: inout Hasher) {

@@ -618,6 +618,136 @@ final class UnknownFieldsTests: XCTestCase {
         XCTAssertTrue(message.unknownFields.isEmpty)
     }
 
+    // MARK: - Tests - Size and Copy on Write
+
+    func testUnknownFieldsIsOnePointerInSize() {
+        XCTAssertEqual(MemoryLayout<UnknownFields>.size, 8)
+        XCTAssertEqual(MemoryLayout<UnknownFields>.size, MemoryLayout<AnyObject>.size)
+    }
+
+    func testExtensibleUnknownFieldsIsAtMostTwoPointersInSize() {
+        XCTAssertLessThanOrEqual(MemoryLayout<ExtensibleUnknownFields>.size, 16)
+    }
+
+    func testEmptyUnknownFieldsAreEmptyEverywhere() throws {
+        var fields = UnknownFields()
+        XCTAssertTrue(fields.isEmpty)
+        XCTAssertEqual(fields.rawData, Foundation.Data())
+        XCTAssertEqual(fields, UnknownFields(rawData: Foundation.Data()))
+        XCTAssertEqual(fields, UnknownFields(fieldsByTag: [:]))
+        XCTAssertEqual(fields.hashValue, UnknownFields(rawData: Foundation.Data()).hashValue)
+
+        // Removing the last field makes the value empty again.
+        fields[1] = Foundation.Data(varintField(1, 1))
+        XCTAssertFalse(fields.isEmpty)
+        fields[1] = nil
+        XCTAssertTrue(fields.isEmpty)
+        XCTAssertEqual(fields, UnknownFields())
+    }
+
+    func testMutatingACopyOfUnknownFieldsDoesNotChangeTheOriginal() {
+        var original = UnknownFields()
+        original[10] = Foundation.Data(varintField(10, 1))
+        original[30] = Foundation.Data(varintField(30, 3))
+        let originalBytes = original.rawData
+
+        var copy = original
+        copy[20] = Foundation.Data(varintField(20, 2))
+        XCTAssertEqual(original.rawData, originalBytes)
+        XCTAssertEqual(original.keys, [10, 30])
+        XCTAssertEqual(copy.keys, [10, 20, 30])
+
+        var replaced = original
+        replaced[10] = Foundation.Data(varintField(10, 99))
+        XCTAssertEqual(original[10], Foundation.Data(varintField(10, 1)))
+        XCTAssertEqual(replaced[10], Foundation.Data(varintField(10, 99)))
+
+        var removed = original
+        removed[30] = nil
+        XCTAssertEqual(original.keys, [10, 30])
+        XCTAssertEqual(removed.keys, [10])
+
+        var emptied = original
+        emptied.fieldsByTag = [:]
+        XCTAssertTrue(emptied.isEmpty)
+        XCTAssertEqual(original.rawData, originalBytes)
+    }
+
+    func testMutatingTheOriginalDoesNotChangeItsCopies() {
+        var original = UnknownFields()
+        original[10] = Foundation.Data(varintField(10, 1))
+        let copy = original
+
+        original[10] = Foundation.Data(varintField(10, 2))
+        original[5] = Foundation.Data(varintField(5, 5))
+
+        XCTAssertEqual(copy.rawData, Foundation.Data(varintField(10, 1)))
+        XCTAssertEqual(original.rawData, Foundation.Data(varintField(5, 5) + varintField(10, 2)))
+    }
+
+    func testMutatingAUniqueValueKeepsGivingTheRightBytes() {
+        var fields = UnknownFields()
+        for tag in stride(from: UInt32(50), through: 1, by: -1) {
+            fields[tag] = Foundation.Data(varintField(tag, UInt64(tag)))
+        }
+        XCTAssertEqual(fields.keys, Array(1...50))
+        XCTAssertEqual(fields.rawData, Foundation.Data((1...50).flatMap { varintField(UInt32($0), UInt64($0)) }))
+    }
+
+    func testUnknownFieldsFromDecodingAreNotChangedByMutatingACopyOfTheMessage() throws {
+        let input = Foundation.Data(varintField(1, 7) + varintField(100, 1) + varintField(200, 2))
+        let original = try ProtoDecoder().decode(SimpleOptional2.self, from: input)
+
+        var copy = original
+        copy.unknownFields[150] = Foundation.Data(varintField(150, 3))
+        copy.opt_int32 = 8
+
+        XCTAssertEqual(original.opt_int32, 7)
+        XCTAssertEqual(original.unknownFields.keys, [100, 200])
+        XCTAssertEqual(try ProtoEncoder().encode(original), input)
+        XCTAssertEqual(copy.unknownFields.keys, [100, 150, 200])
+        XCTAssertNotEqual(original, copy)
+    }
+
+    func testEqualityDoesNotDependOnSharingTheSameBuffer() throws {
+        let input = Foundation.Data(varintField(100, 1) + varintField(200, 2))
+        let first = try ProtoDecoder().decode(SimpleOptional2.self, from: input)
+        let second = try ProtoDecoder().decode(SimpleOptional2.self, from: input)
+        let copy = first
+
+        XCTAssertEqual(first.unknownFields, second.unknownFields)
+        XCTAssertEqual(first.unknownFields, copy.unknownFields)
+        XCTAssertEqual(first.unknownFields.hashValue, second.unknownFields.hashValue)
+    }
+
+    func testExtensibleUnknownFieldsCopyOnWriteWithTheSharedBuffer() throws {
+        var original = ExtensibleUnknownFields()
+        original[10] = Foundation.Data(varintField(10, 1))
+        var copy = original
+
+        copy[10] = Foundation.Data(varintField(10, 2))
+        copy[20] = Foundation.Data(varintField(20, 3))
+
+        XCTAssertEqual(original.rawData, Foundation.Data(varintField(10, 1)))
+        XCTAssertEqual(copy.rawData, Foundation.Data(varintField(10, 2) + varintField(20, 3)))
+    }
+
+    func testUnknownFieldsCanBeSharedAcrossThreads() {
+        var fields = UnknownFields()
+        for tag in 1...100 { fields[UInt32(tag)] = Foundation.Data(varintField(UInt32(tag), 1)) }
+        let expected = fields.rawData
+        let results = (0..<8).map { _ in Atomic(false) }
+
+        DispatchQueue.concurrentPerform(iterations: 8) { index in
+            var local = fields
+            local[1000 + UInt32(index)] = Foundation.Data(varintField(1000 + UInt32(index), 1))
+            results[index].value = fields.rawData == expected && local.keys.count == 101
+        }
+
+        XCTAssertTrue(results.allSatisfy { $0.value })
+        XCTAssertEqual(fields.rawData, expected)
+    }
+
     // MARK: - Helpers
 
     private func varintBytes(_ value: UInt64) -> [UInt8] {
@@ -654,4 +784,9 @@ final class UnknownFieldsTests: XCTestCase {
     private func fixed32Field(_ tag: UInt32, _ value: UInt32) -> [UInt8] {
         key(tag, 5) + (0..<4).map { UInt8((value >> (8 * UInt32($0))) & 0xFF) }
     }
+}
+
+private final class Atomic<T>: @unchecked Sendable {
+    var value: T
+    init(_ value: T) { self.value = value }
 }
