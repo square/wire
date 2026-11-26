@@ -17,7 +17,7 @@ Current Key
 | Created     | 2024-11-18                                             |
 | Expires     | 2034-11-16                                             |
 
-This key signs all Wire 6.x and 7.x releases.
+This key signs all Wire 6.x, 7.x and 8.x releases.
 
 Download the key from a public keyserver:
 
@@ -31,7 +31,7 @@ Verify an Artifact Manually
 Download an artifact and its `.asc` signature from Maven Central. Then verify the signature:
 
 ```
-gpg --verify wire-runtime-7.0.3.jar.asc wire-runtime-7.0.3.jar
+gpg --verify wire-runtime-8.0.0-alpha01.jar.asc wire-runtime-8.0.0-alpha01.jar
 ```
 
 Confirm that the output reports a good signature. Confirm that the primary key fingerprint matches
