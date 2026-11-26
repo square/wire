@@ -235,6 +235,27 @@ public class RuntimeMessageAdapterRedactTest {
   }
 
   @Test
+  public void generatedOneOfChangesOnlyTheMemberThatIsSet() {
+    ProtoAdapter<RedactedOneOf> reflective = ProtoAdapter.newMessageAdapter(RedactedOneOf.class);
+    RedactedOneOf[] messages = {
+      new RedactedOneOf.Builder().a("a").build(),
+      new RedactedOneOf.Builder().b(new RedactedFields("a", "b", "c", null)).build(),
+      new RedactedOneOf.Builder().c("c").build(),
+      new RedactedOneOf.Builder().build(),
+    };
+    RedactedOneOf[] expected = {
+      new RedactedOneOf.Builder().build(),
+      new RedactedOneOf.Builder().b(new RedactedFields(null, "b", "c", null)).build(),
+      new RedactedOneOf.Builder().c("c").build(),
+      new RedactedOneOf.Builder().build(),
+    };
+    for (int i = 0; i < messages.length; i++) {
+      assertThat(RedactedOneOf.ADAPTER.redact(messages[i])).isEqualTo(expected[i]);
+      assertThat(reflective.redact(messages[i])).isEqualTo(expected[i]);
+    }
+  }
+
+  @Test
   public void reflectiveRequiredRedactedFieldThrowsRedacting() {
     ProtoAdapter<RedactedRequired> adapter = ProtoAdapter.newMessageAdapter(RedactedRequired.class);
     try {
