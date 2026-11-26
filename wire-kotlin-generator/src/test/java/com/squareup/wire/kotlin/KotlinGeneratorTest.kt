@@ -3335,6 +3335,81 @@ class KotlinGeneratorTest {
     }
   }
 
+  @Test fun flatOneofRedactWithBuildersOnlyDoesNotClearOtherMembers() {
+    val schema = buildSchema {
+      add(
+        "message.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |import "option_redacted.proto";
+        |message Choices {
+        |  optional string name = 1;
+        |  optional Inner other = 2;
+        |  oneof choice {
+        |    Inner nested = 3;
+        |    string text = 4;
+        |    string secret = 5 [(squareup.protos.redacted_option.redacted) = true];
+        |  }
+        |}
+        |message Single {
+        |  oneof choice {
+        |    Inner nested = 1;
+        |  }
+        |}
+        |message Inner {
+        |  optional string password = 1 [(squareup.protos.redacted_option.redacted) = true];
+        |}
+        """.trimMargin(),
+      )
+      add(
+        "option_redacted.proto".toPath(),
+        """
+        |syntax = "proto2";
+        |package squareup.protos.redacted_option;
+        |import "google/protobuf/descriptor.proto";
+        |extend google.protobuf.FieldOptions {
+        |  optional bool redacted = 22200;
+        |}
+        """.trimMargin(),
+      )
+    }
+    for (javaInterop in listOf(false, true)) {
+      val code = KotlinWithProfilesGenerator(schema).generateKotlin(
+        "Choices",
+        buildersOnly = true,
+        javaInterop = javaInterop,
+      )
+      // The setter of a oneof member clears the other members, even for null. Only the members
+      // that are set are redacted.
+      assertThat(code).contains(
+        """
+        |      override fun redact(`value`: Choices): Choices = Choices(
+        |        builder = value.newBuilder()
+        |          .other(value.other?.let(Inner.ADAPTER::redact))
+        |          .also { builder ->
+        |            value.nested?.let { builder.nested(Inner.ADAPTER.redact(it)) }
+        |            if (value.secret != null) builder.secret(null)
+        |          },
+        |        unknownFields = ByteString.EMPTY,
+        |      )
+        """.trimMargin(),
+      )
+    }
+
+    // A oneof with one member has no other member to clear.
+    val single = KotlinWithProfilesGenerator(schema).generateKotlin(
+      "Single",
+      buildersOnly = true,
+    )
+    assertThat(single).contains(".nested(value.nested?.let(Inner.ADAPTER::redact))")
+    assertThat(single).doesNotContain("also {")
+
+    // Without `buildersOnly`, `redact` calls `copy()` and no setter.
+    val copy = KotlinWithProfilesGenerator(schema).generateKotlin("Choices", javaInterop = true)
+    assertThat(copy).contains("secret = null,")
+    assertThat(copy).doesNotContain("also {")
+  }
+
   @Test fun boxedOneofRedactIsTheSameSizeForAnyNumberOfMembers() {
     fun redactFunction(memberCount: Int): String {
       val members = (1..memberCount).joinToString("\n") { "    Inner member_$it = $it;" }

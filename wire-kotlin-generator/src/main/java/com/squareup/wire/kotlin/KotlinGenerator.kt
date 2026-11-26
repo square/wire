@@ -2662,6 +2662,14 @@ class KotlinGenerator private constructor(
     }
 
     if (buildersOnly) {
+      // A builder setter for a member of a flat oneof clears the other members, even when it gets
+      // null. Those members are only redacted when they are set. Oneofs with one member have
+      // nothing to clear and keep the plain setter call.
+      val clearingOneOfFields = message.flatOneOfs()
+        .filter { it.fields.size >= 2 }
+        .flatMap { it.fields }
+        .toSet()
+      val oneOfMemberRedactions = mutableListOf<CodeBlock>()
       val newBuilderBlock = buildCodeBlock {
         add("return %T(\n⇥builder = value.newBuilder()⇥", className)
         for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
@@ -2669,7 +2677,19 @@ class KotlinGenerator private constructor(
             is Field -> {
               val fieldName = nameAllocator[fieldOrOneOf]
               val redactedField = fieldOrOneOf.redact(fieldName)
-              if (redactedField != null) {
+              if (redactedField == null) {
+                // Nothing to redact.
+              } else if (fieldOrOneOf in clearingOneOfFields) {
+                oneOfMemberRedactions += if (fieldOrOneOf.isRedacted) {
+                  CodeBlock.of("if (value.%1N != null) builder.%1N(null)", fieldName)
+                } else {
+                  CodeBlock.of(
+                    "value.%1N?.let { builder.%1N(%2L.redact(it)) }",
+                    fieldName,
+                    fieldOrOneOf.getAdapterName(),
+                  )
+                }
+              } else {
                 add("\n.%1N(%2L)", fieldName, redactedField)
               }
             }
@@ -2684,6 +2704,13 @@ class KotlinGenerator private constructor(
 
             else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
           }
+        }
+        if (oneOfMemberRedactions.isNotEmpty()) {
+          add("\n.also { builder ->\n⇥")
+          for (redaction in oneOfMemberRedactions) {
+            add("%L\n", redaction)
+          }
+          add("⇤}")
         }
         add(",⇤\n")
         add("unknownFields = %T.EMPTY,⇤\n", ByteString::class)

@@ -28,6 +28,7 @@ wire {
       "easter.proto",
       "external_message.proto",
       "foreign.proto",
+      "flat_redacted_one_of.proto",
       "form.proto",
       "map.proto",
       "person.proto",
@@ -59,6 +60,24 @@ wire {
     includes = listOf("squareup.protos.kotlin.edgecases.MergeChoiceBuildersOnly")
     buildersOnly = true
     javaInterop = true
+  }
+
+  kotlin {
+    includes = listOf(
+      "squareup.protos.kotlin.flat_redacted.FlatRedactedOneOfBuildersOnly",
+      "squareup.protos.kotlin.flat_redacted.FlatRedactedSingleOneOfBuildersOnly",
+    )
+    buildersOnly = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.flat_redacted.FlatRedactedOneOfInteropBuildersOnly")
+    buildersOnly = true
+    javaInterop = true
+  }
+
+  kotlin {
+    includes = listOf("squareup.protos.kotlin.flat_redacted.FlatRedactedOneOfPlain")
   }
 
   kotlin {
