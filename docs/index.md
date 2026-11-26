@@ -768,6 +768,25 @@ api "com.squareup.wire:wire-runtime:4.9.2"
 
 Snapshots of the development version are available in [the Central Portal Snapshots repository][snap].
 
+### Platform support
+
+Wire artifacts support these platforms:
+
+| Artifact | JVM | JS | Native | Wasm |
+|----------|-----|----|--------|------|
+| `wire-runtime` | Yes | Yes | Yes | Yes |
+| `wire-grpc-client` | Yes | API only | API only | API only |
+| `wire-schema`, `wire-schema-tests` | Yes | Yes | Yes | No |
+| `wire-compiler`, `wire-gradle-plugin`, `wire-moshi-adapter`, `wire-gson-support`, `wire-reflector`, `wire-grpc-mockwebserver` | Yes | No | No | No |
+
+Native includes `iosX64`, `iosArm64`, `iosSimulatorArm64`, `tvosX64`, `tvosArm64`, `tvosSimulatorArm64`, `macosX64`, `macosArm64`, `linuxX64`, and `mingwX64`.
+`wire-runtime` also supports `linuxArm64`.
+Wasm includes `wasmJs` and `wasmWasi`.
+
+Only the JVM has a gRPC client implementation, which uses [OkHttp][okhttp].
+On the other platforms, `wire-grpc-client` contains the `GrpcClient` API that generated services use, but no transport.
+To make calls on these platforms, you must implement `GrpcClient` yourself.
+
 
 Unsupported
 -----------
@@ -791,6 +810,7 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
 [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
 [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
 [snap]: https://central.sonatype.com/repository/maven-snapshots/
+[okhttp]: https://square.github.io/okhttp/
 [wire]: https://square.github.io/wire/
 
 [compiler_docs]: wire_compiler.md
