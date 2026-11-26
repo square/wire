@@ -6,6 +6,13 @@
 // - Show declarations: true
 
 // Library unique name: <com.squareup.wire:wire-runtime>
+open annotation class com.squareup.wire/WireBoxedOneof : kotlin/Annotation { // com.squareup.wire/WireBoxedOneof|null[0]
+    constructor <init>(kotlin/Int) // com.squareup.wire/WireBoxedOneof.<init>|<init>(kotlin.Int){}[0]
+
+    final val schemaIndex // com.squareup.wire/WireBoxedOneof.schemaIndex|{}schemaIndex[0]
+        final fun <get-schemaIndex>(): kotlin/Int // com.squareup.wire/WireBoxedOneof.schemaIndex.<get-schemaIndex>|<get-schemaIndex>(){}[0]
+}
+
 open annotation class com.squareup.wire/WireEnclosingType : kotlin/Annotation { // com.squareup.wire/WireEnclosingType|null[0]
     constructor <init>() // com.squareup.wire/WireEnclosingType.<init>|<init>(){}[0]
 }

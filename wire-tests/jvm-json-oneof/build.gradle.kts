@@ -39,6 +39,14 @@ wire {
     javaInterop = true
   }
   kotlin {
+    includes = listOf("squareup.wire.json.oneof.boxed_plain.*")
+    oneofMode = "boxed"
+  }
+  kotlin {
+    includes = listOf("squareup.wire.json.oneof.boxed_min_size.*")
+    boxOneOfsMinSize = 3
+  }
+  kotlin {
     includes = listOf("squareup.wire.json.oneof.boxed_builders.*")
     oneofMode = "boxed"
     buildersOnly = true

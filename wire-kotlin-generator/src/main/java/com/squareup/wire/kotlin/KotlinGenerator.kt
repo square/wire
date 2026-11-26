@@ -70,6 +70,7 @@ import com.squareup.wire.ProtoReader32
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
+import com.squareup.wire.WireBoxedOneof
 import com.squareup.wire.WireEnclosingType
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
@@ -1288,17 +1289,14 @@ class KotlinGenerator private constructor(
             schemaIndex = schemaIndex++,
           ),
         )
-        is OneOf -> {
-          val sealedIndex = if (fieldOrOneOf in message.sealedOneOfs()) schemaIndex++ else null
-          result.add(
-            constructorParameterAndProperty(
-              message = message,
-              oneOf = fieldOrOneOf,
-              nameAllocator = nameAllocator,
-              schemaIndex = sealedIndex,
-            ),
-          )
-        }
+        is OneOf -> result.add(
+          constructorParameterAndProperty(
+            message = message,
+            oneOf = fieldOrOneOf,
+            nameAllocator = nameAllocator,
+            schemaIndex = schemaIndex++,
+          ),
+        )
         else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
     }
@@ -1392,7 +1390,7 @@ class KotlinGenerator private constructor(
     message: MessageType,
     oneOf: OneOf,
     nameAllocator: NameAllocator,
-    schemaIndex: Int? = null,
+    schemaIndex: Int,
   ): Pair<ParameterSpec, PropertySpec> {
     val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
     val fieldName = nameAllocator[oneOf]
@@ -1405,9 +1403,11 @@ class KotlinGenerator private constructor(
       .initializer(CodeBlock.of(if (buildersOnly) "builder.%N" else "%N", fieldName))
       .jvmFieldIf(useJavaInterop, jvmAnnotationPackage)
       .apply {
-        if (!buildersOnly && schemaIndex != null) {
+        if (!buildersOnly) {
+          // The reflective builder uses the schema index to place the oneof in the constructor.
+          val annotationClass = if (oneOf in message.sealedOneOfs()) WireSealedOneof::class else WireBoxedOneof::class
           addAnnotation(
-            AnnotationSpec.builder(WireSealedOneof::class)
+            AnnotationSpec.builder(annotationClass)
               .useSiteTarget(AnnotationSpec.UseSiteTarget.FIELD)
               .addMember("schemaIndex = %L", schemaIndex)
               .build(),

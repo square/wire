@@ -405,6 +405,10 @@ public final class com/squareup/wire/Wire {
 	public static final fun get (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 }
 
+public abstract interface annotation class com/squareup/wire/WireBoxedOneof : java/lang/annotation/Annotation {
+	public abstract fun schemaIndex ()I
+}
+
 public abstract interface annotation class com/squareup/wire/WireEnclosingType : java/lang/annotation/Annotation {
 }
 
