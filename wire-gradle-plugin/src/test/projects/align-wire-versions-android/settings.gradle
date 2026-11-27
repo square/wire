@@ -1,0 +1,11 @@
+pluginManagement {
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    google()
+    mavenCentral()
+  }
+}
+
+include ':'

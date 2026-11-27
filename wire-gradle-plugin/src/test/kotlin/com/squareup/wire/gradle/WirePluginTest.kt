@@ -1627,6 +1627,332 @@ class WirePluginTest {
     assertThat(result.task(":app:generateProtos")).isNotNull()
   }
 
+  @Test
+  fun alignsOlderWireArtifactDeclaredDirectly() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+
+    val graph = wireGraph("align-wire-versions", fakeRepo, "com.squareup.wire:wire-grpc-client:7.0.0")
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      assertThat(graph.versionsOf(classpath, "wire-grpc-client")).containsExactly(wireVersion)
+    }
+  }
+
+  @Test
+  fun alignsOlderWireArtifactFromTransitiveDependency() {
+    val fakeRepo = fakeWireRepo(
+      "com.squareup.wire:wire-grpc-client:7.2.2",
+      "com.squareup.wire:wire-runtime-jvm:7.2.2",
+    )
+    fakePom(
+      fakeRepo,
+      "com.example:old-protos:1.0",
+      dependencies = listOf(
+        "com.squareup.wire:wire-grpc-client:7.2.2",
+        "com.squareup.wire:wire-runtime-jvm:7.2.2",
+      ),
+    )
+
+    val graph = wireGraph("align-wire-versions", fakeRepo, "com.example:old-protos:1.0")
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      assertThat(graph.versionsOf(classpath, "wire-grpc-client")).containsExactly(wireVersion)
+      assertThat(graph.versionsOf(classpath, "wire-runtime")).containsExactly(wireVersion)
+    }
+  }
+
+  @Test
+  fun alignsWireArtifactVersionedByOlderBom() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.2.2")
+    fakePom(
+      fakeRepo,
+      "com.squareup.wire:wire-bom:7.2.2",
+      packaging = "pom",
+      managedDependencies = listOf("com.squareup.wire:wire-grpc-client:7.2.2"),
+    )
+
+    // The dependency has no version, the BOM provides it.
+    val graph = wireGraph(
+      "align-wire-versions",
+      fakeRepo,
+      "platform:com.squareup.wire:wire-bom:7.2.2",
+      "com.squareup.wire:wire-grpc-client",
+    )
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      assertThat(graph.versionsOf(classpath, "wire-grpc-client")).containsExactly(wireVersion)
+    }
+  }
+
+  @Test
+  fun alignsOtherOlderWireArtifacts() {
+    val fakeRepo = fakeWireRepo(
+      "com.squareup.wire:wire-moshi-adapter:7.0.0",
+      "com.squareup.wire:wire-moshi-adapter:$wireVersion",
+      "com.squareup.wire:wire-runtime-jvm:7.0.0",
+    )
+
+    val graph = wireGraph(
+      "align-wire-versions",
+      fakeRepo,
+      "com.squareup.wire:wire-moshi-adapter:7.0.0",
+      "com.squareup.wire:wire-runtime-jvm:7.0.0",
+    )
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      assertThat(graph.versionsOf(classpath, "wire-moshi-adapter")).containsExactly(wireVersion)
+      assertThat(graph.versionsOf(classpath, "wire-runtime")).containsExactly(wireVersion)
+    }
+  }
+
+  @Test
+  fun doesNotAddWireArtifactsMissingFromTheGraph() {
+    val fakeRepo = fakeWireRepo()
+
+    val graph = wireGraph("align-wire-versions", fakeRepo)
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      // Only the runtime, which the plugin adds with a dependency.
+      assertThat(graph.wireModules(classpath)).isIn(setOf("wire-runtime"), setOf("wire-runtime", "wire-runtime-jvm"))
+      assertThat(graph.versionsOf(classpath, "wire-runtime")).containsExactly(wireVersion)
+    }
+  }
+
+  @Test
+  fun doesNotAddOtherWireArtifactsWhenOneIsInTheGraph() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+
+    val graph = wireGraph("align-wire-versions", fakeRepo, "com.squareup.wire:wire-grpc-client:7.0.0")
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      assertThat(graph.wireModules(classpath).filter { it.startsWith("wire-moshi") || it.startsWith("wire-gson") }).isEmpty()
+      assertThat(graph.wireModules(classpath).filter { it.startsWith("wire-schema") || it.startsWith("wire-reflector") }).isEmpty()
+    }
+  }
+
+  @Test
+  fun higherExplicitWireVersionWins() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:99.0.0")
+
+    val graph = wireGraph("align-wire-versions", fakeRepo, "com.squareup.wire:wire-grpc-client:99.0.0")
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      assertThat(graph.versionsOf(classpath, "wire-grpc-client")).containsExactly("99.0.0")
+    }
+  }
+
+  @Test
+  fun doesNotAlignWireArtifactsWithoutGeneratedCode() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+
+    // No Java or Kotlin output means no runtime dependency, and no constraints either.
+    val graph = wireGraph(
+      "align-wire-versions",
+      fakeRepo,
+      "com.squareup.wire:wire-grpc-client:7.0.0",
+      extraArguments = arrayOf("-PprotoOnly=true"),
+    )
+
+    for (classpath in listOf("compileClasspath", "runtimeClasspath")) {
+      assertThat(graph.versionsOf(classpath, "wire-grpc-client")).containsExactly("7.0.0")
+      assertThat(graph.versionsOf(classpath, "wire-runtime")).isEmpty()
+    }
+  }
+
+  @Test
+  fun publishesWireVersionConstraintsInModuleMetadataOnly() {
+    val fakeRepo = fakeWireRepo()
+    val fixtureRoot = File("src/test/projects/align-wire-versions")
+
+    fixtureGradleRunner(
+      fixtureRoot,
+      "generateMetadataFileForMavenPublication",
+      "generatePomFileForMavenPublication",
+      "-PfakeRepo=${fakeRepo.path}",
+      "-PextraDependencies=",
+    ).build()
+
+    val module = File(fixtureRoot, "build/publications/maven/module.json").readText()
+    val pom = File(fixtureRoot, "build/publications/maven/pom-default.xml").readText()
+
+    // The constraints are published for both the compile and the runtime variants.
+    val constraintBlocks = module.split("\"dependencyConstraints\"").drop(1)
+    assertThat(constraintBlocks.size).isEqualTo(2)
+    for (block in constraintBlocks) {
+      val constraints = block.substringBefore("]")
+      for (name in listOf(
+        "wire-grpc-client",
+        "wire-grpc-client-jvm",
+        "wire-moshi-adapter",
+        "wire-runtime",
+        "wire-runtime-jvm",
+        "wire-schema",
+        "wire-schema-jvm",
+      )) {
+        assertThat(constraints).contains("\"module\": \"$name\"")
+      }
+      assertThat(Regex("\"requires\": \"$wireVersion\"").findAll(constraints).count())
+        .isEqualTo(Regex("\"module\"").findAll(constraints).count())
+    }
+    assertThat(module).doesNotContain("\"strictly\"")
+
+    // Only the runtime is a dependency. The constraints are not.
+    val moduleDependencies = module.split("\"dependencies\"").drop(1).map { it.substringBefore("]") }
+    assertThat(moduleDependencies.size).isEqualTo(2)
+    for (block in moduleDependencies) {
+      assertThat(block).contains("\"module\": \"wire-runtime\"")
+      assertThat(block).doesNotContain("wire-grpc-client")
+      assertThat(block).doesNotContain("wire-moshi-adapter")
+    }
+
+    // Gradle writes the constraints in the POM as managed versions, not as dependencies.
+    assertThat(pom.substringBefore("</dependencyManagement>")).contains("<artifactId>wire-grpc-client</artifactId>")
+    val pomDependencies = pom.substringAfter("</dependencyManagement>")
+    assertThat(pomDependencies).contains("<artifactId>wire-runtime-jvm</artifactId>")
+    assertThat(pomDependencies).doesNotContain("wire-grpc-client")
+    assertThat(pomDependencies).doesNotContain("wire-moshi-adapter")
+  }
+
+  @Test
+  fun alignsOlderWireArtifactInKotlinMultiplatform() {
+    val fakeRepo = fakeWireRepo(
+      "com.squareup.wire:wire-grpc-client:7.0.0",
+      "com.squareup.wire:wire-runtime-jvm:7.0.0",
+    )
+    val kmpJsEnabled = System.getProperty("kjs", "true")!!.toBoolean()
+    val kmpNativeEnabled = System.getProperty("knative", "true")!!.toBoolean()
+
+    val graph = wireGraph(
+      "align-wire-versions-kmp",
+      fakeRepo,
+      "com.squareup.wire:wire-grpc-client:7.0.0",
+      "com.squareup.wire:wire-runtime-jvm:7.0.0",
+      extraArguments = arrayOf("-Dkjs=$kmpJsEnabled", "-Dknative=$kmpNativeEnabled"),
+    )
+
+    for (classpath in kmpClasspaths(kmpJsEnabled, kmpNativeEnabled)) {
+      assertThat(graph.versionsOf(classpath, "wire-grpc-client"), classpath).containsExactly(wireVersion)
+      assertThat(graph.versionsOf(classpath, "wire-runtime"), classpath).containsExactly(wireVersion)
+    }
+  }
+
+  @Test
+  fun doesNotAddWireArtifactsMissingFromTheGraphInKotlinMultiplatform() {
+    val fakeRepo = fakeWireRepo()
+    val kmpJsEnabled = System.getProperty("kjs", "true")!!.toBoolean()
+    val kmpNativeEnabled = System.getProperty("knative", "true")!!.toBoolean()
+
+    val graph = wireGraph(
+      "align-wire-versions-kmp",
+      fakeRepo,
+      extraArguments = arrayOf("-Dkjs=$kmpJsEnabled", "-Dknative=$kmpNativeEnabled"),
+    )
+
+    for (classpath in kmpClasspaths(kmpJsEnabled, kmpNativeEnabled)) {
+      assertThat(graph.wireModules(classpath).filter { !it.startsWith("wire-runtime") }, classpath).isEmpty()
+      assertThat(graph.versionsOf(classpath, "wire-runtime"), classpath).containsExactly(wireVersion)
+    }
+  }
+
+  @Test
+  fun alignsOlderWireArtifactInAndroidLibrary() {
+    writeAndroidSdkLocalProperties(File("src/test/projects/align-wire-versions-android"))
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+
+    val graph = wireGraph("align-wire-versions-android", fakeRepo, "com.squareup.wire:wire-grpc-client:7.0.0")
+
+    for (classpath in listOf("debugCompileClasspath", "debugRuntimeClasspath")) {
+      assertThat(graph.versionsOf(classpath, "wire-grpc-client"), classpath).containsExactly(wireVersion)
+      assertThat(graph.versionsOf(classpath, "wire-runtime"), classpath).containsExactly(wireVersion)
+      assertThat(graph.wireModules(classpath).filter { it.startsWith("wire-moshi") }, classpath).isEmpty()
+    }
+  }
+
+  private fun kmpClasspaths(js: Boolean, native: Boolean) = buildList {
+    add("jvmCompileClasspath")
+    add("jvmRuntimeClasspath")
+    if (js) add("jsCompileClasspath")
+    if (native) add("linuxX64CompileKlibraries")
+  }
+
+  /** Writes a Maven repository with POM-only modules, for example `group:name:version`. */
+  private fun fakeWireRepo(vararg coordinates: String): File {
+    val repo = tmpFolder.newFolder("fakeRepo")
+    for (coordinate in coordinates) {
+      fakePom(repo, coordinate)
+    }
+    return repo
+  }
+
+  private fun fakePom(
+    repo: File,
+    coordinate: String,
+    packaging: String = "jar",
+    dependencies: List<String> = listOf(),
+    managedDependencies: List<String> = listOf(),
+  ) {
+    fun xml(tag: String, coordinates: List<String>) = coordinates.joinToString("\n") {
+      val (group, name, version) = it.split(":")
+      "<$tag><groupId>$group</groupId><artifactId>$name</artifactId><version>$version</version></$tag>"
+    }
+
+    val (group, name, version) = coordinate.split(":")
+    val directory = File(repo, "${group.replace('.', '/')}/$name/$version").also { it.mkdirs() }
+    File(directory, "$name-$version.pom").writeText(
+      """
+      |<project>
+      |  <modelVersion>4.0.0</modelVersion>
+      |  <groupId>$group</groupId>
+      |  <artifactId>$name</artifactId>
+      |  <version>$version</version>
+      |  <packaging>$packaging</packaging>
+      |  <dependencyManagement><dependencies>
+      |${xml("dependency", managedDependencies)}
+      |  </dependencies></dependencyManagement>
+      |  <dependencies>
+      |${xml("dependency", dependencies)}
+      |  </dependencies>
+      |</project>
+      |
+      """.trimMargin(),
+    )
+  }
+
+  /** Resolved Wire modules by classpath, from the `printWireGraph` task of an alignment fixture. */
+  private class WireGraph(private val modules: Map<String, List<Pair<String, String>>>) {
+    fun wireModules(classpath: String) = modules[classpath].orEmpty().map { it.first }.toSet()
+
+    /** Versions of the module [name] and of its platform modules, such as `-jvm` or `-js`. */
+    fun versionsOf(classpath: String, name: String) = modules[classpath].orEmpty()
+      .filter { it.first.matches(Regex("${Regex.escape(name)}(-jvm|-js|-linuxx64)?")) }
+      .map { it.second }
+      .distinct()
+  }
+
+  private fun wireGraph(
+    fixture: String,
+    fakeRepo: File,
+    vararg extraDependencies: String,
+    extraArguments: Array<String> = arrayOf(),
+  ): WireGraph {
+    val result = fixtureGradleRunner(
+      File("src/test/projects/$fixture"),
+      "printWireGraph",
+      "--quiet",
+      "-PfakeRepo=${fakeRepo.path}",
+      "-PextraDependencies=${extraDependencies.joinToString(",")}",
+      *extraArguments,
+    ).build()
+
+    val modules = mutableMapOf<String, MutableList<Pair<String, String>>>()
+    for (line in result.output.lines().filter { it.startsWith("WIRE_GRAPH ") }) {
+      val (_, classpath, moduleAndVersion) = line.split(" ")
+      val (name, version) = moduleAndVersion.split(":")
+      modules.getOrPut(classpath) { mutableListOf() } += name to version
+    }
+    return WireGraph(modules)
+  }
+
   companion object {
     private val OUTPUT_DIRECTORY_NAMES = arrayOf("build", "custom")
 

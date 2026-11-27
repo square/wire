@@ -1,0 +1,78 @@
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
+  }
+
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'com.squareup.wire'
+
+repositories {
+  // Fake Wire artifacts, created by the test. They have a POM and no JAR.
+  maven {
+    url new File(fakeRepo).toURI().toString()
+  }
+  maven {
+    url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+  }
+  mavenCentral()
+}
+
+kotlin {
+  jvm()
+  if (System.getProperty("kjs", "true").toBoolean()) {
+    js(IR) {
+      nodejs()
+    }
+  }
+  if (System.getProperty("knative", "true").toBoolean()) {
+    linuxX64()
+  }
+}
+
+wire {
+  kotlin {
+  }
+}
+
+// Comma separated dependency notations. A `platform:` prefix declares a platform.
+kotlin.sourceSets.commonMain.dependencies {
+  for (notation in findProperty('extraDependencies').split(',')) {
+    if (notation.isEmpty()) continue
+    if (notation.startsWith('platform:')) {
+      implementation(project.dependencies.platform(notation.substring('platform:'.length())))
+    } else {
+      implementation(notation)
+    }
+  }
+}
+
+tasks.register('printWireGraph') {
+  doLast {
+    def names = ['jvmCompileClasspath', 'jvmRuntimeClasspath']
+    if (System.getProperty("kjs", "true").toBoolean()) {
+      names += ['jsCompileClasspath', 'jsRuntimeClasspath']
+    }
+    if (System.getProperty("knative", "true").toBoolean()) {
+      names += ['linuxX64CompileKlibraries']
+    }
+    for (name in names) {
+      def components = configurations.getByName(name).incoming.resolutionResult.allComponents
+      for (component in components) {
+        def id = component.moduleVersion
+        if (id.group == 'com.squareup.wire') {
+          println("WIRE_GRAPH $name ${id.name}:${id.version}")
+        }
+      }
+    }
+  }
+}

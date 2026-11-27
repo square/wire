@@ -1,0 +1,77 @@
+buildscript {
+  dependencies {
+    classpath "com.squareup.wire:wire-gradle-plugin:$wireVersion"
+    classpath libs.pluginz.kotlin
+  }
+
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    mavenCentral()
+    google()
+  }
+}
+
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'maven-publish'
+apply plugin: 'com.squareup.wire'
+
+repositories {
+  // Fake Wire artifacts, created by the test. They have a POM and no JAR.
+  maven {
+    url new File(fakeRepo).toURI().toString()
+  }
+  maven {
+    url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+  }
+  mavenCentral()
+}
+
+wire {
+  if (findProperty('protoOnly') != null) {
+    proto {
+    }
+  } else {
+    kotlin {
+    }
+  }
+}
+
+// Comma separated dependency notations. A `platform:` prefix declares a platform.
+dependencies {
+  for (notation in findProperty('extraDependencies').split(',')) {
+    if (notation.isEmpty()) continue
+    if (notation.startsWith('platform:')) {
+      add('implementation', platform(notation.substring('platform:'.length())))
+    } else {
+      add('implementation', notation)
+    }
+  }
+}
+
+publishing {
+  publications {
+    create('maven', MavenPublication) {
+      from components.java
+      groupId = 'com.example'
+      artifactId = 'library'
+      version = '1.0'
+    }
+  }
+}
+
+tasks.register('printWireGraph') {
+  doLast {
+    for (name in ['compileClasspath', 'runtimeClasspath']) {
+      def components = configurations.getByName(name).incoming.resolutionResult.allComponents
+      for (component in components) {
+        def id = component.moduleVersion
+        if (id.group == 'com.squareup.wire') {
+          println("WIRE_GRAPH $name ${id.name}:${id.version}")
+        }
+      }
+    }
+  }
+}
