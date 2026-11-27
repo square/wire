@@ -30,3 +30,7 @@ message MapTypes {
   map<fixed64, fixed64> map_fixed64_fixed64 = 10;
   map<uint64, uint64> map_uint64_uint64 = 11;
 }
+
+message MapBoolKeys {
+  map<bool, string> map_bool_string = 1;
+}
