@@ -39,14 +39,39 @@ wire {
   }
 }
 
-// Comma separated dependency notations. A `platform:` prefix declares a platform.
+// Comma separated dependency notations. The prefixes are `platform:`, `enforcedPlatform:`, and
+// `strictly:` which declares a strict version.
 dependencies {
   for (notation in findProperty('extraDependencies').split(',')) {
     if (notation.isEmpty()) continue
     if (notation.startsWith('platform:')) {
       add('implementation', platform(notation.substring('platform:'.length())))
+    } else if (notation.startsWith('enforcedPlatform:')) {
+      add('implementation', enforcedPlatform(notation.substring('enforcedPlatform:'.length())))
+    } else if (notation.startsWith('strictly:')) {
+      def (strictGroup, strictName, strictVersion) = notation.substring('strictly:'.length()).split(':')
+      add('implementation', "$strictGroup:$strictName") {
+        version {
+          strictly(strictVersion)
+        }
+      }
     } else {
       add('implementation', notation)
+    }
+  }
+}
+
+// `-Pforce=group:name:version` and `-PuseVersion=group:name:version` pin a version.
+configurations.configureEach {
+  if (findProperty('force') != null) {
+    resolutionStrategy.force(findProperty('force'))
+  }
+  if (findProperty('useVersion') != null) {
+    def (group, name, version) = findProperty('useVersion').split(':')
+    resolutionStrategy.eachDependency {
+      if (it.requested.group == group && it.requested.name == name) {
+        it.useVersion(version)
+      }
     }
   }
 }
@@ -74,4 +99,24 @@ tasks.register('printWireGraph') {
       }
     }
   }
+}
+
+// Resolves the classpaths when the task runs, and works with the configuration cache.
+abstract class ResolveClasspathsTask extends DefaultTask {
+  @InputFiles
+  abstract ConfigurableFileCollection getClasspaths()
+
+  @TaskAction
+  void resolve() {
+    println("RESOLVED ${classpaths.files.size()}")
+  }
+}
+
+// Fake modules have no JAR, so artifact failures are ignored unless `-PstrictResolution` is set.
+tasks.register('resolveClasspaths', ResolveClasspathsTask) {
+  def lenientResolution = findProperty('strictResolution') == null
+  classpaths.from(
+    configurations.compileClasspath.incoming.artifactView { lenient = lenientResolution }.files,
+    configurations.runtimeClasspath.incoming.artifactView { lenient = lenientResolution }.files,
+  )
 }

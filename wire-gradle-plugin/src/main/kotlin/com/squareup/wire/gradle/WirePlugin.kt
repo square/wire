@@ -281,6 +281,12 @@ class WirePlugin : Plugin<Project> {
     // Project dependencies are used in the Wire repo, there are no published versions to align.
     if (!isInternalBuild) {
       addWireVersionConstraints(configurationName)
+      WireVersionAlignmentWarnings(
+        logger = project.logger,
+        wireVersion = wireVersion,
+        constraintsConfigurationName = configurationName,
+        alignedModules = wireAlignedModules,
+      ).register(project.configurations)
     }
   }
 
@@ -300,7 +306,7 @@ class WirePlugin : Plugin<Project> {
     for (module in wireAlignedModules) {
       project.dependencies.constraints.add(configurationName, "com.squareup.wire:$module") { constraint ->
         constraint.version { it.require(wireVersion) }
-        constraint.because("Align Wire artifacts to the version of the Wire Gradle plugin")
+        constraint.because(WireVersionAlignmentWarnings.CONSTRAINT_REASON)
       }
     }
   }

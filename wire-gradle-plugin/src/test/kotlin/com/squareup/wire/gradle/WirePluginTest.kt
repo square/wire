@@ -1868,6 +1868,184 @@ class WirePluginTest {
     }
   }
 
+  @Test
+  fun warnsWhenProjectDeclaresOlderWireArtifact() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+
+    val output = resolveClasspaths(fakeRepo, "com.squareup.wire:wire-grpc-client:7.0.0").output
+
+    // One warning, although the module is on both the compile and the runtime classpath.
+    assertThat(wireWarnings(output)).containsExactly(
+      "Wire artifact com.squareup.wire:wire-grpc-client:7.0.0 is declared in configuration " +
+        "'compileClasspath' but resolved to $wireVersion. " +
+        "The Wire Gradle plugin aligns Wire artifacts to its version, $wireVersion, " +
+        "because code it generates needs the matching Wire artifacts. " +
+        "To silence this warning, declare wire-grpc-client at $wireVersion or newer.",
+    )
+  }
+
+  @Test
+  fun doesNotWarnWhenOlderWireVersionIsOnlyTransitive() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.2.2")
+    fakePom(
+      fakeRepo,
+      "com.example:old-protos:1.0",
+      dependencies = listOf("com.squareup.wire:wire-grpc-client:7.2.2"),
+    )
+
+    val output = resolveClasspaths(fakeRepo, "com.example:old-protos:1.0").output
+
+    assertThat(wireWarnings(output)).isEmpty()
+  }
+
+  @Test
+  fun doesNotWarnWhenOlderWireVersionComesFromBom() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.2.2")
+    fakePom(
+      fakeRepo,
+      "com.squareup.wire:wire-bom:7.2.2",
+      packaging = "pom",
+      managedDependencies = listOf("com.squareup.wire:wire-grpc-client:7.2.2"),
+    )
+    // A library which brings the older BOM, like an older published protos jar.
+    fakePom(
+      fakeRepo,
+      "com.example:old-protos:1.0",
+      dependencies = listOf("com.squareup.wire:wire-grpc-client:7.2.2"),
+    )
+
+    val output = resolveClasspaths(
+      fakeRepo,
+      "com.example:old-protos:1.0",
+      "platform:com.squareup.wire:wire-bom:7.2.2",
+      "com.squareup.wire:wire-grpc-client",
+    ).output
+
+    assertThat(wireWarnings(output)).isEmpty()
+  }
+
+  @Test
+  fun warnsWhenForceKeepsOlderWireArtifact() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+
+    val output = resolveClasspaths(
+      fakeRepo,
+      "com.squareup.wire:wire-grpc-client:7.0.0",
+      extraArguments = arrayOf("-Pforce=com.squareup.wire:wire-grpc-client:7.0.0"),
+    ).output
+
+    assertThat(wireWarnings(output)).containsExactly(keptWarning("wire-grpc-client", "7.0.0", "forced"))
+  }
+
+  @Test
+  fun warnsWhenEachDependencyUseVersionKeepsOlderWireArtifact() {
+    val fakeRepo = fakeWireRepo(
+      "com.squareup.wire:wire-grpc-client:7.0.0",
+      "com.squareup.wire:wire-grpc-client:7.2.2",
+    )
+
+    val output = resolveClasspaths(
+      fakeRepo,
+      "com.squareup.wire:wire-grpc-client:7.2.2",
+      extraArguments = arrayOf("-PuseVersion=com.squareup.wire:wire-grpc-client:7.0.0"),
+    ).output
+
+    assertThat(wireWarnings(output)).containsExactly(keptWarning("wire-grpc-client", "7.0.0", "selected by rule"))
+  }
+
+  @Test
+  fun warnsWhenEnforcedPlatformKeepsOlderWireArtifact() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.2.2")
+    fakePom(
+      fakeRepo,
+      "com.squareup.wire:wire-bom:7.2.2",
+      packaging = "pom",
+      managedDependencies = listOf("com.squareup.wire:wire-grpc-client:7.2.2"),
+    )
+
+    val output = resolveClasspaths(
+      fakeRepo,
+      "enforcedPlatform:com.squareup.wire:wire-bom:7.2.2",
+      "com.squareup.wire:wire-grpc-client",
+    ).output
+
+    assertThat(wireWarnings(output)).containsExactly(keptWarning("wire-grpc-client", "7.2.2", "forced"))
+  }
+
+  @Test
+  fun doesNotWarnWhenWireVersionIsTheSameOrHigher() {
+    val fakeRepo = fakeWireRepo(
+      "com.squareup.wire:wire-grpc-client:99.0.0",
+      "com.squareup.wire:wire-moshi-adapter:$wireVersion",
+    )
+
+    val output = resolveClasspaths(
+      fakeRepo,
+      "com.squareup.wire:wire-grpc-client:99.0.0",
+      "com.squareup.wire:wire-moshi-adapter:$wireVersion",
+    ).output
+
+    assertThat(wireWarnings(output)).isEmpty()
+  }
+
+  @Test
+  fun strictOlderWireVersionStillFails() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+
+    val result = fixtureGradleRunner(
+      File("src/test/projects/align-wire-versions"),
+      "resolveClasspaths",
+      "-PfakeRepo=${fakeRepo.path}",
+      "-PextraDependencies=strictly:com.squareup.wire:wire-grpc-client:7.0.0",
+      "-PstrictResolution=true",
+    ).buildAndFail()
+
+    assertThat(result.output).all {
+      contains("Cannot find a version of 'com.squareup.wire:wire-grpc-client' that satisfies the version constraints")
+      contains("because of the following reason: Align Wire artifacts to the version of the Wire Gradle plugin")
+    }
+  }
+
+  @Test
+  fun wireVersionWarningsWorkWithConfigurationCache() {
+    val fakeRepo = fakeWireRepo("com.squareup.wire:wire-grpc-client:7.0.0")
+    val arguments = arrayOf("--configuration-cache")
+
+    // The warning comes from a listener on resolution. The first run configures the build and
+    // resolves the classpaths, so it warns, and stores the configuration cache entry.
+    val first = resolveClasspaths(fakeRepo, "com.squareup.wire:wire-grpc-client:7.0.0", extraArguments = arguments)
+    assertThat(first.output).contains("Configuration cache entry stored.")
+    assertThat(wireWarnings(first.output).size).isEqualTo(1)
+
+    // The next run does not configure the build, so the plugin is not applied and nothing listens.
+    // The classpaths come from the cache entry, and Gradle does not resolve them again.
+    val second = resolveClasspaths(fakeRepo, "com.squareup.wire:wire-grpc-client:7.0.0", extraArguments = arguments)
+    assertThat(second.output).contains("Reusing configuration cache")
+    assertThat(wireWarnings(second.output)).isEmpty()
+  }
+
+  private fun keptWarning(module: String, version: String, reason: String) = "Wire artifact com.squareup.wire:$module resolves to $version in configuration " +
+    "'compileClasspath', which is older than the Wire Gradle plugin version, $wireVersion. " +
+    "Gradle selected it because: $reason. " +
+    "Code generated by the Wire Gradle plugin needs Wire artifacts at $wireVersion or newer. " +
+    "Remove what pins $module to an older version, such as a forced version, " +
+    "a substitution rule or an enforced platform."
+
+  private fun wireWarnings(output: String) = output.lines().filter { it.startsWith("Wire artifact ") }
+
+  /** Resolves the classpaths of the `align-wire-versions` fixture, which logs the warnings. */
+  private fun resolveClasspaths(
+    fakeRepo: File,
+    vararg extraDependencies: String,
+    extraArguments: Array<String> = arrayOf(),
+  ) = fixtureGradleRunner(
+    File("src/test/projects/align-wire-versions"),
+    "resolveClasspaths",
+    "-PfakeRepo=${fakeRepo.path}",
+    "-PextraDependencies=${extraDependencies.joinToString(",")}",
+    *extraArguments,
+  ).build()
+
   private fun kmpClasspaths(js: Boolean, native: Boolean) = buildList {
     add("jvmCompileClasspath")
     add("jvmRuntimeClasspath")
