@@ -42,9 +42,10 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     framework: Moshi,
     keyFormatter: JsonFormatter<*>,
     valueAdapter: JsonAdapter<Any?>,
+    skipNull: Boolean,
   ): JsonAdapter<Any?> {
     @Suppress("UNCHECKED_CAST")
-    return MapJsonAdapter(keyFormatter, mapKeyTypeName(keyFormatter), valueAdapter).nullSafe() as JsonAdapter<Any?>
+    return MapJsonAdapter(keyFormatter, mapKeyTypeName(keyFormatter), valueAdapter, skipNull).nullSafe() as JsonAdapter<Any?>
   }
 
   override fun structAdapter(framework: Moshi): JsonAdapter<Any?> = framework.adapter<Any?>(Object::class.java).serializeNulls().nullSafe()
@@ -113,6 +114,7 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     private val keyFormatter: JsonFormatter<K>,
     private val keyTypeName: String,
     private val valueAdapter: JsonAdapter<V>,
+    private val skipNull: Boolean,
   ) : JsonAdapter<Map<K, V>>() {
     override fun fromJson(reader: JsonReader): Map<K, V> {
       val result = mutableMapOf<K, V>()
@@ -124,8 +126,12 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
         } catch (_: RuntimeException) {
           throw JsonDataException("expected a map key that is $keyTypeName")
         }
+        val isJsonNull = reader.peek() == JsonReader.Token.NULL
         val value = valueAdapter.fromJson(reader)
-          ?: throw JsonDataException("expected a map value that is not null")
+        if (value == null) {
+          if (skipNull && !isJsonNull) continue
+          throw JsonDataException("expected a map value that is not null")
+        }
         result[key] = value
       }
       reader.endObject()
