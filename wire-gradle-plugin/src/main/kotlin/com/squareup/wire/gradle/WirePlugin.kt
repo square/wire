@@ -25,7 +25,6 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -264,21 +263,50 @@ class WirePlugin : Plugin<Project> {
     val isMultiplatform = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
     val runtimeDependency = wireRuntimeDependency(isInternalBuild)
 
-    when {
+    val configurationName = when {
       isMultiplatform -> {
         val sourceSets =
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
-        val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
-        project.dependencies.add(sourceSet.apiConfigurationName, runtimeDependency)
+        (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet).apiConfigurationName
       }
 
-      else -> {
-        try {
-          project.dependencies.add("api", runtimeDependency)
-        } catch (_: UnknownConfigurationException) {
-          // No `api` configuration on Java applications.
-          project.dependencies.add("implementation", runtimeDependency)
-        }
+      // No `api` configuration on Java applications.
+      project.configurations.findByName("api") != null -> "api"
+
+      else -> "implementation"
+    }
+
+    project.dependencies.add(configurationName, runtimeDependency)
+
+    // Project dependencies are used in the Wire repo, there are no published versions to align.
+    if (!isInternalBuild) {
+      addWireVersionConstraints(configurationName)
+      WireVersionAlignmentWarnings(
+        logger = project.logger,
+        wireVersion = wireVersion,
+        constraintsConfigurationName = configurationName,
+        alignedModules = wireAlignedModules,
+      ).register(project.configurations)
+    }
+  }
+
+  /**
+   * Aligns the version of the Wire artifacts which are already in the dependency graph to at least
+   * the version of this plugin. Generated code calls APIs of the matching runtime, and the graph
+   * can otherwise contain older versions, for example when an older BOM or a published library
+   * brings them.
+   *
+   * These are dependency constraints: they only apply to a module which is in the graph already,
+   * and they never add one. They require [wireVersion], so a higher version still wins. They are
+   * added to the same configuration as the runtime dependency so that they reach the compile and
+   * runtime classpaths, and are published in the Gradle module metadata of libraries which apply
+   * this plugin.
+   */
+  private fun Project.addWireVersionConstraints(configurationName: String) {
+    for (module in wireAlignedModules) {
+      project.dependencies.constraints.add(configurationName, "com.squareup.wire:$module") { constraint ->
+        constraint.version { it.require(wireVersion) }
+        constraint.because(WireVersionAlignmentWarnings.CONSTRAINT_REASON)
       }
     }
   }
@@ -292,5 +320,34 @@ class WirePlugin : Plugin<Project> {
   internal companion object {
     const val ROOT_TASK = "generateProtos"
     const val GROUP = "wire"
+
+    /**
+     * Wire artifacts which can be on the compile or runtime classpath of a project. Kotlin
+     * Multiplatform modules are listed twice: the root module and its `-jvm` module. Gradle
+     * resolves the root module to the `-jvm` module for JVM and Android, and an older BOM can
+     * constrain either of them.
+     *
+     * The compiler and the generators are not used at runtime, but they can be on the classpath of
+     * a module which implements a custom handler. They are aligned because they call `wire-schema`
+     * APIs. `wire-gradle-plugin` is left out: it is on the build classpath, not the project's.
+     */
+    val wireAlignedModules = listOf(
+      "wire-compiler",
+      "wire-gson-support",
+      "wire-grpc-client",
+      "wire-grpc-client-jvm",
+      "wire-grpc-mockwebserver",
+      "wire-java-generator",
+      "wire-kotlin-generator",
+      "wire-moshi-adapter",
+      "wire-reflector",
+      "wire-runtime",
+      "wire-runtime-jvm",
+      "wire-schema",
+      "wire-schema-jvm",
+      "wire-schema-tests",
+      "wire-schema-tests-jvm",
+      "wire-swift-generator",
+    )
   }
 }

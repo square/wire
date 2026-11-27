@@ -1,0 +1,61 @@
+buildscript {
+  repositories {
+    maven {
+      url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+    }
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("com.squareup.wire:wire-gradle-plugin:${wireVersion}")
+    classpath("com.android.tools.build:gradle:9.2.1")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.squareup.wire'
+
+repositories {
+  // Fake Wire artifacts, created by the test. They have a POM and no JAR.
+  maven {
+    url new File(fakeRepo).toURI().toString()
+  }
+  maven {
+    url new File(rootDir, "../../../../../build/localMaven").toURI().toString()
+  }
+  google()
+  mavenCentral()
+}
+
+android {
+  namespace = "com.example.align"
+  compileSdk = 36
+}
+
+wire {
+  kotlin {
+  }
+}
+
+// Comma separated dependency notations.
+dependencies {
+  for (notation in findProperty('extraDependencies').split(',')) {
+    if (notation.isEmpty()) continue
+    add('implementation', notation)
+  }
+}
+
+tasks.register('printWireGraph') {
+  doLast {
+    for (name in ['debugCompileClasspath', 'debugRuntimeClasspath']) {
+      def components = configurations.getByName(name).incoming.resolutionResult.allComponents
+      for (component in components) {
+        def id = component.moduleVersion
+        if (id.group == 'com.squareup.wire') {
+          println("WIRE_GRAPH $name ${id.name}:${id.version}")
+        }
+      }
+    }
+  }
+}
