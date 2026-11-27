@@ -38,11 +38,15 @@ abstract class JsonIntegration<F, A> {
    */
   abstract fun listAdapter(elementAdapter: A, skipNull: Boolean): A
 
-  /** Returns an adapter iterates keys and values of the target adapter. */
+  /**
+   * Returns an adapter iterates keys and values of the target adapter. If [skipNull] is true,
+   * entries whose value evaluates to null will be ignored. A JSON null is still rejected.
+   */
   abstract fun mapAdapter(
     framework: F,
     keyFormatter: JsonFormatter<*>,
     valueAdapter: A,
+    skipNull: Boolean,
   ): A
 
   /**
@@ -94,6 +98,8 @@ abstract class JsonIntegration<F, A> {
         framework = framework,
         keyFormatter = mapKeyJsonFormatter(field.keyAdapter),
         valueAdapter = singleAdapter,
+        // We also ignore map entries with unrecognized constants for enum values.
+        skipNull = jsonStringAdapter is EnumJsonFormatter<*>,
       )
       else -> singleAdapter
     }

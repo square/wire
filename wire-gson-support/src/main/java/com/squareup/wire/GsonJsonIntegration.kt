@@ -20,6 +20,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import com.squareup.wire.internal.JsonFormatter
 import com.squareup.wire.internal.JsonIntegration
@@ -46,9 +47,10 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
     framework: Gson,
     keyFormatter: JsonFormatter<*>,
     valueAdapter: TypeAdapter<Any?>,
+    skipNull: Boolean,
   ): TypeAdapter<Any?> {
     @Suppress("UNCHECKED_CAST")
-    return MapJsonAdapter(keyFormatter, mapKeyTypeName(keyFormatter), valueAdapter).nullSafe() as TypeAdapter<Any?>
+    return MapJsonAdapter(keyFormatter, mapKeyTypeName(keyFormatter), valueAdapter, skipNull).nullSafe() as TypeAdapter<Any?>
   }
 
   fun <T> TypeAdapter<T>.serializeNulls(): TypeAdapter<T> {
@@ -132,6 +134,7 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
     private val keyFormatter: JsonFormatter<K>,
     private val keyTypeName: String,
     private val valueAdapter: TypeAdapter<V>,
+    private val skipNull: Boolean,
   ) : TypeAdapter<Map<K, V>>() {
     override fun read(reader: JsonReader): Map<K, V> {
       val result = mutableMapOf<K, V>()
@@ -143,8 +146,12 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
         } catch (_: RuntimeException) {
           throw JsonSyntaxException("expected a map key that is $keyTypeName")
         }
+        val isJsonNull = reader.peek() == JsonToken.NULL
         val value = valueAdapter.read(reader)
-          ?: throw JsonSyntaxException("expected a map value that is not null")
+        if (value == null) {
+          if (skipNull && !isJsonNull) continue
+          throw JsonSyntaxException("expected a map value that is not null")
+        }
         result[key] = value
       }
       reader.endObject()

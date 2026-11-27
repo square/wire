@@ -982,6 +982,18 @@ class WireJsonTest {
     assertFailsToDecode("""{"mapInt32Int32":{"1":null}}""", MapTypes::class.java)
   }
 
+  @Test fun mapEntryWithUnknownEnumValueIsSkipped() {
+    val value = jsonLibrary.fromJson(
+      """{"mapStringEnum":{"a":"A","b":"NOT_A_CONSTANT","c":99}}""",
+      AllTypesProto3::class.java,
+    )
+    assertThat(value.map_string_enum).isEqualTo(mapOf("a" to AllTypesProto3.NestedEnum.A))
+  }
+
+  @Test fun mapEnumValueThatIsNullIsRejected() {
+    assertFailsToDecode("""{"mapStringEnum":{"a":null}}""", AllTypesProto3::class.java)
+  }
+
   @Test fun anyMessageWithTypeThatIsNotAStringIsRejected() {
     assertFailsToDecode("""{"promotion":{"@type":null}}""", PizzaDelivery::class.java)
     assertFailsToDecode("""{"promotion":{"@type":{"a":1}}}""", PizzaDelivery::class.java)
